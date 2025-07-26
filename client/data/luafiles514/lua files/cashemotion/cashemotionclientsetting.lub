@@ -1,0 +1,4 @@
+EMOTION_CLIENT_SETTING = { IntendedDelay = 0 }
+function getEmotionClientSetting(in_type)
+	return EMOTION_CLIENT_SETTING[in_type]
+end
