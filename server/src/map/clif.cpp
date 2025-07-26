@@ -56,6 +56,7 @@
 #include "skill.hpp"
 #include "status.hpp"
 #include "storage.hpp"
+#include "title.hpp"
 #include "unit.hpp"
 #include "vending.hpp"
 
@@ -10843,6 +10844,14 @@ void clif_parse_LoadEndAck(int32 fd,map_session_data *sd)
 		else if (sd->sc.getSCE(SC_ALL_RIDING))
 			clif_status_load(sd, EFST_ALL_RIDING, 1);
 
+		// Title Bonus
+        if (sd->status.title_id > 0) {  
+            std::shared_ptr<s_title_bonus_db> title_entry = title_db.find(static_cast<uint16>(sd->status.title_id));
+            if (title_entry != nullptr && title_entry->icon > EFST_BLANK) {
+                clif_status_load(sd, static_cast<efst_type>(title_entry->icon), 1);  
+            }  
+        }
+
 		if(sd->status.manner < 0)
 			sc_start(sd,sd,SC_NOCHAT,100,0,0);
 
@@ -20667,16 +20676,42 @@ void clif_parse_change_title(int32 fd, map_session_data *sd)
 		// It is exactly the same as the old one
 		return;
 	}else if( title_id <= 0 ){
+        // Remove title - clear existing icon first  
+        if (sd->status.title_id > 0) {  
+            std::shared_ptr<s_title_bonus_db> old_title = title_db.find(static_cast<uint16>(sd->status.title_id));  
+            if (old_title != nullptr && old_title->icon > EFST_BLANK) {  
+                clif_status_change(sd, static_cast<sc_type>(old_title->icon), 0, 0, 0, 0, 0);  
+            }  
+        }
 		sd->status.title_id = 0;
+
+		status_calc_pc(sd, SCO_NONE);
 	}else{
 		if (std::find(sd->titles.begin(), sd->titles.end(), title_id) == sd->titles.end()) {
 			clif_change_title_ack(sd, 1, title_id);
 			return;
 		}
+        // Remove old title icon first  
+        if (sd->status.title_id > 0) {  
+            std::shared_ptr<s_title_bonus_db> old_title = title_db.find(static_cast<uint16>(sd->status.title_id));  
+            if (old_title != nullptr && old_title->icon > EFST_BLANK) {  
+                clif_status_change(sd, static_cast<sc_type>(old_title->icon), 0, 0, 0, 0, 0);  
+            }  
+        }  
+  
+        // Apply new title  
+        std::shared_ptr<s_title_bonus_db> title_entry = title_db.find(static_cast<uint16>(title_id));  
+        if (title_entry != nullptr) {
+			sd->status.title_id = title_id;
+            // Display new title icon  
+            if (title_entry->icon > EFST_BLANK) {  
+                clif_status_change(sd, static_cast<sc_type>(title_entry->icon), 1, INFINITE_TICK, 0, 0, 0);  
+            }  
+              
+			status_calc_pc(sd, SCO_NONE);
+		}
 
-		sd->status.title_id = title_id;
 	}
-	
 	clif_name_area(sd);
 	clif_change_title_ack(sd, 0, title_id);
 }

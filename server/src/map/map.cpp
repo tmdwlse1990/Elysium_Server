@@ -51,6 +51,7 @@
 #include "pet.hpp"
 #include "quest.hpp"
 #include "storage.hpp"
+#include "title.hpp"
 #include "trade.hpp"
 
 using namespace rathena;
@@ -5061,6 +5062,7 @@ void MapServer::finalize(){
 	do_final_vending();
 	do_final_buyingstore();
 	do_final_path();
+	do_final_title();
 
 	map_db->destroy(map_db, map_db_final);
 
@@ -5437,6 +5439,7 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	do_init_duel();
 	do_init_vending();
 	do_init_buyingstore();
+	do_init_title();
 
 	npc_event_do_oninit();	// Init npcs (OnInit)
 

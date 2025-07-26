@@ -35,6 +35,7 @@
 #include "pc_groups.hpp"
 #include "pet.hpp"
 #include "script.hpp"
+#include "title.hpp"
 
 using namespace rathena;
 
@@ -4241,6 +4242,14 @@ int32 status_calc_pc_sub(map_session_data* sd, uint8 opt)
 		// same as versus large size.
 		sd->right_weapon.atkmods[SZ_MEDIUM] = sd->right_weapon.atkmods[SZ_BIG];
 		sd->left_weapon.atkmods[SZ_MEDIUM] = sd->left_weapon.atkmods[SZ_BIG];
+	}
+
+	// Title Bonus
+	if (sd->status.title_id > 0) {  
+		std::shared_ptr<s_title_bonus_db> title_entry = title_db.find(static_cast<uint16>(sd->status.title_id));
+		if (title_entry != nullptr && title_entry->script) {			
+			run_script(title_entry->script, 0, sd->id, 0);	
+		}  
 	}
 
 // ----- STATS CALCULATION -----
@@ -10830,6 +10839,16 @@ static bool status_change_start_post_delay(block_list* src, block_list* bl, sc_t
 				ud->endure_tick = endtick;
 			}
 			break;
+		// Title Bonus
+		case SC_TITLE_BUFF:  
+			tick = INFINITE_TICK;  
+			if (sd && val1 > 0) {  
+				std::shared_ptr<s_title_bonus_db> title_entry = title_db.find(static_cast<uint16>(val1));  
+				if (title_entry != nullptr && title_entry->icon > EFST_BLANK) {  
+					clif_status_change(bl, static_cast<efst_type>(title_entry->icon), 1, 0, 0, 0, 0);  
+				}  
+			}
+			break;			
 		case SC_DECREASEAGI:
 		case SC_INCREASEAGI:
 		case SC_ADORAMUS:
@@ -13062,6 +13081,16 @@ static bool status_change_start_post_delay(block_list* src, block_list* bl, sc_t
 					return false;
 				}
 				break;
+			// Title Bonus
+			case SC_TITLE_BUFF:
+				// Clean up title status when removed  
+				if (sd && val1 > 0) {  
+					std::shared_ptr<s_title_bonus_db> title_entry = title_db.find(static_cast<uint16>(val1));  
+					if (title_entry != nullptr && title_entry->icon > EFST_BLANK) {  
+						clif_status_load(bl, static_cast<efst_type>(title_entry->icon), 0);  
+					}  
+				}
+				break;				
 			case SC_SERVANTWEAPON:
 			case SC_ABYSSFORCEWEAPON:
 				tick_time = tick;
@@ -13087,6 +13116,12 @@ static bool status_change_start_post_delay(block_list* src, block_list* bl, sc_t
 				dval2 = val2;
 				dval3 = val3;
 				break;
+			// Title Bonus
+			case SC_TITLE_BUFF:
+				dval1 = val1;
+				dval2 = val2;
+				dval3 = val3;
+				break;				
 			default: /* All others: just copy val1 */
 				dval1 = val1;
 				break;
@@ -13885,6 +13920,15 @@ int32 status_change_end( struct block_list* bl, enum sc_type type, int32 tid ){
 			clif_status_load(bl, EFST_KYOUGAKU, 0); // Avoid client crash
 			clif_status_load(bl, EFST_ACTIVE_MONSTER_TRANSFORM, 0);
 			break;
+		// Title Bonus
+		case SC_TITLE_BUFF: 
+			if (sd && val1 > 0) {  
+				std::shared_ptr<s_title_bonus_db> title_entry = title_db.find(static_cast<uint16>(val1));  
+				if (title_entry != nullptr && title_entry->icon > EFST_BLANK) {  
+					clif_status_load(bl, static_cast<efst_type>(title_entry->icon), 0);  
+				}  
+			}
+			break;			
 		case SC_INTRAVISION:
 			calc_flag = status_db.getSCB_ALL(); // Required for overlapping
 			break;
