@@ -396,6 +396,9 @@ bool mercenary_recv_data(s_mercenary *merc, bool flag)
 		status_calc_mercenary(md, SCO_FIRST);
 		md->contract_timer = INVALID_TIMER;
 		md->masterteleport_timer = INVALID_TIMER;
+		md->auto_support = false;
+		md->support_timer = INVALID_TIMER;
+		md->last_support_time = 0;
 		merc_contract_init(md);
 	} else {
 		memcpy(&sd->md->mercenary, merc, sizeof(s_mercenary));
@@ -484,8 +487,293 @@ void mercenary_kills(s_mercenary_data *md){
 uint16 mercenary_checkskill(s_mercenary_data *md, uint16 skill_id) {
 	if (!md || !md->db)
 		return 0;
+
+		// Validate skill ID range for mercenary skills  
+	if (!SKILL_CHK_MERC(skill_id))  
+		return 0;
+
 	auto skill_level = util::umap_find(md->db->skill, skill_id);
 	return skill_level ? *skill_level : 0;
+}
+
+/*==========================================  
+ * Mercenary support timer function  
+ * Checks if master needs support buffs and casts them  
+ *------------------------------------------*/  
+TIMER_FUNC(mercenary_support_timer)      
+{      
+    map_session_data *sd = map_id2sd(id);        
+            
+    if (!sd || !sd->md || !sd->md->auto_support) {        
+        return 0;      
+    }        
+            
+    struct s_mercenary_data *md = sd->md;        
+            
+    if (status_isdead(*md) || md->battle_status.sp < 10) {        
+        md->support_timer = add_timer(gettick() + 100, mercenary_support_timer, sd->id, 0);        
+        return 0;        
+    }        
+      
+    // Check if mercenary is stuck or idle for too long  
+    static int last_x = 0, last_y = 0;  
+    static int idle_count = 0;  
+      
+    if (md->x == last_x && md->y == last_y && !md->ud.walktimer) {  
+        idle_count++;  
+        if (idle_count > 10) { // 5 seconds of being idle  
+            // Force movement towards master  
+            unit_walktobl(md, (struct block_list*)md->master, 2, 1);  
+            idle_count = 0;  
+        }  
+    } else {  
+        idle_count = 0;  
+        last_x = md->x;  
+        last_y = md->y;  
+    }  
+            
+    // Use enhanced AI function  
+    if (md->master) {    
+        mercenary_check_auto_skills(md, (struct block_list*)md->master);        
+    }    
+            
+    md->support_timer = add_timer(gettick() + 100, mercenary_support_timer, sd->id, 0);        
+    return 0;      
+}
+
+/*==========================================    
+ * Check and cast support/aggressive skills on master/enemies  
+ *------------------------------------------*/    
+void mercenary_check_auto_skills(struct s_mercenary_data *md, struct block_list *master)  
+{  
+    status_change *sc = status_get_sc(master);    
+    if (!sc) return;    
+      
+    // Check distance to master - if too far, move closer first  
+    int master_dist = distance_bl(md, master);  
+    if (master_dist > MAX_MER_DISTANCE - 3) {  
+        unit_walktoxy(md, master->x, master->y, 0);  
+        return;  
+    }  
+        
+    // First priority: Support skills for master    
+    for (const auto& skill_pair : md->db->skill) {    
+        uint16 skill_id = skill_pair.first;    
+        uint16 skill_level = skill_pair.second;    
+            
+        if (skill_level <= 0) continue;    
+            
+        auto cooldown_it = md->scd.find(skill_id);    
+        if (cooldown_it != md->scd.end() && cooldown_it->second > gettick())    
+            continue;    
+                
+        if (mercenary_is_support_skill(skill_id)) {    
+            sc_type status_type = skill_get_sc(skill_id);    
+            if (status_type != SC_NONE && !sc->getSCE(status_type)) {    
+                unit_skilluse_id(md, master->id, skill_id, skill_level);    
+                return;    
+            }    
+        }    
+    }    
+        
+    // Second priority: Combat behavior  
+    struct block_list *target = nullptr;    
+        
+    // Check current target validity with extended range  
+    if (md->target_id) {    
+        target = map_id2bl(md->target_id);    
+        if (!target || status_isdead(*target) ||     
+            !check_distance_bl(md, target, md->db->range3 + 3)) { // Extended range  
+            md->target_id = 0;    
+            target = nullptr;    
+        }    
+    }    
+        
+    // Find new target if needed  
+    if (!target) {    
+        target = mercenary_find_nearby_enemy(md, master);    
+        if (target) {    
+            md->target_id = target->id;    
+        }    
+    }    
+        
+    // Combat actions  
+    if (target) {    
+        int target_dist = distance_bl(md, target);  
+        int attack_range = md->db->status.rhw.range;  
+          
+        // Move closer if target is out of attack range  
+        if (target_dist > attack_range) {  
+            unit_walktobl(md, target, attack_range, 1);  
+            return;  
+        }  
+          
+        // Use offensive skills  
+        for (const auto& skill_pair : md->db->skill) {    
+            uint16 skill_id = skill_pair.first;    
+            uint16 skill_level = skill_pair.second;    
+                
+            if (skill_level <= 0) continue;    
+                
+            auto cooldown_it = md->scd.find(skill_id);    
+            if (cooldown_it != md->scd.end() && cooldown_it->second > gettick())    
+                continue;    
+                    
+            if (mercenary_is_offensive_skill(skill_id)) {    
+                unit_skilluse_id(md, target->id, skill_id, skill_level);    
+                return;    
+            }    
+        }    
+            
+        // Normal attack  
+        unit_attack(md, target->id, 0);    
+    } else {  
+        // No target found - follow master if too far  
+        if (master_dist > 3) {  
+            unit_walktobl(md, master, 2, 1);  
+        }  
+    }  
+}
+
+/*==========================================  
+ * Check if skill is a support/buff skill  
+ *------------------------------------------*/  
+bool mercenary_is_support_skill(uint16 skill_id)  
+{  
+    switch(skill_id) {  
+        case MER_BLESSING:  
+        case MER_INCAGI:  
+        case MER_QUICKEN:  
+        case MER_BENEDICTION:  
+        case MER_REGAIN:  
+        case ML_AUTOGUARD:  
+        case ML_DEFENDER:  
+        case ML_DEVOTION:  
+        case MER_MAGNIFICAT:
+            return true;  
+        default:  
+            return false;  
+    }  
+}  
+  
+/*==========================================  
+ * Check if skill is an offensive skill  
+ *------------------------------------------*/  
+bool mercenary_is_offensive_skill(uint16 skill_id)  
+{  
+    switch(skill_id) {  
+        case MS_BASH:  
+        case MS_BOWLINGBASH:  
+        case MS_MAGNUM:  
+        case MER_CRASH:  
+        case ML_BRANDISH:  
+        case MER_PROVOKE:  
+        case MS_BERSERK:  
+        case MER_AUTOBERSERK:
+            return true;  
+        default:  
+            return false;  
+    }  
+}  
+  
+/*==========================================  
+ * Find nearby enemy for aggressive skills  
+ *------------------------------------------*/  
+ /*==========================================
+  * Helper function for enhanced enemy finding
+  *------------------------------------------*/
+static int mercenary_find_enemy_sub(struct block_list* bl, va_list ap)
+{
+	struct s_mercenary_data* md = va_arg(ap, struct s_mercenary_data*);
+	struct block_list** target = va_arg(ap, struct block_list**);
+	struct block_list* master = va_arg(ap, struct block_list*);
+	int* min_dist = va_arg(ap, int*);
+	int search_range = va_arg(ap, int);
+
+	if (bl->type == BL_MOB && !status_isdead(*bl)) {
+		struct mob_data* mob = BL_CAST(BL_MOB, bl);
+
+		// Prioritize mobs that are targeting the master  
+		if (mob && mob->target_id == master->id) {
+			*target = bl;
+			*min_dist = 0; // Highest priority  
+			return 1; // Stop searching, found priority target  
+		}
+
+		int dist = distance_bl(md, bl);
+		if (dist < *min_dist&& dist <= search_range) {
+			*target = bl;
+			*min_dist = dist;
+		}
+	}
+	return 0;
+}
+
+/*==========================================
+ * Enhanced enemy finding with movement and positioning
+ *------------------------------------------*/
+struct block_list* mercenary_find_nearby_enemy(struct s_mercenary_data* md, struct block_list* master)
+{
+	struct block_list* target = nullptr;
+	int min_distance = 999;
+	int search_range = md->db->range3 > 0 ? md->db->range3 : 12; // Use ChaseRange or default  
+
+	// Find enemies that are attacking the master or nearby  
+	map_foreachinrange(mercenary_find_enemy_sub, md, search_range, BL_MOB, md, &target, master, &min_distance, search_range);
+
+	return target;
+}
+
+/*==========================================  
+ * Called when master takes damage - mercenary retaliates  
+ *------------------------------------------*/  
+void mercenary_damage_support(map_session_data *sd, struct block_list *src)    
+{    
+    if (!sd || !sd->md || !sd->md->auto_support)      
+        return;      
+              
+    struct s_mercenary_data *md = sd->md;      
+          
+    // Check if source is valid target      
+    if (!src || src->type != BL_MOB || status_isdead(*src))      
+        return;      
+      
+    // Interrupt current action to respond immediately  
+    unit_stop_attack(md);  
+    unit_stop_walking(md, 1);  
+              
+    // Set the attacker as priority target      
+    md->target_id = src->id;      
+      
+    // Move to attack range if needed  
+    int dist = distance_bl(md, src);  
+    int attack_range = md->db->status.rhw.range;  
+      
+    if (dist > attack_range) {  
+        unit_walktobl(md, src, attack_range, 1);  
+    }  
+          
+    // Try to use offensive skills first    
+    for (const auto& skill_pair : md->db->skill) {    
+        uint16 skill_id = skill_pair.first;    
+        uint16 skill_level = skill_pair.second;    
+            
+        if (skill_level <= 0) continue;    
+            
+        // Check if skill is on cooldown    
+        auto cooldown_it = md->scd.find(skill_id);    
+        if (cooldown_it != md->scd.end() && cooldown_it->second > gettick())    
+            continue;    
+                
+        // Use offensive skills for immediate retaliation    
+        if (mercenary_is_offensive_skill(skill_id)) {    
+            unit_skilluse_id(md, src->id, skill_id, skill_level);    
+            return;  
+        }    
+    }    
+        
+    // Fall back to normal attack  
+    unit_attack(md, src->id, 0);    
 }
 
 const std::string MercenaryDatabase::getDefaultLocation() {
@@ -946,6 +1234,7 @@ void do_init_mercenary(void){
 	mercenary_db.load();
 
 	add_timer_func_list(merc_contract_end, "merc_contract_end");
+	add_timer_func_list(mercenary_support_timer, "mercenary_support_timer");
 }
 
 /**

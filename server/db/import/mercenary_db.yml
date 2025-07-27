@@ -57,3 +57,41 @@
 Header:
   Type: MERCENARY_DB
   Version: 1
+
+Body:
+  - Id: 6046
+    AegisName: MER_SWORDMAN10
+    Name: Wayne
+    Level: 275
+    Hp: 100000
+    Sp: 1000
+    Attack: 1076000
+    Attack2: 1280000
+    Defense: 640
+    MagicDefense: 300
+    Str: 130
+    Agi: 130
+    Vit: 30
+    Int: 30
+    Dex: 130
+    Luk: 30
+    AttackRange: 2
+    SkillRange: 10
+    Race: Demihuman
+    Element: Neutral
+    ElementLevel: 1
+    WalkSpeed: 150
+    AttackDelay: 450
+    AttackMotion: 432
+    DamageMotion: 300
+    Skills:
+      - Name: MER_BLESSING
+        MaxLevel: 10
+      - Name: MER_INCAGI
+        MaxLevel: 10
+      - Name: MS_BASH
+        MaxLevel: 10
+      - Name: MS_BERSERK
+        MaxLevel: 1
+      - Name: MER_MAGNIFICAT
+        MaxLevel: 5

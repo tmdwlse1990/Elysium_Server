@@ -54,6 +54,11 @@ struct s_mercenary_data : public block_list {
 	int32 contract_timer;
 
 	unsigned devotion_flag : 1;
+
+	bool auto_support;			// Flag for auto support mode  
+	int support_timer;          // Timer ID for support checks  
+	t_tick last_support_time;   // Last time support was used
+	int32 target_id;			// ID of current target enemy
 };
 
 struct view_data * mercenary_get_viewdata(uint16 class_);
@@ -89,6 +94,12 @@ void mercenary_set_calls(s_mercenary_data *md, int32 value);
 void mercenary_kills(s_mercenary_data *md);
 
 uint16 mercenary_checkskill(s_mercenary_data *md, uint16 skill_id);
+bool mercenary_is_support_skill(uint16 skill_id);  
+bool mercenary_is_offensive_skill(uint16 skill_id);  
+struct block_list* mercenary_find_nearby_enemy(struct s_mercenary_data *md, struct block_list *master);
+void mercenary_damage_support(map_session_data* sd, struct block_list* src);
+void mercenary_check_auto_skills(struct s_mercenary_data *md, struct block_list *master);
+TIMER_FUNC(mercenary_support_timer);
 
 void do_init_mercenary(void);
 void do_final_mercenary(void);

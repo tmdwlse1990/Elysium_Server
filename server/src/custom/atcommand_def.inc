@@ -10,3 +10,4 @@
 
 //ACMD_DEF(newcommand),
 ACMD_DEF(afk),
+ACMD_DEF2("mercenaryon", mercenaryon),

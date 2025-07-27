@@ -34,3 +34,33 @@ ACMD_FUNC(afk) {
 	clif_authfail_fd(fd, 15);
 	return 0;
 }
+
+/*==========================================  
+ * @mercenaryon
+ * Toggle automatic mercenary support skill usage  
+ *------------------------------------------*/  
+ACMD_FUNC(mercenaryon)    
+{    
+    nullpo_retr(-1, sd);    
+        
+    if (!sd->md) {    
+        clif_displaymessage(fd, "You don't have a mercenary.");    
+        return -1;    
+    }    
+        
+    // Toggle the auto support flag  
+    sd->md->auto_support = !sd->md->auto_support;  
+        
+    if (sd->md->auto_support) {    
+        clif_displaymessage(fd, "Mercenary auto-skills enabled (support + aggressive).");    
+        sd->md->support_timer = add_timer(gettick() + 1000, mercenary_support_timer, sd->id, 0);    
+    } else {    
+        clif_displaymessage(fd, "Mercenary auto-skills disabled.");    
+        if (sd->md->support_timer != INVALID_TIMER) {    
+            delete_timer(sd->md->support_timer, mercenary_support_timer);    
+            sd->md->support_timer = INVALID_TIMER;    
+        }    
+    }    
+        
+    return 0;    
+}

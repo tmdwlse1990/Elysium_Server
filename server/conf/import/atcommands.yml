@@ -31,3 +31,12 @@
 Header:
   Type: ATCOMMAND_DB
   Version: 1
+
+Body:
+    - Command: mercenaryon  
+      Aliases:  
+        - mercon  
+        - mercoff  
+      Help: |  
+        Toggle automatic mercenary support skill usage.  
+        When enabled, your mercenary will automatically cast support buffs when they expire.

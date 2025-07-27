@@ -359,6 +359,13 @@ int32 battle_damage(struct block_list *src, struct block_list *target, int64 dam
 		else {
 			add_timer(tick + delay, mob_attacked, target->id, src->id);
 		}
+
+		if (target && target->type == BL_PC && src && src->type == BL_MOB && dmg_lv > ATK_BLOCK) {
+			map_session_data* target_sd = BL_CAST(BL_PC, target);
+			if (target_sd) {
+				mercenary_damage_support(target_sd, src);
+			}
+		}
 	}
 	map_freeblock_unlock();
 	return dmg_change;
