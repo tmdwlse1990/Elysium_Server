@@ -27,6 +27,7 @@
 
 #include "achievement.hpp"
 #include "atcommand.hpp"
+#include "autocombat.hpp"
 #include "battle.hpp"
 #include "battleground.hpp"
 #include "cashshop.hpp"
@@ -5942,6 +5943,9 @@ void clif_skillcastcancel( block_list& bl ){
 /// Note: when this packet is received an unknown flag is always set to 0,
 /// suggesting this is an ACK packet for the UseSkill packets and should be sent on success too [FlavioJS]
 void clif_skill_fail( map_session_data& sd, uint16 skill_id, enum useskill_fail_cause cause, int32 btype, t_itemid itemId ){
+	if(sd.state.autocombat)
+		return;
+	
 	if(battle_config.display_skill_fail&1)
 		return; //Disable all skill failed messages
 
@@ -9865,11 +9869,14 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 
 			if( sd->fakename[0] ) {
 				safestrncpy( packet.name, sd->fakename, NAME_LENGTH );
-				clif_send( &packet, sizeof(packet), src, target );
-				return;
+				if (!(battle_config.function_autocombat_prefixname && sd->state.autocombat)) {
+					clif_send(&packet, sizeof(packet), src, target);
+					return;
+				}
 			}
 
-			safestrncpy( packet.name, sd->status.name, NAME_LENGTH );
+			else
+				safestrncpy( packet.name, sd->status.name, NAME_LENGTH );
 
 			party_data *p = nullptr;
 
@@ -11758,6 +11765,8 @@ void clif_parse_Restart(int32 fd, map_session_data *sd)
 {
 	switch(RFIFOB(fd,packet_db[RFIFOW(fd,0)].pos[0])) {
 	case 0x00:
+		if(sd->state.autocombat)
+			status_change_end(sd, SC_AUTOCOMBAT);	
 		pc_respawn(sd,CLR_OUTSIGHT);
 		break;
 	case 0x01:

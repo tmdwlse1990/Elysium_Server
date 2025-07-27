@@ -87,9 +87,3 @@
 Header:
   Type: ITEM_DB
   Version: 3
-
-Footer:
-  Imports:
-  - Path: db/import/item_db_usable.yml
-  - Path: db/import/item_db_equip.yml
-  - Path: db/import/item_db_etc.yml

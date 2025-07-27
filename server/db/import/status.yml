@@ -44,3 +44,14 @@
 Header:
   Type: STATUS_DB
   Version: 4
+
+Body:
+  - Status: Autocombat
+    Icon: EFST_AUTOCOMBAT
+    Flags:
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      NoRemoveOnDead: true
+      NoSave: true

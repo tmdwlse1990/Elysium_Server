@@ -33,6 +33,8 @@
 
 #include "achievement.hpp"
 #include "atcommand.hpp"
+#include "autocombat.hpp"
+#include "autocombat_script.hpp"
 #include "battle.hpp"
 #include "battleground.hpp"
 #include "cashshop.hpp"
@@ -6119,6 +6121,9 @@ BUILDIN_FUNC(jobchange)
 			return SCRIPT_CMD_SUCCESS;
 
 		pc_jobchange(sd, job, upper);
+
+		sd->ac.autocombatskills.clear();
+		sd->ac.autobuffskills.clear();
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -12931,6 +12936,8 @@ BUILDIN_FUNC(resetskill)
 	if (!script_charid2sd(2,sd))
 		return SCRIPT_CMD_FAILURE;
 	pc_resetskill(sd,1);
+	sd->ac.autocombatskills.clear();
+	sd->ac.autobuffskills.clear();	
 	return SCRIPT_CMD_SUCCESS;
 }
 

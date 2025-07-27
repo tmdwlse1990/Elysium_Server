@@ -88,8 +88,40 @@ Header:
   Type: ITEM_DB
   Version: 3
 
-Footer:
-  Imports:
-  - Path: db/import/item_db_usable.yml
-  - Path: db/import/item_db_equip.yml
-  - Path: db/import/item_db_etc.yml
+Body:
+    - Id: 50500
+      AegisName: Autoattack_Pack
+      Name: Autoattack Pack
+      Type: Usable
+      Buy: 1
+      Weight: 1
+      Flags:
+        NoConsume: false
+      Trade:
+        NoDrop: true
+        NoTrade: true
+        NoSell: true
+        NoCart: true
+        NoGuildStorage: true
+        NoMail: true
+        NoAuction: true        
+      Script: |
+        rentitem 50501,604800;
+    - Id: 50501
+      AegisName: Autocombat_Device
+      Name: Autocombat Device
+      Type: Usable
+      Buy: 1
+      Weight: 1
+      Flags:
+        NoConsume: true
+      Trade:
+        NoDrop: true
+        NoTrade: true
+        NoSell: true
+        NoCart: true
+        NoGuildStorage: true
+        NoMail: true
+        NoAuction: true        
+      Script: |
+        doevent "bot_at::OnMainMenu";

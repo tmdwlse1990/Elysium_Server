@@ -1,0 +1,1005 @@
+//
+//===== rAthena Script =======================================
+//= autocombat
+//===== By: ==================================================
+//= Shakto
+//= Louis T Steinhil
+//===== Current Version: =====================================
+//= Version		2024/01/24
+//===== Compatible With: =====================================
+//= latest revision of rAthena
+//===== Description: =========================================
+//= For item use, also add this to disable autocombat on unequip item
+//=   UnEquipScript: |
+//=    sc_end SC_AUTOCOMBAT;
+//= 1.0 Initial Release
+//= 1.1 Change input method for adding attack skills to menu method
+//= 1.2 Change input method for adding buff skills to menu method
+//= 1.3 Change input method for Sit and Stand to menu method
+//= 1.4 Added Timer to limit the usage per day
+//= 1.5 Merged enable/disable skills into ON/OFF menu method
+//= 1.6 Change input method for adding buff items to menu method
+//= 1.7 Change autocombat rental item into timer method
+//============================================================
+-	script	bot_at	-1,{
+
+	function calculate_remaining_time;
+	function reset;
+
+OnInit:  
+    .duration = 3600000 * 4; // 4 hour in milliseconds  
+    .remaining_time = .duration;  
+    .start_time = 0;  
+    end;  
+  
+OnHour00: // 12am server time will reset duration  
+    .@n = getunits(BL_PC, .@aid);  
+    for (.@i = 0; .@i < .@n; .@i++) {  
+        attachrid(.@aid[.@i]);  
+        reset();  
+        detachrid;  
+    }  
+    end;
+
+function calculate_remaining_time {
+    .@remaining_time = .remaining_time;
+    .@hours = .@remaining_time / 3600000;
+    .@minutes = (.@remaining_time % 3600000) / 60000;
+    .@seconds = (.@remaining_time % 60000) / 1000;
+    return .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds.";
+}
+
+function	reset	{
+    // Reset remaining time to full duration  
+    .remaining_time = .duration;  
+      
+    // Clear any saved player-specific remaining time  
+    setd(".remaining_time_" + getcharid(0), .duration);  
+      
+    // If player has active autocombat, restart it with full duration  
+    if (ac_getstate()) {  
+        sc_end SC_AUTOCOMBAT;  
+        sc_start4 SC_AUTOCOMBAT, .duration, 1, 0, 0, 0;  
+        .start_time = gettimetick(2);  
+    }
+	
+	dispbottom "[Autocombat System]: Your autocombat has been refreshed for today.";
+	dispbottom "Current remainting time : " + calculate_remaining_time() + ".";
+
+	return;
+}
+    
+goto(OnMainMenu);
+end;
+
+OnMainMenu:
+	.@menu$ = "[Autocombat Configuration]";
+	mes .@menu$;	
+	//if(!rentalcountitem(50501)){
+	//	mes "You need to have an AutoBuff Device to use this feature";
+	//	close;
+	//}
+    mes " ";
+    mes "Remaining Time: ^FF0000" + calculate_remaining_time() + "^000000";
+    mes "Current Time: ^0000FF" + gettimestr("%H:%M:%S", 10) + "^000000";
+    mes " ";	
+	next;
+	.@OnMainMenu = select(ac_getstate()?"[Stop]":"[Start]","[Configuration]","[Cancel]");
+	switch(.@OnMainMenu){
+		case 1:
+			if (ac_getstate()) {
+				goto OnStop;
+			} else {
+				//autocombat_fromitem(50501);
+				// Start autocombat
+				sc_start4 SC_AUTOCOMBAT, .remaining_time, 1, 0, 0, 0;
+				.start_time = gettimetick(2); // Record start time
+				message strcharinfo(0), "Autocombat started. Timer set for: " + calculate_remaining_time();
+			}
+			break;
+		case 2:
+			goto config_menu;
+			break;
+	}
+	end;
+
+config_menu:
+	clear;
+	.@menu$ = "[Autocombat Configuration]";
+	mes .@menu$;
+
+	// To disable an option, comment the line
+	menu	"Return",OnMainMenu,
+			" - Regeneration",regeneration_menu,
+			" - Attack Skills",attackskills_menu,
+			" - Buff Skills",buffskills_menu,
+			" - Buff Items",buffitems_menu,
+			" - Monsters Selection",monsters_menu,
+			" - Items Pickup Selection",pickupitems_menu,
+			" - Teleport",teleport_menu,
+			" - Others configurations",others_menu,
+			" - Reset all",reset_all;
+	end;
+
+pickupitems_menu:
+	clear;
+	.@menu$ = "[Items Pickup Selection]";
+
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	mes "Select the items to pick up";
+	mes ac_getautocombatstring(13,0);
+
+	.@pickupitems_menu = select("Pick up configuration","Add an item","Remove an item","Clear the list","[Cancel]");
+
+	switch(.@pickupitems_menu){
+		case 1:
+			.@pickup_config_choice = 0;
+			// every item = 0
+			// on the list = 1
+			// no item = 2
+			switch(ac_getautocombatint(9,0)){
+				case 0:
+					.@pickupitems_config_menu  = select("Pick up only items on the list","Don't pick up any item","[Cancel]");
+					switch(.@pickupitems_config_menu){
+						case 1:
+							.@pickup_config_choice = 1;
+							break;
+						case 2 :
+							.@pickup_config_choice = 2;
+							break;
+						case 3 :
+							goto(pickupitems_menu);
+							break;
+					}
+						
+					break;
+				case 1:
+					.@pickupitems_config_menu  = select("Pick up every items","Don't pick up any item","[Cancel]");
+					switch(.@pickupitems_config_menu){
+						case 1:
+							.@pickup_config_choice = 0;
+							break;
+						case 2 :
+							.@pickup_config_choice = 2;
+							break;
+						case 3 :
+							goto(pickupitems_menu);
+							break;
+					}
+					break;
+				case 2:
+					.@pickupitems_config_menu  = select("Pick up every items","Pick up only items on the list","[Cancel]");
+					switch(.@pickupitems_config_menu){
+						case 1:
+							.@pickup_config_choice = 0;
+							break;
+						case 2 :
+							.@pickup_config_choice = 1;
+							break;
+						case 3 :
+							goto(pickupitems_menu);
+							break;
+					}
+					break;				
+			}
+			ac_setautocombat("20;" + .@pickup_config_choice);
+			break;
+		case 2:
+			clear;
+			mes .@menu$;
+			mes "Enter the id of the item to add on the list (20 max)";
+			do {
+				input .@itempickup_id;
+			} while(.@itempickup_id < 1);
+
+			ac_setautocombat("21;1;" + .@itempickup_id);
+
+			break;
+		case 3:
+			if(ac_getautocombatint(17,0) > 0){
+				mes "Enter the id of the item to delete from the list";
+
+				do {
+					input .@itempickup_id;
+				} while(.@itempickup_id < 1);
+				ac_setautocombat("21;0;" + .@itempickup_id);
+			} else {
+				clear;
+				mes .@menu$;
+				mes "Sorry, you don't have any item of this list";
+				next;
+			}
+
+			break;
+		case 4:
+			ac_setautocombat("21;-1;0");
+			break;
+
+		case 5:
+			goto(config_menu);
+			break;
+	}
+
+	goto(pickupitems_menu);
+	end;
+
+others_menu:
+	clear;
+	.@menu$ = "[Others configurations]";
+
+	mes .@menu$;
+	//mes "--- Current configuration ---";
+	//mes ac_getautocombatstring(9,0);
+	//mes ac_getautocombatstring(8,0);
+	//mes ac_getautocombatstring(10,0);
+	//mes ac_getautocombatstring(11,0);
+
+	.@others_menu = select(
+	ac_getautocombatint(7,0)?"^008000(ON)^000000 Token of Siegfried":"^FF0000(OFF)^000000 Token of Siegfried"
+	,ac_getautocombatint(6,0)?"^008000(ON)^000000 Return to save point":"^FF0000(OFF)^000000 Return to save point"
+	,ac_getautocombatint(8,0)?"^008000(ON)^000000 Auto accept party request":"^FF0000(OFF)^000000 Auto accept party request"
+	,ac_getautocombatint(10,0)?"^008000(ON)^000000 Priorize loot over fight":"^FF0000(OFF)^000000 Priorize loot over fight"
+	,ac_getautocombatint(11,0)==1?"^FF0000(OFF)^000000 Melee attack":"^008000(ON)^000000 Melee attack"
+	,ac_getautocombatint(11,0)==2?"^008000(ON)^000000 Melee attack only when SP below 100sp":"^FF0000(OFF)^000000 Melee attack only when SP below 100sp"
+	,ac_getautocombatint(16,0)?"^008000(ON)^000000 Ignore aggressive monster if not in the list":"^FF0000(OFF)^000000 Ignore aggressive monster if not in the list"
+	,"Configure action when autocombat stop"
+	,"[Cancel]"
+	);
+	switch(.@others_menu){
+		case 1:
+			if(ac_getautocombatint(7,0))
+				ac_setautocombat("11;0");
+			else
+				ac_setautocombat("11;1");
+			break;
+		case 2:
+			if(ac_getautocombatint(6,0))
+				ac_setautocombat("9;0");
+			else
+				ac_setautocombat("9;1");
+			break;
+		case 3:
+			if(ac_getautocombatint(8,0))
+				ac_setautocombat("12;0");
+			else
+				ac_setautocombat("12;1");
+			break;
+		case 4:
+			if(ac_getautocombatint(10,0))
+				ac_setautocombat("13;0");
+			else
+				ac_setautocombat("13;1");
+			break;
+		case 5:
+			if(ac_getautocombatint(11,0) == 1)
+				ac_setautocombat("7;0");
+			else
+				ac_setautocombat("7;1");
+			break;
+		case 6:
+			if(ac_getautocombatint(11,0) == 2)
+				ac_setautocombat("7;0");
+			else
+				ac_setautocombat("7;2");
+			break;
+		case 7:
+			if(ac_getautocombatint(16,0))
+				ac_setautocombat("18;0");
+			else
+				ac_setautocombat("18;1");
+			break;
+		case 8:
+			goto(action_on_end_menu);
+			break;
+		case 9:
+			goto(config_menu);
+			break;
+	}
+	goto(others_menu);
+
+	end;
+
+action_on_end_menu:
+	clear;
+	.@menu$ = "[Action when Autocombat stop]";
+
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	mes ac_getautocombatstring(4,0); // status hp sp
+
+	.@action_on_end_menu = select(
+	ac_getautocombatint(18,0) == 0?"^008000[x]^000000 Do nothing":"[ ] Do nothing"
+	,ac_getautocombatint(18,0) == 1?"^008000[x]^000000 Teleport to save point":"[ ] Teleport to save point"
+	,ac_getautocombatint(18,0) == 2?"^008000[x]^000000 Logout":"[ ] Logout"
+	,"[Cancel]"
+	);
+
+	switch(.@action_on_end_menu){
+		case 1:
+			if(ac_getautocombatint(18,0) != 0)
+				ac_setautocombat("22;0");
+			break;
+		case 2:
+			if(ac_getautocombatint(18,0) != 1)
+				ac_setautocombat("22;1");
+			break;
+		case 3:
+			if(ac_getautocombatint(18,0) != 2)
+				ac_setautocombat("22;2");
+			break;
+		case 4:
+			clear;
+			goto(others_menu);
+			break;
+	}
+
+	clear;
+	goto(others_menu);
+	end;
+
+reset_all:
+	clear;
+	.@menu$ = "[Reset settings]";
+	mes .@menu$;
+	
+	.@reset_menu = select("Confirm the reset of all settings","[Cancel]");
+
+	switch(.@reset_menu){
+		case 1:
+			ac_setautocombat("10;0");
+			break;
+	}
+
+	goto(config_menu);
+	end;
+
+monsters_menu:
+	clear;
+	.@menu$ = "[Monster Selection]";
+
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	mes "Select here the monsters that you don't want to attack";
+	//deletearray .@mobs_menu_ids;
+	//deletearray .@mobs_menu_state;
+	//deletearray .@mobs_menu_list$;
+	mes ac_getautocombatstring(12,0);
+	
+	if(getarraysize(.@mobs_menu_ids) == 0){
+		clear;
+		mes .@menu$;
+		mes "Sorry, there is no monsters on the map";
+		next;
+		goto(OnMainMenu);
+	}
+	
+	.@mobs_menu_list$ = "[Cancel]:" + .@mobs_menu_list$;
+	.@i = select( .@mobs_menu_list$ );
+
+	if(.@i == 1)
+		goto(config_menu);
+	else
+		.@i--;
+
+	if(.@mobs_menu_state[.@mobs_menu_ids[.@i]])
+		ac_setautocombat("19;"+ .@mobs_menu_ids[.@i] + ";0");
+	else
+		ac_setautocombat("19;"+ .@mobs_menu_ids[.@i] + ";1");
+
+	goto(monsters_menu);
+	end;
+
+teleport_menu:
+	clear;
+	.@menu$ = "[Teleport]";
+
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	mes ac_getautocombatstring(6,0);
+
+	.@teleport_menu = select(
+	ac_getautocombatint(12,0)?"^FF0000(OFF)^000000 Enable fly wing to teleport":"^008000(ON)^000000 Enable fly wing to teleport"
+	,ac_getautocombatint(13,0)?"^FF0000(OFF)^000000 Enable teleport skill to teleport":"^008000(ON)^000000 Enable teleport skill to teleport"
+	,"Set the minimum HP value for emergency teleport"
+	,"Adjust the teleport delay if no monster is encountered within that time"
+	,"Adjust the max number of monster that can target you before being teleported"
+	,"[Cancel]"
+	);
+	
+	switch(.@teleport_menu){
+		case 1:
+			if(ac_getautocombatint(12,0))
+				ac_setautocombat("4;0");
+			else
+				ac_setautocombat("4;1");
+			break;
+		case 2:
+			if(ac_getautocombatint(13,0))
+				ac_setautocombat("6;0");
+			else
+				ac_setautocombat("6;1");
+			break;
+		case 3:
+			do {
+				clear;
+				mes .@menu$;
+				mes "Choose the minimum hp % for emergency teleport)";
+				mes "Min value is 5, Max value is 90 (0 to disable it)";
+				input .@teleport_minhpvalue;
+			} while(.@teleport_minhpvalue != 0 && (.@teleport_minhpvalue < 5 || .@teleport_minhpvalue > 90));
+			ac_setautocombat("16;"+.@teleport_minhpvalue);
+			break;
+		case 4:
+			do {
+				clear;
+				mes .@menu$;
+				mes "Adjust the teleport delay (in seconds) if no monster is encountered within that time";
+				mes "Min value is 2, Max value is 600 (0 to disable it)";
+				input .@teleport_delayvalue;
+			} while(.@teleport_delayvalue != 0 && (.@teleport_delayvalue < 2 || .@teleport_delayvalue > 600));
+			.@teleport_delayvalue = .@teleport_delayvalue * 1000;
+			ac_setautocombat("17;"+.@teleport_delayvalue);
+			break;
+		case 5:
+			do {
+				clear;
+				mes .@menu$;
+				mes "Adjust the max number of monster that can target you before being teleported";
+				mes "Max value is 30 (0 to disable it)";
+				input .@monster_surround;
+			} while(.@monster_surround != 0 && (.@monster_surround < 0 || .@monster_surround > 30));
+			ac_setautocombat("23;"+.@monster_surround);
+			break;
+		case 6:
+			goto(config_menu);
+			break;
+	}
+
+	goto(teleport_menu);
+	end;
+
+regeneration_menu:
+	mes "Clear menu";
+	clear;
+	.@menu$ = "[Regeneration]";
+	
+	mes .@menu$;
+	menu	"Return",config_menu,
+			" ~ Auto-Heal",heal_menu,
+			" ~ HP / SP Potions",potion_menu,
+			" ~ Sit to Rest",sit_regen_menu;
+	end;
+
+heal_menu:
+	clear;
+	.@menu$ = "[Auto-Heal]";
+
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	mes "You can add / modify or remove the following skills";
+	setarray .@lheal_skill[0],28,2051,2043;
+
+	.@healskill_menu1$ = "";
+	.@j = 0;
+	
+	// Check if the player have the skills
+	for (.@i = 0; .@i < getarraysize(.@lheal_skill); .@i++){
+		if(getskilllv(.@lheal_skill[.@i]))
+			.@lheal_skill2[.@j++] = .@lheal_skill[.@i];
+	}
+
+	if(getarraysize(.@lheal_skill2) == 0){
+		clear;
+		mes .@menu$;
+		mes "Sorry, you don't have any kind of heal skills allowed";
+		next;
+		goto(regeneration_menu);
+	}
+
+	for (.@i = 0; .@i < getarraysize(.@lheal_skill2); .@i++)
+		.@healskill_menu1$ = .@healskill_menu1$ + (.@i > 0 ? ":" : "") + ac_getautocombatstring(0,.@lheal_skill2[.@i],1);
+
+	.@i = select(.@healskill_menu1$) -1;
+
+	if(.@skill_menu_state[.@lheal_skill2[.@i]]){
+		.@heal_menu = select("Modify","Disable","[Cancel]");
+		switch(.@heal_menu){
+			case 1 :
+				do{
+					clear;
+					mes .@menu$;
+					mes "Choose the skill lv to use";
+					mes "Max lv : " + getskilllv(.@lheal_skill2[.@i]);
+					mes "";
+					mes "Current configuration : ";
+					mes ac_getautocombatstring(0,.@lheal_skill2[.@i],0);
+					input .@heal_skilllv;
+				} while(.@heal_skilllv < 1 || .@heal_skilllv > getskilllv(.@lheal_skill2[.@i]));
+
+				do {
+					clear;
+					mes .@menu$;
+					mes "Choose the value of HP % to use the skill (ex : 10 to use skill if hp are below 10%)";
+					mes "Min value is 5, Max value is 90";
+					input .@heal_minhpvalue;
+				} while(.@heal_minhpvalue < 5 || .@heal_minhpvalue > 90);
+
+
+				ac_setautocombat("0;1;"+ .@lheal_skill2[.@i] + ";" + .@heal_skilllv + ";" + .@heal_minhpvalue);
+				break;
+
+				goto(heal_menu);
+				break;
+			case 2:
+				ac_setautocombat("0;0;"+ .@lheal_skill[.@i] + ";0;0");
+				goto(heal_menu);
+				break;
+			case 3:
+				goto(heal_menu);
+				break;
+		}
+	} else {
+		.@heal_menu = select("Enable","[Cancel]");
+		switch(.@heal_menu){
+			case 1 :
+				do{
+					clear;
+					mes .@menu$;
+					mes "Choose the skill lv to use";
+					mes "Max lv : " + getskilllv(.@lheal_skill2[.@i]);
+					mes "";
+					mes "Current configuration : ";
+					mes ac_getautocombatstring(0,.@lheal_skill2[.@i],0);
+					input .@heal_skilllv;
+				} while(.@heal_skilllv < 1 || .@heal_skilllv > getskilllv(.@lheal_skill2[.@i]));
+
+				do {
+					clear;
+					mes .@menu$;
+					mes "Choose the value of HP % to use the skill (ex : 10 to use skill if hp are below 10%)";
+					mes "Min value is 5, Max value is 90";
+					input .@heal_minhpvalue;
+				} while(.@heal_minhpvalue < 5 || .@heal_minhpvalue > 90);
+
+				ac_setautocombat("0;1;"+ .@lheal_skill2[.@i] + ";" + .@heal_skilllv + ";" + .@heal_minhpvalue);
+				break;
+
+				goto(heal_menu);
+				break;
+			case 2:
+				goto(heal_menu);
+				break;
+		}
+	}
+
+	goto(heal_menu);
+	end;
+
+potion_menu:
+	clear;
+	.@menu$ = "[HP / SP Potions]";
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	mes "You can add / modify or remove the following potion";
+	
+	//deletearray .@potion_menu_ids;
+	//deletearray .@potion_menu_state;
+	//deletearray .@potion_menu_list$;
+	setarray .@lpotion_disable_list[0],14875,14876;
+	mes ac_getautocombatstring(1,0);
+	
+	if(getarraysize(.@potion_menu_ids) == 0){
+		clear;
+		mes .@menu$;
+		mes "Sorry, you don't have any kind of heal items";
+		next;
+		goto(regeneration_menu);
+	}
+	
+	.@potion_menu_list$ = "[Cancel]:" + .@potion_menu_list$;
+	.@i = select( .@potion_menu_list$ );
+
+	if(.@i == 1)
+		goto(regeneration_menu);
+	else
+		.@i--;
+	
+	if(.@potion_menu_state[.@potion_menu_ids[.@i]]){
+		// Check if the selected the potion
+		for (.@j = 0; .@j < getarraysize(.@lpotion_disable_list); .@j++){
+			if(.@potion_menu_ids[.@i] == .@lpotion_disable_list[.@j]){
+				mes "You can't select that item. it has been disabled by GM on autocombat";
+				next;
+				goto(potion_menu);
+			}
+		}
+	
+		.@potion_menu2 = select("Modify","Disable","[Cancel]");
+		switch(.@potion_menu2){
+			case 1:
+				do {
+					clear;
+					mes .@menu$;
+					mes "Choose the value of HP % to use the consumable (ex : 10 to use it if hp are below 10%)";
+					mes "Min value is 5, Max value is 90 (0 to disable it)";
+					input .@potion_minhpvalue;
+				} while(.@potion_minhpvalue != 0 && (.@potion_minhpvalue < 5 || .@potion_minhpvalue > 90));
+
+				do {
+					clear;
+					mes .@menu$;
+					mes "Choose the value of SP % to use the consumable (ex : 10 to use it if sp are below 10%)";
+					mes "Min value is 5, Max value is 90 (0 to disable it)";
+					input .@potion_minspvalue;
+				} while(.@potion_minspvalue != 0 && (.@potion_minspvalue < 5 || .@potion_minspvalue > 90));
+
+				ac_setautocombat("1;1;"+ .@potion_menu_ids[.@i] + ";" + .@potion_minhpvalue + ";" + .@potion_minspvalue);
+				goto(potion_menu);
+				break;
+			case 2:
+				ac_setautocombat("1;0;"+ .@potion_menu_ids[.@i] + ";0;0");
+				goto(potion_menu);
+				break;
+			case 3:
+				goto(potion_menu);
+				break;
+		}
+	}
+	else{
+		.@potion_menu2 = select("Add","[Cancel]");
+		switch(.@potion_menu2){
+			case 1:
+				do {
+					clear;
+					mes .@menu$;
+					mes "Choose the value of HP % to use the consumable (ex : 10 to use it if hp are below 10%)";
+					mes "Min value is 5, Max value is 90 (0 to disable it)";
+					input .@potion_minhpvalue;
+				} while(.@potion_minhpvalue != 0 && (.@potion_minhpvalue < 5 || .@potion_minhpvalue > 90));
+
+				do {
+					clear;
+					mes .@menu$;
+					mes "Choose the value of SP % to use the consumable (ex : 10 to use it if sp are below 10%)";
+					mes "Min value is 5, Max value is 90 (0 to disable it)";
+					input .@potion_minspvalue;
+				} while(.@potion_minspvalue != 0 && (.@potion_minspvalue < 5 || .@potion_minspvalue > 90));
+
+				ac_setautocombat("1;1;"+ .@potion_menu_ids[.@i] + ";" + .@potion_minhpvalue + ";" + .@potion_minspvalue);
+				goto(potion_menu);
+				break;
+			case 2:
+				goto(potion_menu);
+				break;
+		}
+	}
+	
+	goto(regeneration_menu);
+	end;
+
+attackskills_menu:
+	clear;
+	.@menu$ = "[Attack Skills]";
+
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	mes "You can add / modify or remove the following skills";
+	//deletearray .@skill_menu_ids;
+	//deletearray .@skill_menu_state;
+	//deletearray .@skill_menu_list$;
+	mes ac_getautocombatstring(2,0);
+	
+	if(getarraysize(.@skill_menu_ids) == 0){
+		clear;
+		mes .@menu$;
+		mes "Sorry, you don't have any kind of buff skills";
+		next;
+		goto(OnMainMenu);
+	}
+	
+	.@skill_menu_list$ = "[Cancel]:" + .@skill_menu_list$;
+	.@i = select( .@skill_menu_list$ );
+
+	if(.@i == 1)
+		goto(config_menu);
+	else
+		.@i--;
+
+	if(.@skill_menu_state[.@skill_menu_ids[.@i]]){
+		.@skill_menu2 = select("Modify","Disable","[Cancel]");
+		switch(.@skill_menu2){
+			case 1:
+				do{
+					clear;
+					mes .@menu$;
+					mes "Choose the skill lv to use";
+					mes "Max lv : " + getskilllv(.@skill_menu_ids[.@i]);
+					mes "";
+					mes "Current configuration : ";
+					mes ac_getautocombatstring(2,.@skill_menu_ids[.@i],1);
+					input .@attack_skilllv;
+				} while(.@attack_skilllv < 1 || .@attack_skilllv > getskilllv(.@skill_menu_ids[.@i]));
+
+				clear;
+				mes .@menu$;
+				mes "Choose your buff configuration";
+
+				ac_setautocombat("2;1;"+ .@skill_menu_ids[.@i] + ";" + .@attack_skilllv);
+
+				goto(attackskills_menu);
+				break;
+			case 2:
+				ac_setautocombat("2;0;"+ .@skill_menu_ids[.@i] + ";0");
+				goto(attackskills_menu);
+				break;
+			case 3:
+				goto(config_menu);
+				break;
+		}
+	}
+	else{
+		.@skill_menu2 = select("Add","[Cancel]");
+		switch(.@skill_menu2){
+			case 1:
+				do{
+					clear;
+					mes .@menu$;
+					mes "Choose the skill lv to use";
+					mes "Max lv : " + getskilllv(.@skill_menu_ids[.@i]);
+					mes "";
+					mes "Current configuration : ";
+					mes ac_getautocombatstring(2,.@skill_menu_ids[.@i],1);
+					input .@attack_skilllv;
+				} while(.@attack_skilllv < 1 || .@attack_skilllv > getskilllv(.@skill_menu_ids[.@i]));
+
+				clear;
+				mes .@menu$;
+				mes "Choose your buff configuration";
+				
+				ac_setautocombat("2;1;"+ .@skill_menu_ids[.@i] + ";" + .@attack_skilllv);
+				
+				goto(attackskills_menu);
+				break;
+			case 2:
+				goto(config_menu);
+				break;
+		}
+	}
+
+	goto(config_menu);
+	end;
+
+buffskills_menu:
+	clear;
+	.@menu$ = "[Buff Skills]";
+
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	mes "You can add / modify or remove the following skills";
+	//deletearray .@skill_menu_ids;
+	//deletearray .@skill_menu_state;
+	//deletearray .@skill_menu_list$;
+	mes ac_getautocombatstring(3,0);
+	
+	if(getarraysize(.@skill_menu_ids) == 0){
+		clear;
+		mes .@menu$;
+		mes "Sorry, you don't have any kind of buff skills";
+		next;
+		goto(OnMainMenu);
+	}
+
+	.@skill_menu_list$ = "[Cancel]:" + .@skill_menu_list$;
+	.@i = select( .@skill_menu_list$ );
+
+	if(.@i == 1)
+		goto(config_menu);
+	else
+		.@i--;
+
+	if(.@skill_menu_state[.@skill_menu_ids[.@i]]){
+		.@skill_menu2 = select("Modify","Disable","[Cancel]");
+		switch(.@skill_menu2){
+			case 1:
+				do{
+					clear;
+					mes .@menu$;
+					mes "Choose the skill lv to use";
+					mes "Max lv : " + getskilllv(.@skill_menu_ids[.@i]);
+					mes "";
+					mes "Current configuration : ";
+					mes ac_getautocombatstring(3,.@skill_menu_ids[.@i],1);
+					input .@buff_skilllv;
+				} while(.@buff_skilllv < 1 || .@buff_skilllv > getskilllv(.@skill_menu_ids[.@i]));
+
+				clear;
+				mes .@menu$;
+				mes "Choose your buff configuration";
+
+				ac_setautocombat("3;1;"+ .@skill_menu_ids[.@i] + ";" + .@buff_skilllv);
+
+				goto(buffskills_menu);
+				break;
+			case 2:
+				ac_setautocombat("3;0;"+ .@skill_menu_ids[.@i] + ";0");
+				goto(buffskills_menu);
+				break;
+			case 3:
+				goto(config_menu);
+				break;
+		}
+	}
+	else{
+		.@skill_menu2 = select("Add","[Cancel]");
+		switch(.@skill_menu2){
+			case 1:
+				do{
+					clear;
+					mes .@menu$;
+					mes "Choose the skill lv to use";
+					mes "Max lv : " + getskilllv(.@skill_menu_ids[.@i]);
+					mes "";
+					mes "Current configuration : ";
+					mes ac_getautocombatstring(3,.@skill_menu_ids[.@i],1);
+					input .@buff_skilllv;
+				} while(.@buff_skilllv < 1 || .@buff_skilllv > getskilllv(.@skill_menu_ids[.@i]));
+
+				clear;
+				mes .@menu$;
+				mes "Choose your buff configuration";
+				
+				ac_setautocombat("3;1;"+ .@skill_menu_ids[.@i] + ";" + .@buff_skilllv);
+				
+				goto(buffskills_menu);
+				break;
+			case 2:
+				goto(config_menu);
+				break;
+		}
+	}
+
+	goto(config_menu);
+	end;
+
+buffitems_menu:
+	clear;
+	.@menu$ = "[Buff Items]";
+
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	setarray .@lbuff_item[0],645,656,657,12208,12210;
+	setarray .@lbuff_sc[0],SC_ASPDPOTION0,SC_ASPDPOTION1,SC_ASPDPOTION2,SC_EXPBOOST,SC_ITEMBOOST;
+	.@buffitems_menu1$ = "";
+	
+	for (.@i = 0; .@i < getarraysize(.@lbuff_item); .@i++)
+		.@buffitems_menu1$ = .@buffitems_menu1$ + (.@i > 0 ? ":" : "") + ac_getautocombatstring(5,.@lbuff_item[.@i]);
+
+
+	.@buffitems_menu1$ = "[Cancel]:" + .@buffitems_menu1$;
+	.@i = select(.@buffitems_menu1$) -1;
+
+	if(.@i == 0)
+		goto(config_menu);
+	else
+		.@i--;
+	
+	.@buffitems_menu = select(.@buffitem_menu_state[.@lbuff_item[.@i]] ? "Disable" : "Enable","[Cancel]");
+	if( .@buffitems_menu == 1 ){
+		if(.@buffitem_menu_state[.@lbuff_item[.@i]])
+			ac_setautocombat("5;0;"+ .@lbuff_item[.@i] + ";" + .@lbuff_sc[.@i]);
+		else
+			ac_setautocombat("5;1;"+ .@lbuff_item[.@i] + ";" + .@lbuff_sc[.@i]);
+		goto(buffitems_menu);
+	}
+	else if( .@buffitems_menu == 2 ){
+		ac_setautocombat("5;0;"+ .@lbuff_item[.@i] + ";0");
+		goto(buffitems_menu);
+	}
+	
+	goto(config_menu);
+	end;
+
+sit_regen_menu:
+	clear;
+	.@menu$ = "[Sit to Rest]";
+
+	mes .@menu$;
+	mes "--- Current configuration ---";
+	mes ac_getautocombatstring(4,0); // status hp sp
+
+	.@sit_regen_menu = select(
+	ac_getautocombatint(14,0) == 1?"^008000(ON)^000000 Sit if HP < 75%":"^FF0000(OFF)^000000 Sit if HP < 75%"
+	,ac_getautocombatint(14,0) == 2?"^008000(ON)^000000 Sit if HP < 50%":"^FF0000(OFF)^000000 Sit if HP < 50%"
+	,ac_getautocombatint(14,0) == 3?"^008000(ON)^000000 Sit if HP < 25%":"^FF0000(OFF)^000000 Sit if HP < 25%"
+	,ac_getautocombatint(15,0) == 1?"^008000(ON)^000000 Sit if SP < 75%":"^FF0000(OFF)^000000 Sit if SP < 75%"
+	,ac_getautocombatint(15,0) == 2?"^008000(ON)^000000 Sit if SP < 50%":"^FF0000(OFF)^000000 Sit if SP < 50%"
+	,ac_getautocombatint(15,0) == 3?"^008000(ON)^000000 Sit if SP < 25%":"^FF0000(OFF)^000000 Sit if SP < 25%"
+	,"[Cancel]"
+	);
+
+	switch(.@sit_regen_menu){
+		case 1:
+			if(ac_getautocombatint(14,0) == 1)
+				ac_setautocombat("14;0;0");
+			else
+				ac_setautocombat("14;75;100");
+			break;
+		case 2:
+			if(ac_getautocombatint(14,0) == 2)
+				ac_setautocombat("14;0;0");
+			else
+				ac_setautocombat("14;50;100");
+			break;
+		case 3:
+			if(ac_getautocombatint(14,0) == 3)
+				ac_setautocombat("14;0;0");
+			else
+				ac_setautocombat("14;25;100");
+			break;
+		case 4:
+			if(ac_getautocombatint(15,0) == 1)
+				ac_setautocombat("15;0;0");
+			else
+				ac_setautocombat("15;75;100");
+			break;
+		case 5:
+			if(ac_getautocombatint(15,0) == 2)
+				ac_setautocombat("15;0;0");
+			else
+				ac_setautocombat("15;50;100");
+			break;
+		case 6:
+			if(ac_getautocombatint(15,0) == 3)
+				ac_setautocombat("15;0;0");
+			else
+				ac_setautocombat("15;25;100");
+			break;
+		case 7:
+			clear;
+			goto(regeneration_menu);
+			break;
+	}
+
+	clear;
+	goto(sit_regen_menu);
+	end;
+
+OnStop:
+    if(ac_getstate()) {
+        // Calculate elapsed time
+        .@elapsed_time = (gettimetick(2) - .start_time) * 1000;
+        .remaining_time -= .@elapsed_time;
+
+        if (.remaining_time < 0) {
+            .remaining_time = 0;
+        }
+
+        sc_end SC_AUTOCOMBAT;
+        setd(".remaining_time_" + getcharid(0), .remaining_time); // Save remaining time for the player
+        message strcharinfo(0), "autocombat stopped. Remaining time: " + calculate_remaining_time();
+    } else {
+        mes "You have no active autocombat to stop.";
+    }
+    end;
+
+OnPCLogoutEvent:
+
+	reset();
+
+    if(ac_getstate()) {
+        // Calculate elapsed time
+        .@elapsed_time = (gettimetick(2) - .start_time) * 1000;
+        .remaining_time -= .@elapsed_time;
+
+        if (.remaining_time < 0) {
+            .remaining_time = 0;
+        }
+
+        sc_end SC_AUTOCOMBAT;
+        setd(".remaining_time_" + getcharid(0), .remaining_time); // Save remaining time for the player
+    }
+	
+    end;	
+}
+

@@ -9,3 +9,11 @@
  **/
 
 //BUILDIN_DEF(example,""),
+
+// Autocombat System
+BUILDIN_DEF(ac_getskillinfostring, "iv"),
+BUILDIN_DEF(ac_setautocombat, "s"),
+BUILDIN_DEF(autocombat_fromitem, "i"),
+BUILDIN_DEF(ac_getautocombatstring, "i??"),
+BUILDIN_DEF(ac_getautocombatint, "i?"),
+BUILDIN_DEF(ac_getstate, ""),

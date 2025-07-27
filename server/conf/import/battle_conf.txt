@@ -1,0 +1,9 @@
+//--------------------------------------------------------------
+// rAthena Battle Configuration File
+// Originally Translated by Peter Kieser <pfak@telus.net>
+// Made in to plainer English by Ancyker
+// Splitted up into multiple files by Skotlex.
+//--------------------------------------------------------------
+
+//Feature control (on/off) settings
+import: conf/battle/function.conf

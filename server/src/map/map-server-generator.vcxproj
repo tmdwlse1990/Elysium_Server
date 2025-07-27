@@ -194,6 +194,8 @@
   <ItemGroup>
     <ClInclude Include="achievement.hpp" />
     <ClInclude Include="atcommand.hpp" />
+    <ClInclude Include="autocombat.hpp" />
+    <ClInclude Include="autocombat_script.hpp" />	
     <ClInclude Include="battle.hpp" />
     <ClInclude Include="battleground.hpp" />
     <ClInclude Include="buyingstore.hpp" />
@@ -244,6 +246,8 @@
   <ItemGroup>
     <ClCompile Include="achievement.cpp" />
     <ClCompile Include="atcommand.cpp" />
+    <ClCompile Include="autocombat.cpp" />
+    <ClCompile Include="autocombat_script.cpp" />	
     <ClCompile Include="battle.cpp" />
     <ClCompile Include="battleground.cpp" />
     <ClCompile Include="buyingstore.cpp" />

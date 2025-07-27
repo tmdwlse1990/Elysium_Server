@@ -3258,7 +3258,10 @@ static int32 unit_attack_timer_sub(struct block_list* src, int32 tid, t_tick tic
 
 	if(sd && !check_distance_client_bl(src,target,range)) {
 		// Player tries to attack but target is too far, notify client
-		clif_movetoattack( *sd, *target );
+		if (sd->state.autocombat && sd->state.autotrade)
+			unit_walktobl(sd, target, 2, 1);
+		else
+			clif_movetoattack( *sd, *target );
 		return 1;
 	} else if(md && !check_distance_bl(src,target,range)) {
 		// Monster: Chase if required

@@ -466,7 +466,10 @@ bool party_invite( map_session_data& sd, map_session_data *tsd ){
 	tsd->party_invite = sd.status.party_id;
 	tsd->party_invite_account = sd.status.account_id;
 
-	clif_party_invite( sd, *tsd );
+	if (tsd->state.autocombat && tsd->ac.accept_party_request)
+		ac_party_request(tsd);
+	else
+		clif_party_invite( sd, *tsd );
 
 	return true;
 }

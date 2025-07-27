@@ -15,6 +15,7 @@
 #include <common/strlib.hpp>
 #include <common/timer.hpp>
 
+#include "autocombat.hpp"
 #include "battle.hpp"
 #include "clan.hpp"
 #include "clif.hpp"
@@ -339,6 +340,8 @@ int32 chrif_save(map_session_data *sd, int32 flag) {
 		intif_quest_save(sd);
 	if (sd->achievement_data.save)
 		intif_achievement_save(sd);
+
+	ac_save(sd);
 
 	return 0;
 }

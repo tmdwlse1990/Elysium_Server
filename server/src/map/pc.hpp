@@ -14,6 +14,7 @@
 #include <common/strlib.hpp>// StringBuf
 #include <common/timer.hpp>
 
+#include "autocombat.hpp"
 #include "battleground.hpp"
 #include "buyingstore.hpp" // struct s_buyingstore
 #include "clif.hpp" //e_wip_block
@@ -386,9 +387,11 @@ public:
 	status_change sc;
 	struct regen_data regen;
 	struct regen_data_sub sregen, ssregen;
+	struct s_autocombat ac;
 	//NOTE: When deciding to add a flag to state or special_state, take into consideration that state is preserved in
 	//status_calc_pc, while special_state is recalculated in each call. [Skotlex]
 	struct s_state {
+		uint32 autocombat : 1;
 		uint32 active : 1; //Marks active player (not active is logging in/out, or changing map servers)
 		uint32 menu_or_input : 1;// if a script is waiting for feedback from the player
 		uint32 dead_sit : 2;
