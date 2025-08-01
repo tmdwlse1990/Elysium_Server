@@ -80,9 +80,9 @@ int32 inventory_tosql(uint32 char_id, struct s_storage* p)
  * @param p: Storage entries
  * @return 0 if success, or error count
  */
-int32 storage_tosql(uint32 account_id, struct s_storage* p)
+int32 storage_tosql(uint32 account_id, struct s_storage* p, uint16 mode = 0)
 {
-	return char_memitemdata_to_sql(p->u.items_storage, MAX_STORAGE, account_id, TABLE_STORAGE, p->stor_id);
+	return char_memitemdata_to_sql(p->u.items_storage, MAX_STORAGE, account_id, TABLE_STORAGE, p->stor_id, mode);
 }
 
 /**
@@ -125,9 +125,9 @@ bool cart_fromsql(uint32 char_id, struct s_storage* p)
  * @param stor_id: Storage ID
  * @return True if success, False if failed
  */
-bool storage_fromsql(uint32 account_id, struct s_storage* p)
+bool storage_fromsql(uint32 account_id, struct s_storage* p, uint16 mode = 0)
 {
-	return char_memitemdata_from_sql( p, MAX_STORAGE, account_id, TABLE_STORAGE, p->stor_id );
+	return char_memitemdata_from_sql( p, MAX_STORAGE, account_id, TABLE_STORAGE, p->stor_id, mode );
 }
 
 /**
@@ -503,7 +503,7 @@ void mapif_storage_saved(int32 fd, uint32 account_id, uint32 char_id, bool succe
 bool mapif_parse_StorageLoad(int32 fd) {
 	uint32 aid, cid;
 	int32 type;
-	uint8 stor_id, mode;
+	uint16 stor_id, mode;
 	struct s_storage stor;
 	bool res = true;
 
@@ -511,9 +511,10 @@ bool mapif_parse_StorageLoad(int32 fd) {
 	aid = RFIFOL(fd,3);
 	cid = RFIFOL(fd,7);
 	stor_id = RFIFOB(fd,11);
+	mode = RFIFOB(fd, 12);
 
 	memset(&stor, 0, sizeof(struct s_storage));
-	stor.stor_id = stor_id;
+	stor.stor_id = static_cast<uint8>(stor_id);
 
 	//ShowInfo("Loading storage for AID=%d.\n", aid);
 	switch (type) {
@@ -524,7 +525,10 @@ bool mapif_parse_StorageLoad(int32 fd) {
 				return false;
 			}
 
-			res = storage_fromsql(aid, &stor);
+			if (mode & STOR_MODE_CHAR)
+				res = storage_fromsql(cid, &stor, mode);
+			else
+				res = storage_fromsql(aid, &stor);
 			break;
 		case TABLE_CART:      res = cart_fromsql(cid, &stor);      break;
 		default: return false;
@@ -546,13 +550,16 @@ bool mapif_parse_StorageLoad(int32 fd) {
 bool mapif_parse_StorageSave(int32 fd) {
 	int32 aid, cid, type;
 	struct s_storage stor;
+	uint16 mode;
 
 	type = RFIFOB(fd, 4);
 	aid = RFIFOL(fd, 5);
 	cid = RFIFOL(fd, 9);
 	
+	mode = RFIFOB(fd, 13);
+	
 	memset(&stor, 0, sizeof(struct s_storage));
-	memcpy(&stor, RFIFOP(fd, 13), sizeof(struct s_storage));
+	memcpy(&stor, RFIFOP(fd, 14), sizeof(struct s_storage));
 
 	//ShowInfo("Saving storage data for AID=%d.\n", aid);
 	switch(type){
@@ -563,7 +570,10 @@ bool mapif_parse_StorageSave(int32 fd) {
 				return false;
 			}
 
-			storage_tosql(aid, &stor);
+			if (mode & STOR_MODE_CHAR)
+				storage_tosql(cid, &stor, mode);
+			else
+				storage_tosql(aid, &stor);
 			break;
 		case TABLE_CART:	cart_tosql(cid, &stor); break;
 		default: return false;

@@ -40,6 +40,7 @@
 #include "chrif.hpp"
 #include "clan.hpp"
 #include "clif.hpp"
+#include "collection.hpp"
 #include "date.hpp" // is_day_of_*()
 #include "duel.hpp"
 #include "elemental.hpp"
@@ -2443,6 +2444,22 @@ void pc_reg_received(map_session_data *sd)
 	sd->state.active = 1;
 	sd->state.pc_loaded = false; // Ensure inventory data and status data is loaded before we calculate player stats
 
+	for (const auto& pair : collection_db)
+	{
+		std::shared_ptr<s_collection_stor> stor = pair.second;
+
+		if (stor->items.empty())
+			continue;
+
+		uint16 mode = STOR_MODE_ALL;
+		if (!stor->bound)
+			mode |= STOR_MODE_CHAR;
+
+		intif_storage_request(sd, TABLE_STORAGE, static_cast<uint8>(stor->stor_id), static_cast<uint8>(mode));
+	}
+
+	collection_load_combo_states(sd);
+
 	intif_storage_request(sd,TABLE_STORAGE, 0, STOR_MODE_ALL); // Request storage data
 	intif_storage_request(sd,TABLE_CART, 0, STOR_MODE_ALL); // Request cart data
 	intif_storage_request(sd,TABLE_INVENTORY, 0, STOR_MODE_ALL); // Request inventory data
@@ -4487,6 +4504,9 @@ void pc_bonus(map_session_data *sd,int32 type,int32 val)
 			}
 			break;
 	}
+
+	collection_counter(sd, type, val, 0);
+
 }
 
 /*==========================================
@@ -5129,6 +5149,9 @@ void pc_bonus2(map_session_data *sd,int32 type,int32 type2,int32 val)
 		}
 		break;
 	}
+
+	collection_counter(sd, type, type2, val);
+
 }
 
 /**

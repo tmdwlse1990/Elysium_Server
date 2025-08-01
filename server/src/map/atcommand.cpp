@@ -30,6 +30,7 @@
 #include "chrif.hpp"
 #include "clan.hpp"
 #include "clif.hpp"
+#include "collection.hpp"
 #include "duel.hpp"
 #include "elemental.hpp"
 #include "guild.hpp"

@@ -445,6 +445,7 @@ enum e_storage_mode {
 	STOR_MODE_GET = 0x1,
 	STOR_MODE_PUT = 0x2,
 	STOR_MODE_ALL = 0x3,
+	STOR_MODE_CHAR = 0x4,
 };
 
 struct s_storage {

@@ -64,3 +64,15 @@ ACMD_FUNC(mercenaryon)
         
     return 0;    
 }
+
+/*==========================================
+* @reloadcollectiondb
+*------------------------------------------*/
+ACMD_FUNC(reloadcollectiondb){
+	nullpo_retr(-1, sd);
+
+	do_reload_collection();
+	clif_displaymessage(fd, "Collection Database has been reloaded.");
+
+	return 0;
+}

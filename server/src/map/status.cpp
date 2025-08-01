@@ -23,6 +23,7 @@
 #include "battle.hpp"
 #include "battleground.hpp"
 #include "clif.hpp"
+#include "collection.hpp"
 #include "elemental.hpp"
 #include "guild.hpp"
 #include "homunculus.hpp"
@@ -4254,6 +4255,62 @@ int32 status_calc_pc_sub(map_session_data* sd, uint8 opt)
 		}  
 	}
 
+	// Item Collection
+	sd->collection.calc = false;
+	if (!sd->collection.items.empty())
+	{
+		sd->collection.calc = true;
+		sd->collection.bonus.clear();
+		for (const auto& pair : sd->collection.items)
+		{
+			uint16 stor_id = pair.first;
+			std::vector<s_collection_items> ditems = pair.second;
+
+			if (ditems.empty())
+				continue;
+			for (s_collection_items& it : ditems)
+			{
+				std::shared_ptr<s_collection_item> entry = collection_db.findItemInStor(stor_id, it.nameid);
+				if (entry != nullptr && entry->script && it.amount >= entry->amount && it.refine >= entry->refine)
+				{
+					run_script(entry->script, 0, sd->id, 0);
+					if (!calculating)
+						return 1;
+				}				
+			}
+			std::shared_ptr<s_collection_stor> collection = collection_db.find(stor_id);    
+			if (collection != nullptr) {    
+				for (size_t combo_idx = 0; combo_idx < collection->combos.size(); combo_idx++) {    
+					if (combo_idx < collection->active_combos.size() && collection->active_combos[combo_idx]) {    
+						auto& combo = collection->combos[combo_idx];    
+
+						bool combo_complete = true;    
+						for (t_itemid combo_item : combo->items) {    
+							auto found = std::find_if(ditems.begin(), ditems.end(),  
+								[&](const s_collection_items& item) {  
+									return item.nameid == combo_item;  
+								});
+
+							if (found == ditems.end() ||   
+								found->amount < combo->amount ||   
+								found->refine < combo->refine)  
+							{  
+								combo_complete = false;  
+								break;  
+							}    
+						}
+
+						if (combo_complete && combo->script) {    
+							run_script(combo->script, 0, sd->id, 0);    
+							if (!calculating)    
+								return 1;    
+						}    
+					}    
+				}    
+			}			
+		}
+		sd->collection.calc = false;
+	}
 // ----- STATS CALCULATION -----
 
 	// Job bonuses

@@ -311,8 +311,8 @@ int32 char_mmo_chars_fromsql(struct char_session_data* sd, uint8* buf, uint8* co
 enum e_char_del_response char_delete(struct char_session_data* sd, uint32 char_id);
 int32 char_rename_char_sql(struct char_session_data *sd, uint32 char_id);
 int32 char_divorce_char_sql(int32 partner_id1, int32 partner_id2);
-int32 char_memitemdata_to_sql(const struct item items[], int32 max, int32 id, enum storage_type tableswitch, uint8 stor_id);
-bool char_memitemdata_from_sql(struct s_storage* p, int32 max, int32 id, enum storage_type tableswitch, uint8 stor_id);
+int32 char_memitemdata_to_sql(const struct item items[], int32 max, int32 id, enum storage_type tableswitch, uint16 stor_id, uint16 mode = 0);
+bool char_memitemdata_from_sql(struct s_storage* p, int32 max, int32 id, enum storage_type tableswitch, uint16 stor_id, uint16 mode = 0);
 
 int32 char_married(int32 pl1,int32 pl2);
 int32 char_child(int32 parent_id, int32 child_id);

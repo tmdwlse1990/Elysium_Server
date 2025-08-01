@@ -336,6 +336,13 @@ namespace rathena {
 		* @return Base62 string
 		**/
 		std::string base62_encode( uint32 val );
+
+		/**  
+		* Insert commas into a number string for better readability  
+		* @param number: Number to format  
+		* @return Formatted string with commas  
+		*/  
+		std::string insert_comma(int32 number);		
 	}
 }
 

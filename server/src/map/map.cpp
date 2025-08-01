@@ -33,6 +33,7 @@
 #include "chrif.hpp"
 #include "clan.hpp"
 #include "clif.hpp"
+#include "collection.hpp"
 #include "duel.hpp"
 #include "elemental.hpp"
 #include "guild.hpp"
@@ -5063,6 +5064,7 @@ void MapServer::finalize(){
 	do_final_buyingstore();
 	do_final_path();
 	do_final_title();
+	do_final_collection();
 
 	map_db->destroy(map_db, map_db_final);
 
@@ -5440,6 +5442,7 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	do_init_vending();
 	do_init_buyingstore();
 	do_init_title();
+	do_init_collection();
 
 	npc_event_do_oninit();	// Init npcs (OnInit)
 

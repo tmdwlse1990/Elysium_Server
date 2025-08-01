@@ -161,3 +161,22 @@ std::string rathena::util::base62_encode( uint32 val ){
 	}
 	return result;
 }
+
+std::string rathena::util::insert_comma(int32 number) {  
+    std::string str = std::to_string(number);  
+
+    bool negative = (number < 0);  
+    if (negative) {  
+        str = str.substr(1);
+    }  
+
+    for (int i = static_cast<int>(str.length()) - 3; i > 0; i -= 3) {  
+        str.insert(i, ",");  
+    }  
+
+    if (negative) {  
+        str = "-" + str;  
+    }  
+      
+    return str;  
+}

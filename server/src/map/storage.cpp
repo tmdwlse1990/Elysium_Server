@@ -15,6 +15,7 @@
 #include "battle.hpp"
 #include "chrif.hpp"
 #include "clif.hpp"
+#include "collection.hpp"
 #include "guild.hpp"
 #include "intif.hpp"
 #include "itemdb.hpp"
@@ -261,6 +262,99 @@ static int32 storage_additem(map_session_data* sd, struct s_storage *stor, struc
 		return 1;
 	}
 
+	std::shared_ptr<s_collection_stor> collection = collection_db.find(stor->stor_id);  
+	if (collection != nullptr) {  
+		if (collection->items.empty() && collection->combos.empty()) {  
+			clif_displaymessage(sd->fd, "This collection storage is not properly configured.");  
+			return 1;  
+		}
+		char message[CHAT_SIZE_MAX + 1];
+		std::shared_ptr<s_collection_item> entry = collection_db.findItemInStor(stor->stor_id, it->nameid);
+
+		struct item ditem = {};
+		ditem.nameid = it->nameid;
+		std::string itemlstr = item_db.create_item_link(ditem);
+
+		ARR_FIND(0, stor->max_amount, i, stor->u.items_storage[i].nameid == it->nameid);
+
+		if (entry == nullptr)
+		{
+			safesnprintf(message, sizeof(message), "You can't put %s in the collection box.", itemlstr.c_str());
+			clif_displaymessage(sd->fd, message);			
+			return 1;
+		}
+
+		if (itemdb_isstackable2(data))
+		{
+
+			if (i < stor->max_amount)
+			{
+				if (amount > entry->amount - stor->u.items_storage[i].amount)
+				{
+					if (stor->u.items_storage[i].amount >= entry->amount)
+					{
+						safesnprintf(message, sizeof(message), "Item %s has reached maximum amount (%d).", itemlstr.c_str(), entry->amount);
+						clif_displaymessage(sd->fd, message);
+					}
+					safesnprintf(message, sizeof(message), "Maximum amount of %s can be collected is %d (%d/%d).", itemlstr.c_str(), entry->amount, stor->u.items_storage[i].amount, entry->amount);
+					clif_displaymessage(sd->fd, message);
+					return 2;
+				}
+			}
+			else
+			{
+				if (amount > entry->amount)
+				{
+					safesnprintf(message, sizeof(message), "Maximum amount of %s can be collected is %d (0/%d).", itemlstr.c_str(), entry->amount, entry->amount);
+					clif_displaymessage(sd->fd, message);
+					return 2;
+				}
+			}
+		}
+		else
+		{
+			if (i < stor->max_amount)
+			{
+				safesnprintf(message, sizeof(message), "Collected item %s has reached maximum amount (%d).", itemlstr.c_str(), entry->amount);
+				clif_displaymessage(sd->fd, message);
+				return 2;
+			}
+			if (entry->refine && it->refine < entry->refine)
+			{
+				safesnprintf(message, sizeof(message), "Item %s refine count need to be +%d.", itemlstr.c_str(), entry->refine);
+				clif_displaymessage(sd->fd, message);
+				return 1;
+			}
+		}
+
+		int32 collection_fee = 0;
+
+		if (entry != nullptr && entry->collection_fee > 0) {
+			collection_fee = entry->collection_fee * amount;
+		}
+		else if (collection->collection_fee > 0) {
+			collection_fee = collection->collection_fee * amount;
+		}
+
+		if (collection_fee > 0) {
+			if (sd->status.zeny < collection_fee) {
+				std::string formatted_fee = rathena::util::insert_comma(collection_fee);
+				safesnprintf(message, sizeof(message), "You need %s Zeny to store items in this collection box.", formatted_fee.c_str());
+				clif_displaymessage(sd->fd, message);
+				return 1;
+			}
+
+			sd->status.zeny -= collection_fee;
+			clif_updatestatus(*sd, SP_ZENY);
+
+			log_zeny(*sd, LOG_TYPE_STORAGE, sd->status.char_id, -collection_fee);
+
+			std::string formatted_fee = rathena::util::insert_comma(collection_fee);
+			safesnprintf(message, sizeof(message), "Collection fee of %s Zeny has been charged.", formatted_fee.c_str());
+			clif_displaymessage(sd->fd, message);
+		}
+	}
+
 	if( itemdb_isstackable2(data) ) { // Stackable
 		for( i = 0; i < stor->max_amount; i++ ) {
 			if( compare_item(&stor->u.items_storage[i], it) ) { // existing items found, stack them
@@ -309,6 +403,64 @@ int32 storage_delitem(map_session_data* sd, struct s_storage *stor, int32 index,
 
 	stor->u.items_storage[index].amount -= amount;
 	stor->dirty = true;
+
+    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor->stor_id);  
+    if (collection != nullptr)  
+    {  
+        char message[CHAT_SIZE_MAX + 1];  
+        std::shared_ptr<s_collection_item> entry = collection_db.findItemInStor(stor->stor_id, stor->u.items_storage[index].nameid);  
+
+        int32 withdraw_fee = 0;  
+        if (entry != nullptr && entry->withdraw_fee > 0) {  
+            withdraw_fee = entry->withdraw_fee * amount;  
+        }  
+        else if (collection->withdraw_fee > 0) {  
+            withdraw_fee = collection->withdraw_fee * amount;  
+        }  
+  
+        if (withdraw_fee > 0) {  
+            if (sd->status.zeny < withdraw_fee) {  
+                std::string formatted_fee = rathena::util::insert_comma(withdraw_fee);
+                safesnprintf(message, sizeof(message), "You need %s Zeny to withdraw items from this collection box.", formatted_fee.c_str());  
+                clif_displaymessage(sd->fd, message);  
+                return 1;  
+            }  
+
+            sd->status.zeny -= withdraw_fee;  
+            clif_updatestatus(*sd, SP_ZENY);  
+            log_zeny(*sd, LOG_TYPE_STORAGE, sd->status.char_id, -withdraw_fee);  
+  
+            std::string formatted_fee = rathena::util::insert_comma(withdraw_fee);
+            safesnprintf(message, sizeof(message), "Withdrawal fee of %s Zeny has been charged.", formatted_fee.c_str());  
+            clif_displaymessage(sd->fd, message);  
+        }  
+
+        for (size_t combo_idx = 0; combo_idx < collection->combos.size(); combo_idx++) {  
+            if (combo_idx < collection->active_combos.size() && collection->active_combos[combo_idx]) {  
+                auto& combo = collection->combos[combo_idx];  
+
+                bool item_in_combo = false;  
+                for (t_itemid combo_item : combo->items) {  
+                    if (combo_item == stor->u.items_storage[index].nameid) {  
+                        item_in_combo = true;  
+                        break;  
+                    }  
+                }  
+                  
+                if (item_in_combo) {
+                    int32 remaining_amount = stor->u.items_storage[index].amount;  
+                    if (remaining_amount < combo->amount) {
+                        collection->active_combos[combo_idx] = false;  
+
+                        safesnprintf(message, sizeof(message), "Combo %zu has been deactivated due to insufficient items.", combo_idx + 1);  
+                        clif_displaymessage(sd->fd, message);  
+
+                        status_calc_pc(sd, SCO_NONE);  
+                    }  
+                }  
+            }  
+        }  
+    }
 
 	if( stor->u.items_storage[index].amount == 0 ) {
 		memset(&stor->u.items_storage[index],0,sizeof(stor->u.items_storage[0]));
