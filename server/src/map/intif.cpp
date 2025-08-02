@@ -3649,7 +3649,7 @@ bool intif_storage_request(map_session_data *sd, enum storage_type type, uint8 s
  * @param stor: Storage data
  * @ return false - error, true - message sent
  */
-bool intif_storage_save(map_session_data *sd, struct s_storage *stor)
+bool intif_storage_save(map_session_data *sd, struct s_storage *stor, uint16 mode)
 {
 	int32 stor_size = sizeof(struct s_storage);
 
@@ -3659,14 +3659,15 @@ bool intif_storage_save(map_session_data *sd, struct s_storage *stor)
 	if (CheckForCharServer())
 		return false;
 
-	WFIFOHEAD(inter_fd, stor_size+13);
+	WFIFOHEAD(inter_fd, stor_size+14);
 	WFIFOW(inter_fd, 0) = 0x308b;
-	WFIFOW(inter_fd, 2) = stor_size+13;
+	WFIFOW(inter_fd, 2) = stor_size+14;
 	WFIFOB(inter_fd, 4) = stor->type;
 	WFIFOL(inter_fd, 5) = sd->status.account_id;
 	WFIFOL(inter_fd, 9) = sd->status.char_id;
-	memcpy(WFIFOP(inter_fd, 13), stor, stor_size);
-	WFIFOSET(inter_fd, stor_size+13);
+	WFIFOB(inter_fd, 13) = mode;
+	memcpy(WFIFOP(inter_fd, 14), stor, stor_size);
+	WFIFOSET(inter_fd, stor_size+14);
 	return true;
 }
 

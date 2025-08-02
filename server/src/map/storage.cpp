@@ -1270,6 +1270,12 @@ void storage_guild_storage_quit(map_session_data* sd, int32 flag)
 void storage_premiumStorage_open(map_session_data *sd) {
 	nullpo_retv(sd);
 
+	if (!sd->state.pc_loaded)
+	{
+		collection_save(sd, false);
+		return;
+	}
+
 	sd->state.storage_flag = 3;
 	storage_sortitem(sd->premiumStorage.u.items_storage, ARRAYLENGTH(sd->premiumStorage.u.items_storage));
 	clif_storagelist(sd, sd->premiumStorage.u.items_storage, ARRAYLENGTH(sd->premiumStorage.u.items_storage), storage_getName(sd->premiumStorage.stor_id));
@@ -1302,7 +1308,13 @@ bool storage_premiumStorage_load(map_session_data *sd, uint8 num, uint8 mode) {
 	}
 
 	if (sd->premiumStorage.stor_id != num)
+	{
+		std::shared_ptr<s_collection_stor> collection = collection_db.find(sd->premiumStorage.stor_id);
+		if (collection != nullptr && !collection->bound)
+			mode |= STOR_MODE_CHAR;
+		
 		return intif_storage_request(sd, TABLE_STORAGE, num, mode);
+	}		
 	else {
 		sd->premiumStorage.state.put = (mode&STOR_MODE_PUT) ? 1 : 0;
 		sd->premiumStorage.state.get = (mode&STOR_MODE_GET) ? 1 : 0;
@@ -1319,7 +1331,14 @@ bool storage_premiumStorage_load(map_session_data *sd, uint8 num, uint8 mode) {
 void storage_premiumStorage_save(map_session_data *sd) {
 	nullpo_retv(sd);
 
-	intif_storage_save(sd, &sd->premiumStorage);
+	uint16 mode;
+	std::shared_ptr<s_collection_stor> collection = collection_db.find(sd->premiumStorage.stor_id);
+	if (collection != nullptr && !collection->bound)
+		mode = STOR_MODE_CHAR;
+
+	intif_storage_save(sd, &sd->premiumStorage, mode);
+
+	collection_save(sd);
 }
 
 /**

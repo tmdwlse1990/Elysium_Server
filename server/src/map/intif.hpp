@@ -128,7 +128,7 @@ int32 intif_request_accinfo( int32 u_fd, int32 aid, int32 group_lv, char* query 
 
 // STORAGE
 bool intif_storage_request(map_session_data *sd, enum storage_type type, uint8 stor_id, uint8 mode);
-bool intif_storage_save(map_session_data *sd, struct s_storage *stor);
+bool intif_storage_save(map_session_data *sd, struct s_storage *stor, uint16 mode = 0);
 
 int32 CheckForCharServer(void);
 

@@ -36,7 +36,8 @@ Header:
   Type: INTER_SERVER_DB
   Version: 1
 
-Body:
-  - ID: 100
-    Name: "Item Collection"
-    Table: item_collection
+Body:  
+  - ID: 100  
+    Name: "Item Collection"  
+    Table: item_collection  
+    Max: 300
