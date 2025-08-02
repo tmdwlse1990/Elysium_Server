@@ -1,0 +1,94 @@
+/**************************************************************************\
+*                                                                          *
+*   Copyright (C) 2017 Secret                                              *
+*   Copyright (C) 2017-2024 Andrei Karas (4144)                            *
+*   Copyright (C) 2020-2024 X-EcutiOnner (xex.ecutionner@gmail.com)        *
+*                                                                          *
+*   This file is a part of WARP project (specific to RO clients)           *
+*                                                                          *
+*   WARP is free software: you can redistribute it and/or modify           *
+*   it under the terms of the GNU General Public License as published by   *
+*   the Free Software Foundation, either version 3 of the License, or      *
+*   (at your option) any later version.                                    *
+*                                                                          *
+*   This program is distributed in the hope that it will be useful,        *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+*   GNU General Public License for more details.                           *
+*                                                                          *
+*   You should have received a copy of the GNU General Public License      *
+*   along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
+*                                                                          *
+*                                                                          *
+|**************************************************************************|
+*                                                                          *
+*   Author(s)     : Secret, Andrei (4144), X-EcutiOnner                    *
+*   Created Date  : 2020-11-12                                             *
+*   Last Modified : 2024-08-26                                             *
+*                                                                          *
+\**************************************************************************/
+
+///
+/// \brief Enforce a JMP to the string PUSH for ExternalSettings_kr file irrespective of g_serviceType
+///
+LoadKrExtSettings = function(_)
+{
+	$$(_, 1.1, `Ensure the LANGTYPE is loaded`)
+	LANGTYPE.load();
+
+	$$(_, 1.2, `Find where the string is PUSHed`)
+	const refAddr = Exe.FindHex(
+		ROC.FullVer == 14.29
+	?
+		MOV(ECX, this.PathAddr)
+	+	PUSH_1
+	+	PUSH(ECX)		
+	:
+		PUSH(this.PathAddr) 
+	);
+	if (refAddr < 0)
+		throw Error("'ExternalSettings_kr' reference missing");
+
+	$$(_, 2.1, `Find the LANGTYPE comparison (for old clients)`)
+	let code =
+	[
+		MOV(R32, ECX)           //mov edi/esi, ecx
+	,
+		ROC.FullVer == 14.29
+	?	MOV([EBP, WCn], R32)    //mov dword ptr [LOCAL.x], esi
+	:	''
+	,
+		MOV(EAX, [LANGTYPE])    //mov eax, dword ptr [g_serviceType]
+	+	CMP(EAX, ' [00010..0]') //cmp eax, 12h or 14h
+	+	JA()                    //ja _skip
+	];
+
+	const addr = Exe.FindHex(code, refAddr - 0x80, refAddr);
+	if (addr < 0)
+		throw Error("Langtype Comparison not found");
+
+	$$(_, 2.2, `Change the EAX assignment to zero by XORing`)
+	code =
+		XOR(EAX, EAX)  //xor eax, eax
+	+	NOP3           //3 byte nop
+	;
+	Exe.SetHex(addr + 2, code);
+
+	return true;
+};
+
+///
+/// \brief Only applicable if ExternalSettings_kr path is present in the client
+///
+LoadKrExtSettings.validate = function()
+{
+	this.PathAddr = Exe.FindText(
+		ROC.IsZero ?
+			"Lua Files\\service_korea\\zero_server\\ExternalSettings_kr"
+		:
+			"Lua Files\\service_korea\\ExternalSettings_kr"
+		,
+		CASE_INSENSITIVE
+	);
+	return (this.PathAddr > 0);
+};

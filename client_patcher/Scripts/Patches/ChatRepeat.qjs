@@ -1,0 +1,87 @@
+/**************************************************************************\
+*                                                                          *
+*   Copyright (C) 2013-2024 Neo-Mind                                       *
+*                                                                          *
+*   This file is a part of WARP project (specific to RO clients)           *
+*                                                                          *
+*   WARP is free software: you can redistribute it and/or modify           *
+*   it under the terms of the GNU General Public License as published by   *
+*   the Free Software Foundation, either version 3 of the License, or      *
+*   (at your option) any later version.                                    *
+*                                                                          *
+*   This program is distributed in the hope that it will be useful,        *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+*   GNU General Public License for more details.                           *
+*                                                                          *
+*   You should have received a copy of the GNU General Public License      *
+*   along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
+*                                                                          *
+*                                                                          *
+|**************************************************************************|
+*                                                                          *
+*   Author(s)     : Neo-Mind                                               *
+*   Created Date  : 2020-11-06                                             *
+*   Last Modified : 2024-08-08                                             *
+*                                                                          *
+\**************************************************************************/
+
+///
+/// \brief Modifies comparison in the ::IsSameSentence function
+///
+///        UnlimitedChatRepeat - Enforces a JMP
+///        LimitedChatRepeat - Changes the limit itself
+///
+ChatRepeat = function(_)
+{
+	$$(_, 1.1, `Ensure the LANGTYPE is loaded`)
+	LANGTYPE.load();
+
+	$$(_, 1.2, `Find the Langtype comparison to identify ::IsSameSentence`)
+	const dist = Exe.Version === 6 ? POS1WC : WCp;
+
+	const prefix =
+		CMP([LANGTYPE], 0xA) //cmp dword ptr [g_serviceType], 0Ah
+	+	JE(dist)             //je short _next / je _next
+	+	CMP(ROC.HasFP        //cmp dword ptr [ARG.1], 2 ; where ARG.1 =
+	?
+		[EBP, 8]             // ebp+8 with FP
+	:                        //  OR
+		[ESP, 4]             // esp+4 without FP
+		, 2
+	);
+
+	const suffix = JL(dist);   //jl short _skip / jl _skip
+
+	let addr = Exe.FindHex(prefix + suffix);
+	if (addr < 0)
+		throw Error("Langtype comparison missing");
+
+	$$(_, 2.1, `Point addr to position of the JL`)
+	addr += prefix.byteCount();
+
+	if (_ === "UnlimitedChatRepeat")
+	{
+		$$(_, 2.2, `If no limit is needed, change the JL to JMP`)
+		Exe.SetJMP(addr);
+	}
+	else
+	{
+		$$(_, 2.3, `Otherwise, get the new limit from the user`)
+		const varName = '$chatFloodLimit';
+		const limit = Exe.GetUserInput(varName, D_Uint8, "Chat Limit", "Enter the new limit", 2, {max: 127});
+		if (limit === false)
+			Cancel("Chat Limit", 2);
+
+		$$(_, 2.4, `Change the limit in the Exe`)
+		Exe.SetFromVar(addr - 1, varName);
+	}
+
+	return true;
+};
+
+///
+/// \brief Wrappers for individual patches
+///
+UnlimitedChatRepeat = ChatRepeat;
+LimitedChatRepeat   = ChatRepeat;
