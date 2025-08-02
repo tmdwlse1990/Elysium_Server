@@ -223,6 +223,8 @@ CustomRuneSystemTableLub = CustomPath;
 CustomRuneSystemIdLub  = CustomPath;
 CustomRuneSystemInfoLub = CustomPath;
 CustomRuneRewardLub = CustomPath;
+CustomspopupLub        = CustomPath;
+CustomQuestQualiLub    = CustomPath;
 
 ///
 /// \brief Data to be used for the above patches
@@ -402,6 +404,22 @@ CustomPath.Data = MakeMap(
 		varName : '$newrunerewInfo',
 		prefix : "runeset_reward Lua",
 		knownName : "System\\Rune\\runeset_reward.lub"
+	},
+
+	'CustomspopupLub',
+	{
+		strType : "Path",
+		varName : '$newspopup',
+		prefix : "spopup Lua",
+		knownName : "System\\spopup.lub"
+	},
+
+	'CustomQuestQualiLub',
+	{
+		strType : "Path",
+		varName : '$newQuestQuali',
+		prefix : "QuestClassificationInfo Lua",
+		knownName : "System\\QuestClassificationInfo.lub"
 	},
 );
 

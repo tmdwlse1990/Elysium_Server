@@ -418,6 +418,17 @@ CustomPath:
             author : Secret
             desc : Change the clientinfo XML file loaded from *clientinfo.xml to user specified name.
 
+        - CustomspopupLub:
+            title : Customize spopup lub
+            recommend : no
+            author : llchrisll
+            desc : Make the client load user specified lua file instead of <b>spopup.lub</b>.
+
+        - CustomQuestQualiLub:
+            title : Customize QuestClassificationInfo lub
+            recommend : no
+            author : llchrisll
+            desc : Make the client load user specified lua file instead of <b>QuestClassificationInfo.lub</b>.
 
 SharedBodyPal:
     title : SHARED BODY PALETTES
