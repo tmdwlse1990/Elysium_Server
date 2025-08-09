@@ -12,3 +12,5 @@
 ACMD_DEF(afk),
 ACMD_DEF2("mercenaryon", mercenaryon),
 ACMD_DEF(reloadcollectiondb),
+ACMD_DEF(whosell),
+ACMD_DEF(whobuy),
