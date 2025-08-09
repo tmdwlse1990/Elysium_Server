@@ -10048,25 +10048,6 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 					}
 				}
 
-				// Add emblem support with new flags  
-				if (battle_config.show_mob_info & 64) {  
-					// Show race emblem  
-					int32 emblem_id = get_race_emblem_id(md->status.race);  
-					if (emblem_id > 0) {  
-						create_monster_emblem_data(md, emblem_id);  
-						clif_guild_emblem_area(md);  
-					}  
-				} 
-			  
-				if (battle_config.show_mob_info & 128) {  
-					// Show element emblem (overrides race emblem if both are set)  
-					int32 emblem_id = get_element_emblem_id(md->status.def_ele);  
-					if (emblem_id > 0) {  
-						create_monster_emblem_data(md, emblem_id);  
-						clif_guild_emblem_area(md);  
-					}  
-				}
-
 				// Even thought mobhp ain't a name, we send it as one so the client can parse it. [Skotlex]
 				if (!mob_info.empty()) {
 					// Remove trailing " | "  
