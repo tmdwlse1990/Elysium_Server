@@ -785,8 +785,6 @@ void storage_guild_log( map_session_data* sd, struct item* item, int16 amount ){
 
 	if (SQL_SUCCESS != stmt.PrepareStr(StringBuf_Value(&buf)) || SQL_SUCCESS != stmt.Execute())
 		SqlStmt_ShowDebug(stmt);
-
-	StringBuf_Destroy(&buf);
 }
 
 enum e_guild_storage_log storage_guild_log_read_sub( map_session_data* sd, std::vector<struct guild_log_entry>& log, uint32 max ){
@@ -812,7 +810,6 @@ enum e_guild_storage_log storage_guild_log_read_sub( map_session_data* sd, std::
 		SQL_ERROR == stmt.Execute() )
 	{
 		SqlStmt_ShowDebug(stmt);
-		StringBuf_Destroy(&buf);
 
 		return GUILDSTORAGE_LOG_FAILED;
 	}
@@ -849,7 +846,6 @@ enum e_guild_storage_log storage_guild_log_read_sub( map_session_data* sd, std::
 	}
 
 	Sql_FreeResult(mmysql_handle);
-	StringBuf_Destroy(&buf);
 
 	if( log.empty() ){
 		return GUILDSTORAGE_LOG_EMPTY;

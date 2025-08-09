@@ -2460,7 +2460,6 @@ void script_error(const char* src, const char* file, int32 start_line, const cha
 	script_errorwarning_sub(&buf, src, file, start_line, error_msg_cur, error_pos_cur);
 
 	ShowError("%s", StringBuf_Value(&buf));
-	StringBuf_Destroy(&buf);
 }
 
 void script_warning(const char* src, const char* file, int32 start_line, const char* error_msg_cur, const char* error_pos_cur) {
@@ -2471,7 +2470,6 @@ void script_warning(const char* src, const char* file, int32 start_line, const c
 	script_errorwarning_sub(&buf, src, file, start_line, error_msg_cur, error_pos_cur);
 
 	ShowWarning("%s", StringBuf_Value(&buf));
-	StringBuf_Destroy(&buf);
 }
 
 /*==========================================
@@ -5139,7 +5137,6 @@ BUILDIN_FUNC(menu)
 			data = script_getdata(st, i+1);
 			if( !data_islabel(data) )
 			{// not a label
-				StringBuf_Destroy(&buf);
 				ShowError("buildin_menu: Argument #%d (from 1) is not a label or label not found.\n", i);
 				script_reportdata(data);
 				st->state = END;
@@ -5170,8 +5167,6 @@ BUILDIN_FUNC(menu)
 			aFree(menu);
 		} else
 			clif_scriptmenu( *sd, st->oid, StringBuf_Value( &buf ) );
-
-		StringBuf_Destroy(&buf);
 
 		if( sd->npc_menu >= 0xff )
 		{// client supports only up to 254 entries; 0 is not used and 255 is reserved for cancel; excess entries are displayed but cause 'uint8' overflow
@@ -5274,7 +5269,6 @@ BUILDIN_FUNC(select)
 			aFree(menu);
 		} else
 			clif_scriptmenu( *sd, st->oid, StringBuf_Value( &buf ) );
-		StringBuf_Destroy(&buf);
 
 		if( sd->npc_menu >= 0xff ) {
 			ShowWarning("buildin_select: Too many options specified (current=%d, max=254).\n", sd->npc_menu);
@@ -5352,7 +5346,6 @@ BUILDIN_FUNC(prompt)
 			aFree(menu);
 		} else
 			clif_scriptmenu( *sd, st->oid, StringBuf_Value( &buf ) );
-		StringBuf_Destroy(&buf);
 
 		if( sd->npc_menu >= 0xff )
 		{
@@ -17494,7 +17487,6 @@ BUILDIN_FUNC(sprintf)
 			ShowError("buildin_sprintf: Not enough arguments passed!\n");
 			if(buf) aFree(buf);
 			if(buf2) aFree(buf2);
-			StringBuf_Destroy(&final_buf);
 			script_pushconststr(st,"");
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -17534,7 +17526,6 @@ BUILDIN_FUNC(sprintf)
 			ShowError("buildin_sprintf: Unknown argument type!\n");
 			if(buf) aFree(buf);
 			if(buf2) aFree(buf2);
-			StringBuf_Destroy(&final_buf);
 			script_pushconststr(st,"");
 			return SCRIPT_CMD_FAILURE;
 		}
@@ -17556,7 +17547,6 @@ BUILDIN_FUNC(sprintf)
 
 	if(buf) aFree(buf);
 	if(buf2) aFree(buf2);
-	StringBuf_Destroy(&final_buf);
 
 	return SCRIPT_CMD_SUCCESS;
 }
@@ -17812,7 +17802,7 @@ BUILDIN_FUNC(replacestr)
 		StringBuf_AppendStr(&output, &(input[i]));
 
 	script_pushstrcopy(st, StringBuf_Value(&output));
-	StringBuf_Destroy(&output);
+
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -20251,7 +20241,6 @@ BUILDIN_FUNC(unittalk)
 		StringBuf_Init(&sbuf);
 		StringBuf_Printf(&sbuf, "%s", message);
 		clif_disp_overhead_(bl, StringBuf_Value(&sbuf), target);
-		StringBuf_Destroy(&sbuf);
 	}
 
 	return SCRIPT_CMD_SUCCESS;
