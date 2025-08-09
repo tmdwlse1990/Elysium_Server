@@ -1738,3 +1738,67 @@
   find : <BF B0 BB F6 C1 A6 B0 C5>
   replace : "No Color"
   startDate : 20211100
+
+-
+  ##################################
+  desc : Game usage time notice - Part 1
+  ##################################
+  find : <25 64 20 BD C3 B0 A3 C0 CC 20 B0 E6 B0 FA C7 DF BD C0 B4 CF B4 D9 2E>
+  replace : "%d time has passed now."
+  startDate : 20130000
+
+-
+  ##################################
+  desc : Game usage time notice - Part 2
+  ##################################
+  find : <B0 FA B5 B5 C7 D1 20 B0 D4 C0 D3 C0 CC BF EB C0 BA 20 C1 A4 BB F3 C0 FB C0 CE 20 C0 CF BB F3 BB FD C8 B0 BF A1 20 C1 F6 C0 E5 C0 BB 20 C1 D9 20 BC F6 20 C0 D6 BD C0 B4 CF B4 D9 2E>
+  replace : "Excessive gaming can disrupt your normal daily life routine."
+  startDate : 20130000
+
+-
+  ##################################
+  desc : Macro Report - Part 1
+  ##################################
+  find : <C0 AF C0 FA 20 BD C5 B0 ED 00 00>
+  replace : "Reporting"
+  startDate : 20130000
+
+-
+  ##################################
+  desc : Macro Report - Part 2
+  ##################################
+  find : <BD C5 B0 ED 20 B3 BB BF EB C0 BB 20 C0 D4 B7 C2 C7 CF BC BC BF E4 2E 00>
+  replace : "Please enter details..."
+  startDate : 20130000
+
+-
+  ##################################
+  desc : Macro Report - Part 3
+  ##################################
+  find : <BA D2 B9 FD 20 C7 C1 B7 CE B1 D7 B7 A5 20 C0 C7 BD C9 20 BD C5 B0 ED>
+  replace : "Report illegal programs"
+  startDate : 20130000
+
+-
+  ##################################
+  desc : Macro Report - Part 4
+  ##################################
+  find : <B9 F6 B1 D7 20 B9 D7 20 BD C3 BD BA C5 DB 20 BE C7 BF EB>
+  replace : "Bugs and exploits "
+  startDate : 20130000
+
+-
+  ##################################
+  desc : Macro Report - Part 5
+  ##################################
+  find : <B1 E2 B4 C9 20 BE C7 BF EB 20 BD C3 20 C1 A6 C0 E7 B8 A6 20 B9 DE C0 BB 20 BC F6 20 C0 D6 BD C0 B4 CF B4 D9 2E 00 00 00>
+  replace : "You can get punished if you abuse it."
+  startDate : 20130000
+
+-
+  ##################################
+  desc : Equipment Properties
+  ##################################
+  find : <C0 E5 BA F1 B4 C9 B7 C2 C4 A1>
+  replace : "Eq. Props "
+  startDate : 20130000

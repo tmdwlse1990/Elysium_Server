@@ -3665,7 +3665,7 @@ bool intif_storage_save(map_session_data *sd, struct s_storage *stor, uint16 mod
 	WFIFOB(inter_fd, 4) = stor->type;
 	WFIFOL(inter_fd, 5) = sd->status.account_id;
 	WFIFOL(inter_fd, 9) = sd->status.char_id;
-	WFIFOB(inter_fd, 13) = mode;
+	WFIFOB(inter_fd, 13) = static_cast<uint8>(mode);
 	memcpy(WFIFOP(inter_fd, 14), stor, stor_size);
 	WFIFOSET(inter_fd, stor_size+14);
 	return true;
