@@ -8033,30 +8033,55 @@ ACMD_FUNC(mobinfo)
 		else
 			sprintf(atcmd_output, msg_txt(sd,1241), mob->name.c_str(), mob->jname.c_str(), mob->sprite.c_str(), mob->id); // Monster: '%s'/'%s'/'%s' (%d)
 		clif_displaymessage(fd, atcmd_output);
-		sprintf(atcmd_output, msg_txt(sd,1242), mob->lv, mob->status.max_hp, base_exp, job_exp, MOB_HIT(mob), MOB_FLEE(mob)); //  Lv:%d  HP:%d  Base EXP:%llu  Job EXP:%llu  HIT:%d  FLEE:%d
-		clif_displaymessage(fd, atcmd_output);
-		sprintf(atcmd_output, msg_txt(sd,1243), //  DEF:%d  MDEF:%d  STR:%d  AGI:%d  VIT:%d  INT:%d  DEX:%d  LUK:%d
-			mob->status.def, mob->status.mdef,mob->status.str, mob->status.agi,
-			mob->status.vit, mob->status.int_, mob->status.dex, mob->status.luk);
+
+		std::string formatted_lv = rathena::util::insert_comma(mob->lv);
+		std::string formatted_hp = rathena::util::insert_comma(mob->status.max_hp);
+		std::string formatted_base_exp = rathena::util::insert_comma(static_cast<int32>(base_exp));
+		std::string formatted_job_exp = rathena::util::insert_comma(static_cast<int32>(job_exp));
+		std::string formatted_hit = rathena::util::insert_comma(MOB_HIT(mob));
+		std::string formatted_flee = rathena::util::insert_comma(MOB_FLEE(mob));
+
+		sprintf(atcmd_output, msg_txt(sd, 1242), formatted_lv.c_str(), formatted_hp.c_str(), formatted_base_exp.c_str(), formatted_job_exp.c_str(), formatted_hit.c_str(), formatted_flee.c_str()); //  Lv:%s  HP:%s  Base EXP:%s  Job EXP:%s  HIT:%s  FLEE:%s    
 		clif_displaymessage(fd, atcmd_output);
 
-		sprintf(atcmd_output, msg_txt(sd,1244), //  ATK:%d~%d  Range:%d~%d~%d  Size:%s  Race: %s  Element: %s (Lv:%d)
-			mob->status.batk + mob->status.rhw.atk, mob->status.batk + mob->status.rhw.atk2, mob->status.rhw.range,
-			mob->range2 , mob->range3, msize[mob->status.size],
-			mrace[mob->status.race], melement[mob->status.def_ele], mob->status.ele_lv);
+		std::string formatted_def = rathena::util::insert_comma(mob->status.def);
+		std::string formatted_mdef = rathena::util::insert_comma(mob->status.mdef);
+		std::string formatted_str = rathena::util::insert_comma(mob->status.str);
+		std::string formatted_agi = rathena::util::insert_comma(mob->status.agi);
+		std::string formatted_vit = rathena::util::insert_comma(mob->status.vit);
+		std::string formatted_int = rathena::util::insert_comma(mob->status.int_);
+		std::string formatted_dex = rathena::util::insert_comma(mob->status.dex);
+		std::string formatted_luk = rathena::util::insert_comma(mob->status.luk);
+
+		sprintf(atcmd_output, msg_txt(sd, 1243), //  DEF:%s  MDEF:%s  STR:%s  AGI:%s  VIT:%s  INT:%s  DEX:%s  LUK:%s    
+			formatted_def.c_str(), formatted_mdef.c_str(), formatted_str.c_str(), formatted_agi.c_str(),
+			formatted_vit.c_str(), formatted_int.c_str(), formatted_dex.c_str(), formatted_luk.c_str());
 		clif_displaymessage(fd, atcmd_output);
-#ifdef RENEWAL
-		sprintf(atcmd_output, msg_txt(sd, 827), mob->status.res, mob->status.mres);//  MDEF:%d  RES:%d  MRES:%d
+
+		std::string formatted_atk1 = rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk);
+		std::string formatted_atk2 = rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk2);
+		std::string formatted_range1 = rathena::util::insert_comma(mob->status.rhw.range);
+		std::string formatted_range2 = rathena::util::insert_comma(mob->range2);
+		std::string formatted_range3 = rathena::util::insert_comma(mob->range3);
+		std::string formatted_ele_lv = rathena::util::insert_comma(mob->status.ele_lv);
+
+		sprintf(atcmd_output, msg_txt(sd, 1244), //  ATK:%s~%s  Range:%s~%s~%s  Size:%s  Race: %s  Element: %s (Lv:%s)    
+			formatted_atk1.c_str(), formatted_atk2.c_str(), formatted_range1.c_str(),
+			formatted_range2.c_str(), formatted_range3.c_str(), msize[mob->status.size],
+			mrace[mob->status.race], melement[mob->status.def_ele], formatted_ele_lv.c_str());
+		clif_displaymessage(fd, atcmd_output);
+
+#ifdef RENEWAL    
+		std::string formatted_res = rathena::util::insert_comma(mob->status.res);
+		std::string formatted_mres = rathena::util::insert_comma(mob->status.mres);
+		sprintf(atcmd_output, msg_txt(sd, 827), formatted_res.c_str(), formatted_mres.c_str());//  RES:%s  MRES:%s    
 		clif_displaymessage(fd, atcmd_output);
 #endif
 		// drops
 		clif_displaymessage(fd, msg_txt(sd,1245)); //  Drops:
-		strcpy(atcmd_output, " ");
-
 		if( mob->dropitem.empty() ){
 			clif_displaymessage(fd, msg_txt(sd,1246)); // This monster has no drops.
 		}else{
-			uint32 j = 0;
 			int32 drop_modifier = 100;
 #ifdef RENEWAL_DROP
 			if( battle_config.atcommand_mobinfo_type ){
@@ -8074,32 +8099,22 @@ ACMD_FUNC(mobinfo)
 					continue;
 
 				int32 droprate = mob_getdroprate( sd, mob, entry->rate, drop_modifier );
-
-				sprintf(atcmd_output2, " - %s  %02.02f%%", item_db.create_item_link( id ).c_str(), (float)droprate / 100);
-				strcat(atcmd_output, atcmd_output2);
-				if (++j % 3 == 0) {
-					clif_displaymessage(fd, atcmd_output);
-					strcpy(atcmd_output, " ");
-				}
-			}
-
-			if( j % 3 != 0 ){
+				sprintf(atcmd_output, " - %s %02.02f%%", item_db.create_item_link(id).c_str(), (float)droprate / 100);
 				clif_displaymessage(fd, atcmd_output);
 			}
 		}
 
 		// mvp
 		if( mob->get_bosstype() == BOSSTYPE_MVP ){
-			sprintf(atcmd_output, msg_txt(sd,1247), mob->mexp); //  MVP Bonus EXP:%llu
+			std::string formatted_mexp = rathena::util::insert_comma(static_cast<int64>(mob->mexp));  
+			sprintf(atcmd_output, msg_txt(sd,1247), formatted_mexp.c_str()); // MVP Bonus EXP:%s
 			clif_displaymessage(fd, atcmd_output);
 			clif_displaymessage(fd, msg_txt(sd,1248)); //  MVP drops:
-			strcpy(atcmd_output, " ");
 
 			if( mob->mvpitem.empty() ){
 				clif_displaymessage(fd, msg_txt(sd,1249)); // This monster has no MVP drops.
 			}else{
 				float mvpremain = 100.0; //Remaining drop chance for official mvp drop mode
-				uint32 j = 0;
 
 				for( const std::shared_ptr<s_mob_drop>& entry : mob->mvpitem ){
 					if (entry->nameid == 0)
@@ -8116,17 +8131,9 @@ ACMD_FUNC(mobinfo)
 						mvpremain -= mvppercent;
 					}
 					if (mvppercent > 0) {
-						sprintf(atcmd_output2, " - %s  %02.02f%%", item_db.create_item_link( id ).c_str(), mvppercent);
-						strcat(atcmd_output, atcmd_output2);
-						if (++j % 3 == 0) {
-							clif_displaymessage(fd, atcmd_output);
-							strcpy(atcmd_output, " ");
-						}
+						sprintf(atcmd_output, " - %s %02.02f%%", item_db.create_item_link(id).c_str(), mvppercent);
+						clif_displaymessage(fd, atcmd_output);
 					}
-				}
-
-				if( j % 3 != 0 ){
-					clif_displaymessage(fd, atcmd_output);
 				}
 			}
 		}
