@@ -7761,3 +7761,12 @@ StateIconList[EFST_IDs.EFST_TITLE45] = {
 		{ "All Stats +1" },
 	}
 }
+StateIconList[EFST_IDs.EFST_AUTOCOMBAT] = {
+    haveTimeLimit = 1,
+    posTimeLimitStr = 2,
+    descript = {
+        { "AUTOCOMBAT", COLOR_TITLE_BUFF },
+		{ "%s", COLOR_TIME },
+		{ "Drop Rate: -90%" }
+    } 
+}

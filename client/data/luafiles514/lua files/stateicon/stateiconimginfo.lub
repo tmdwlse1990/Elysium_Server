@@ -70,6 +70,7 @@ StateIconImgList = {
 		[EFST_IDs.EFST_TITLE43] = "titleid.tga",
 		[EFST_IDs.EFST_TITLE44] = "titleid.tga",
 		[EFST_IDs.EFST_TITLE45] = "titleid.tga",		
+		[EFST_IDs.EFST_AUTOCOMBAT] = "AUTOCOMBAT.tga",
 		[EFST_IDs.EFST_JUMPINGCLAN] = "eldicastes.tga",
 		[EFST_IDs.EFST_ESSENCE_OF_TIME] = "EssenceOfTime.tga"
 	},
