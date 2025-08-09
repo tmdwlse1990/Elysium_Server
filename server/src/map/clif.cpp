@@ -9981,26 +9981,97 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 
 				packet.packet_id = HEADER_ZC_ACK_REQNAMEALL;
 				packet.gid = bl->id;
-				safestrncpy( packet.name, md->name, NAME_LENGTH );
+				safestrncpy(packet.name, md->name, NAME_LENGTH);
 
-				char mobhp[50], *str_p = mobhp;
+				std::string mob_info = "";
 
-				if( battle_config.show_mob_info&4 ){
-					str_p += sprintf( str_p, "Lv. %d | ", md->level );
+				if (battle_config.show_mob_info & 1) {
+					mob_info += "HP: " + std::to_string(md->status.hp) + "/" + std::to_string(md->status.max_hp) + " | ";
 				}
 
-				if( battle_config.show_mob_info&1 ){
-					str_p += sprintf( str_p, "HP: %u/%u | ", md->status.hp, md->status.max_hp );
+				if (battle_config.show_mob_info & 2) {
+					mob_info += "HP: " + std::to_string(get_percentage(md->status.hp, md->status.max_hp)) + "% | ";
 				}
 
-				if( battle_config.show_mob_info&2 ){
-					str_p += sprintf( str_p, "HP: %u%% | ", get_percentage( md->status.hp, md->status.max_hp ) );
+				if (battle_config.show_mob_info & 4) {
+					mob_info += "ID: " + std::to_string(md->mob_id) + " | ";
+				}
+
+				if (battle_config.show_mob_info & 8) {
+					mob_info += "Lv: " + std::to_string(md->level) + " | ";
+				}
+
+				if (battle_config.show_mob_info & 16) {
+					std::string ele_name{};
+					switch (md->status.def_ele) {
+					case ELE_NEUTRAL: ele_name = "Neutral"; break;
+					case ELE_WATER: ele_name = "Water"; break;
+					case ELE_EARTH: ele_name = "Earth"; break;
+					case ELE_FIRE: ele_name = "Fire"; break;
+					case ELE_WIND: ele_name = "Wind"; break;
+					case ELE_POISON: ele_name = "Poison"; break;
+					case ELE_HOLY: ele_name = "Holy"; break;
+					case ELE_DARK: ele_name = "Shadow"; break;
+					case ELE_GHOST: ele_name = "Ghost"; break;
+					case ELE_UNDEAD: ele_name = "Undead"; break;
+					default: ele_name = "";
+					}
+					if (ele_name != "") {
+						std::string ele = "[" + ele_name + " " + std::to_string(md->status.ele_lv) + "]";
+						safestrncpy(packet.guild_name, ele.c_str(), NAME_LENGTH);
+					}
+				}
+
+				if (battle_config.show_mob_info & 32) {
+					std::string race_name{};
+					switch (md->status.race) {
+					case RC_FORMLESS:	race_name = "Formless"; break;
+					case RC_UNDEAD:		race_name = "Undead"; break;
+					case RC_BRUTE:		race_name = "Brute"; break;
+					case RC_PLANT:		race_name = "Plant"; break;
+					case RC_INSECT:		race_name = "Insect"; break;
+					case RC_FISH:		race_name = "Fish"; break;
+					case RC_DEMON:		race_name = "Demon"; break;
+					case RC_DEMIHUMAN:	race_name = "Demi-Human"; break;
+					case RC_ANGEL:		race_name = "Angel"; break;
+					case RC_DRAGON:		race_name = "Dragon"; break;
+					default:			race_name = "";
+					}
+					if (race_name != "") {
+						// If element is not activated (flag 16), use guild_name instead of position_name  
+						if (!(battle_config.show_mob_info & 16)) {
+							safestrncpy(packet.guild_name, race_name.c_str(), NAME_LENGTH);
+						}
+						else {
+							safestrncpy(packet.position_name, race_name.c_str(), NAME_LENGTH);
+						}
+					}
+				}
+
+				// Add emblem support with new flags  
+				if (battle_config.show_mob_info & 64) {  
+					// Show race emblem  
+					int32 emblem_id = get_race_emblem_id(md->status.race);  
+					if (emblem_id > 0) {  
+						create_monster_emblem_data(md, emblem_id);  
+						clif_guild_emblem_area(md);  
+					}  
+				} 
+			  
+				if (battle_config.show_mob_info & 128) {  
+					// Show element emblem (overrides race emblem if both are set)  
+					int32 emblem_id = get_element_emblem_id(md->status.def_ele);  
+					if (emblem_id > 0) {  
+						create_monster_emblem_data(md, emblem_id);  
+						clif_guild_emblem_area(md);  
+					}  
 				}
 
 				// Even thought mobhp ain't a name, we send it as one so the client can parse it. [Skotlex]
-				if( str_p != mobhp ){
-					*(str_p-3) = '\0'; //Remove trailing space + pipe.
-					safestrncpy( packet.party_name, mobhp, NAME_LENGTH );
+				if (!mob_info.empty()) {
+					// Remove trailing " | "  
+					mob_info = mob_info.substr(0, mob_info.length() - 3);
+					safestrncpy(packet.party_name, mob_info.c_str(), NAME_LENGTH);
 				}
 
 				clif_send(&packet, sizeof(packet), src, target);

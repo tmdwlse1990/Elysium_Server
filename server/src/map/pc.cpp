@@ -9940,7 +9940,7 @@ int32 pc_dead(map_session_data *sd,struct block_list *src)
 				status_calc_mob(md, SCO_NONE);
 				status_percent_heal(src,10,0);
 
-				if( battle_config.show_mob_info&4 )
+				if( battle_config.show_mob_info&60 )
 				{// update name with new level
 					clif_name_area(md);
 				}
