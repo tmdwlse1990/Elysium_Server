@@ -88,7 +88,7 @@ ACMD_FUNC(whosell)
 	int s_type = 1; // search bitmask: 0-name,1-id, 2-card, 4-refine, 8-options
 	int refine = 0,card_id = 0, option_id = 0, option_value = 0;
 	bool flag = 0; // place dot on the minimap?
-	struct map_session_data* pl_sd;
+	class map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 	unsigned int MinPrice = battle_config.vending_max_value, MaxPrice = 0;
 	time_t querytime;
@@ -305,7 +305,7 @@ ACMD_FUNC(whobuy)
 	int s_type = 1; // search bitmask: 0-name,1-id, 2-card, 4-refine  
 	int refine = 0, card_id = 0;
 	bool flag = 0; // place dot on the minimap?  
-	struct map_session_data* pl_sd;
+	class map_session_data* pl_sd;
 	struct s_mapiterator* iter;
 	unsigned int MinPrice = battle_config.vending_max_value, MaxPrice = 0;
 	time_t querytime;
