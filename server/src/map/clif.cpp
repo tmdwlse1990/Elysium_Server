@@ -21994,7 +21994,7 @@ void clif_ui_open( map_session_data& sd, enum out_ui_type ui_type, int32 data ){
 			PACKET_ZC_UI_OPEN3 p = {};
 			p.PacketType = HEADER_ZC_UI_OPEN3;
 			p.UIType = ui_type;
-			clif_send(&p, sizeof(p), &sd.bl, SELF);
+			clif_send(&p, sizeof(p), &sd, SELF);
 		}
 #endif
 			return;
