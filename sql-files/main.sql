@@ -365,6 +365,16 @@ INSERT INTO `clan` VALUES ('1', 'Swordman Clan', 'Raffam Oranpere', 'prontera', 
 INSERT INTO `clan` VALUES ('2', 'Arcwand Clan', 'Devon Aire', 'geffen', '500');
 INSERT INTO `clan` VALUES ('3', 'Golden Mace Clan', 'Berman Aire', 'prontera', '500');
 INSERT INTO `clan` VALUES ('4', 'Crossbow Clan', 'Shaam Rumi', 'payon', '500');
+INSERT INTO `clan` VALUES ('6', 'Angel Clan', 'Reginleif', 'valkyrie', '500');	
+INSERT INTO `clan` VALUES ('7', 'Brute Clan', 'Ragnar', 'lasgna', '500');
+INSERT INTO `clan` VALUES ('8', 'Demi-Human Clan', 'Saber', 'prontera', '500');
+INSERT INTO `clan` VALUES ('9', 'Demon Clan', 'Zarathos', 'gl_cas02', '500');
+INSERT INTO `clan` VALUES ('10', 'Dragon Clan', 'Drakorath', 'abyss_04', '500');
+INSERT INTO `clan` VALUES ('11', 'Fish Clan', 'Aquaros', 'iz_dun04', '500');
+INSERT INTO `clan` VALUES ('12', 'Formless Clan', 'Belzhar', '1@xm_d', '500');
+INSERT INTO `clan` VALUES ('13', 'Insect Clan', 'Venothrax', 'splendide', '500');
+INSERT INTO `clan` VALUES ('14', 'Plant Clan', 'Thornroot', 'mora', '500');
+INSERT INTO `clan` VALUES ('15', 'Undead Clan', 'Mordath', 'gl_chyard_', '500');
 
 --
 -- Table structure for `clan_alliance`

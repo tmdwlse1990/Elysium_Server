@@ -55,3 +55,133 @@ Body:
       NoClearance: true
       NoRemoveOnDead: true
       NoSave: true
+  - Status: Angelclan
+    Icon: EFST_ANGELCLAN
+    Flags:
+      NoRemoveOnDead: true
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      SendVal1: true
+    EndOnEnd:
+      Clan_Info: true
+    Script: |
+      bonus bRace,RC_ANGEL;      
+  - Status: Bruteclan
+    Icon: EFST_BRUTECLAN
+    Flags:
+      NoRemoveOnDead: true
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      SendVal1: true
+    EndOnEnd:
+      Clan_Info: true
+    Script: |
+      bonus bRace,RC_BRUTE;      
+  - Status: Demihumanclan
+    Icon: EFST_DEMIHUMANCLAN
+    Flags:
+      NoRemoveOnDead: true
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      SendVal1: true
+    EndOnEnd:
+      Clan_Info: true
+    Script: |
+      bonus bRace,RC_DemiHuman;      
+  - Status: Demonclan
+    Icon: EFST_DEMONCLAN
+    Flags:
+      NoRemoveOnDead: true
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      SendVal1: true
+    EndOnEnd:
+      Clan_Info: true
+    Script: |
+      bonus bRace,RC_Demon;
+  - Status: Dragonclan
+    Icon: EFST_DRAGONCLAN
+    Flags:
+      NoRemoveOnDead: true
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      SendVal1: true
+    EndOnEnd:
+      Clan_Info: true
+    Script: |
+      bonus bRace,RC_Dragon;
+  - Status: Fishclan
+    Icon: EFST_FISHCLAN
+    Flags:
+      NoRemoveOnDead: true
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      SendVal1: true
+    EndOnEnd:
+      Clan_Info: true
+    Script: |
+      bonus bRace,RC_Fish;      
+  - Status: Formlessclan
+    Icon: EFST_FORMLESSCLAN
+    Flags:
+      NoRemoveOnDead: true
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      SendVal1: true
+    EndOnEnd:
+      Clan_Info: true
+    Script: |
+      bonus bRace,RC_Formless;      
+  - Status: Insectclan
+    Icon: EFST_INSECTCLAN
+    Flags:
+      NoRemoveOnDead: true
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      SendVal1: true
+    EndOnEnd:
+      Clan_Info: true
+    Script: |
+      bonus bRace,RC_Insect;      
+  - Status: Plantclan
+    Icon: EFST_PLANTCLAN
+    Flags:
+      NoRemoveOnDead: true
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      SendVal1: true
+    EndOnEnd:
+      Clan_Info: true
+    Script: |
+      bonus bRace,RC_Plant;      
+  - Status: Undeadclan
+    Icon: EFST_UNDEADCLAN
+    Flags:
+      NoRemoveOnDead: true
+      NoClearbuff: true
+      NoDispell: true
+      NoBanishingBuster: true
+      NoClearance: true
+      SendVal1: true
+    EndOnEnd:
+      Clan_Info: true
+    Script: |
+      bonus bRace,RC_Undead;

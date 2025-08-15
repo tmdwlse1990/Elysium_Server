@@ -519,6 +519,7 @@ enum _sp {
 
 	// Mercenaries
 	SP_MERCFLEE=165, SP_MERCKILLS=189, SP_MERCFAITH=190,
+	SP_RACE,	
 
 	// 4th jobs
 	SP_POW=219, SP_STA, SP_WIS, SP_SPL, SP_CON, SP_CRT,	// 219-224

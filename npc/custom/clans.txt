@@ -1,0 +1,1710 @@
+//===== rAthena Script =======================================
+//= Clan masters
+//===== Description: =========================================
+//= The clan master NPCs that allow you to join and leave
+//= one of the clans.
+//===== Changelogs: ==========================================
+//= 1.0 Initial release. [Louis T Steinhil]
+//============================================================
+
+prontera,138,183,7	script	Clan Helper	703,{
+	mes "[Clan Helper]";
+	mes "Do you want to build connections without being in a guild?";
+	next;
+	mes "[Clan Helper]";
+	mes "Can't find the perfect guild for yourself?";
+	next;
+	mes "[Clan Helper]";
+	mes "You can join or leave clans freely! Just join!";
+	next;
+	mes "[Clan Helper]";
+	mes "Now, come on in and meet the masters of the Kingdom's best clans!";
+	close;
+}
+
+valkyrie,49,86,4	script	[ Clan Master ]#1	4_EM_PROCELLA,{
+	//cutin "sham01.bmp", 2;
+	mes "[Reginleif]";
+	mes "Hi, there! I'm Reginleif, master of the ^0000FFAngel Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Angel Clan:Cancel." ) ){
+				case 1:
+					mes "[Reginleif]";
+					mes "Join us, if no clan suits your taste.";
+					mes "New members are given ^0000FFfree stat bonus^000000.";
+					next;
+					mes "[Reginleif]";
+					mes "The ^0000FFAngel Clan^000000 is known for its serene disposition and unwavering support.";
+					mes "Founded centuries ago by celestial beings, the clan offers sanctuary and camaraderie amidst the chaos of battle.";
+					next;
+					mes "[Reginleif]";
+					mes "Support and Tank stats are offered as the name suggests, but not all members are Support or Tank classes.";
+					mes "The clan celebrates diversity, welcoming adventurers of all classes to join their ranks.";
+					next;
+					mes "[Reginleif]";
+					mes "Our headquarters, a grand citadel adorned with celestial symbols and glowing with ethereal light, serves as a haven for members.";
+					mes "Here, we train under the guidance of elder angels, honing our skills and deepening our bonds of friendship.";
+					next;
+					mes "[Reginleif]";
+					mes "In battle, Angel Clan members are a formidable force. With the blessings of the angels, we possess enhanced support and tank stats,";
+					mes "enabling us to protect and heal our comrades with unmatched proficiency.";
+					next;
+					mes "[Reginleif]";
+					mes "The Angel Clan believes in the power of unity and friendship, often organizing gatherings and events to strengthen our community bonds.";
+					mes "Join us, and embark on a journey where support and strength go hand in hand.";
+					next;
+					mes "[Reginleif]";
+					mes "In the Angel Clan, you'll not only find comrades in battle but also friends for life.";
+					mes "Difference in variety creates the fun. These odd bunches never bore me in the party.";
+					next;
+					mes "[Reginleif]";
+					mes "And who knows, you might meet your soul mate in the clan! Hahah!";
+					close;
+				case 2:
+					mes "[Reginleif]";
+					mes "The ^0000FFAngel Clan^000000 mainly for Support and Tank adventurers.";
+					next;
+					mes "[Reginleif]";
+					mes "Eh, let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as an Angel>^000000.";
+					mes "^0000FF<Resistance to all elements + 20%>^000000.";
+					mes "^0000FF<Increase effectiveness of Heal + 100%>^000000!";
+					mes "^0000FF<DEF & MDEF + 10%>^000000!";					
+					mes "^0000FF<Damage received from Demon + 20%>^000000.";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Reginleif]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Reginleif]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Reginleif]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Reginleif]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Eh, let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as an Angel>^000000.";
+			mes "^0000FF<Resistant to all elements + 20%>^000000.";
+			mes "^0000FF<Increase effectiveness of Heal + 100%>^000000!";
+			mes "^0000FF<DEF & MDEF + 10%>^000000!";			
+			mes "^0000FF<Damage received from Demon + 20%>^000000.";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Reginleif]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Reginleif]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Reginleif]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Reginleif]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Reginleif]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(ANGELCLAN)) {
+							sc_start2 SC_ANGELCLAN, INFINITE_TICK, 0, ANGELCLAN;
+							callfunc "TransformToRaceFantasy", 9;
+							cutin "sham02.bmp", 2;
+							mes "[Reginleif]";
+							mes "Welcome to the ^0000FFAngel Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Reginleif]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Reginleif]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Reginleif]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Reginleif]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Reginleif]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Reginleif]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_ANGELCLAN;
+						callfunc "TransformToPlayer";
+						mes "[Reginleif]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_ANGELCLAN, INFINITE_TICK, 0, ANGELCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 100);
+	setunittitle( getnpcid(0), "Reginleif" );	
+	end;
+}
+
+lasagna,177,211,4	script	[ Clan Master ]#2	4_EP17_MIGUEL,{
+	//cutin "sham01.bmp", 2;
+	mes "[Ragnar]";
+	mes "Hi, there! I'm Ragnar, master of the ^0000FFBrute Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Brute Clan:Cancel." ) ){
+				case 1:
+					mes "[Ragnar]";
+					mes "The ^0000FFClans^000000 are a type of guild ran by the Kingdom.";
+					mes "They don't participate in the Siege, so members are free to join/leave anytime.";
+					next;
+					mes "[Ragnar]";
+					mes "I wish we could join the Siege. I'd love flying over on my dragon and burning everyone in my way!";
+					mes "Oops, too thrilled!";
+					next;
+					mes "[Ragnar]";
+					mes "Join us, if no clan suits your taste.";
+					mes "New members are given ^0000FFfree stat bonus^000000.";
+					next;
+					mes "[Ragnar]";
+					mes "The ^0000FFBrute Clan^000000 is a formidable group,";
+					mes "comprised of beastly monsters who harness their primal instincts in battle.";
+					next;
+					mes "[Ragnar]";
+					mes "Brute Clan members excel in critical strikes and swift attacks,";
+					mes "offering unique bonuses that enhance their ferocity and speed.";
+					next;
+					mes "[Ragnar]";
+					mes "Our headquarters is a rugged wilderness, reflecting the untamed nature of our members.";
+					mes "Here, we train to sharpen our instincts and strengthen our bonds.";
+					next;
+					mes "[Ragnar]";
+					mes "In battle, Brute Clan members are a fierce force. With our unique bonuses,";
+					mes "we deliver devastating critical strikes, attack with unmatched speed, and cast spells rapidly.";
+					next;
+					mes "[Ragnar]";
+					mes "The Brute Clan values raw power and primal instincts,";
+					mes "embracing the wild and constantly pushing their limits.";
+					next;
+					mes "[Ragnar]";
+					mes "Join us, and discover the power of the beast within. Embrace the wild and rise to greatness in the Brute Clan.";
+					mes "Difference in variety creates the fun. These odd bunches never bore me in the party.";
+					next;
+					mes "[Ragnar]";
+					mes "And who knows, you might meet your soul mate in the clan! Hahah!";
+					close;
+				case 2:
+					mes "[Ragnar]";
+					mes "The ^0000FFBrute Clan^000000 mainly for critical strikes and swift attacks.";
+					next;
+					mes "[Ragnar]";
+					mes "Eh, let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Brute>^000000.";
+					mes "^0000FF<Critical Damage + 10%>^000000!";
+					mes "^0000FF<Critical Rate + 10%>^000000!";
+					mes "^0000FF<Aspd + 10%>^000000!";
+					mes "^0000FF<Cast Time + 10%>^000000!";
+					mes "^0000FF<Increased Damage against Demi-Human Type Enemies + 20%>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Ragnar]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Ragnar]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Ragnar]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Ragnar]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Eh, let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Brute>^000000.";
+			mes "^0000FF<Critical Damage + 10%>^000000!";
+			mes "^0000FF<Critical Rate + 10%>^000000!";
+			mes "^0000FF<Aspd + 10%>^000000!";
+			mes "^0000FF<Cast Time + 10%>^000000!";
+			mes "^0000FF<Increased Damage against Demi-Human Type Enemies + 20%>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Ragnar]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Ragnar]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Ragnar]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Ragnar]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Ragnar]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(BRUTECLAN)) {
+							sc_start2 SC_BRUTECLAN, INFINITE_TICK, 0, BRUTECLAN;
+							callfunc "TransformToRaceFantasy", 6;
+							cutin "sham02.bmp", 2;
+							mes "[Ragnar]";
+							mes "Welcome to the ^0000FFBrute Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Ragnar]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Ragnar]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Ragnar]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Ragnar]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Ragnar]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Ragnar]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_BRUTECLAN;
+						callfunc "TransformToPlayer";
+						mes "[Ragnar]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_BRUTECLAN, INFINITE_TICK, 0, BRUTECLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 101);
+	setunittitle( getnpcid(0), "Ragnar" );	
+	end;
+}
+
+prontera,177,211,4	script	[ Clan Master ]#3	4_EP17_MIGUEL,{
+	//cutin "sham01.bmp", 2;
+	mes "[Saber]";
+	mes "Hi, there! I'm Saber, master of the ^0000FFDemi-Human Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Demi-Human Clan:Cancel." ) ){
+				case 1:
+					mes "[Saber]";
+					mes "The ^0000FFClans^000000 are a type of guild ran by the Kingdom.";
+					mes "They don't participate in the Siege, so members are free to join/leave anytime.";
+					next;
+					mes "[Saber]";
+					mes "I wish we could join the Siege. I'd love murdering these beastmen for fun!";
+					mes "Oops, too thrilled!";
+					next;
+					mes "[Saber]";
+					mes "Join us, if no clan suits your taste.";
+					mes "New members are given ^0000FFfree stat bonus^000000.";
+					next;
+					mes "[Saber]";
+					mes "The ^0000FFDemi-Human Clan^000000 is a formidable group,";
+					mes "In the untamed wilderness, where civilization dares not tread, ^0000FFDemi-Human Clan^000000 thrives.";
+					next;
+					mes "[Saber]";
+					mes "Their origins are shrouded in myth—some say they are the remnants of an ancient race, while others";
+					mes "whisper that they were once human, cursed or blessed with beastly strength.";
+					next;
+					mes "[Saber]";
+					mes "Whatever the truth, their presence on the battlefield is undeniable.";
+					mes "Unlike other clans that rely on strategy and discipline";
+					next;
+					mes "[Saber]";
+					mes "the ^0000FFDemi-Human Clan^000000 embraces raw power, striking with blinding speed and overwhelming force.";
+					mes "They reside in the Wildlands, a sprawling terrain where only the strong survive.";
+					next;
+					mes "[Saber]";
+					mes "From towering mountains to dense forests, every inch of their land is a proving ground"; 
+					mes "ensuring that only the fiercest warriors rise to the top.";
+					close;
+				case 2:
+					mes "[Saber]";
+					mes "The ^0000FFDemi-Human Clan^000000 is known for their accuracy on hunting beasts.";
+					next;
+					mes "[Saber]";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Demi-Human>^000000.";
+					mes "^0000FF<Ranged Attack + 10%>^000000!";
+					mes "^0000FF<Movespeed + 10%>^000000!";
+					mes "^0000FF<Accuracy + 100%>^000000!";
+					mes "^0000FF<Increased Damage against Brute Type Enemies + 20%>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Saber]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Saber]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Saber]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Saber]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Demi-Human>^000000.";
+			mes "^0000FF<Ranged Attack + 10%>^000000!";
+			mes "^0000FF<Movespeed + 10%>^000000!";
+			mes "^0000FF<Accuracy + 100%>^000000!";
+			mes "^0000FF<Increased Damage against Brute Type Enemies + 20%>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Saber]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Saber]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Saber]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Saber]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Saber]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(DEMIHUMANCLAN)) {
+							sc_start2 SC_DEMIHUMANCLAN, INFINITE_TICK, 0, DEMIHUMANCLAN;
+							callfunc "TransformToRaceFantasy", 1;
+							cutin "sham02.bmp", 2;
+							mes "[Saber]";
+							mes "Welcome to the ^0000FFDemi-Human Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Saber]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Saber]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Saber]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Saber]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Saber]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Saber]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_DEMIHUMANCLAN;
+						callfunc "TransformToPlayer";
+						mes "[Saber]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_DEMIHUMANCLAN, INFINITE_TICK, 0, DEMIHUMANCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 102);
+	setunittitle( getnpcid(0), "Saber" );	
+	end;
+}
+
+gl_cas02_,103,177,4	script	[ Clan Master ]#4	4_BAPHOMET,{
+	//cutin "sham01.bmp", 2;
+	mes "[Zarathos]";
+	mes "Hi, there! I'm Zarathos, master of the ^0000FFDemon Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Demon Clan:Cancel." ) ){
+				case 1:
+					mes "[Zarathos]";
+					mes "The ^3131FFClans^000000 are a type of guild ran by the Kingdom.";
+					mes "They don't participate in the Siege, so members are free to join/leave anytime.";
+					next;
+					mes "[Zarathos]";
+					mes "Join us, if no clan suits your taste.";
+					mes "New members are given ^3131FFfree stat bonus^000000.";
+					next;
+					mes "[Zarathos]";
+					mes "The ^3131FFDemon Clan^000000 is renowned for its fierce strength and relentless power.";
+					mes "Founded by ancient demons, the clan thrives on the chaos and power of battle.";
+					next;
+					mes "[Zarathos]";
+					mes "Melee stats are offered as the name suggests, but not all members are Melee classes.";
+					mes "The clan welcomes warriors of all types who seek to unleash their inner fury.";
+					next;
+					mes "[Zarathos]";
+					mes "Our headquarters, a fortress of dark stone and flickering torches, stands as a testament to our might.";
+					mes "Here, we train under the watchful eyes of demon lords, mastering our skills and forging unbreakable bonds.";
+					next;
+					mes "[Zarathos]";
+					mes "In battle, Demon Clan members are a fearsome force. With our melee prowess and demonic heritage,";
+					mes "we crush our enemies and revel in the thrill of combat.";
+					next;
+					mes "[Zarathos]";
+					mes "The Demon Clan believes in the strength of individuality and the thrill of competition.";
+					mes "We often engage in duels and contests to hone our skills and prove our dominance.";
+					next;
+					mes "[Zarathos]";
+					mes "Join us, and embrace the power within you. Unleash your fury and rise to greatness in the Demon Clan.";
+					mes "Difference in variety creates the fun. These odd bunches never bore me in the party.";
+					next;
+					mes "[Zarathos]";
+					mes "And who knows, you might meet your soul mate in the clan! Hahah!";
+					close;
+				case 2:
+					mes "[Zarathos]";
+					mes "The ^0000FFDemon Clan^000000 is known to have demonic strength.";
+					next;
+					mes "[Zarathos]";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Demon>^000000.";
+					mes "^0000FF<ATK & MATK + 10%>^000000!";
+					mes "^0000FF<DEF & MDEF - 10%>^000000!";
+					mes "^0000FF<Damage received from Angel Type Enemies + 20%>^000000.";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Zarathos]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Zarathos]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Zarathos]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Zarathos]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Demon>^000000.";
+			mes "^0000FF<ATK & MATK + 10%>^000000!";
+			mes "^0000FF<DEF & MDEF - 10%>^000000!";
+			mes "^0000FF<Damage received from Angel Type Enemies + 20%>^000000.";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Zarathos]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Zarathos]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Zarathos]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Zarathos]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Zarathos]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(DEMONCLAN)) {
+							sc_start2 SC_DEMONCLAN, INFINITE_TICK, 0, DEMONCLAN;
+							callfunc "TransformToRaceFantasy", 7;
+							cutin "sham02.bmp", 2;
+							mes "[Zarathos]";
+							mes "Welcome to the ^0000FFDemon Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Zarathos]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Zarathos]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Zarathos]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Zarathos]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Zarathos]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Zarathos]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_DEMONCLAN;
+						callfunc "TransformToPlayer";
+						mes "[Zarathos]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_DEMONCLAN, INFINITE_TICK, 0, DEMONCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 103);
+	setunittitle( getnpcid(0), "Zarathos" );	
+	end;
+}
+
+abyss_04,147,173,4	script	[ Clan Master ]#5	4_4JOB_LETICIA,{
+	//cutin "sham01.bmp", 2;
+	mes "[Drakorath]";
+	mes "Hi, there! I'm Drakorath, master of the ^0000FFDragon Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Dragon Clan:Cancel." ) ){
+				case 1:
+					mes "[Drakorath]";
+					mes "The ^0000FFClans^000000 are factions sanctioned by the Kingdom, each with unique traditions and strengths.";
+					mes "Unlike guilds that wage war in the Siege, Clans are free to join or leave as one pleases.";
+					next;
+					mes "[Drakorath]";
+					mes "If no other clan calls to your spirit, consider the path of the Dragon Clan.";
+					mes "New members receive a ^0000FFpowerful stat bonus^000000 to help forge their legend.";
+					next;
+					mes "[Drakorath]";
+					mes "The ^0000FFDragon Clan^000000 is forged in fire and tempered in battle.";
+					mes "Founded by ancient Dragons, our lineage is one of strength, resilience, and unwavering fury.";
+					next;
+					mes "[Drakorath]";
+					mes "Though our clan is known for its unmatched melee prowess, we welcome warriors of all disciplines.";
+					mes "Any who seek to embrace their primal might will find a home among us.";
+					next;
+					mes "[Drakorath]";
+					mes "Our stronghold, a fortress of obsidian and flame-lit halls, stands as a testament to our legacy.";
+					mes "Here, under the guidance of Dragon Lords, we train, sharpen our skills, and forge bonds as strong as dragon scales.";
+					next;
+					mes "[Drakorath]";
+					mes "In battle, Dragon Clan warriors are an unstoppable force. Our fury is unmatched, our strikes relentless.";
+					mes "With Dragonic heritage coursing through our veins, we dominate the battlefield with sheer might.";
+					next;
+					mes "[Drakorath]";
+					mes "Strength, honor, and competition drive us forward.";
+					mes "Within our ranks, duels and trials of combat are common tests that refine our power and prove our supremacy.";
+					next;
+					mes "[Drakorath]";
+					mes "Join us, embrace your inner dragon, and rise to greatness.";
+					mes "Power lies dormant in us all it is time to awaken yours.";
+					next;
+					mes "[Drakorath]";
+					mes "And who knows? You may just find a kindred spirit, or even a soul mate, within our ranks! Hahaha!";
+					close;
+				case 2:
+					mes "[Drakorath]";
+					mes "The ^0000FFDragon Clan^000000 mainly supports Support & Tank adventurers.";
+					next;
+					mes "[Drakorath]";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Dragon>^000000.";
+					mes "^0000FF<Reflect 10% of Physical Damage Received>^000000!";
+					mes "^0000FF<Reflect 10% of Magical Damage Received>^000000!";
+					mes "^0000FF<HP/SP Recovery + 100%>^000000!";
+					mes "^0000FF<Resistance to all elements - 20%>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Drakorath]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Drakorath]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Drakorath]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Drakorath]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Dragon>^000000.";
+			mes "^0000FF<Reflect 10% of Physical Damage Received>^000000!";
+			mes "^0000FF<Reflect 10% of Magical Damage Received>^000000!";
+			mes "^0000FF<HP/SP Recovery + 100%>^000000!";
+			mes "^0000FF<Resistance to all elements - 20%>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Drakorath]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Drakorath]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Drakorath]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Drakorath]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Drakorath]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(DRAGONCLAN)) {
+							sc_start2 SC_DRAGONCLAN, INFINITE_TICK, 0, DRAGONCLAN;
+							callfunc "TransformToRaceFantasy", 8;
+							cutin "sham02.bmp", 2;
+							mes "[Drakorath]";
+							mes "Welcome to the ^0000FFDragon Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Drakorath]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Drakorath]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Drakorath]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Drakorath]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Drakorath]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Drakorath]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_DRAGONCLAN;
+						callfunc "TransformToPlayer";
+						mes "[Drakorath]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_DRAGONCLAN, INFINITE_TICK, 0, DRAGONCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 104);
+	setunittitle( getnpcid(0), "Drakorath" );	
+	end;
+}
+
+iz_dun04,129,224,4	script	[ Clan Master ]#6	4_EM_DILUVIO,{
+	//cutin "sham01.bmp", 2;
+	mes "[Aquaros]";
+	mes "Hi, there! I'm Aquaros, master of the ^0000FFFish Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Fish Clan:Cancel." ) ){
+				case 1:
+					mes "[Aquaros]";
+					mes "The ^0000FFClans^000000 are factions sanctioned by the Kingdom, each with unique traditions and strengths.";
+					mes "Unlike guilds that wage war in the Siege, Clans are free to join or leave as one pleases.";
+					next;
+					mes "[Aquaros]";
+					mes "If no other clan calls to your spirit, consider the path of the Fish Clan.";
+					mes "New members receive a ^0000FFpowerful stat bonus^000000 to help forge their legend.";
+					next;
+					mes "[Aquaros]";
+					mes "The ^0000FFFish Clan^000000 is forged in fire and tempered in battle.";
+					mes "Founded by ancient Fishs, our lineage is one of strength, resilience, and unwavering fury.";
+					next;
+					mes "[Aquaros]";
+					mes "Though our clan is known for its unmatched melee prowess, we welcome warriors of all disciplines.";
+					mes "Any who seek to embrace their primal might will find a home among us.";
+					next;
+					mes "[Aquaros]";
+					mes "Our stronghold, a fortress of obsidian and flame-lit halls, stands as a testament to our legacy.";
+					mes "Here, under the guidance of Fish Lords, we train, sharpen our skills, and forge bonds as strong as Fish scales.";
+					next;
+					mes "[Aquaros]";
+					mes "In battle, Fish Clan warriors are an unstoppable force. Our fury is unmatched, our strikes relentless.";
+					mes "With Fishic heritage coursing through our veins, we dominate the battlefield with sheer might.";
+					next;
+					mes "[Aquaros]";
+					mes "Strength, honor, and competition drive us forward.";
+					mes "Within our ranks, duels and trials of combat are common—tests that refine our power and prove our supremacy.";
+					next;
+					mes "[Aquaros]";
+					mes "Join us, embrace your inner Fish, and rise to greatness.";
+					mes "Power lies dormant in us all—it is time to awaken yours.";
+					next;
+					mes "[Aquaros]";
+					mes "And who knows? You may just find a kindred spirit, or even a soul mate, within our ranks! Hahaha!";
+					close;
+				case 2:
+					mes "[Aquaros]";
+					mes "The ^0000FFFish Clan^000000 mainly supports Water Type Skill Users.";
+					next;
+					mes "[Aquaros]";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Fish>^000000.";
+					mes "^0000FF<Increase damage of Water type Skill + 100%>^000000!";
+					mes "^0000FF<Increase damage of Water elemental attcks + 100%>^000000!";
+					mes "^0000FF<Movement Speed and Evasion + 20% while on water>^000000!";
+					mes "^0000FF<HP/ SP Recovery + 100% while on water>^000000!";
+					mes "^0000FF<Resistance to wind element - 20%>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Aquaros]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Aquaros]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Aquaros]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Aquaros]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Fish>^000000.";
+			mes "^0000FF<Increase damage of Water type Skill + 100%>^000000!";
+			mes "^0000FF<Increase damage of Water elemental attcks + 100%>^000000!";
+			mes "^0000FF<Movement Speed and Evasion + 20% while on water>^000000!";
+			mes "^0000FF<HP/ SP Recovery + 100% while on water>^000000!";
+			mes "^0000FF<Resistance to wind element - 20%>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Aquaros]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Aquaros]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Aquaros]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Aquaros]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Aquaros]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(FISHCLAN)) {
+							sc_start2 SC_FISHCLAN, INFINITE_TICK, 0, FISHCLAN;
+							callfunc "TransformToRaceFantasy", 3;
+							cutin "sham02.bmp", 2;
+							mes "[Aquaros]";
+							mes "Welcome to the ^0000FFFish Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Aquaros]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Aquaros]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Aquaros]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Aquaros]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Aquaros]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Aquaros]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_FISHCLAN;
+						callfunc "TransformToPlayer";
+						mes "[Aquaros]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_FISHCLAN, INFINITE_TICK, 0, FISHCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 105);
+	setunittitle( getnpcid(0), "Aquaros" );	
+	end;
+}
+
+1@xm_d,130,219,4	script	[ Clan Master ]#7	4_JITTERBUG,{
+	//cutin "sham01.bmp", 2;
+	mes "[Belzhar]";
+	mes "Hi, there! I'm Belzhar, master of the ^0000FFFormless Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Formless Clan:Cancel." ) ){
+				case 1:
+					mes "[Belzhar]";
+					mes "The ^0000FFClans^000000 are factions sanctioned by the Kingdom, each with unique traditions and strengths.";
+					mes "Unlike guilds that wage war in the Siege, Clans are free to join or leave as one pleases.";
+					next;
+					mes "[Belzhar]";
+					mes "If no other clan calls to your spirit, consider the path of the Formless Clan.";
+					mes "New members receive a ^0000FFpowerful stat bonus^000000 to help forge their legend.";
+					next;
+					mes "[Belzhar]";
+					mes "The ^0000FFFormless Clan^000000 is forged in fire and tempered in battle.";
+					mes "Founded by ancient Formlesss, our lineage is one of strength, resilience, and unwavering fury.";
+					next;
+					mes "[Belzhar]";
+					mes "Though our clan is known for its unmatched melee prowess, we welcome warriors of all disciplines.";
+					mes "Any who seek to embrace their primal might will find a home among us.";
+					next;
+					mes "[Belzhar]";
+					mes "Our stronghold, a fortress of obsidian and flame-lit halls, stands as a testament to our legacy.";
+					mes "Here, under the guidance of Formless Lords, we train, sharpen our skills, and forge bonds as strong as Formless scales.";
+					next;
+					mes "[Belzhar]";
+					mes "In battle, Formless Clan warriors are an unstoppable force. Our fury is unmatched, our strikes relentless.";
+					mes "With Formlessic heritage coursing through our veins, we dominate the battlefield with sheer might.";
+					next;
+					mes "[Belzhar]";
+					mes "Strength, honor, and competition drive us forward.";
+					mes "Within our ranks, duels and trials of combat are common—tests that refine our power and prove our supremacy.";
+					next;
+					mes "[Belzhar]";
+					mes "Join us, embrace your inner Formless, and rise to greatness.";
+					mes "Power lies dormant in us all—it is time to awaken yours.";
+					next;
+					mes "[Belzhar]";
+					mes "And who knows? You may just find a kindred spirit, or even a soul mate, within our ranks! Hahaha!";
+					close;
+				case 2:
+					mes "[Belzhar]";
+					mes "The ^0000FFFormless Clan^000000 mainly supports Support & Tank adventurers.";
+					next;
+					mes "[Belzhar]";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Formless>^000000.";
+					mes "^0000FF<Resistance to all elements + 10%>^000000!";
+					mes "^0000FF<VIT + 10>^000000!";
+					mes "^0000FF<DEF & MDEF + 10%>^000000!";
+					mes "^0000FF<Max HP + 10%>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Belzhar]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Belzhar]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Belzhar]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Belzhar]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Formless>^000000.";
+			mes "^0000FF<Resistance to all elements + 10%>^000000!";
+			mes "^0000FF<VIT + 10>^000000!";
+			mes "^0000FF<DEF & MDEF + 10%>^000000!";
+			mes "^0000FF<Max HP + 10%>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Belzhar]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Belzhar]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Belzhar]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Belzhar]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Belzhar]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(FORMLESSCLAN)) {
+							sc_start2 SC_FORMLESSCLAN, INFINITE_TICK, 0, FORMLESSCLAN;
+							callfunc "TransformToRaceFantasy", 2;
+							cutin "sham02.bmp", 2;
+							mes "[Belzhar]";
+							mes "Welcome to the ^0000FFFormless Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Belzhar]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Belzhar]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Belzhar]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Belzhar]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Belzhar]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Belzhar]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_FORMLESSCLAN;
+						callfunc "TransformToPlayer";
+						mes "[Belzhar]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_FORMLESSCLAN, INFINITE_TICK, 0, FORMLESSCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 106);
+	setunittitle( getnpcid(0), "Belzhar" );	
+	end;
+}
+
+splendide,175,164,4	script	[ Clan Master ]#8	MAYA_PUPLE,{
+	//cutin "sham01.bmp", 2;
+	mes "[Venothrax]";
+	mes "Hi, there! I'm Venothrax, master of the ^0000FFInsect Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Insect Clan:Cancel." ) ){
+				case 1:
+					mes "[Venothrax]";
+					mes "The ^0000FFClans^000000 are factions sanctioned by the Kingdom, each with unique traditions and strengths.";
+					mes "Unlike guilds that wage war in the Siege, Clans are free to join or leave as one pleases.";
+					next;
+					mes "[Venothrax]";
+					mes "If no other clan calls to your spirit, consider the path of the ^0000FFInsect Clan^000000.";
+					mes "New members receive a ^0000FFunique stat bonus^000000, enhancing their natural instincts.";
+					next;
+					mes "[Venothrax]";
+					mes "The ^0000FFInsect Clan^000000 thrives on unity, resilience, and adaptability.";
+					mes "Founded by the great swarms of old, our lineage carries the wisdom of the hive and the strength of countless generations.";
+					next;
+					mes "[Venothrax]";
+					mes "We may be small alone, but together, we are an unstoppable force.";
+					mes "With unyielding endurance and an exoskeleton tougher than steel, we overwhelm our foes.";
+					next;
+					mes "[Venothrax]";
+					mes "Our stronghold is a labyrinth of tunnels and chambers, carved deep within the earth.";
+					mes "Here, under the guidance of the Swarm Lords, we train our minds and bodies, sharpening our instincts.";
+					next;
+					mes "[Venothrax]";
+					mes "In battle, we move as one. Like a swarm of locusts, we descend upon our enemies, overwhelming them with sheer numbers and speed.";
+					mes "With our hardened carapaces, we shrug off attacks, while our relentless assault never ceases.";
+					next;
+					mes "[Venothrax]";
+					mes "Speed, defense, and precision define our way of life.";
+					mes "Within our ranks, we test our skills in duels, honing our reflexes and proving our worth.";
+					next;
+					mes "[Venothrax]";
+					mes "Join us and embrace the might of the swarm.";
+					mes "Become faster, stronger, and more resilient—just as nature intended.";
+					next;
+					mes "[Venothrax]";
+					mes "And who knows? In the heart of the hive, you may find allies, family, or even a soul mate! Hahaha!";
+					close;
+				case 2:
+					mes "[Venothrax]";
+					mes "The ^0000FFInsect Clan^000000 mainly supports Support & Tank adventurers.";
+					next;
+					mes "[Venothrax]";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Insect>^000000.";
+					mes "^0000FF<Intravision>^000000!";
+					mes "^0000FF<Bypass gemstone requirements from skills>^000000!";
+					mes "^0000FF<DEF & MDEF + 10%>^000000!";
+					mes "^0000FF<Resistance to Plant Type Enemies - 20%>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Venothrax]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Venothrax]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Venothrax]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Venothrax]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Insect>^000000.";
+			mes "^0000FF<Intravision>^000000!";
+			mes "^0000FF<Bypass gemstone requirements from skills>^000000!";
+			mes "^0000FF<DEF & MDEF + 10%>^000000!";
+			mes "^0000FF<Resistance to Plant Type Enemies - 20%>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Venothrax]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Venothrax]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Venothrax]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Venothrax]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Venothrax]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(INSECTCLAN)) {
+							sc_start2 SC_INSECTCLAN, INFINITE_TICK, 0, INSECTCLAN;
+							callfunc "TransformToRaceFantasy", 15;
+							cutin "sham02.bmp", 2;
+							mes "[Venothrax]";
+							mes "Welcome to the ^0000FFInsect Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Venothrax]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Venothrax]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Venothrax]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Venothrax]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Venothrax]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Venothrax]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_INSECTCLAN;
+						callfunc "TransformToPlayer";
+						mes "[Venothrax]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_INSECTCLAN, INFINITE_TICK, 0, INSECTCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 107);
+	setunittitle( getnpcid(0), "Venothrax" );	
+	end;
+}
+
+mora,22,158,4	script	[ Clan Master ]#9	4_M_CACTUSCHIEF,{
+	//cutin "sham01.bmp", 2;
+	mes "[Thornroot]";
+	mes "Hi, there! I'm Thornroot, master of the ^0000FFPlant Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Plant Clan:Cancel." ) ){
+				case 1:
+					mes "[Thornroot]";
+					mes "The ^0000FFClans^000000 are factions sanctioned by the Kingdom, each with unique traditions and strengths.";
+					mes "Unlike guilds that wage war in the Siege, Clans are free to join or leave as one pleases.";
+					next;
+					mes "[Thornroot]";
+					mes "If no other clan calls to your spirit, consider the path of the ^0000FFPlant Clan^000000.";
+					mes "New members receive a ^0000FFunique stat bonus^000000, enhancing their natural instincts.";
+					next;
+					mes "[Thornroot]";
+					mes "The ^0000FFPlant Clan^000000 thrives on unity, resilience, and adaptability.";
+					mes "Founded by the great swarms of old, our lineage carries the wisdom of the hive and the strength of countless generations.";
+					next;
+					mes "[Thornroot]";
+					mes "We may be small alone, but together, we are an unstoppable force.";
+					mes "With unyielding endurance and an exoskeleton tougher than steel, we overwhelm our foes.";
+					next;
+					mes "[Thornroot]";
+					mes "Our stronghold is a labyrinth of tunnels and chambers, carved deep within the earth.";
+					mes "Here, under the guidance of the Swarm Lords, we train our minds and bodies, sharpening our instincts.";
+					next;
+					mes "[Thornroot]";
+					mes "In battle, we move as one. Like a swarm of locusts, we descend upon our enemies, overwhelming them with sheer numbers and speed.";
+					mes "With our hardened carapaces, we shrug off attacks, while our relentless assault never ceases.";
+					next;
+					mes "[Thornroot]";
+					mes "Speed, defense, and precision define our way of life.";
+					mes "Within our ranks, we test our skills in duels, honing our reflexes and proving our worth.";
+					next;
+					mes "[Thornroot]";
+					mes "Join us and embrace the might of the swarm.";
+					mes "Become faster, stronger, and more resilient—just as nature intended.";
+					next;
+					mes "[Thornroot]";
+					mes "And who knows? In the heart of the hive, you may find allies, family, or even a soul mate! Hahaha!";
+					close;
+				case 2:
+					mes "[Thornroot]";
+					mes "The ^0000FFPlant Clan^000000 mainly supports Support & Tank adventurers.";
+					next;
+					mes "[Thornroot]";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Plant>^000000.";
+					mes "^0000FF<Reflects 10% of physical attacks received>^000000!";
+					mes "^0000FF<Deals 100% more damage with Poison Attacks>^000000!";
+					mes "^0000FF<Deals 20% more damage on Insect Type Enemies>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Thornroot]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Thornroot]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Thornroot]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Thornroot]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Plant>^000000.";
+			mes "^0000FF<Reflects 10% of physical attacks received>^000000!";
+			mes "^0000FF<Deals 100% more damage with Poison Attacks>^000000!";
+			mes "^0000FF<Deals 20% more damage on Insect Type Enemies>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Thornroot]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Thornroot]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Thornroot]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Thornroot]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Thornroot]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(PLANTCLAN)) {
+							sc_start2 SC_PLANTCLAN, INFINITE_TICK, 0, PLANTCLAN;
+							callfunc "TransformToRaceFantasy", 10;
+							cutin "sham02.bmp", 2;
+							mes "[Thornroot]";
+							mes "Welcome to the ^0000FFPlant Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Thornroot]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Thornroot]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Thornroot]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Thornroot]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Thornroot]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Thornroot]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_PLANTCLAN;
+						callfunc "TransformToPlayer";
+						mes "[Thornroot]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_PLANTCLAN, INFINITE_TICK, 0, PLANTCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 108);
+	setunittitle( getnpcid(0), "Thornroot" );	
+	end;
+}
+
+gl_chyard_,148,149,4	script	[ Clan Master ]#10	4_M_DEATH2,{
+	//cutin "sham01.bmp", 2;
+	mes "[Mordath]";
+	mes "Hi, there! I'm Mordath, master of the ^0000FFUndead Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Undead Clan:Cancel." ) ){
+				case 1:
+					mes "[Mordath]";
+					mes "The ^0000FFClans^000000 are factions sanctioned by the Kingdom, each with unique traditions and strengths.";
+					mes "Unlike guilds that wage war in the Siege, Clans are free to join or leave as one pleases.";
+					next;
+					mes "[Mordath]";
+					mes "If no other clan calls to your spirit, consider the path of the ^0000FFUndead Clan^000000.";
+					mes "New members receive a ^0000FFunique stat bonus^000000, enhancing their natural instincts.";
+					next;
+					mes "[Mordath]";
+					mes "The ^0000FFUndead Clan^000000 thrives on unity, resilience, and adaptability.";
+					mes "Founded by the great swarms of old, our lineage carries the wisdom of the hive and the strength of countless generations.";
+					next;
+					mes "[Mordath]";
+					mes "We may be small alone, but together, we are an unstoppable force.";
+					mes "With unyielding endurance and an exoskeleton tougher than steel, we overwhelm our foes.";
+					next;
+					mes "[Mordath]";
+					mes "Our stronghold is a labyrinth of tunnels and chambers, carved deep within the earth.";
+					mes "Here, under the guidance of the Swarm Lords, we train our minds and bodies, sharpening our instincts.";
+					next;
+					mes "[Mordath]";
+					mes "In battle, we move as one. Like a swarm of locusts, we descend upon our enemies, overwhelming them with sheer numbers and speed.";
+					mes "With our hardened carapaces, we shrug off attacks, while our relentless assault never ceases.";
+					next;
+					mes "[Mordath]";
+					mes "Speed, defense, and precision define our way of life.";
+					mes "Within our ranks, we test our skills in duels, honing our reflexes and proving our worth.";
+					next;
+					mes "[Mordath]";
+					mes "Join us and embrace the might of the swarm.";
+					mes "Become faster, stronger, and more resilient—just as nature intended.";
+					next;
+					mes "[Mordath]";
+					mes "And who knows? In the heart of the hive, you may find allies, family, or even a soul mate! Hahaha!";
+					close;
+				case 2:
+					mes "[Mordath]";
+					mes "The ^0000FFUndead Clan^000000 mainly supports Support & Tank adventurers.";
+					next;
+					mes "[Mordath]";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Undead>^000000.";
+					mes "^0000FF<Immune to Effects>^000000!";
+					mes "^0000FF<Physical and Long-ranged attacks heals 1% of damage dealt>^000000!";
+					mes "^0000FF<Resistance to Holy Elemental Attacks -20%>^000000!";
+					mes "^0000FF<Resistance to Angel Type Enemies -20%>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Mordath]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Mordath]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Mordath]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Mordath]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Undead>^000000.";
+			mes "^0000FF<Immune to Effects>^000000!";
+			mes "^0000FF<Physical and Long-ranged attacks heals 1% of damage dealt>^000000!";
+			mes "^0000FF<Resistance to Holy Elemental Attacks -20%>^000000!";
+			mes "^0000FF<Resistance to Angel Type Enemies -20%>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Mordath]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Mordath]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Mordath]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Mordath]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Mordath]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(UNDEADCLAN)) {
+							sc_start2 SC_UNDEADCLAN, INFINITE_TICK, 0, UNDEADCLAN;
+							callfunc "TransformToRaceFantasy", 19;
+							cutin "sham02.bmp", 2;
+							mes "[Mordath]";
+							mes "Welcome to the ^0000FFUndead Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Mordath]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Mordath]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Mordath]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Mordath]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Mordath]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Mordath]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_UNDEADCLAN;
+						callfunc "TransformToPlayer";
+						mes "[Mordath]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_UNDEADCLAN, INFINITE_TICK, 0, UNDEADCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 109);
+	setunittitle( getnpcid(0), "Mordath" );	
+	end;
+}

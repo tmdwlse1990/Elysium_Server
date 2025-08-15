@@ -45,6 +45,26 @@ Body:
     Value: 4
   - Name: JUMPINGCLAN
     Value: 5
+  - Name: ANGELCLAN
+    Value: 6
+  - Name: BRUTECLAN
+    Value: 7
+  - Name: DEMIHUMANCLAN
+    Value: 8
+  - Name: DEMONCLAN
+    Value: 9
+  - Name: DRAGONCLAN
+    Value: 10
+  - Name: FISHCLAN
+    Value: 11
+  - Name: FORMLESSCLAN
+    Value: 12
+  - Name: INSECTCLAN
+    Value: 13
+  - Name: PLANTCLAN
+    Value: 14
+  - Name: UNDEADCLAN
+    Value: 15
   - Name: REPUTATION_EP18
     Value: 3
 

@@ -1,0 +1,233 @@
+//===== *Athena Script =======================================
+//= Disguise Race Script
+//===== By: ==================================================
+//= KamiShi
+//===== Current Version: =====================================
+//= 2
+//===== Compatible With: =====================================
+//= *Athena SVN
+//===== Description: =========================================
+//= Fantasy script
+//============================================================
+//Variable race_id :
+//------------------------------------------------------------
+//0 = Human
+//1 = Dark Elf
+//2 = Formless
+//3 = Fish
+//4 = Orc
+//5 = Vampire
+//6 = Brute
+//7 = Dragon
+//8 = Demon
+//9 = Angel
+//10 = Plant
+//11 = Wind Element
+//12 = Water Element
+//13 = Fire Element
+//14 = Electric Element
+//15 = Insect
+//16 = Ghost Element
+//17 = Poison Element
+//18 = Holy Element
+//19 = Undead
+//============================================================
+// ITEM EQUIP SCRIPT :
+//------------------------------------------------------------
+// callfunc "TransformToRaceFantasy", <race_id>;
+//============================================================
+// ITEM UNEQUIP SCRIPT :
+//------------------------------------------------------------
+// callfunc "TransformToPlayer";
+//============================================================
+
+prontera,172,182,4	script	[ Race Stylist ]	4_F_FAIRY,{
+	mes("[ ^008B00Fantasy^000000 ]");
+
+	if(race_id)
+	{
+		if (race_id < 1){
+			mes "What are you? You creep me out!";
+			close;
+		}
+
+		mes("Hi, "+ strcharinfo(0) +" of ^008B00"+$RaceNamesFantasy$[race_id]+"^000000!");
+		next;
+		mes("[^008B00Fantasy^000000]");
+		mes("What would you like to do ?");
+		next;
+		switch(select("I want to change my colors.:Close"))
+		{
+			case 1:
+				callfunc "RaceDyeFantasy",$RacePalsFantasy[race_id*4],$RacePalsFantasy[race_id*4+1],$RacePalsFantasy[race_id*4+2],$RacePalsFantasy[race_id*4+3];
+				close;
+
+			case 2:
+				close;
+		}
+	} else { mes("Get away from me you digusting creature!"); close;}
+OnInit:
+	setunitdata( getnpcid(0), UNPC_GROUP_ID,21 );
+	setunittitle( getnpcid(0), "Oberon" );
+	end;	
+}
+
+function	script	TransformToRaceFantasy	{		
+	set race_id, getarg(0);	// Race ID 
+	setlook(6, $RacePalsFantasy[race_id*4+2]);	// Number of the first race hair dye
+	setlook(7, $RacePalsFantasy[race_id*4]);	// Number of the first race clothes dye
+	specialeffect2 248;	// Some fancy effect
+	return;
+	
+}
+
+function	script	TransformToPlayer	{		
+	set race_id, 0;	// Race ID 
+	setlook(6, 0);	
+	setlook(7, 0);
+	specialeffect2 248;	// Some fancy effect
+	return;
+}
+
+
+function	script	RaceDyeFantasy	{	
+
+	set .@offsetFantasyC, $RacePalsFantasy[race_id*4];
+	set .@offsetFantasyH, $RacePalsFantasy[race_id*4+2];
+
+	mes("[^FF8000Fantasy^000000]");
+	mes("You are currently wearing:");
+	mes("^000000Cloth color: ^0000FF"+(getlook(7)-.@offsetFantasyC));
+	mes("^000000Hair color: ^0000FF"+(getlook(6)-.@offsetFantasyH));
+	next;
+	mes("[^FF8000Fantasy^000000]");
+	mes("What would you like to change?");
+	next;
+	switch(select("Clothes color:Hair color"))
+	{
+		case 1:
+			mes("[^FF8000Fantasy^000000]");
+			
+			mes("Choose a clothes color from ^0000FF"+(getarg(2)-.@offsetFantasyC)+" to "+(getarg(3)-1-.@offsetFantasyC)+"^000000.");
+
+			chose1:
+			input (.@style, getarg(2)-.@offsetFantasyC, getarg(3)-.@offsetFantasyC);
+			if((.@style+.@offsetFantasyC) < getarg(2) || (.@style+.@offsetFantasyC) >= getarg(3))
+			{
+				mes "The color chosen is out of range.";
+				goto chose1;
+			}
+			
+			browse1:
+			setlook(7, .@style+.@offsetFantasyC);
+			dispbottom "This is the color number "+(.@style)+".";
+			switch(select("Next:Previous:I Like It!")){
+				
+				case 1:
+					set .@style, .@style+1;
+					if (.@style >= (getarg(3)-.@offsetFantasyC)) set .@style, (getarg(2)-.@offsetFantasyC);
+					goto browse1;
+					
+				case 2:
+					set .@style, .@style-1;
+					if (.@style <= (getarg(2)-.@offsetFantasyC)) set .@style, (getarg(3)-1-.@offsetFantasyC);
+					goto browse1;
+				
+				case 3:
+					next;
+					mes "[^FF8000Fantasy^000000]";
+					mes "Perfect ! I am glad you found a color that fits you!";
+					close;
+					
+			}
+			
+			close;
+
+		case 2:
+			mes("[^FF8000Fantasy^000000]");
+			mes("Choose a hair color from ^0000FF"+(getarg(0)-.@offsetFantasyH)+" to "+(getarg(1)-1-.@offsetFantasyH)+"^000000.");
+			chose2:
+			input (.@style, (getarg(0)-.@offsetFantasyH), (getarg(1)-.@offsetFantasyH));
+			if((.@style+.@offsetFantasyH) < getarg(0) || (.@style+.@offsetFantasyH) >= getarg(1))
+			{
+				mes("The chosen color is out of range.");
+				goto chose2;
+			}
+			
+			browse2:
+			setlook(6,.@style+.@offsetFantasyH);
+			dispbottom "This is the color number "+(.@style)+".";
+			
+			switch(select("Next:Previous:I Like It!")){
+				
+				case 1:
+					set .@style, .@style+1;
+					if (.@style >= (getarg(1)-.@offsetFantasyH)) set .@style, (getarg(0)-.@offsetFantasyH);
+					goto browse2;
+					
+				case 2:
+					set .@style, .@style-1;
+					if (.@style <= (getarg(0)-.@offsetFantasyH)) set .@style, (getarg(1)-1-.@offsetFantasyH);
+					goto browse2;
+				
+				case 3:
+					next;
+					mes "[^FF8000Fantasy^000000]";
+					mes "Perfect ! I am glad you found a color that fits you!";
+					close;
+			
+			}
+			
+			close;
+	}
+}
+
+-	script	PalOffsetsFantasy	-1,{
+OnInit:
+	set .@offsetFantasyC, 0;
+	set .@offsetFantasyH, 0;
+	
+	setarray $RacePalsFantasy[1*4], 700+.@offsetFantasyC,732+.@offsetFantasyC,700+.@offsetFantasyH,732+.@offsetFantasyH;	// Dark Elf
+	setarray $RacePalsFantasy[2*4], 732+.@offsetFantasyC,764+.@offsetFantasyC,732+.@offsetFantasyH,764+.@offsetFantasyH;	// Formless
+	setarray $RacePalsFantasy[3*4], 764+.@offsetFantasyC,796+.@offsetFantasyC,764+.@offsetFantasyH,796+.@offsetFantasyH;	// Fish
+	setarray $RacePalsFantasy[4*4], 796+.@offsetFantasyC,828+.@offsetFantasyC,796+.@offsetFantasyH,828+.@offsetFantasyH;	// Orc
+	setarray $RacePalsFantasy[5*4], 828+.@offsetFantasyC,860+.@offsetFantasyC,828+.@offsetFantasyH,860+.@offsetFantasyH;	// Vampire
+	setarray $RacePalsFantasy[6*4], 860+.@offsetFantasyC,892+.@offsetFantasyC,860+.@offsetFantasyH,892+.@offsetFantasyH;	// Beast
+	setarray $RacePalsFantasy[7*4], 892+.@offsetFantasyC,924+.@offsetFantasyC,892+.@offsetFantasyH,924+.@offsetFantasyH;	// Demon
+	setarray $RacePalsFantasy[8*4], 924+.@offsetFantasyC,956+.@offsetFantasyC,924+.@offsetFantasyH,956+.@offsetFantasyH;	// Dragon
+	setarray $RacePalsFantasy[9*4], 1276+.@offsetFantasyC,1308+.@offsetFantasyC,1276+.@offsetFantasyH,1308+.@offsetFantasyH;	// Angel
+	setarray $RacePalsFantasy[10*4], 1020+.@offsetFantasyC,1052+.@offsetFantasyC,1020+.@offsetFantasyH,1052+.@offsetFantasyH;	// Plant
+	setarray $RacePalsFantasy[11*4], 1052+.@offsetFantasyC,1084+.@offsetFantasyC,1052+.@offsetFantasyH,1084+.@offsetFantasyH;	// Wind
+	setarray $RacePalsFantasy[12*4], 1084+.@offsetFantasyC,1116+.@offsetFantasyC,1084+.@offsetFantasyH,1116+.@offsetFantasyH;	// Water
+	setarray $RacePalsFantasy[13*4], 1116+.@offsetFantasyC,1148+.@offsetFantasyC,1116+.@offsetFantasyH,1148+.@offsetFantasyH;	// Fire
+	setarray $RacePalsFantasy[14*4], 1148+.@offsetFantasyC,1180+.@offsetFantasyC,1148+.@offsetFantasyH,1180+.@offsetFantasyH;	// Electric
+	setarray $RacePalsFantasy[15*4], 1180+.@offsetFantasyC,1212+.@offsetFantasyC,1180+.@offsetFantasyH,1212+.@offsetFantasyH;	// Insect
+	setarray $RacePalsFantasy[16*4], 1212+.@offsetFantasyC,1244+.@offsetFantasyC,1212+.@offsetFantasyH,1244+.@offsetFantasyH;	// Ghost
+	setarray $RacePalsFantasy[17*4], 1244+.@offsetFantasyC,1276+.@offsetFantasyC,1244+.@offsetFantasyH,1276+.@offsetFantasyH;	// Poison
+	setarray $RacePalsFantasy[18*4], 1276+.@offsetFantasyC,1308+.@offsetFantasyC,1276+.@offsetFantasyH,1308+.@offsetFantasyH;	// Holy
+	setarray $RacePalsFantasy[19*4], 1308+.@offsetFantasyC,1340+.@offsetFantasyC,1308+.@offsetFantasyH,1340+.@offsetFantasyH;	// Undead
+	
+	/* Define Races Names */
+	setarray $RaceNamesFantasy$[0], "Player"
+									, "Demi-Human Clan"
+									, "Formless Clan"
+									, "Fish Clan"
+									, "Orc Clan"
+									, "Vampire Clan"
+									, "Brute Clan"
+									, "Demon Clan"
+									, "Dragon Clan"
+									, "Angel Clan"
+									, "Plant Clan"
+									, "Wind Element Clan"
+									, "Fire Element Clan"
+									, "Water Element Clan"
+									, "Electric Element Clan"
+									, "Insect Clan"
+									, "Ghost Element Clan"
+									, "Poison Element Clan"
+									, "Holy Element Clan"
+									, "Undead Clan";
+	end;
+
+}
