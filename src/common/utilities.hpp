@@ -342,7 +342,23 @@ namespace rathena {
 		* @param number: Number to format  
 		* @return Formatted string with commas  
 		*/  
-		std::string insert_comma(int32 number);		
+		std::string insert_comma(int32 number);
+
+		template <typename InstanceClass, typename InterfaceClass = InstanceClass> class Singleton {
+		protected:
+			Singleton() = default;
+			~Singleton() = default;
+
+		public:
+			static std::shared_ptr<InterfaceClass> getInstance() {
+				static std::shared_ptr<InterfaceClass> instance = std::make_shared<InstanceClass>();
+
+				return instance;
+			}
+
+			Singleton(const Singleton &) = delete;
+			Singleton& operator=(const Singleton &) = delete;
+		};		
 	}
 }
 
