@@ -3497,6 +3497,7 @@ void unit_dataset(struct block_list *bl)
 	ud->dmg_tick = 0;
 	ud->sx = 8;
 	ud->sy = 8;
+	ud->hatEffects = {};
 }
 
 /**
@@ -4039,10 +4040,6 @@ int32 unit_free(struct block_list *bl, clr_type clrtype)
 
 			sd->qi_display.clear();
 
-#if PACKETVER_MAIN_NUM >= 20150507 || PACKETVER_RE_NUM >= 20150429 || defined(PACKETVER_ZERO)
-			sd->hatEffects.clear();
-#endif
-
 			if (sd->achievement_data.achievements)
 				achievement_free(sd);
 
@@ -4223,6 +4220,10 @@ int32 unit_free(struct block_list *bl, clr_type clrtype)
 			status_change_clear(bl,1);
 			break;
 		}
+	}
+
+	if( ud != nullptr ){
+		ud->hatEffects.clear();
 	}
 
 	map_deliddb(bl);
