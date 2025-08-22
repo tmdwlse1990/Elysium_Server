@@ -24776,7 +24776,7 @@ BUILDIN_FUNC(hateffect){
 	}
 
 	if( enable ){
-		if( !util::vector_exists( ud->hatEffects, effectID ) ){
+		if( util::vector_exists( ud->hatEffects, effectID ) ){
 			return SCRIPT_CMD_SUCCESS;
 		}
 
