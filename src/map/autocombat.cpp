@@ -2174,7 +2174,7 @@ bool ac_changestate_autocombat(map_session_data* sd, int flag) {
 
 				auto it = util::vector_get(ud->hatEffects, effectID);
 
-				if (it != ud->hatEffects.end()){
+				if (it == ud->hatEffects.end()){
 					ud->hatEffects.push_back(effectID);
 					if (!sd->state.connect_new)
 						clif_hat_effect_single(*sd, effectID, true);
