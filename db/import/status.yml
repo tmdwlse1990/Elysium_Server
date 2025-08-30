@@ -185,3 +185,39 @@ Body:
       Clan_Info: true
     Script: |
       bonus bRace,RC_Undead;
+  - Status: Instance_Resist_Penalty  
+    Icon: EFST_INSTANCE_RESIST_PENALTY
+    Flags:  
+      NoDispell: true  
+      NoClearance: true
+      NoBanishingBuster: true
+      OverlapIgnoreLevel: true
+    Script: |  
+      bonus2 bSubEle,Ele_Neutral, getstatus(SC_INSTANCE_RESIST_PENALTY, 1);  
+      bonus2 bSubEle,Ele_Water, getstatus(SC_INSTANCE_RESIST_PENALTY, 1);  
+      bonus2 bSubEle,Ele_Earth, getstatus(SC_INSTANCE_RESIST_PENALTY, 1);  
+      bonus2 bSubEle,Ele_Fire, getstatus(SC_INSTANCE_RESIST_PENALTY, 1);  
+      bonus2 bSubEle,Ele_Wind, getstatus(SC_INSTANCE_RESIST_PENALTY, 1);  
+      bonus2 bSubEle,Ele_Poison, getstatus(SC_INSTANCE_RESIST_PENALTY, 1);  
+      bonus2 bSubEle,Ele_Holy, getstatus(SC_INSTANCE_RESIST_PENALTY, 1);  
+      bonus2 bSubEle,Ele_Dark, getstatus(SC_INSTANCE_RESIST_PENALTY, 1);  
+      bonus2 bSubEle,Ele_Ghost, getstatus(SC_INSTANCE_RESIST_PENALTY, 1);  
+      bonus2 bSubEle,Ele_Undead, getstatus(SC_INSTANCE_RESIST_PENALTY, 1);
+  - Status: Instance_Exp_Bonus  
+    Icon: EFST_INSTANCE_EXP_BONUS  
+    Flags:  
+      NoDispell: true  
+      NoClearance: true
+      NoBanishingBuster: true
+      OverlapIgnoreLevel: true        
+    Script: |  
+      bonus2 bExpAddRace,RC_All, getstatus(SC_INSTANCE_EXP_BONUS, 1);    
+  - Status: Instance_Drop_Bonus    
+    Icon: EFST_INSTANCE_DROP_BONUS  
+    Flags:  
+      NoDispell: true  
+      NoClearance: true
+      NoBanishingBuster: true
+      OverlapIgnoreLevel: true      
+    Script: |  
+      bonus2 bDropAddRace,RC_All, getstatus(SC_INSTANCE_DROP_BONUS, 1);

@@ -1,0 +1,538 @@
+//===== rAthena Script ======================================= 
+//= Instance Settings
+//===== By: ================================================== 
+//= Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 1.1
+//===== Compatible With: ===================================== 
+//= rAthena Project
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Endless Tower Memorial Dungeon.
+//= Consists of 101 floors.
+//===== Additional Comments: ================================= 
+//= 1.0 First version.
+//= 1.1 Added Difficulty (Normal, Veteran, Nightmare, 
+//=		Hell & Torment). [Louis T Steinhil]
+//= 1.2 Added Resistance Penalty to every difficulty
+//============================================================
+// Difficulty Function
+//============================================================
+
+function	script	F_Instance_AreaMonster_Summon	{    
+	.@map$ = getarg(0, "");
+	.@x1 = getarg(1, 0);
+	.@y1 = getarg(2, 0);
+	.@x2 = getarg(3, 0);
+	.@y2 = getarg(4, 0);
+	.@mob_name$ = getarg(5, "");
+	.@mob_id = getarg(6, 0);
+	.@amount = getarg(7, 0);
+	.@label$ = getarg(8, "");
+
+	.@level_mode = $INSTANCE_LEVELMODE[instance_id(IM_PARTY)];
+	
+	switch(.@level_mode){  
+		case 1://Normal  
+			.@bonus_hp_rate = $@normal_mode_variables[0];  
+			.@bonus_dmg_rate = $@normal_mode_variables[1];  
+			.@bonus_damagetaken = $@normal_mode_variables[2];  
+			.@bonus_def = $@normal_mode_variables[3];  
+			.@bonus_mdef = $@normal_mode_variables[4];  
+			.@bonus_hit = $@normal_mode_variables[5];			  
+			.@bonus_flee = $@normal_mode_variables[6];  
+			break;  
+		case 2://Veteran  
+			.@bonus_hp_rate = $@veteran_mode_variables[0];  
+			.@bonus_dmg_rate = $@veteran_mode_variables[1];  
+			.@bonus_damagetaken = $@veteran_mode_variables[2];  
+			.@bonus_def = $@veteran_mode_variables[3];  
+			.@bonus_mdef = $@veteran_mode_variables[4];  
+			.@bonus_hit = $@veteran_mode_variables[5];			  
+			.@bonus_flee = $@veteran_mode_variables[6];		  
+			break;  
+		case 3://Nightmare  
+			.@bonus_hp_rate = $@nightmare_mode_variables[0];  
+			.@bonus_dmg_rate = $@nightmare_mode_variables[1];  
+			.@bonus_damagetaken = $@nightmare_mode_variables[2];  
+			.@bonus_def = $@nightmare_mode_variables[3];  
+			.@bonus_mdef = $@nightmare_mode_variables[4];  
+			.@bonus_hit = $@nightmare_mode_variables[5];			  
+			.@bonus_flee = $@nightmare_mode_variables[6];					  
+			break;  
+		case 4://Hell  
+			.@bonus_hp_rate = $@hell_mode_variables[0];  
+			.@bonus_dmg_rate = $@hell_mode_variables[1];  
+			.@bonus_damagetaken = $@hell_mode_variables[2];  
+			.@bonus_def = $@hell_mode_variables[3];  
+			.@bonus_mdef = $@hell_mode_variables[4];  
+			.@bonus_hit = $@hell_mode_variables[5];			  
+			.@bonus_flee = $@hell_mode_variables[6];			  
+			break;  
+		case 5://Torment  
+			.@bonus_hp_rate = $@torment_mode_variables[0];  
+			.@bonus_dmg_rate = $@torment_mode_variables[1];  
+			.@bonus_damagetaken = $@torment_mode_variables[2];  
+			.@bonus_def = $@torment_mode_variables[3];  
+			.@bonus_mdef = $@torment_mode_variables[4];  
+			.@bonus_hit = $@torment_mode_variables[5];			  
+			.@bonus_flee = $@torment_mode_variables[6];				  
+			break;  
+	}
+
+	deletearray $@mobid,getarraysize($@mobid);
+	areamonster .@map$, .@x1, .@y1, .@x2, .@y2, .@mob_name$, .@mob_id, .@amount, .@label$;
+	copyarray .@GID, $@mobid, getarraysize($@mobid);
+
+	freeloop(1);
+	for (.@i = 0; .@i < getarraysize(.@GID); .@i++) {
+		getunitdata(.@GID[.@i], .@ST);
+		if(.@bonus_hp_rate){
+			.@HP = .@ST[UMOB_MAXHP] + ((.@ST[UMOB_MAXHP] * .@bonus_hp_rate ) /100);			
+				setunitdata(.@GID[.@i], UMOB_MAXHP, .@HP);
+				setunitdata(.@GID[.@i], UMOB_HP, .@HP);
+		}
+		if(.@bonus_dmg_rate){
+			.@ATKMIN = .@ST[UMOB_ATKMIN] + ((.@ST[UMOB_ATKMIN] * .@bonus_dmg_rate) /100);
+			.@ATKMAX = .@ST[UMOB_ATKMAX] + ((.@ST[UMOB_ATKMAX] * .@bonus_dmg_rate) /100);
+			.@MATKMIN = .@ST[UMOB_MATKMIN] + ((.@ST[UMOB_MATKMIN] * .@bonus_dmg_rate) /100);
+			.@MATKMAX = .@ST[UMOB_MATKMAX] + ((.@ST[UMOB_MATKMAX] * .@bonus_dmg_rate) /100);
+				setunitdata(.@GID[.@i], UMOB_ATKMIN, .@ATKMIN);
+				setunitdata(.@GID[.@i], UMOB_ATKMAX, .@ATKMAX);
+				setunitdata(.@GID[.@i], UMOB_MATKMIN, .@MATKMIN);
+				setunitdata(.@GID[.@i], UMOB_MATKMAX, .@MATKMAX);
+		}
+		if(.@bonus_damagetaken){  
+			.@DAMAGETAKEN = .@ST[UMOB_DAMAGETAKEN] + ((.@ST[UMOB_DAMAGETAKEN] * .@bonus_damagetaken) /100);  
+			if(.@DAMAGETAKEN < 0) .@DAMAGETAKEN = 0;
+			setunitdata(.@GID[.@i], UMOB_DAMAGETAKEN, .@DAMAGETAKEN);  
+		}
+		if(.@bonus_def){
+			.@DEF = .@ST[UMOB_DEF] + ((.@ST[UMOB_DEF] * .@bonus_def) /100);	
+				setunitdata(.@GID[.@i], UMOB_DEF, .@DEF);
+		}	
+		if(.@bonus_mdef){
+			.@MDEF = .@ST[UMOB_MDEF] + ((.@ST[UMOB_MDEF] * .@bonus_mdef) /100);	
+				setunitdata(.@GID[.@i], UMOB_MDEF, .@MDEF);
+		}
+		if(.@bonus_hit){
+			.@HIT = .@ST[UMOB_HIT] + ((.@ST[UMOB_HIT] * .@bonus_hit) /100);	
+				setunitdata(.@GID[.@i], UMOB_HIT, .@HIT);
+		}		
+		if(.@bonus_flee){
+			.@FLEE = .@ST[UMOB_FLEE] + ((.@ST[UMOB_FLEE] * .@bonus_flee) /100);	
+				setunitdata(.@GID[.@i], UMOB_FLEE, .@FLEE);
+		}		
+	}
+	freeloop(0);
+
+	return;
+}
+
+function	script	F_Instance_Monster_Summon	{    
+	.@map$ = getarg(0, "");
+	.@x1 = getarg(1, 0);
+	.@y1 = getarg(2, 0);
+	.@mob_name$ = getarg(3, "");
+	.@mob_id = getarg(4, 0);
+	.@amount = getarg(5, 0);
+	.@label$ = getarg(6, "");
+
+	.@level_mode = $INSTANCE_LEVELMODE[instance_id(IM_PARTY)];
+	
+	switch(.@level_mode){  
+		case 1://Normal  
+			.@bonus_hp_rate = $@normal_mode_variables[0];  
+			.@bonus_dmg_rate = $@normal_mode_variables[1];  
+			.@bonus_damagetaken = $@normal_mode_variables[2];  
+			.@bonus_def = $@normal_mode_variables[3];  
+			.@bonus_mdef = $@normal_mode_variables[4];  
+			.@bonus_hit = $@normal_mode_variables[5];			  
+			.@bonus_flee = $@normal_mode_variables[6];  
+			break;  
+		case 2://Veteran  
+			.@bonus_hp_rate = $@veteran_mode_variables[0];  
+			.@bonus_dmg_rate = $@veteran_mode_variables[1];  
+			.@bonus_damagetaken = $@veteran_mode_variables[2];  
+			.@bonus_def = $@veteran_mode_variables[3];  
+			.@bonus_mdef = $@veteran_mode_variables[4];  
+			.@bonus_hit = $@veteran_mode_variables[5];			  
+			.@bonus_flee = $@veteran_mode_variables[6];		  
+			break;  
+		case 3://Nightmare  
+			.@bonus_hp_rate = $@nightmare_mode_variables[0];  
+			.@bonus_dmg_rate = $@nightmare_mode_variables[1];  
+			.@bonus_damagetaken = $@nightmare_mode_variables[2];  
+			.@bonus_def = $@nightmare_mode_variables[3];  
+			.@bonus_mdef = $@nightmare_mode_variables[4];  
+			.@bonus_hit = $@nightmare_mode_variables[5];			  
+			.@bonus_flee = $@nightmare_mode_variables[6];					  
+			break;  
+		case 4://Hell  
+			.@bonus_hp_rate = $@hell_mode_variables[0];  
+			.@bonus_dmg_rate = $@hell_mode_variables[1];  
+			.@bonus_damagetaken = $@hell_mode_variables[2];  
+			.@bonus_def = $@hell_mode_variables[3];  
+			.@bonus_mdef = $@hell_mode_variables[4];  
+			.@bonus_hit = $@hell_mode_variables[5];			  
+			.@bonus_flee = $@hell_mode_variables[6];			  
+			break;  
+		case 5://Torment  
+			.@bonus_hp_rate = $@torment_mode_variables[0];  
+			.@bonus_dmg_rate = $@torment_mode_variables[1];  
+			.@bonus_damagetaken = $@torment_mode_variables[2];  
+			.@bonus_def = $@torment_mode_variables[3];  
+			.@bonus_mdef = $@torment_mode_variables[4];  
+			.@bonus_hit = $@torment_mode_variables[5];			  
+			.@bonus_flee = $@torment_mode_variables[6];				  
+			break;  
+	}
+
+	deletearray $@mobid,getarraysize($@mobid);
+	monster .@map$, .@x1, .@y1, .@mob_name$, .@mob_id, .@amount, .@label$;
+	copyarray .@GID, $@mobid, getarraysize($@mobid);
+
+	freeloop(1);
+	for (.@i = 0; .@i < getarraysize(.@GID); .@i++) {
+		getunitdata(.@GID[.@i], .@ST);
+		if(.@bonus_hp_rate){
+			.@HP = .@ST[UMOB_MAXHP] + ((.@ST[UMOB_MAXHP] * .@bonus_hp_rate ) /100);			
+				setunitdata(.@GID[.@i], UMOB_MAXHP, .@HP);
+				setunitdata(.@GID[.@i], UMOB_HP, .@HP);
+		}
+		if(.@bonus_dmg_rate){
+			.@ATKMIN = .@ST[UMOB_ATKMIN] + ((.@ST[UMOB_ATKMIN] * .@bonus_dmg_rate) /100);
+			.@ATKMAX = .@ST[UMOB_ATKMAX] + ((.@ST[UMOB_ATKMAX] * .@bonus_dmg_rate) /100);
+			.@MATKMIN = .@ST[UMOB_MATKMIN] + ((.@ST[UMOB_MATKMIN] * .@bonus_dmg_rate) /100);
+			.@MATKMAX = .@ST[UMOB_MATKMAX] + ((.@ST[UMOB_MATKMAX] * .@bonus_dmg_rate) /100);
+				setunitdata(.@GID[.@i], UMOB_ATKMIN, .@ATKMIN);
+				setunitdata(.@GID[.@i], UMOB_ATKMAX, .@ATKMAX);
+				setunitdata(.@GID[.@i], UMOB_MATKMIN, .@MATKMIN);
+				setunitdata(.@GID[.@i], UMOB_MATKMAX, .@MATKMAX);
+		}
+		if(.@bonus_damagetaken){  
+			.@DAMAGETAKEN = .@ST[UMOB_DAMAGETAKEN] + ((.@ST[UMOB_DAMAGETAKEN] * .@bonus_damagetaken) /100);  
+			if(.@DAMAGETAKEN < 0) .@DAMAGETAKEN = 0;
+			setunitdata(.@GID[.@i], UMOB_DAMAGETAKEN, .@DAMAGETAKEN);  
+		}
+		if(.@bonus_def){
+			.@DEF = .@ST[UMOB_DEF] + ((.@ST[UMOB_DEF] * .@bonus_def) /100);	
+				setunitdata(.@GID[.@i], UMOB_DEF, .@DEF);
+		}	
+		if(.@bonus_mdef){
+			.@MDEF = .@ST[UMOB_MDEF] + ((.@ST[UMOB_MDEF] * .@bonus_mdef) /100);	
+				setunitdata(.@GID[.@i], UMOB_MDEF, .@MDEF);
+		}
+		if(.@bonus_hit){
+			.@HIT = .@ST[UMOB_HIT] + ((.@ST[UMOB_HIT] * .@bonus_hit) /100);	
+				setunitdata(.@GID[.@i], UMOB_HIT, .@HIT);
+		}		
+		if(.@bonus_flee){
+			.@FLEE = .@ST[UMOB_FLEE] + ((.@ST[UMOB_FLEE] * .@bonus_flee) /100);	
+				setunitdata(.@GID[.@i], UMOB_FLEE, .@FLEE);
+		}		
+	}
+	freeloop(0);
+
+	return;
+}
+
+function	script	F_Instance_ApplyBonuses	{
+
+	.@iid = instance_id(IM_PARTY);
+
+	if (.@iid <= 0) {
+		end;
+	}
+
+	.@instance_name$ = instance_live_info(ILI_NAME, .@iid);
+	.@current_map$ = strcharinfo(3);
+	.@valid_map = 0;
+
+	// --- Validate if player is in the instance maps ---
+	.@entry_map_template$ = instance_info(.@instance_name$, IIT_ENTER_MAP);
+	.@entry_map$ = instance_mapname(.@entry_map_template$, .@iid);
+
+	if (.@current_map$ == .@entry_map$) {
+		.@valid_map = 1;
+	} else {
+		.@map_count = instance_info(.@instance_name$, IIT_MAPCOUNT);
+
+		for (.@i = 0; .@i < .@map_count; .@i++) {
+			.@map_template$ = instance_info(.@instance_name$, IIT_MAP, .@i);
+			.@inst_map$ = instance_mapname(.@map_template$, .@iid);
+
+			if (.@current_map$ == .@inst_map$) {
+				.@valid_map = 1;
+				break;
+			}
+		}
+	}
+
+	if (!.@valid_map) {
+		end;
+	}
+
+	// --- Duration setup ---
+	.@time_limit = instance_info(.@instance_name$, IIT_TIME_LIMIT);
+	.@duration_ms = .@time_limit * 1000;
+
+	// --- Get values based on level mode ---
+	.@level_mode = $INSTANCE_LEVELMODE[.@iid];
+
+	switch(.@level_mode){
+		case 1:
+			.@res_penalty = $@normal_mode_variables[7];
+			.@exp_bonus   = $@bonus_exp[1];
+			.@drop_bonus  = $@bonus_drop[1];
+			break;
+		case 2:
+			.@res_penalty = $@veteran_mode_variables[7];
+			.@exp_bonus   = $@bonus_exp[2];
+			.@drop_bonus  = $@bonus_drop[2];
+			break;
+		case 3:
+			.@res_penalty = $@nightmare_mode_variables[7];
+			.@exp_bonus   = $@bonus_exp[3];
+			.@drop_bonus  = $@bonus_drop[3];
+			break;
+		case 4:
+			.@res_penalty = $@hell_mode_variables[7];
+			.@exp_bonus   = $@bonus_exp[4];
+			.@drop_bonus  = $@bonus_drop[4];
+			break;
+		case 5:
+			.@res_penalty = $@torment_mode_variables[7];
+			.@exp_bonus   = $@bonus_exp[5];
+			.@drop_bonus  = $@bonus_drop[5];
+			break;
+		default:
+			.@res_penalty = 0;
+			.@exp_bonus   = 0;
+			.@drop_bonus  = 0;
+			break;
+	}
+
+	// --- Apply Status Effects ---
+	if (.@res_penalty != 0) {
+		sc_start SC_INSTANCE_RESIST_PENALTY, .@duration_ms, .@res_penalty, 10000, SCSTART_NOAVOID;
+	} else {
+		sc_end SC_INSTANCE_RESIST_PENALTY;
+	}
+
+	if (.@exp_bonus > 0) {
+		sc_start SC_INSTANCE_EXP_BONUS, .@duration_ms, .@exp_bonus, 10000, SCSTART_NOAVOID;
+	} else {
+		sc_end SC_INSTANCE_EXP_BONUS;
+	}
+
+	if (.@drop_bonus > 0) {
+		sc_start SC_INSTANCE_DROP_BONUS, .@duration_ms, .@drop_bonus, 10000, SCSTART_NOAVOID;
+	} else {
+		sc_end SC_INSTANCE_DROP_BONUS;
+	}
+	
+	return;
+}
+
+function	script	F_Instance_Reconnect_Check	{  
+    .@iid = instance_id(IM_PARTY);    
+    if (.@iid <= 0) return;    
+        
+    .@level_mode = $INSTANCE_LEVELMODE[.@iid];    
+    if (.@level_mode <= 0) return;  
+    
+    .@instance_name$ = instance_live_info(ILI_NAME, .@iid);  
+    .@current_map$ = strcharinfo(3);  
+    .@valid_map = 0;  
+    
+    // --- Entry map check ---  
+    .@entry_map_template$ = instance_info(.@instance_name$, IIT_ENTER_MAP);  
+    if (.@entry_map_template$ != "") {
+        .@entry_map$ = instance_mapname(.@entry_map_template$, .@iid);  
+        if (.@current_map$ == .@entry_map$) {  
+            callfunc("F_Instance_ApplyBonuses");    
+            return;  
+        }  
+    }  
+    
+    // --- Additional maps check ---  
+    .@map_count = instance_info(.@instance_name$, IIT_MAPCOUNT);  
+    for (.@i = 0; .@i < .@map_count; .@i++) {  
+        .@instance_map_template$ = instance_info(.@instance_name$, IIT_MAP, .@i);  
+        .@instance_map$ = instance_mapname(.@instance_map_template$, .@iid);  
+        if (.@current_map$ == .@instance_map$) {  
+            callfunc("F_Instance_ApplyBonuses");    
+            return;  
+        }  
+    }  
+ 
+    return;  
+}
+
+//============================================================
+// Reward Function (Auto-detect instance map)
+//============================================================
+function	script	F_Instance_Reward	{
+
+	.@iid = instance_id(IM_PARTY);
+	if (.@iid <= 0) {
+		return;
+	}
+
+	.@level_mode = $INSTANCE_LEVELMODE[.@iid];
+	if (.@level_mode <= 0) {
+		return;
+	}
+
+	// Difficulty settings
+	.@instance_points = $@instance_points[.@level_mode];
+	.@difficulty_mode$ = $@difficulty_mode$[.@level_mode];
+	.@var_name$ = $@var_names$[.@level_mode];
+
+	// Party info
+	.@party_id = instance_live_info(ILI_OWNER, .@iid);
+	getpartymember .@party_id, 1;
+	getpartymember .@party_id, 2;
+
+	// Current map (where mob died)
+	.@current_map$ = strcharinfo(3);
+	.@valid_map = false;
+
+	// 1) Check entry map
+	.@entry_map_template$ = instance_info(instance_live_info(ILI_NAME, .@iid), IIT_ENTER_MAP);
+	.@entry_map$ = instance_mapname(.@entry_map_template$, .@iid);
+
+	if (.@current_map$ == .@entry_map$) {
+		.@valid_map = true;
+	} else {
+		// 2) Check additional maps
+		.@map_count = instance_info(instance_live_info(ILI_NAME, .@iid), IIT_MAPCOUNT);
+		for (.@i = 0; .@i < .@map_count; .@i++) {
+			.@map_template$ = instance_info(instance_live_info(ILI_NAME, .@iid), IIT_MAP, .@i);
+			.@map$ = instance_mapname(.@map_template$, .@iid);
+			if (.@current_map$ == .@map$) {
+				.@valid_map = true;
+				break;
+			}
+		}
+	}
+
+	if (!.@valid_map) {
+		return;
+	}
+
+	// Copy party arrays
+	copyarray .@CID, $@partymembercid, $@partymembercount;
+	copyarray .@AID, $@partymemberaid, $@partymembercount;
+
+	// Reward loop
+	for (.@i = 0; .@i < getarraysize(.@CID); .@i++) {
+		if (isloggedin(.@AID[.@i], .@CID[.@i])) {
+			.@member_map$ = strcharinfo(3, .@CID[.@i]);
+			if (.@member_map$ == .@current_map$) {
+				setd("#" + .@var_name$, getd("#" + .@var_name$) + .@instance_points);
+
+				announce "The party [ " + getpartyname(.@party_id) +" ] has defeated Endless Tower on " + .@difficulty_mode$ + "!", bc_all;
+
+				message strcharinfo(0, .@CID[.@i]),"You've been granted " + .@instance_points + " " + .@var_name$ + ".";
+				message strcharinfo(0, .@CID[.@i]),"You now have " + getd("#" + .@var_name$) + " " + .@var_name$ + ".";
+			}
+		}
+	}
+	return;
+}
+
+// Tower Settings
+//============================================================
+function	script	F_Instance_Settings	{
+
+    setarray $@normal_mode_variables, 0         //bonus_hp_rate  
+                                    , 0         //bonus_dmg_rate  
+                                    , 0         //bonus_damagetaken  
+                                    , 0         //bonus_def  
+                                    , 0         //bonus_mdef  
+                                    , 0         //bonus_hit  
+                                    , 0;        //bonus_flee
+                                      
+    setarray $@veteran_mode_variables, 50       //bonus_hp_rate  
+                                    , 50        //bonus_dmg_rate  
+                                    , -10       //bonus_damagetaken  
+                                    , 50        //bonus_def  
+                                    , 50        //bonus_mdef  
+                                    , 50        //bonus_hit  
+                                    , 50        //bonus_flee  
+                                    , -25;      //resistance_penalty
+                                      
+    setarray $@nightmare_mode_variables, 100    //bonus_hp_rate  
+                                    , 100       //bonus_dmg_rate  
+                                    , -20       //bonus_damagetaken  
+                                    , 100       //bonus_def  
+                                    , 100       //bonus_mdef  
+                                    , 100       //bonus_hit  
+                                    , 100       //bonus_flee  
+                                    , -50;      //resistance_penalty
+                                      
+    setarray $@hell_mode_variables, 150     //bonus_hp_rate  
+                                    , 150       //bonus_dmg_rate  
+                                    , -30       //bonus_damagetaken  
+                                    , 150       //bonus_def  
+                                    , 150       //bonus_mdef  
+                                    , 150       //bonus_hit  
+                                    , 150       //bonus_flee  
+                                    , -75;      //resistance_penalty
+                                      
+    setarray $@torment_mode_variables, 200      //bonus_hp_rate  
+                                    , 200       //bonus_dmg_rate  
+                                    , -40       //bonus_damagetaken  
+                                    , 200       //bonus_def  
+                                    , 200       //bonus_mdef  
+                                    , 200       //bonus_hit  
+                                    , 200       //bonus_flee  
+                                    , -100;     //resistance_penalty
+									
+	setarray $@bonus_exp[1], 0					//normal_bonus_exp
+						, 50					//veteran_bonus_exp
+						, 100					//nightmare_bonus_exp
+						, 150					//hell_bonus_exp
+						, 200;					//torment_bonus_exp
+
+	setarray $@bonus_drop[1], 0					//normal_bonus_exp
+						, 50					//veteran_bonus_exp
+						, 100					//nightmare_bonus_exp
+						, 150					//hell_bonus_exp
+						, 200;					//torment_bonus_exp
+
+	setarray $@instance_points[1], 10			//normal mode
+								, 20			//veteran mode
+								, 40			//nightmare mode
+								, 80			//hell mode
+								, 160;			//torment mode
+	
+	setarray $@difficulty_mode$[1], "Normal Mode"	//announcement
+								, "Veteran Mode"
+								, "Nightmare Mode"
+								, "Hell Mode"
+								, "Torment Mode";
+
+	setarray $@var_names$[1], "INSTANCE_NORMAL"	//custom cashpoints variable name
+							, "INSTANCE_VETERAN"
+							, "INSTANCE_NIGHTMARE"
+							, "INSTANCE_HELL"
+							, "INSTANCE_TORMENT";
+return;
+}
+
+//============================================================
+// Instance Event Handler (with detailed debug logging)
+//============================================================
+-	script	Instance_LoginEvent_Handler	FAKE_NPC,{
+
+	end;
+
+OnPCLoginEvent:
+	debugmes "[Event] OnPCLoginEvent triggered.";
+	callfunc("F_Instance_Reconnect_Check");
+	end;
+
+}
