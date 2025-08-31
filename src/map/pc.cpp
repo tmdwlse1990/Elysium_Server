@@ -752,6 +752,119 @@ int32 pc_class2idx(int32 class_) {
 	return class_;
 }
 
+/**  
+ * Element name helper function  
+ * Maps element constants to human-readable names for display purposes  
+ * @param ele: Element constant (ELE_NEUTRAL, ELE_WATER, etc.)  
+ * @return Element name as string ("Neutral", "Water", etc.) or "Unknown" for invalid elements  
+ */  
+std::string get_element_name(int ele) {  
+    switch(ele) {  
+        case ELE_NEUTRAL: return "Neutral";  
+        case ELE_WATER: return "Water";  
+        case ELE_EARTH: return "Earth";  
+        case ELE_FIRE: return "Fire";  
+        case ELE_WIND: return "Wind";  
+        case ELE_POISON: return "Poison";  
+        case ELE_HOLY: return "Holy";  
+        case ELE_DARK: return "Dark";  
+        case ELE_GHOST: return "Ghost";  
+        case ELE_UNDEAD: return "Undead";  
+        default: return "Unknown";  
+    }  
+}  
+  
+/**  
+ * Race name helper function  
+ * Maps race constants to human-readable names for display purposes  
+ * @param race: Race constant (RC_FORMLESS, RC_UNDEAD, etc.)  
+ * @return Race name as string ("Formless", "Undead", etc.) or "Unknown" for invalid races  
+ */  
+std::string get_race_name(int race) {  
+    switch(race) {  
+        case RC_FORMLESS: return "Formless";  
+        case RC_UNDEAD: return "Undead";  
+        case RC_BRUTE: return "Brute";  
+        case RC_PLANT: return "Plant";  
+        case RC_INSECT: return "Insect";  
+        case RC_FISH: return "Fish";  
+        case RC_DEMON: return "Demon";  
+        case RC_DEMIHUMAN: return "DemiHuman";  
+        case RC_ANGEL: return "Angel";  
+        case RC_DRAGON: return "Dragon";  
+        case RC_PLAYER_HUMAN: return "Player (Human)";  
+        case RC_PLAYER_DORAM: return "Player (Doram)";  
+        default: return "Unknown";  
+    }  
+}  
+  
+/**  
+ * Class name helper function  
+ * Maps class constants to human-readable names for display purposes  
+ * @param class_type: Class constant (CLASS_NORMAL, CLASS_BOSS, etc.)  
+ * @return Class name as string ("Normal", "Boss", etc.) or "Unknown" for invalid classes  
+ */  
+std::string get_class_name(int class_type) {  
+    switch(class_type) {  
+        case CLASS_NORMAL: return "Normal";  
+        case CLASS_BOSS: return "Boss";  
+        case CLASS_GUARDIAN: return "Guardian";  
+        case CLASS_BATTLEFIELD: return "Battlefield";  
+        default: return "Unknown";  
+    }  
+}  
+  
+/**  
+ * Size name helper function  
+ * Maps size constants to human-readable names for display purposes  
+ * @param size: Size constant (SZ_SMALL, SZ_MEDIUM, SZ_LARGE)  
+ * @return Size name as string ("Small", "Medium", "Large") or "Unknown" for invalid sizes  
+ */  
+std::string get_size_name(int size) {  
+    switch(size) {  
+        case SZ_SMALL: return "Small";  
+        case SZ_MEDIUM: return "Medium";  
+        case SZ_BIG: return "Large";  
+        default: return "Unknown";  
+    }  
+}  
+  
+/**  
+ * Base stat name helper function  
+ * Maps parameter constants to human-readable stat names for display purposes  
+ * @param param: Parameter constant (PARAM_STR, PARAM_AGI, etc.)  
+ * @return Stat name as string ("STR", "AGI", etc.) or "Unknown" for invalid parameters  
+ */  
+std::string get_stat_name(int param) {  
+    switch(param) {  
+        case PARAM_STR: return "STR";  
+        case PARAM_AGI: return "AGI";  
+        case PARAM_VIT: return "VIT";  
+        case PARAM_INT: return "INT";  
+        case PARAM_DEX: return "DEX";  
+        case PARAM_LUK: return "LUK";  
+        default: return "Unknown";  
+    }  
+}  
+  
+/**  
+ * Trait stat name helper function  
+ * Maps trait parameter constants to human-readable trait names for display purposes  
+ * @param param: Trait parameter constant (PARAM_POW, PARAM_STA, etc.)  
+ * @return Trait name as string ("POW", "STA", etc.) or "Unknown" for invalid parameters  
+ */  
+std::string get_trait_name(int param) {  
+    switch(param - PARAM_POW) {  
+        case 0: return "POW";
+        case 1: return "STA";
+        case 2: return "WIS";
+        case 3: return "SPL";
+        case 4: return "CON";
+        case 5: return "CRT";
+        default: return "Unknown";  
+    }  
+}
+
 /**
 * Get player's group ID
 * @param sd

@@ -1221,6 +1221,48 @@ static inline bool pc_hasprogress(map_session_data *sd, enum e_wip_block progres
 uint16 pc_maxparameter(map_session_data *sd, e_params param);
 int16 pc_maxaspd(map_session_data *sd);
 
+/**  
+ * Element name helper function  
+ * @param ele: Element constant (ELE_NEUTRAL, ELE_WATER, etc.)  
+ * @return Element name as string ("Neutral", "Water", etc.) or "Unknown" for invalid elements  
+ */  
+std::string get_element_name(int ele);  
+  
+/**  
+ * Race name helper function  
+ * @param race: Race constant (RC_FORMLESS, RC_UNDEAD, etc.)  
+ * @return Race name as string ("Formless", "Undead", etc.) or "Unknown" for invalid races  
+ */  
+std::string get_race_name(int race);  
+  
+/**  
+ * Class name helper function  
+ * @param class_type: Class constant (CLASS_NORMAL, CLASS_BOSS, etc.)  
+ * @return Class name as string ("Normal", "Boss", etc.) or "Unknown" for invalid classes  
+ */  
+std::string get_class_name(int class_type);  
+  
+/**  
+ * Size name helper function  
+ * @param size: Size constant (SZ_SMALL, SZ_MEDIUM, SZ_LARGE)  
+ * @return Size name as string ("Small", "Medium", "Large") or "Unknown" for invalid sizes  
+ */  
+std::string get_size_name(int size);  
+  
+/**  
+ * Base stat name helper function  
+ * @param param: Parameter constant (PARAM_STR, PARAM_AGI, etc.)  
+ * @return Stat name as string ("STR", "AGI", etc.) or "Unknown" for invalid parameters  
+ */  
+std::string get_stat_name(int param);  
+  
+/**  
+ * Trait stat name helper function  
+ * @param param: Trait parameter constant (PARAM_POW, PARAM_STA, etc.)  
+ * @return Trait name as string ("POW", "STA", etc.) or "Unknown" for invalid parameters  
+ */  
+std::string get_trait_name(int param);
+
 /**
  * Ranger
  **/
