@@ -1,392 +1,319 @@
-//===== rAthena Script ======================================= 
-//= Instance Settings
-//===== By: ================================================== 
+//===== rAthena Script =======================================
+//= Instance Settings (Full Rewrite)
+//===== By: ==================================================
 //= Louis T Steinhil
-//===== Current Version: ===================================== 
-//= 1.1
-//===== Compatible With: ===================================== 
+//===== Current Version: =====================================
+//= 1.6
+//===== Compatible With: =====================================
 //= rAthena Project
-//===== Description: ========================================= 
-//= [Official Conversion]
-//= Endless Tower Memorial Dungeon.
-//= Consists of 101 floors.
-//===== Additional Comments: ================================= 
+//===== Description: =========================================
+//= Endless Tower Memorial Dungeon (101 floors) with difficulty system
+//= Unified monster summon + expanded scaling & rewards.
+//===== Changelog: ===========================================
 //= 1.0 First version.
-//= 1.1 Added Difficulty (Normal, Veteran, Nightmare, 
-//=		Hell & Torment). [Louis T Steinhil]
-//= 1.2 Added Resistance Penalty to every difficulty
+//= 1.1 Added Difficulty (Normal, Veteran, Nightmare, Hell, Torment).
+//= 1.2 Added Resistance Penalty per difficulty.
+//= 1.3 Unified area/single monster summon.
+//= 1.4 Added failsafes for stat scaling.
+//= 1.5 Moved party-wide announce outside reward loop.
+//= 1.6 New stat modifiers: ASPD (AMOTION/ADELAY), CRIT, DEF ignore,
+//=     faster attacks (AMOTION/ADELAY) + random element (UMOB_ELETYPE/LEVEL).
 //============================================================
-// Difficulty Function
+
 //============================================================
-
-function	script	F_Instance_AreaMonster_Summon	{    
-	.@map$ = getarg(0, "");
-	.@x1 = getarg(1, 0);
-	.@y1 = getarg(2, 0);
-	.@x2 = getarg(3, 0);
-	.@y2 = getarg(4, 0);
-	.@mob_name$ = getarg(5, "");
-	.@mob_id = getarg(6, 0);
-	.@amount = getarg(7, 0);
-	.@label$ = getarg(8, "");
-
-	.@level_mode = $INSTANCE_LEVELMODE[instance_id(IM_PARTY)];
-	
-	switch(.@level_mode){  
-		case 1://Normal  
-			.@bonus_hp_rate = $@normal_mode_variables[0];  
-			.@bonus_dmg_rate = $@normal_mode_variables[1];  
-			.@bonus_damagetaken = $@normal_mode_variables[2];  
-			.@bonus_def = $@normal_mode_variables[3];  
-			.@bonus_mdef = $@normal_mode_variables[4];  
-			.@bonus_hit = $@normal_mode_variables[5];			  
-			.@bonus_flee = $@normal_mode_variables[6];  
-			break;  
-		case 2://Veteran  
-			.@bonus_hp_rate = $@veteran_mode_variables[0];  
-			.@bonus_dmg_rate = $@veteran_mode_variables[1];  
-			.@bonus_damagetaken = $@veteran_mode_variables[2];  
-			.@bonus_def = $@veteran_mode_variables[3];  
-			.@bonus_mdef = $@veteran_mode_variables[4];  
-			.@bonus_hit = $@veteran_mode_variables[5];			  
-			.@bonus_flee = $@veteran_mode_variables[6];		  
-			break;  
-		case 3://Nightmare  
-			.@bonus_hp_rate = $@nightmare_mode_variables[0];  
-			.@bonus_dmg_rate = $@nightmare_mode_variables[1];  
-			.@bonus_damagetaken = $@nightmare_mode_variables[2];  
-			.@bonus_def = $@nightmare_mode_variables[3];  
-			.@bonus_mdef = $@nightmare_mode_variables[4];  
-			.@bonus_hit = $@nightmare_mode_variables[5];			  
-			.@bonus_flee = $@nightmare_mode_variables[6];					  
-			break;  
-		case 4://Hell  
-			.@bonus_hp_rate = $@hell_mode_variables[0];  
-			.@bonus_dmg_rate = $@hell_mode_variables[1];  
-			.@bonus_damagetaken = $@hell_mode_variables[2];  
-			.@bonus_def = $@hell_mode_variables[3];  
-			.@bonus_mdef = $@hell_mode_variables[4];  
-			.@bonus_hit = $@hell_mode_variables[5];			  
-			.@bonus_flee = $@hell_mode_variables[6];			  
-			break;  
-		case 5://Torment  
-			.@bonus_hp_rate = $@torment_mode_variables[0];  
-			.@bonus_dmg_rate = $@torment_mode_variables[1];  
-			.@bonus_damagetaken = $@torment_mode_variables[2];  
-			.@bonus_def = $@torment_mode_variables[3];  
-			.@bonus_mdef = $@torment_mode_variables[4];  
-			.@bonus_hit = $@torment_mode_variables[5];			  
-			.@bonus_flee = $@torment_mode_variables[6];				  
-			break;  
-	}
-
-	deletearray $@mobid,getarraysize($@mobid);
-	areamonster .@map$, .@x1, .@y1, .@x2, .@y2, .@mob_name$, .@mob_id, .@amount, .@label$;
-	copyarray .@GID, $@mobid, getarraysize($@mobid);
-
-	freeloop(1);
-	for (.@i = 0; .@i < getarraysize(.@GID); .@i++) {
-		getunitdata(.@GID[.@i], .@ST);
-		if(.@bonus_hp_rate){
-			.@HP = .@ST[UMOB_MAXHP] + ((.@ST[UMOB_MAXHP] * .@bonus_hp_rate ) /100);			
-				setunitdata(.@GID[.@i], UMOB_MAXHP, .@HP);
-				setunitdata(.@GID[.@i], UMOB_HP, .@HP);
-		}
-		if(.@bonus_dmg_rate){
-			.@ATKMIN = .@ST[UMOB_ATKMIN] + ((.@ST[UMOB_ATKMIN] * .@bonus_dmg_rate) /100);
-			.@ATKMAX = .@ST[UMOB_ATKMAX] + ((.@ST[UMOB_ATKMAX] * .@bonus_dmg_rate) /100);
-			.@MATKMIN = .@ST[UMOB_MATKMIN] + ((.@ST[UMOB_MATKMIN] * .@bonus_dmg_rate) /100);
-			.@MATKMAX = .@ST[UMOB_MATKMAX] + ((.@ST[UMOB_MATKMAX] * .@bonus_dmg_rate) /100);
-				setunitdata(.@GID[.@i], UMOB_ATKMIN, .@ATKMIN);
-				setunitdata(.@GID[.@i], UMOB_ATKMAX, .@ATKMAX);
-				setunitdata(.@GID[.@i], UMOB_MATKMIN, .@MATKMIN);
-				setunitdata(.@GID[.@i], UMOB_MATKMAX, .@MATKMAX);
-		}
-		if(.@bonus_damagetaken){  
-			.@DAMAGETAKEN = .@ST[UMOB_DAMAGETAKEN] + ((.@ST[UMOB_DAMAGETAKEN] * .@bonus_damagetaken) /100);  
-			if(.@DAMAGETAKEN < 0) .@DAMAGETAKEN = 0;
-			setunitdata(.@GID[.@i], UMOB_DAMAGETAKEN, .@DAMAGETAKEN);  
-		}
-		if(.@bonus_def){
-			.@DEF = .@ST[UMOB_DEF] + ((.@ST[UMOB_DEF] * .@bonus_def) /100);	
-				setunitdata(.@GID[.@i], UMOB_DEF, .@DEF);
-		}	
-		if(.@bonus_mdef){
-			.@MDEF = .@ST[UMOB_MDEF] + ((.@ST[UMOB_MDEF] * .@bonus_mdef) /100);	
-				setunitdata(.@GID[.@i], UMOB_MDEF, .@MDEF);
-		}
-		if(.@bonus_hit){
-			.@HIT = .@ST[UMOB_HIT] + ((.@ST[UMOB_HIT] * .@bonus_hit) /100);	
-				setunitdata(.@GID[.@i], UMOB_HIT, .@HIT);
-		}		
-		if(.@bonus_flee){
-			.@FLEE = .@ST[UMOB_FLEE] + ((.@ST[UMOB_FLEE] * .@bonus_flee) /100);	
-				setunitdata(.@GID[.@i], UMOB_FLEE, .@FLEE);
-		}		
-	}
-	freeloop(0);
-
+// Constants & Helpers
+//============================================================
+function	script	F_DiffIndex	{
+	// Index map for $@difficulty_matrix row (per difficulty)
+	// Keep DMGTAKEN at 11, EXP at 12, DROP at 13 as requested
+	setarray $@STAT_IDX,
+		0,  // HP_RATE
+		1,  // DMG_RATE
+		2,  // DEF
+		3,  // MDEF
+		4,  // HIT
+		5,  // FLEE
+		6,  // AMOTION_RATE   (negative reduces AMOTION; higher = faster)
+		7,  // ADELAY_RATE    (negative reduces ADELay)
+		8,  // CRIT           (flat add %)
+		9,  // IGNORE_DEF     (% of DEF to ignore -> simulated by reducing DEF)
+		10, // RESERVED       (slot for future use)
+		11, // DMG_TAKEN      (% change; - = reduces damage taken)
+		12, // BONUS_EXP      (% EXP buff applied as SC to players)
+		13; // BONUS_DROP     (% DROP buff applied as SC to players)
 	return;
 }
 
-function	script	F_Instance_Monster_Summon	{    
-	.@map$ = getarg(0, "");
-	.@x1 = getarg(1, 0);
-	.@y1 = getarg(2, 0);
-	.@mob_name$ = getarg(3, "");
-	.@mob_id = getarg(4, 0);
-	.@amount = getarg(5, 0);
-	.@label$ = getarg(6, "");
+function	script	F_GetDiffStat	{
+	// Returns matrix value for a given mode + stat index
+	// args: (mode, statIndex)
+	.@mode = getarg(0);
+	.@stat = getarg(1);
+	.@COLS = 14; // columns per difficulty row
+	return $@difficulty_matrix[(.@mode-1) * .@COLS + .@stat];
+}
 
-	.@level_mode = $INSTANCE_LEVELMODE[instance_id(IM_PARTY)];
-	
-	switch(.@level_mode){  
-		case 1://Normal  
-			.@bonus_hp_rate = $@normal_mode_variables[0];  
-			.@bonus_dmg_rate = $@normal_mode_variables[1];  
-			.@bonus_damagetaken = $@normal_mode_variables[2];  
-			.@bonus_def = $@normal_mode_variables[3];  
-			.@bonus_mdef = $@normal_mode_variables[4];  
-			.@bonus_hit = $@normal_mode_variables[5];			  
-			.@bonus_flee = $@normal_mode_variables[6];  
-			break;  
-		case 2://Veteran  
-			.@bonus_hp_rate = $@veteran_mode_variables[0];  
-			.@bonus_dmg_rate = $@veteran_mode_variables[1];  
-			.@bonus_damagetaken = $@veteran_mode_variables[2];  
-			.@bonus_def = $@veteran_mode_variables[3];  
-			.@bonus_mdef = $@veteran_mode_variables[4];  
-			.@bonus_hit = $@veteran_mode_variables[5];			  
-			.@bonus_flee = $@veteran_mode_variables[6];		  
-			break;  
-		case 3://Nightmare  
-			.@bonus_hp_rate = $@nightmare_mode_variables[0];  
-			.@bonus_dmg_rate = $@nightmare_mode_variables[1];  
-			.@bonus_damagetaken = $@nightmare_mode_variables[2];  
-			.@bonus_def = $@nightmare_mode_variables[3];  
-			.@bonus_mdef = $@nightmare_mode_variables[4];  
-			.@bonus_hit = $@nightmare_mode_variables[5];			  
-			.@bonus_flee = $@nightmare_mode_variables[6];					  
-			break;  
-		case 4://Hell  
-			.@bonus_hp_rate = $@hell_mode_variables[0];  
-			.@bonus_dmg_rate = $@hell_mode_variables[1];  
-			.@bonus_damagetaken = $@hell_mode_variables[2];  
-			.@bonus_def = $@hell_mode_variables[3];  
-			.@bonus_mdef = $@hell_mode_variables[4];  
-			.@bonus_hit = $@hell_mode_variables[5];			  
-			.@bonus_flee = $@hell_mode_variables[6];			  
-			break;  
-		case 5://Torment  
-			.@bonus_hp_rate = $@torment_mode_variables[0];  
-			.@bonus_dmg_rate = $@torment_mode_variables[1];  
-			.@bonus_damagetaken = $@torment_mode_variables[2];  
-			.@bonus_def = $@torment_mode_variables[3];  
-			.@bonus_mdef = $@torment_mode_variables[4];  
-			.@bonus_hit = $@torment_mode_variables[5];			  
-			.@bonus_flee = $@torment_mode_variables[6];				  
-			break;  
-	}
-
-	deletearray $@mobid,getarraysize($@mobid);
-	monster .@map$, .@x1, .@y1, .@mob_name$, .@mob_id, .@amount, .@label$;
-	copyarray .@GID, $@mobid, getarraysize($@mobid);
-
-	freeloop(1);
-	for (.@i = 0; .@i < getarraysize(.@GID); .@i++) {
-		getunitdata(.@GID[.@i], .@ST);
-		if(.@bonus_hp_rate){
-			.@HP = .@ST[UMOB_MAXHP] + ((.@ST[UMOB_MAXHP] * .@bonus_hp_rate ) /100);			
-				setunitdata(.@GID[.@i], UMOB_MAXHP, .@HP);
-				setunitdata(.@GID[.@i], UMOB_HP, .@HP);
-		}
-		if(.@bonus_dmg_rate){
-			.@ATKMIN = .@ST[UMOB_ATKMIN] + ((.@ST[UMOB_ATKMIN] * .@bonus_dmg_rate) /100);
-			.@ATKMAX = .@ST[UMOB_ATKMAX] + ((.@ST[UMOB_ATKMAX] * .@bonus_dmg_rate) /100);
-			.@MATKMIN = .@ST[UMOB_MATKMIN] + ((.@ST[UMOB_MATKMIN] * .@bonus_dmg_rate) /100);
-			.@MATKMAX = .@ST[UMOB_MATKMAX] + ((.@ST[UMOB_MATKMAX] * .@bonus_dmg_rate) /100);
-				setunitdata(.@GID[.@i], UMOB_ATKMIN, .@ATKMIN);
-				setunitdata(.@GID[.@i], UMOB_ATKMAX, .@ATKMAX);
-				setunitdata(.@GID[.@i], UMOB_MATKMIN, .@MATKMIN);
-				setunitdata(.@GID[.@i], UMOB_MATKMAX, .@MATKMAX);
-		}
-		if(.@bonus_damagetaken){  
-			.@DAMAGETAKEN = .@ST[UMOB_DAMAGETAKEN] + ((.@ST[UMOB_DAMAGETAKEN] * .@bonus_damagetaken) /100);  
-			if(.@DAMAGETAKEN < 0) .@DAMAGETAKEN = 0;
-			setunitdata(.@GID[.@i], UMOB_DAMAGETAKEN, .@DAMAGETAKEN);  
-		}
-		if(.@bonus_def){
-			.@DEF = .@ST[UMOB_DEF] + ((.@ST[UMOB_DEF] * .@bonus_def) /100);	
-				setunitdata(.@GID[.@i], UMOB_DEF, .@DEF);
-		}	
-		if(.@bonus_mdef){
-			.@MDEF = .@ST[UMOB_MDEF] + ((.@ST[UMOB_MDEF] * .@bonus_mdef) /100);	
-				setunitdata(.@GID[.@i], UMOB_MDEF, .@MDEF);
-		}
-		if(.@bonus_hit){
-			.@HIT = .@ST[UMOB_HIT] + ((.@ST[UMOB_HIT] * .@bonus_hit) /100);	
-				setunitdata(.@GID[.@i], UMOB_HIT, .@HIT);
-		}		
-		if(.@bonus_flee){
-			.@FLEE = .@ST[UMOB_FLEE] + ((.@ST[UMOB_FLEE] * .@bonus_flee) /100);	
-				setunitdata(.@GID[.@i], UMOB_FLEE, .@FLEE);
-		}		
-	}
-	freeloop(0);
-
+function	script	F_AssignRandomElement	{
+	// Randomize element type & level from server-safe pool
+	// return via setunitdata calls (this func is called inside loop)
+	.@gid = getarg(0);
+	.@eleType = $@element_pool[rand(getarraysize($@element_pool))]; // 1..9 (no neutral)
+	.@eleLevel = rand(1,4);
+	setunitdata(.@gid, UMOB_ELETYPE, .@eleType);
+	setunitdata(.@gid, UMOB_ELELEVEL, .@eleLevel);
 	return;
 }
 
-function	script	F_Instance_ApplyBonuses	{
+//============================================================
+// Unified Summon + Scaling
+//============================================================
+function	script	F_Instance_Monster_Summon	{
+	// Flexible Monster Summon
+	// Supports two call styles:
+	//  Full: callfunc("F_Instance_Monster_Summon", mode, map$, x1, y1, x2, y2, mob_name$, mob_id, amount, label$)
+	//  Short:callfunc("F_Instance_Monster_Summon", mode, map$, x1, y1, mob_name$, mob_id, amount, label$)
+	//
+	// 0 = mode (1=monster, 2=areamonster)
+	// (see comments above for parameter order)
+
+	.@mode = getarg(0, 1);
+	.@map$ = getarg(1, "");
+	// x1,y1 always at 2,3
+	.@x1 = getarg(2, 0);
+	.@y1 = getarg(3, 0);
+	// We'll detect whether caller used full or short form.
+	// If getarg(8) (the 'full' amount slot) > 0, we assume the full form was used.
+	.@maybe_amount_full = getarg(8, 0);
+
+	if (.@maybe_amount_full > 0 || getarg(9, "") != "") {
+		// Full form (x2,y2 provided)
+		.@x2 = getarg(4, 0);
+		.@y2 = getarg(5, 0);
+		.@mob_name$ = getarg(6, "");
+		.@mob_id = getarg(7, 0);
+		.@amount = getarg(8, 1);
+		.@label$ = getarg(9, "");
+	} else {
+		// Short form (no x2,y2) -> treat args as:
+		// mode, map, x1, y1, mob_name, mob_id, amount, label
+		.@x2 = 0;
+		.@y2 = 0;
+		.@mob_name$ = getarg(4, "");
+		.@mob_id = getarg(5, 0);
+		.@amount = getarg(6, 1);
+		.@label$ = getarg(7, "");
+	}
+
+	callfunc("F_DiffIndex");
 
 	.@iid = instance_id(IM_PARTY);
+	.@level_mode = $INSTANCE_LEVELMODE[.@iid];
+	if (.@level_mode <= 0) .@level_mode = 1;
 
-	if (.@iid <= 0) {
+	// Basic validation -> avoid class 0 spawns and give helpful debugmes
+	if ((.@mob_id <= 0) && (.@mob_name$ == "")) {
+		debugmes "[F_Instance_Monster_Summon] ERROR: no mob_name or mob_id provided for spawn at "+.@map$+" ("+.@x1+","+.@y1+")";
 		end;
 	}
+
+	// Attempt spawn (prefer mob_id if provided)
+	deletearray $@mobid, getarraysize($@mobid);
+
+	if (.@mode == 1) {
+		if (.@mob_id > 0) {
+			monster .@map$, .@x1, .@y1, .@mob_name$, .@mob_id, .@amount, .@label$;
+		} else {
+			// spawn by name only
+			monster .@map$, .@x1, .@y1, .@mob_name$, 0, .@amount, .@label$;
+		}
+	} else {
+		if (.@mob_id > 0) {
+			areamonster .@map$, .@x1, .@y1, .@x2, .@y2, .@mob_name$, .@mob_id, .@amount, .@label$;
+		} else {
+			areamonster .@map$, .@x1, .@y1, .@x2, .@y2, .@mob_name$, 0, .@amount, .@label$;
+		}
+	}
+
+	// If the engine still fails to spawn (class 0), provide clearer debug output
+	if (getarraysize($@mobid) == 0) {
+		debugmes "[F_Instance_Monster_Summon] Spawn attempt produced 0 GIDs. map="+.@map$+" name='"+.@mob_name$+"' id="+.@mob_id+" amount="+.@amount;
+		// continue — no mobs to scale
+		end;
+	}
+	
+	copyarray .@GID, $@mobid, getarraysize($@mobid);
+
+	freeloop(1);
+	for (.@i = 0; .@i < getarraysize(.@GID); .@i++) {
+		getunitdata(.@GID[.@i], .@ST);
+
+		// Read difficulty row once
+		.@HP_RATE     = F_GetDiffStat(.@level_mode, $@STAT_IDX[0]);
+		.@DMG_RATE    = F_GetDiffStat(.@level_mode, $@STAT_IDX[1]);
+		.@DEF_RATE    = F_GetDiffStat(.@level_mode, $@STAT_IDX[2]);
+		.@MDEF_RATE   = F_GetDiffStat(.@level_mode, $@STAT_IDX[3]);
+		.@HIT_RATE    = F_GetDiffStat(.@level_mode, $@STAT_IDX[4]);
+		.@FLEE_RATE   = F_GetDiffStat(.@level_mode, $@STAT_IDX[5]);
+		.@AMOTION_RATE= F_GetDiffStat(.@level_mode, $@STAT_IDX[6]);
+		.@ADELAY_RATE = F_GetDiffStat(.@level_mode, $@STAT_IDX[7]);
+		.@CRIT_ADD    = F_GetDiffStat(.@level_mode, $@STAT_IDX[8]);
+		.@IGN_DEF     = F_GetDiffStat(.@level_mode, $@STAT_IDX[9]);
+		.@DMGTAKEN    = F_GetDiffStat(.@level_mode, $@STAT_IDX[11]);
+
+		// --- HP scaling (cap 2,147,483,647; skip HP<=1) ---
+		if (.@HP_RATE && .@ST[UMOB_MAXHP] > 1) {
+			.@HP = .@ST[UMOB_MAXHP] + ((.@ST[UMOB_MAXHP] * .@HP_RATE) / 100);
+			.@HP = min(.@HP, 2147483647);
+			setunitdata(.@GID[.@i], UMOB_MAXHP, .@HP);
+			setunitdata(.@GID[.@i], UMOB_HP, .@HP);
+		}
+
+		// --- ATK/MATK scaling (cap 65535) ---
+		if (.@DMG_RATE) {
+			.@ATKMIN  = min(.@ST[UMOB_ATKMIN]  + ((.@ST[UMOB_ATKMIN]  * .@DMG_RATE) / 100), 65535);
+			.@ATKMAX  = min(.@ST[UMOB_ATKMAX]  + ((.@ST[UMOB_ATKMAX]  * .@DMG_RATE) / 100), 65535);
+			.@MATKMIN = min(.@ST[UMOB_MATKMIN] + ((.@ST[UMOB_MATKMIN] * .@DMG_RATE) / 100), 65535);
+			.@MATKMAX = min(.@ST[UMOB_MATKMAX] + ((.@ST[UMOB_MATKMAX] * .@DMG_RATE) / 100), 65535);
+			setunitdata(.@GID[.@i], UMOB_ATKMIN, .@ATKMIN);
+			setunitdata(.@GID[.@i], UMOB_ATKMAX, .@ATKMAX);
+			setunitdata(.@GID[.@i], UMOB_MATKMIN, .@MATKMIN);
+			setunitdata(.@GID[.@i], UMOB_MATKMAX, .@MATKMAX);
+		}
+
+		// --- Damage Taken scaling (-90..+200) and non-negative ---
+		if (.@DMGTAKEN) {
+			.@DMGT = .@ST[UMOB_DAMAGETAKEN] + ((.@ST[UMOB_DAMAGETAKEN] * .@DMGTAKEN) / 100);
+			.@DMGT = max(.@DMGT, -90);
+			.@DMGT = min(.@DMGT, 200);
+			if (.@DMGT < 0) .@DMGT = 0;
+			setunitdata(.@GID[.@i], UMOB_DAMAGETAKEN, .@DMGT);
+		}
+
+		// --- DEF/MDEF/HIT/FLEE (cap 10000) ---
+		if (.@DEF_RATE)  setunitdata(.@GID[.@i], UMOB_DEF,  min(.@ST[UMOB_DEF]  + ((.@ST[UMOB_DEF]  * .@DEF_RATE)  / 100), 10000));
+		if (.@MDEF_RATE) setunitdata(.@GID[.@i], UMOB_MDEF, min(.@ST[UMOB_MDEF] + ((.@ST[UMOB_MDEF] * .@MDEF_RATE) / 100), 10000));
+		if (.@HIT_RATE)  setunitdata(.@GID[.@i], UMOB_HIT,  min(.@ST[UMOB_HIT]  + ((.@ST[UMOB_HIT]  * .@HIT_RATE)  / 100), 10000));
+		if (.@FLEE_RATE) setunitdata(.@GID[.@i], UMOB_FLEE, min(.@ST[UMOB_FLEE] + ((.@ST[UMOB_FLEE] * .@FLEE_RATE) / 100), 10000));
+
+		// --- ASPD: faster attacks by lowering AMOTION/ADELAY (min 100ms) ---
+		if (.@AMOTION_RATE) {
+			.@newAM = .@ST[UMOB_AMOTION] - ((.@ST[UMOB_AMOTION] * .@AMOTION_RATE) / 100);
+			.@newAM = max(.@newAM, 100);
+			setunitdata(.@GID[.@i], UMOB_AMOTION, .@newAM);
+		}
+		if (.@ADELAY_RATE) {
+			.@newAD = .@ST[UMOB_ADELAY] - ((.@ST[UMOB_ADELAY] * .@ADELAY_RATE) / 100);
+			.@newAD = max(.@newAD, 100);
+			setunitdata(.@GID[.@i], UMOB_ADELAY, .@newAD);
+		}
+
+		// --- CRIT (cap 100) ---
+		if (.@CRIT_ADD) {
+			.@CRIT = min(.@ST[UMOB_CRIT] + .@CRIT_ADD, 100);
+			setunitdata(.@GID[.@i], UMOB_CRIT, .@CRIT);
+		}
+
+		// --- Ignore DEF: simulate by reducing final DEF after scaling ---
+		if (.@IGN_DEF) {
+			getunitdata(.@GID[.@i], .@TMP);
+			.@curDEF = .@TMP[UMOB_DEF];
+			.@reduced = .@curDEF - ((.@curDEF * .@IGN_DEF) / 100);
+			.@reduced = max(.@reduced, 0);
+			setunitdata(.@GID[.@i], UMOB_DEF, .@reduced);
+		}
+
+       // --- Random element & level (Torment Mode only) ---
+       if (.@level_mode == 5) {
+           callfunc("F_AssignRandomElement", .@GID[.@i]);
+       }
+	}
+	freeloop(0);
+	return;
+}
+
+//============================================================
+// Apply Status Effects to Players (EXP & DROP, Resistance penalty)
+//============================================================
+function	script	F_Instance_ApplyStatus	{
+	.@iid = instance_id(IM_PARTY);
+	if (.@iid <= 0) end;
+
+	callfunc("F_DiffIndex");
 
 	.@instance_name$ = instance_live_info(ILI_NAME, .@iid);
 	.@current_map$ = strcharinfo(3);
 	.@valid_map = 0;
 
-	// --- Validate if player is in the instance maps ---
+	// Map validation
 	.@entry_map_template$ = instance_info(.@instance_name$, IIT_ENTER_MAP);
 	.@entry_map$ = instance_mapname(.@entry_map_template$, .@iid);
-
 	if (.@current_map$ == .@entry_map$) {
 		.@valid_map = 1;
 	} else {
 		.@map_count = instance_info(.@instance_name$, IIT_MAPCOUNT);
-
 		for (.@i = 0; .@i < .@map_count; .@i++) {
 			.@map_template$ = instance_info(.@instance_name$, IIT_MAP, .@i);
 			.@inst_map$ = instance_mapname(.@map_template$, .@iid);
-
-			if (.@current_map$ == .@inst_map$) {
-				.@valid_map = 1;
-				break;
-			}
+			if (.@current_map$ == .@inst_map$) { .@valid_map = 1; break; }
 		}
 	}
+	if (!.@valid_map) end;
 
-	if (!.@valid_map) {
-		end;
-	}
-
-	// --- Duration setup ---
+	// Duration
 	.@time_limit = instance_info(.@instance_name$, IIT_TIME_LIMIT);
 	.@duration_ms = .@time_limit * 1000;
 
-	// --- Get values based on level mode ---
+	// Mode values
 	.@level_mode = $INSTANCE_LEVELMODE[.@iid];
+	if (.@level_mode <= 0) .@level_mode = 1;
 
-	switch(.@level_mode){
-		case 1:
-			.@res_penalty = $@normal_mode_variables[7];
-			.@exp_bonus   = $@bonus_exp[1];
-			.@drop_bonus  = $@bonus_drop[1];
-			break;
-		case 2:
-			.@res_penalty = $@veteran_mode_variables[7];
-			.@exp_bonus   = $@bonus_exp[2];
-			.@drop_bonus  = $@bonus_drop[2];
-			break;
-		case 3:
-			.@res_penalty = $@nightmare_mode_variables[7];
-			.@exp_bonus   = $@bonus_exp[3];
-			.@drop_bonus  = $@bonus_drop[3];
-			break;
-		case 4:
-			.@res_penalty = $@hell_mode_variables[7];
-			.@exp_bonus   = $@bonus_exp[4];
-			.@drop_bonus  = $@bonus_drop[4];
-			break;
-		case 5:
-			.@res_penalty = $@torment_mode_variables[7];
-			.@exp_bonus   = $@bonus_exp[5];
-			.@drop_bonus  = $@bonus_drop[5];
-			break;
-		default:
-			.@res_penalty = 0;
-			.@exp_bonus   = 0;
-			.@drop_bonus  = 0;
-			break;
-	}
+	.@res_penalty = $@resistance_penalty[.@level_mode];
+	.@exp_bonus = F_GetDiffStat(.@level_mode, $@STAT_IDX[12]);
+	.@drop_bonus = F_GetDiffStat(.@level_mode, $@STAT_IDX[13]);
 
-	// --- Apply Status Effects ---
-	if (.@res_penalty != 0) {
-		sc_start SC_INSTANCE_RESIST_PENALTY, .@duration_ms, .@res_penalty, 10000, SCSTART_NOAVOID;
-	} else {
-		sc_end SC_INSTANCE_RESIST_PENALTY;
-	}
-
-	if (.@exp_bonus > 0) {
-		sc_start SC_INSTANCE_EXP_BONUS, .@duration_ms, .@exp_bonus, 10000, SCSTART_NOAVOID;
-	} else {
-		sc_end SC_INSTANCE_EXP_BONUS;
-	}
-
-	if (.@drop_bonus > 0) {
-		sc_start SC_INSTANCE_DROP_BONUS, .@duration_ms, .@drop_bonus, 10000, SCSTART_NOAVOID;
-	} else {
-		sc_end SC_INSTANCE_DROP_BONUS;
-	}
-	
+	// Effects
+	if (.@res_penalty != 0) sc_start SC_INSTANCE_RESIST_PENALTY, .@duration_ms, .@res_penalty, 10000, SCSTART_NOAVOID; else sc_end SC_INSTANCE_RESIST_PENALTY;
+	if (.@exp_bonus   > 0) sc_start SC_INSTANCE_EXP_BONUS, .@duration_ms, .@exp_bonus, 10000, SCSTART_NOAVOID; else sc_end SC_INSTANCE_EXP_BONUS;
+	if (.@drop_bonus  > 0) sc_start SC_INSTANCE_DROP_BONUS, .@duration_ms, .@drop_bonus, 10000, SCSTART_NOAVOID; else sc_end SC_INSTANCE_DROP_BONUS;
 	return;
 }
 
-function	script	F_Instance_Reconnect_Check	{  
-    .@iid = instance_id(IM_PARTY);    
-    if (.@iid <= 0) return;    
-        
-    .@level_mode = $INSTANCE_LEVELMODE[.@iid];    
-    if (.@level_mode <= 0) return;  
-    
-    .@instance_name$ = instance_live_info(ILI_NAME, .@iid);  
-    .@current_map$ = strcharinfo(3);  
-    .@valid_map = 0;  
-    
-    // --- Entry map check ---  
-    .@entry_map_template$ = instance_info(.@instance_name$, IIT_ENTER_MAP);  
-    if (.@entry_map_template$ != "") {
-        .@entry_map$ = instance_mapname(.@entry_map_template$, .@iid);  
-        if (.@current_map$ == .@entry_map$) {  
-            callfunc("F_Instance_ApplyBonuses");    
-            return;  
-        }  
-    }  
-    
-    // --- Additional maps check ---  
-    .@map_count = instance_info(.@instance_name$, IIT_MAPCOUNT);  
-    for (.@i = 0; .@i < .@map_count; .@i++) {  
-        .@instance_map_template$ = instance_info(.@instance_name$, IIT_MAP, .@i);  
-        .@instance_map$ = instance_mapname(.@instance_map_template$, .@iid);  
-        if (.@current_map$ == .@instance_map$) {  
-            callfunc("F_Instance_ApplyBonuses");    
-            return;  
-        }  
-    }  
- 
-    return;  
+function	script	F_Instance_Reconnect_Check	{
+	.@iid = instance_id(IM_PARTY);
+	if (.@iid <= 0) return;
+	if ($INSTANCE_LEVELMODE[.@iid] <= 0) return;
+
+	.@instance_name$ = instance_live_info(ILI_NAME, .@iid);
+	.@current_map$ = strcharinfo(3);
+
+	// Entry map
+	.@entry_map_template$ = instance_info(.@instance_name$, IIT_ENTER_MAP);
+	if (.@entry_map_template$ != "") {
+		.@entry_map$ = instance_mapname(.@entry_map_template$, .@iid);
+		if (.@current_map$ == .@entry_map$) { callfunc("F_Instance_ApplyStatus"); return; }
+	}
+	// Additional maps
+	.@map_count = instance_info(.@instance_name$, IIT_MAPCOUNT);
+	for (.@i = 0; .@i < .@map_count; .@i++) {
+		.@instance_map_template$ = instance_info(.@instance_name$, IIT_MAP, .@i);
+		.@instance_map$ = instance_mapname(.@instance_map_template$, .@iid);
+		if (.@current_map$ == .@instance_map$) { callfunc("F_Instance_ApplyStatus"); return; }
+	}
+	return;
 }
 
 //============================================================
-// Reward Function (Auto-detect instance map)
+// Rewards (auto-detect instance map)
 //============================================================
 function	script	F_Instance_Reward	{
-
 	.@iid = instance_id(IM_PARTY);
-	if (.@iid <= 0) {
-		return;
-	}
+	if (.@iid <= 0) return;
 
 	.@level_mode = $INSTANCE_LEVELMODE[.@iid];
-	if (.@level_mode <= 0) {
-		return;
-	}
+	if (.@level_mode <= 0) return;
 
 	// Difficulty settings
-	.@instance_points = $@instance_points[.@level_mode];
+	.@instance_points = F_GetDiffStat(.@level_mode, $@STAT_IDX[10]);
 	.@difficulty_mode$ = $@difficulty_mode$[.@level_mode];
 	.@var_name$ = $@var_names$[.@level_mode];
 
@@ -395,144 +322,88 @@ function	script	F_Instance_Reward	{
 	getpartymember .@party_id, 1;
 	getpartymember .@party_id, 2;
 
-	// Current map (where mob died)
+	// Current map
 	.@current_map$ = strcharinfo(3);
 	.@valid_map = false;
-
-	// 1) Check entry map
 	.@entry_map_template$ = instance_info(instance_live_info(ILI_NAME, .@iid), IIT_ENTER_MAP);
 	.@entry_map$ = instance_mapname(.@entry_map_template$, .@iid);
-
 	if (.@current_map$ == .@entry_map$) {
 		.@valid_map = true;
 	} else {
-		// 2) Check additional maps
 		.@map_count = instance_info(instance_live_info(ILI_NAME, .@iid), IIT_MAPCOUNT);
 		for (.@i = 0; .@i < .@map_count; .@i++) {
 			.@map_template$ = instance_info(instance_live_info(ILI_NAME, .@iid), IIT_MAP, .@i);
 			.@map$ = instance_mapname(.@map_template$, .@iid);
-			if (.@current_map$ == .@map$) {
-				.@valid_map = true;
-				break;
-			}
+			if (.@current_map$ == .@map$) { .@valid_map = true; break; }
 		}
 	}
-
-	if (!.@valid_map) {
-		return;
-	}
+	if (!.@valid_map) return;
 
 	// Copy party arrays
 	copyarray .@CID, $@partymembercid, $@partymembercount;
 	copyarray .@AID, $@partymemberaid, $@partymembercount;
 
 	// Reward loop
+	.@rewarded = false;
 	for (.@i = 0; .@i < getarraysize(.@CID); .@i++) {
 		if (isloggedin(.@AID[.@i], .@CID[.@i])) {
 			.@member_map$ = strcharinfo(3, .@CID[.@i]);
 			if (.@member_map$ == .@current_map$) {
 				setd("#" + .@var_name$, getd("#" + .@var_name$) + .@instance_points);
-
-				announce "The party [ " + getpartyname(.@party_id) +" ] has defeated Endless Tower on " + .@difficulty_mode$ + "!", bc_all;
-
 				message strcharinfo(0, .@CID[.@i]),"You've been granted " + .@instance_points + " " + .@var_name$ + ".";
 				message strcharinfo(0, .@CID[.@i]),"You now have " + getd("#" + .@var_name$) + " " + .@var_name$ + ".";
+				.@rewarded = true;
 			}
 		}
 	}
+	if (.@rewarded) announce "The party [ " + getpartyname(.@party_id) +" ] has defeated Endless Tower on " + .@difficulty_mode$ + "!", bc_all;
 	return;
 }
 
-// Tower Settings
+//============================================================
+// Difficulty Settings & Data
 //============================================================
 function	script	F_Instance_Settings	{
+	// Human-readable names & variables
+	setarray $@difficulty_mode$[1], "Normal Mode", "Veteran Mode", "Nightmare Mode", "Hell Mode", "Torment Mode";
+	setarray $@var_names$[1], "INSTANCE_NORMAL", "INSTANCE_VETERAN", "INSTANCE_NIGHTMARE", "INSTANCE_HELL", "INSTANCE_TORMENT";
 
-    setarray $@normal_mode_variables, 0         //bonus_hp_rate  
-                                    , 0         //bonus_dmg_rate  
-                                    , 0         //bonus_damagetaken  
-                                    , 0         //bonus_def  
-                                    , 0         //bonus_mdef  
-                                    , 0         //bonus_hit  
-                                    , 0;        //bonus_flee
-                                      
-    setarray $@veteran_mode_variables, 50       //bonus_hp_rate  
-                                    , 50        //bonus_dmg_rate  
-                                    , -10       //bonus_damagetaken  
-                                    , 50        //bonus_def  
-                                    , 50        //bonus_mdef  
-                                    , 50        //bonus_hit  
-                                    , 50        //bonus_flee  
-                                    , -25;      //resistance_penalty
-                                      
-    setarray $@nightmare_mode_variables, 100    //bonus_hp_rate  
-                                    , 100       //bonus_dmg_rate  
-                                    , -20       //bonus_damagetaken  
-                                    , 100       //bonus_def  
-                                    , 100       //bonus_mdef  
-                                    , 100       //bonus_hit  
-                                    , 100       //bonus_flee  
-                                    , -50;      //resistance_penalty
-                                      
-    setarray $@hell_mode_variables, 150     //bonus_hp_rate  
-                                    , 150       //bonus_dmg_rate  
-                                    , -30       //bonus_damagetaken  
-                                    , 150       //bonus_def  
-                                    , 150       //bonus_mdef  
-                                    , 150       //bonus_hit  
-                                    , 150       //bonus_flee  
-                                    , -75;      //resistance_penalty
-                                      
-    setarray $@torment_mode_variables, 200      //bonus_hp_rate  
-                                    , 200       //bonus_dmg_rate  
-                                    , -40       //bonus_damagetaken  
-                                    , 200       //bonus_def  
-                                    , 200       //bonus_mdef  
-                                    , 200       //bonus_hit  
-                                    , 200       //bonus_flee  
-                                    , -100;     //resistance_penalty
-									
-	setarray $@bonus_exp[1], 0					//normal_bonus_exp
-						, 50					//veteran_bonus_exp
-						, 100					//nightmare_bonus_exp
-						, 150					//hell_bonus_exp
-						, 200;					//torment_bonus_exp
+	// Element pool (exclude Neutral for variety)
+	setarray $@element_pool, 1,2,3,4,5,6,7,8,9; // Water,Earth,Fire,Wind,Poison,Holy,Dark,Ghost,Undead
 
-	setarray $@bonus_drop[1], 0					//normal_bonus_exp
-						, 50					//veteran_bonus_exp
-						, 100					//nightmare_bonus_exp
-						, 150					//hell_bonus_exp
-						, 200;					//torment_bonus_exp
+	callfunc("F_DiffIndex");
+	.@C = 14; // columns per difficulty
 
-	setarray $@instance_points[1], 10			//normal mode
-								, 20			//veteran mode
-								, 40			//nightmare mode
-								, 80			//hell mode
-								, 160;			//torment mode
+	// Layout per difficulty row (14 cols):
+	// 0 HP%, 1 DMG%, 2 DEF%, 3 MDEF%, 4 HIT%, 5 FLEE%, 6 AMOTION%, 7 ADELay%, 8 CRIT+, 9 IGN_DEF%, 10 POINTS, 11 DMG_TAKEN%, 12 EXP%, 13 DROP%
 	
-	setarray $@difficulty_mode$[1], "Normal Mode"	//announcement
-								, "Veteran Mode"
-								, "Nightmare Mode"
-								, "Hell Mode"
-								, "Torment Mode";
+	// Normal
+	setarray $@difficulty_matrix[0 * .@C],
+			0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		10,		0,		0,		0;
+	// Veteran
+	setarray $@difficulty_matrix[1 * .@C],
+			50,		50,		50,		50,		50,		50,		10,		10,		5,		10,		20,		-10,	50,		50;
+	// Nightmare
+	setarray $@difficulty_matrix[2 * .@C],
+			100,	100,	100,	100,	100,	100,	20,		20,		10,		15,		40,		-20,	100,	100;
+	// Hell
+	setarray $@difficulty_matrix[3 * .@C],
+			150,	150,	150,	150,	150,	150, 	30, 	30, 	15, 	20,  	80, 	-30, 	150, 	150;
+	// Torment
+	setarray $@difficulty_matrix[4 * .@C],
+			200,	200,	200,	200,	200,	200, 	40, 	40, 	20, 	25, 	160, 	-40, 	200, 	200;
 
-	setarray $@var_names$[1], "INSTANCE_NORMAL"	//custom cashpoints variable name
-							, "INSTANCE_VETERAN"
-							, "INSTANCE_NIGHTMARE"
-							, "INSTANCE_HELL"
-							, "INSTANCE_TORMENT";
-return;
+	// Resistance penalty stays separate (used by player SC)
+	setarray $@resistance_penalty[1], 0, -25, -50, -75, -100;
+	return;
 }
 
 //============================================================
-// Instance Event Handler (with detailed debug logging)
+// Instance Event Handler
 //============================================================
 -	script	Instance_LoginEvent_Handler	FAKE_NPC,{
-
 	end;
-
 OnPCLoginEvent:
-	debugmes "[Event] OnPCLoginEvent triggered.";
 	callfunc("F_Instance_Reconnect_Check");
 	end;
-
 }
