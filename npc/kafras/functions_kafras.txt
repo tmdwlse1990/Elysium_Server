@@ -330,8 +330,8 @@ function Go {
 	set lastwarp$, getarg(0);
 	set lastwarpx, getarg(1,0);
 	set lastwarpy, getarg(2,0);
-	warp getarg(0),getarg(1,0),getarg(2,0);
 	callsub S_CheckPayment;
+	warp getarg(0),getarg(1,0),getarg(2,0);
 	end;
 }
 function Disp {
