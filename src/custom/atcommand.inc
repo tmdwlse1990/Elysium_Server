@@ -1120,6 +1120,36 @@ void atcommand_statbonus_sub(int fd, class map_session_data *sd) {
 		}  
 	}  
 
+	for (int ele = 0; ele < ELE_MAX; ele++) {  
+		if (sd->indexed_bonus.subdefele[ele] != 0) {  
+			std::string ele_name = get_element_name(ele);  
+			if (sd->indexed_bonus.subdefele[ele] < 0) {  
+				sprintf(output, "   -> Physical Damage Reduction from %s Defense: %s%%",   
+						ele_name.c_str(), rathena::util::insert_comma(sd->indexed_bonus.subdefele[ele]).c_str());  
+				clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
+			} else {  
+				sprintf(output, "   -> Physical Damage Reduction from %s Defense: +%s%%",   
+						ele_name.c_str(), rathena::util::insert_comma(sd->indexed_bonus.subdefele[ele]).c_str());  
+				clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
+			}  
+			damage_modifiers_found = true;  
+		}
+
+		if (sd->indexed_bonus.magic_subdefele[ele] != 0) {  
+			std::string ele_name = get_element_name(ele);  
+			if (sd->indexed_bonus.magic_subdefele[ele] < 0) {  
+				sprintf(output, "   -> Magic Damage Reduction from %s Defense: %s%%",   
+						ele_name.c_str(), rathena::util::insert_comma(sd->indexed_bonus.magic_subdefele[ele]).c_str());  
+				clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
+			} else {  
+				sprintf(output, "   -> Magic Damage Reduction from %s Defense: +%s%%",   
+						ele_name.c_str(), rathena::util::insert_comma(sd->indexed_bonus.magic_subdefele[ele]).c_str());  
+				clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
+			}  
+			damage_modifiers_found = true;  
+		}		
+	}
+
 	for (int race = 0; race < RC_MAX; race++) {  
 		if (sd->right_weapon.addrace[race] != 0) {  
 			std::string race_name = get_race_name(race);  
@@ -1177,7 +1207,7 @@ void atcommand_statbonus_sub(int fd, class map_session_data *sd) {
 			damage_modifiers_found = true;  
 		}  
 
-		if (magic_bonus != 0) {
+		if (magic_bonus < 0) {
 			std::string class_name = get_class_name(class_type);
 			if (magic_bonus != 0) {
 				sprintf(output, "   -> %s Magic Damage: %s%%", class_name.c_str(), rathena::util::insert_comma(magic_bonus).c_str());  
@@ -1191,7 +1221,7 @@ void atcommand_statbonus_sub(int fd, class map_session_data *sd) {
 
 		if (reduction_bonus != 0) {
 			std::string class_name = get_class_name(class_type);
-			if (reduction_bonus != 0) {
+			if (reduction_bonus < 0) {
 				sprintf(output, "   -> %s Damage Reduction: %s%%", class_name.c_str(), rathena::util::insert_comma(reduction_bonus).c_str());  
 				clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
 			} else {  
@@ -1262,53 +1292,18 @@ void atcommand_statbonus_sub(int fd, class map_session_data *sd) {
 			}  
 			damage_modifiers_found = true;  
 		}  
-	}  
-
-	for (int race = 0; race < RC_MAX; race++) {  
-		if (sd->right_weapon.addrace[race] != 0) {  
-			std::string race_name = get_race_name(race);  
-			if (sd->right_weapon.addrace[race] < 0) {  
-				sprintf(output, "   -> %s Physical Damage: %s%%", race_name.c_str(), rathena::util::insert_comma(sd->right_weapon.addrace[race]).c_str());  
-				clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
-			} else {  
-				sprintf(output, "   -> %s Physical Damage: +%s%%", race_name.c_str(), rathena::util::insert_comma(sd->right_weapon.addrace[race]).c_str());  
-				clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
-			}  
-			damage_modifiers_found = true;  
-		}  
-
-		if (sd->indexed_bonus.magic_addrace[race] != 0) {  
-			std::string race_name = get_race_name(race);  
-			if (sd->indexed_bonus.magic_addrace[race] < 0) {  
-				sprintf(output, "   -> %s Magic Damage: %s%%", race_name.c_str(), rathena::util::insert_comma(sd->indexed_bonus.magic_addrace[race]).c_str());  
-				clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
-			} else {  
-				sprintf(output, "   -> %s Magic Damage: +%s%%", race_name.c_str(), rathena::util::insert_comma(sd->indexed_bonus.magic_addrace[race]).c_str());  
-				clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
-			}  
-			damage_modifiers_found = true;  
-		}  
-
-		if (sd->indexed_bonus.subrace[race] != 0) {  
-			std::string race_name = get_race_name(race);  
-			if (sd->indexed_bonus.subrace[race] < 0) {  
-				sprintf(output, "   -> %s Damage Reduction: %s%%", race_name.c_str(), rathena::util::insert_comma(sd->indexed_bonus.subrace[race]).c_str());  
-				clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
-			} else {  
-				sprintf(output, "   -> %s Damage Reduction: +%s%%", race_name.c_str(), rathena::util::insert_comma(sd->indexed_bonus.subrace[race]).c_str());  
-				clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
-			}  
-			damage_modifiers_found = true;  
-		}  
-	}  
+	}    
 
 	for (const auto &bonus : sd->right_weapon.add_dmg) {  
-		if (bonus.val != 0) {  
+		if (bonus.val != 0) {
+			const char* monster_name = mob_get_jname(bonus.id);  
+			if (!monster_name) monster_name = "Unknown Monster";
+			
 			if (bonus.val < 0) {  
-				sprintf(output, "   -> Monster %d Physical Damage: %s%%", bonus.id, rathena::util::insert_comma(bonus.val).c_str());  
+				sprintf(output, "   -> %s Physical Damage: %s%%", monster_name, rathena::util::insert_comma(bonus.val).c_str());  
 				clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
 			} else {  
-				sprintf(output, "   -> Monster %d Physical Damage: +%s%%", bonus.id, rathena::util::insert_comma(bonus.val).c_str());  
+				sprintf(output, "   -> %s Physical Damage: +%s%%", monster_name, rathena::util::insert_comma(bonus.val).c_str());  
 				clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
 			}  
 			damage_modifiers_found = true;  
@@ -1318,10 +1313,10 @@ void atcommand_statbonus_sub(int fd, class map_session_data *sd) {
 	for (const auto &bonus : sd->add_mdmg) {  
 		if (bonus.val != 0) {  
 			if (bonus.val < 0) {  
-				sprintf(output, "   -> Monster %d Magic Damage: %s%%", bonus.id, rathena::util::insert_comma(bonus.val).c_str());  
+				sprintf(output, "   -> %s Magic Damage: %s%%", monster_name, rathena::util::insert_comma(bonus.val).c_str());  
 				clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
 			} else {  
-				sprintf(output, "   -> Monster %d Magic Damage: +%s%%", bonus.id, rathena::util::insert_comma(bonus.val).c_str());  
+				sprintf(output, "   -> %s Magic Damage: +%s%%", monster_name, rathena::util::insert_comma(bonus.val).c_str());  
 				clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
 			}  
 			damage_modifiers_found = true;  

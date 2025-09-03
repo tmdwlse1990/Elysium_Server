@@ -17,6 +17,8 @@
 #include "unit.hpp" // struct unit_data
 #include "navi.hpp" // navi stuff
 
+extern DBMap* ev_db;
+
 struct block_list;
 struct npc_data;
 struct view_data;
