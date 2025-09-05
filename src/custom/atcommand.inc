@@ -218,6 +218,18 @@ void atcommand_statbonus_sub(int fd, class map_session_data *sd) {
 		}    
 		atk_def_found = true;    
 	}    
+
+	if (sd->matk_rate != 100) {      
+		int matk_rate_bonus = sd->matk_rate - 100;      
+		if (matk_rate_bonus < 0) {      
+			sprintf(output, "   -> MATK Rate: %s%%", rathena::util::insert_comma(matk_rate_bonus).c_str());      
+			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);      
+		} else {      
+			sprintf(output, "   -> MATK Rate: +%s%%", rathena::util::insert_comma(matk_rate_bonus).c_str());      
+			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);    
+		}      
+		atk_def_found = true;      
+	}
 	  
 	if (sd->bonus.weapon_atk_rate != 0) {    
 		if (sd->bonus.weapon_atk_rate < 0) {    
