@@ -10,6 +10,12 @@
 
 //ACMD_DEF(newcommand),
 ACMD_DEF(afk),
+ACMD_DEF(basicbonuses),
+ACMD_DEF(extendedbonuses),
+ACMD_DEF(gspecificbonuses),
+ACMD_DEF(srelatedbonuses),
+ACMD_DEF(autospellbonuses),
+ACMD_DEF(miscbonuses),
 ACMD_DEF(statbonus),
 ACMD_DEF2("mercenaryon", mercenaryon),
 ACMD_DEF(reloadcollectiondb),

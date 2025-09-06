@@ -753,6 +753,37 @@ int32 pc_class2idx(int32 class_) {
 }
 
 /**  
+ * Status effect name helper function  
+ * Maps status effect constants to human-readable names for display purposes  
+ * @param eff: Status effect constant (SC_STONEWAIT, SC_FREEZE, etc.)  
+ * @return Status effect name as string ("Stone", "Freeze", etc.) or "Unknown" for invalid effects  
+ */  
+std::string get_status_name(int eff) {  
+    switch(eff) {  
+        case SC_STONEWAIT: return "Stone";        // Eff_Stone  
+        case SC_FREEZE: return "Freeze";          // Eff_Freeze  
+        case SC_STUN: return "Stun";              // Eff_Stun  
+        case SC_SLEEP: return "Sleep";            // Eff_Sleep  
+        case SC_POISON: return "Poison";          // Eff_Poison  
+        case SC_CURSE: return "Curse";            // Eff_Curse  
+        case SC_SILENCE: return "Silence";        // Eff_Silence  
+        case SC_CONFUSION: return "Confusion";    // Eff_Confusion  
+        case SC_BLIND: return "Blind";            // Eff_Blind  
+        case SC_BLEEDING: return "Bleeding";      // Eff_Bleeding  
+        case SC_DPOISON: return "Deadly Poison"; // Eff_DPoison  
+        case SC_FEAR: return "Fear";              // Eff_Fear  
+        case SC_BURNING: return "Burning";        // Eff_Burning  
+        case SC_CRYSTALIZE: return "Crystalize";  // Eff_Crystalize  
+        case SC_FREEZING: return "Freezing";      // Eff_Freezing  
+        case SC_BURNT: return "Heat";             // Eff_Heat  
+        case SC_DEEPSLEEP: return "Deep Sleep";  // Eff_Deepsleep  
+        case SC_WHITEIMPRISON: return "White Imprison"; // Eff_WhiteImprison  
+        case SC_HALLUCINATION: return "Hallucination";  // Eff_Hallucination  
+        default: return "Unknown";  
+    }  
+}
+
+/**  
  * Element name helper function  
  * Maps element constants to human-readable names for display purposes  
  * @param ele: Element constant (ELE_NEUTRAL, ELE_WATER, etc.)  
@@ -770,6 +801,7 @@ std::string get_element_name(int ele) {
         case ELE_DARK: return "Dark";  
         case ELE_GHOST: return "Ghost";  
         case ELE_UNDEAD: return "Undead";  
+		case ELE_ALL: return "All";
         default: return "Unknown";  
     }  
 }  
@@ -793,10 +825,63 @@ std::string get_race_name(int race) {
         case RC_ANGEL: return "Angel";  
         case RC_DRAGON: return "Dragon";  
         case RC_PLAYER_HUMAN: return "Player (Human)";  
-        case RC_PLAYER_DORAM: return "Player (Doram)";  
+        case RC_PLAYER_DORAM: return "Player (Doram)";
+		case RC_ALL: return "All";		
         default: return "Unknown";  
     }  
 }  
+
+/**  
+ * Monster Race 2 name helper function  
+ * Maps race2 constants to human-readable names for display purposes  
+ * @param race2: Race2 constant (RC2_GOBLIN, RC2_KOBOLD, etc.)  
+ * @return Race2 name as string ("Goblin", "Kobold", etc.) or "Unknown" for invalid race2  
+ */  
+std::string get_race2_name(int race2) {  
+    switch(race2) {  
+        case RC2_GOBLIN: return "Goblin";  
+        case RC2_KOBOLD: return "Kobold";  
+        case RC2_ORC: return "Orc";  
+        case RC2_GOLEM: return "Golem";  
+        case RC2_NINJA: return "Ninja";  
+        case RC2_GVG: return "GVG";  
+        case RC2_TREASURE: return "Treasure";  
+        case RC2_BIOLAB: return "BioLab";  
+        case RC2_MANUK: return "Manuk";  
+        case RC2_SPLENDIDE: return "Splendide";  
+        case RC2_SCARABA: return "Scaraba";  
+        case RC2_OGH_ATK_DEF: return "OGH Atk Def";  
+        case RC2_OGH_HIDDEN: return "OGH Hidden";  
+        case RC2_BIO5_SWORDMAN_THIEF: return "Bio5 Swordman Thief";  
+        case RC2_BIO5_ACOLYTE_MERCHANT: return "Bio5 Acolyte Merchant";  
+        case RC2_BIO5_MAGE_ARCHER: return "Bio5 Mage Archer";  
+        case RC2_BIO5_MVP: return "Bio5 MVP";  
+        case RC2_CLOCKTOWER: return "Clocktower";  
+        case RC2_THANATOS: return "Thanatos";  
+        case RC2_FACEWORM: return "Faceworm";  
+        case RC2_HEARTHUNTER: return "Hearthunter";  
+        case RC2_ROCKRIDGE: return "Rockridge";  
+        case RC2_WERNER_LAB: return "Werner Lab";  
+        case RC2_TEMPLE_DEMON: return "Temple Demon";  
+        case RC2_ILLUSION_VAMPIRE: return "Illusion Vampire";  
+        case RC2_MALANGDO: return "Malangdo";  
+        case RC2_EP172ALPHA: return "EP172 Alpha";  
+        case RC2_EP172BETA: return "EP172 Beta";  
+        case RC2_EP172BATH: return "EP172 Bath";  
+        case RC2_ILLUSION_TURTLE: return "Illusion Turtle";  
+        case RC2_RACHEL_SANCTUARY: return "Rachel Sanctuary";  
+        case RC2_ILLUSION_LUANDA: return "Illusion Luanda";  
+        case RC2_ILLUSION_FROZEN: return "Illusion Frozen";  
+        case RC2_ILLUSION_MOONLIGHT: return "Illusion Moonlight";  
+        case RC2_EP16_DEF: return "EP16 Def";  
+        case RC2_EDDA_ARUNAFELTZ: return "Edda Arunafeltz";  
+        case RC2_LASAGNA: return "Lasagna";  
+        case RC2_GLAST_HEIM_ABYSS: return "Glast Heim Abyss";  
+        case RC2_DESTROYED_VALKYRIE_REALM: return "Destroyed Valkyrie Realm";  
+        case RC2_ENCROACHED_GEPHENIA: return "Encroached Gephenia";  
+        default: return "Unknown";  
+    }  
+}
   
 /**  
  * Class name helper function  
@@ -810,6 +895,7 @@ std::string get_class_name(int class_type) {
         case CLASS_BOSS: return "Boss";  
         case CLASS_GUARDIAN: return "Guardian";  
         case CLASS_BATTLEFIELD: return "Battlefield";  
+		case CLASS_ALL: return "All";
         default: return "Unknown";  
     }  
 }  
@@ -825,6 +911,7 @@ std::string get_size_name(int size) {
         case SZ_SMALL: return "Small";  
         case SZ_MEDIUM: return "Medium";  
         case SZ_BIG: return "Large";  
+		case SZ_ALL: return "All";
         default: return "Unknown";  
     }  
 }  

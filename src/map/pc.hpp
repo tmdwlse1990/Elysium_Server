@@ -1222,6 +1222,14 @@ uint16 pc_maxparameter(map_session_data *sd, e_params param);
 int16 pc_maxaspd(map_session_data *sd);
 
 /**  
+ * Status effect name helper function  
+ * Maps status effect constants to human-readable names for display purposes  
+ * @param eff: Status effect constant (SC_STONEWAIT, SC_FREEZE, etc.)  
+ * @return Status effect name as string ("Stone", "Freeze", etc.) or "Unknown" for invalid effects  
+ */
+std::string get_status_name(int eff);
+
+/**  
  * Element name helper function  
  * @param ele: Element constant (ELE_NEUTRAL, ELE_WATER, etc.)  
  * @return Element name as string ("Neutral", "Water", etc.) or "Unknown" for invalid elements  
@@ -1234,6 +1242,14 @@ std::string get_element_name(int ele);
  * @return Race name as string ("Formless", "Undead", etc.) or "Unknown" for invalid races  
  */  
 std::string get_race_name(int race);  
+
+/**  
+ * Monster Race 2 name helper function  
+ * Maps race2 constants to human-readable names for display purposes  
+ * @param race2: Race2 constant (RC2_GOBLIN, RC2_KOBOLD, etc.)  
+ * @return Race2 name as string ("Goblin", "Kobold", etc.) or "Unknown" for invalid race2  
+ */
+std::string get_race2_name(int race2);
   
 /**  
  * Class name helper function  
