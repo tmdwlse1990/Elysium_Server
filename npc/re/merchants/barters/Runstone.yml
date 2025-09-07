@@ -16,11 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 ###########################################################################
-# Barter Database
-###########################################################################
-#
-# Barter Settings
-#
+# Runestone Database
 ###########################################################################
 #  - Name               NPC name.
 #    Map                Map name. (Default: not on a map)
@@ -34,7 +30,6 @@
 #        Item           Aegis name of the item.
 #        Stock          Amount of item in stock. 0 means unlimited. (Default: 0)
 #        Zeny           Cost of them item in Zeny. (Default: 0)
-#        Refine         Refine level of the item. (Default: 0)
 #        RequiredItems: List of required items (Optional)
 #          - Index      Index of the required item. (0-4)
 #            Item       Aegis name of required item.
@@ -46,26 +41,34 @@ Header:
   Type: BARTER_DB
   Version: 2
 
-Footer:
-  Imports:
-  - Path: npc/re/merchants/barters/cashmall.yml
-  - Path: npc/re/merchants/barters/enchan_illusion_dungeons.yml
-  - Path: npc/re/merchants/barters/enchantgrade.yml
-  - Path: npc/re/merchants/barters/Extended_Ammunition.yml
-  - Path: npc/re/merchants/barters/garden_of_time.yml
-  - Path: npc/re/merchants/barters/Gemstone_Bagger.yml
-  - Path: npc/re/merchants/barters/mysterious_cookie_shop.yml
-  - Path: npc/re/merchants/barters/quests_16_1.yml
-  - Path: npc/re/merchants/barters/quests_16_2.yml
-  - Path: npc/re/merchants/barters/quests_17_1.yml
-  - Path: npc/re/merchants/barters/quests_17_2.yml
-  - Path: npc/re/merchants/barters/quests_18.yml
-  - Path: npc/re/merchants/barters/quests_exp_175.yml
-  - Path: npc/re/merchants/barters/refine.yml
-  - Path: npc/re/merchants/barters/rgsr_in.yml
-  - Path: npc/re/merchants/barters/Pet_Groomer.yml
-  - Path: npc/re/merchants/barters/quests_19_daily.yml
-  - Path: npc/re/merchants/barters/quests_19_misc.yml
-  - Path: npc/re/merchants/barters/ep19_new_content.yml
-  - Path: npc/re/merchants/barters/quests_20_misc.yml
-  - Path: npc/re/merchants/barters/Runstone.yml
+Body:
+
+  - Name: Runestone
+    Items:
+      - Index: 0
+        Item: R_Ep17_Album 
+        RequiredItems:
+          - Index: 0
+            Item: Imperfect_Rune
+            Amount: 150
+      - Index: 1
+        Item: Perfect_Rune 
+        RequiredItems:
+          - Index: 0
+            Item: Imperfect_Rune
+            Amount: 1500
+      - Index: 2
+        Item: R_Core_Rune 
+        RequiredItems:
+          - Index: 0
+            Item: R_Outside_Rune
+            Amount: 70
+      - Index: 3
+        Item: R_Sealed_Rune  
+        RequiredItems:
+          - Index: 0
+            Item: R_Rune_Seal
+            Amount: 3
+          - Index: 1
+            Item: Imperfect_Rune
+            Amount: 150

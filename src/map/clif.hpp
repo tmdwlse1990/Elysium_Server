@@ -13,6 +13,7 @@
 #include <common/timer.hpp> // t_tick
 
 #include "packets.hpp"
+#include "rune.hpp"
 #include "script.hpp"
 #include "skill.hpp"
 #include "trade.hpp"
@@ -54,6 +55,7 @@ enum e_macro_report_status : uint8;
 enum e_hom_state2 : uint8;
 enum _sp;
 enum e_searchstore_failure : uint16;
+enum e_runedecompo_result: uint8;
 
 #define DMGVAL_IGNORE -30000
 
@@ -1560,5 +1562,25 @@ void clif_macro_user_report_ack(map_session_data* const sd, int32 status, const 
 
 // Body Size Controller
 void clif_body_size(block_list* bl, int32 val1);
+
+// Rune UI
+void clif_rune_ui_open( map_session_data* sd );
+void clif_parse_asktag_rune( int32 fd, map_session_data* sd );
+void clif_bookinfo_rune( map_session_data* sd, uint16 tagID );
+void clif_setinfo_rune( map_session_data* sd, uint16 tagID );
+void clif_parse_result_rune_ui_open( int32 fd, map_session_data* sd );
+void clif_parse_bookactivate_rune( int32 fd, map_session_data* sd );
+void clif_parse_setactivate_rune( int32 fd, map_session_data* sd );
+void clif_setactivate_rune (map_session_data* sd, uint16 tagID, uint32 runesetid );
+void clif_parse_setupgrade_rune( int32 fd, map_session_data* sd );
+void clif_setupgrade_rune (map_session_data* sd, uint16 tagID, uint32 runesetid );
+void clif_enablerefresh_rune (map_session_data* sd, uint16 tagID, uint32 runesetid );
+void clif_enablerefresh_rune2 (map_session_data* sd, uint16 tagID, uint32 runesetid );
+void clif_onlogenable_rune (map_session_data* sd);
+void clif_parse_decompo_rune( int32 fd, map_session_data* sd );
+void clif_runedecompowindow_result (map_session_data* sd, enum e_runedecompo_result result, std::unordered_map<t_itemid, uint32> material_item_list);
+void clif_parse_askreward_rune(int32 fd, map_session_data* sd);
+void clif_resultreward_rune(map_session_data* sd, e_runereward_result result, uint8 reward, uint16 tagID, uint32 runesetid);
+void clif_onlogreward_rune(map_session_data* sd, uint16 tagID);
 
 #endif /* CLIF_HPP */

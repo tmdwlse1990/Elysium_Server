@@ -51,6 +51,7 @@
 #include "pc.hpp"
 #include "pet.hpp"
 #include "quest.hpp"
+#include "rune.hpp"
 #include "storage.hpp"
 #include "title.hpp"
 #include "trade.hpp"
@@ -5065,7 +5066,8 @@ void MapServer::finalize(){
 	do_final_path();
 	do_final_title();
 	do_final_collection();
-	do_final_emotions();	
+	do_final_emotions();
+	do_final_rune();	
 
 	map_db->destroy(map_db, map_db_final);
 
@@ -5445,6 +5447,7 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	do_init_title();
 	do_init_collection();
 	do_init_emotions();	
+	do_init_rune();	
 
 	npc_event_do_oninit();	// Init npcs (OnInit)
 

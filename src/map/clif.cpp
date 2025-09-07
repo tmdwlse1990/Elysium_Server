@@ -53,6 +53,7 @@
 #include "pc_groups.hpp"
 #include "pet.hpp"
 #include "quest.hpp"
+#include "rune.hpp"
 #include "script.hpp"
 #include "skill.hpp"
 #include "status.hpp"
@@ -25636,6 +25637,61 @@ void clif_parse_partybooking_reply( int32 fd, map_session_data* sd ){
 #endif
 }
 
+void clif_parse_askreward_rune(int32 fd, map_session_data* sd) {
+#if PACKETVER >= 20241001
+	struct PACKET_CZ_RUNE_ASK_REWARD* p = (struct PACKET_CZ_RUNE_ASK_REWARD*)RFIFOP(fd, 0);
+
+	std::tuple<e_runereward_result, uint8> result = rune_askreward(sd, p->tagID, p->runesetid, p->reward);
+	//ShowError("2 clif_parse_askreward_rune tagID %d runesetid %d reward %d std::get<0>(result) %d std::get<1>(result) %d \n", p->tagID, p->runesetid, p->reward, std::get<0>(result), std::get<1>(result));
+
+	clif_resultreward_rune(sd, std::get<0>(result), std::get<1>(result), p->tagID, p->runesetid);
+#endif
+}
+
+void clif_resultreward_rune(map_session_data* sd, e_runereward_result result, uint8 reward, uint16 tagID, uint32 runesetid) {
+#if PACKETVER >= 20241001
+	struct PACKET_ZC_RUNE_RESULT_REWARD p = {};
+	//ShowError("clif_resultreward_rune : tagId %d runesetid %d result %d reward %d \n", tagID, runesetid, result, reward);
+
+	p.packetType = HEADER_ZC_RUNE_RESULT_REWARD;
+	p.result = result;
+	p.tagID = tagID;
+	p.runesetid = runesetid;
+	p.reward = reward;
+
+	clif_send(&p, sizeof(p), sd, SELF);
+#endif
+}
+
+void clif_onlogreward_rune(map_session_data* sd, uint16 tagID) {
+#if PACKETVER >= 20241001
+	if (!sd) return;
+	if (sd->runeSets.empty()) return;
+	if (sd->runeSets.size() <= 0) return;
+
+	struct PACKET_ZC_REWARD_INFO_RUNE* p = (struct PACKET_ZC_REWARD_INFO_RUNE*)packet_buffer;
+
+	p->packetType = HEADER_ZC_REWARD_INFO_RUNE;
+	p->set_amount = 0;
+	p->tagID = tagID;
+
+	for (auto& set_data : sd->runeSets) {
+		if (set_data.tagId == tagID) {
+			struct PACKET_ZC_REWARD_INFO_RUNE_sub* setreward_rune = &p->setreward_rune[p->set_amount];
+			setreward_rune->runesetid = static_cast<uint32>(set_data.setId);
+			setreward_rune->reward = set_data.reward;
+			p->set_amount++;
+		}
+	}
+
+	p->packetLength = sizeof(struct PACKET_ZC_REWARD_INFO_RUNE) + (sizeof(struct PACKET_ZC_REWARD_INFO_RUNE_sub) * p->set_amount);
+	p->unknown = 0;
+
+	//ShowError("clif_setinfo_rune tagID %d \n", p->tagID);
+	clif_send(p, p->packetLength, sd, SELF);
+#endif
+}
+
 /// /resetskill.
 /// Request to skills.
 /// 0bb1 <type>.W <unknown>.B (CZ_RESET_SKILL)
@@ -26088,6 +26144,409 @@ void clif_macro_user_report_ack(map_session_data* const sd, int32 status, const 
 
 	Packet->Status = status;
 	clif_send(Packet, sizeof(PACKET_ZC_MACRO_USER_REPORT_ACK), sd, SELF);
+#endif
+}
+
+void clif_rune_ui_open( map_session_data* sd ){
+#if PACKETVER >= 20230802
+	struct PACKET_ZC_OPEN_RUNE_UI p = {};
+
+	p.packetType = HEADER_ZC_OPEN_RUNE_UI;
+	p.state = 1;
+
+	clif_send( &p, sizeof( p ), sd, SELF );
+#endif
+}
+
+void clif_parse_result_rune_ui_open( int32 fd, map_session_data* sd ){
+#if PACKETVER >= 20230802
+	struct PACKET_CZ_RESULT_OPEN_RUNE_UI* p = (struct PACKET_CZ_RESULT_OPEN_RUNE_UI*)RFIFOP( fd, 0 );
+
+	//ShowError("clif_parse_result_rune_ui_open result ui open state %d\n",p->state);
+	
+	sd->state.runeui_open = p->state;
+#endif
+}
+
+void clif_parse_asktag_rune( int32 fd, map_session_data* sd ){
+#if PACKETVER >= 20230802
+	struct PACKET_CZ_ASK_TAG_LOAD_RUNE* p = (struct PACKET_CZ_ASK_TAG_LOAD_RUNE*)RFIFOP( fd, 0 );
+
+	//ShowError("clif_parse_asktab_rune tagID %d\n",p->tagID);
+	
+	clif_bookinfo_rune(sd, p->tagID);
+	clif_setinfo_rune(sd, p->tagID);
+#endif
+}
+
+void clif_bookinfo_rune( map_session_data* sd, uint16 tagID ){
+#if PACKETVER >= 20230802
+	struct PACKET_ZC_BOOK_INFO_RUNE* p = (struct PACKET_ZC_BOOK_INFO_RUNE*)packet_buffer;;
+
+	p->packetType = HEADER_ZC_BOOK_INFO_RUNE;
+	p->book_amount = 0;
+
+	for (const s_runebook_data& runebook_data : sd->runeBooks) {
+		if (runebook_data.tagId == tagID) {
+			struct PACKET_BOOK_LIST_RUNE_sub* booklist_rune = &p->booklist_rune[p->book_amount];
+			booklist_rune->runebookid = static_cast<uint32>(runebook_data.bookId);
+
+			p->book_amount++;
+		}
+	}
+
+	p->packetLength = sizeof( struct PACKET_ZC_BOOK_INFO_RUNE ) + ( sizeof( struct PACKET_BOOK_LIST_RUNE_sub ) * p->book_amount );
+	p->unknown = 0;
+	p->tagID = tagID;
+
+	//ShowError("clif_setinfo_rune tagID %d \n", p->tagID);
+	clif_send( p, p->packetLength, sd, SELF );
+#endif
+}
+
+void clif_setinfo_rune( map_session_data* sd, uint16 tagID ){
+#if PACKETVER >= 20230802
+	struct PACKET_ZC_SET_INFO_RUNE* p = (struct PACKET_ZC_SET_INFO_RUNE*)packet_buffer;
+
+	p->packetType = HEADER_ZC_SET_INFO_RUNE;
+	p->set_amount = 0;
+
+	for (const s_runeset_data& set_data : sd->runeSets) {
+		if(set_data.tagId == tagID){
+			struct PACKET_SET_LIST_RUNE_sub* setlist_rune = &p->setlist_rune[p->set_amount];
+			setlist_rune->runesetid = static_cast<uint32>(set_data.setId);
+			setlist_rune->upgrade = set_data.upgrade;
+			setlist_rune->failcount = set_data.failcount;
+		}
+
+		p->set_amount++;
+	}
+
+	p->packetLength = sizeof( struct PACKET_ZC_BOOK_INFO_RUNE ) + ( sizeof( struct PACKET_SET_LIST_RUNE_sub ) * p->set_amount );
+	p->unknown = 0;
+	p->tagID = tagID;
+
+	//ShowError("clif_setinfo_rune tagID %d \n", p->tagID);
+	clif_send( p, p->packetLength, sd, SELF );
+
+	if(sd->runeactivated_data.tagID && !sd->runeactivated_data.loaded){
+		clif_enablerefresh_rune2(sd,0,0);
+		clif_enablerefresh_rune2(sd,sd->runeactivated_data.tagID,sd->runeactivated_data.runesetid);
+		sd->runeactivated_data.loaded = true;
+	}
+#endif
+}
+
+void clif_parse_bookactivate_rune( int32 fd, map_session_data* sd ){
+#if PACKETVER >= 20230802
+	struct PACKET_CZ_BOOK_ACTIVATE_RUNE* p = (struct PACKET_CZ_BOOK_ACTIVATE_RUNE*)RFIFOP( fd, 0 );
+	
+	struct PACKET_ZC_BOOK_RESULT_RUNE pm = {};
+
+	pm.packetType = HEADER_ZC_BOOK_RESULT_RUNE;
+	pm.runebookid = p->runebookid;
+	pm.tagID = p->tagID;
+	pm.result = rune_bookactivate(sd,p->tagID,p->runebookid);
+
+	//ShowError("clif_parse_bookactivate_rune tagID %d runebookid %d result %d\n",p->tagID, p->runebookid, pm.result);
+	clif_send( &pm, sizeof( pm ), sd, SELF );
+
+	if(sd->runeactivated_data.tagID && sd->runeactivated_data.tagID == pm.tagID){
+		clif_enablerefresh_rune2(sd,0,0);
+		clif_enablerefresh_rune2(sd,sd->runeactivated_data.tagID,sd->runeactivated_data.runesetid);
+	}
+#endif
+}
+
+void clif_parse_setactivate_rune( int32 fd, map_session_data* sd ){
+#if PACKETVER >= 20230802
+	struct PACKET_CZ_SET_ACTIVATE_RUNE* p = (struct PACKET_CZ_SET_ACTIVATE_RUNE*)RFIFOP( fd, 0 );
+
+	//ShowError("clif_parse_setactivate_rune tagID %d runesetid %d \n",p->tagID, p->runesetid);
+	
+	clif_setactivate_rune(sd, p->tagID, p->runesetid);
+#endif
+}
+
+void clif_setactivate_rune (map_session_data* sd, uint16 tagID, uint32 runesetid ){
+#if PACKETVER >= 20230802
+	struct PACKET_ZC_SET_RESULT_RUNE p = {};
+
+	p.packetType = HEADER_ZC_SET_RESULT_RUNE;
+	p.tagID = tagID;
+	p.runesetid = runesetid;
+
+	p.result = rune_setactivate(sd,tagID,runesetid);
+	p.upgrade = 0;
+	p.failcount = 0;
+	
+	//ShowError("clif_setactivate_rune result %d upgrade : %d failcount %d \n",p.result, p.upgrade, p.failcount);
+	clif_send( &p, sizeof( p ), sd, SELF );
+#endif
+}
+
+void clif_parse_setupgrade_rune( int32 fd, map_session_data* sd ){
+#if PACKETVER >= 20230802
+	struct PACKET_CZ_SET_UPGRADE_RUNE* p = (struct PACKET_CZ_SET_UPGRADE_RUNE*)RFIFOP( fd, 0 );
+	//ShowError("clif_parse_setupgrade_rune tagID %d runesetid %d \n",p->tagID, p->runesetid);
+	
+	clif_setupgrade_rune(sd, p->tagID, p->runesetid);
+#endif
+}
+
+void clif_setupgrade_rune (map_session_data* sd, uint16 tagID, uint32 runesetid ){
+#if PACKETVER >= 20230802
+	struct PACKET_ZC_SET_RESULT_RUNE2 p = {};
+
+	p.packetType = HEADER_ZC_SET_RESULT_RUNE2;
+	p.tagID = tagID;
+	p.runesetid = runesetid;
+	
+	std::tuple<uint8, uint16, uint16>  rune_setupgrade_result = rune_setupgrade(sd, tagID, runesetid);
+	p.result = std::get<0>(rune_setupgrade_result);
+	p.upgrade = std::get<1>(rune_setupgrade_result);
+	p.failcount = std::get<2>(rune_setupgrade_result);
+
+	//ShowError("clif_setupgrade_rune result %d upgrade : %d failcount %d \n",p.result, p.upgrade, p.failcount);
+	clif_send( &p, sizeof( p ), sd, SELF );
+
+	if(sd->runeactivated_data.tagID && sd->runeactivated_data.tagID == tagID && sd->runeactivated_data.runesetid == runesetid){
+		clif_enablerefresh_rune2(sd,0,0);
+		clif_enablerefresh_rune2(sd,sd->runeactivated_data.tagID,sd->runeactivated_data.runesetid);
+	}
+#endif
+}
+
+void clif_parse_enable_rune( int32 fd, map_session_data* sd ){
+#if PACKETVER >= 20230802
+	struct PACKET_CZ_ENABLE_RUNE* p = (struct PACKET_CZ_ENABLE_RUNE*)RFIFOP( fd, 0 );
+
+	//ShowError("clif_parse_enable_rune tagID %d runesetid %d \n",p->tagID, p->runesetid);
+	
+	clif_enablerefresh_rune(sd, p->tagID, p->runesetid);
+#endif
+}
+
+void clif_enablerefresh_rune (map_session_data* sd, uint16 tagID, uint32 runesetid ){
+#if PACKETVER >= 20230802
+	struct PACKET_ZC_REFRESH_ENABLE_RUNE p = {};
+
+	p.packetType = HEADER_ZC_REFRESH_ENABLE_RUNE;
+	p.tagID = tagID;
+	
+	if(rune_changestate(sd, tagID, runesetid))
+		p.runesetid = runesetid;
+	else
+		p.runesetid = 0;
+
+	//ShowError("clif_enablerefresh_rune tagID %d runesetid %d \n",p.tagID, p.runesetid);
+	clif_send( &p, sizeof( p ), sd, SELF );
+#endif
+}
+
+void clif_enablerefresh_rune2 (map_session_data* sd, uint16 tagID, uint32 runesetid ){
+#if PACKETVER >= 20230802
+	struct PACKET_ZC_REFRESH_ENABLE_RUNE2 p = {};
+
+	p.packetType = HEADER_ZC_REFRESH_ENABLE_RUNE2;
+	p.tagID = tagID;
+	p.runesetid = runesetid;
+
+	//ShowError("clif_enablerefresh_rune2 tagID %d runesetid %d \n",p.tagID, p.runesetid);
+	clif_send( &p, sizeof( p ), sd, SELF );
+#endif
+}
+
+void clif_onlogenable_rune (map_session_data* sd){
+#if PACKETVER >= 20230802
+	//ShowError("clif_onlogenable_rune \n");
+	struct PACKET_ZC_ONLOG_ENABLE_RUNE p = {};
+	bool isSelectedSet = false;
+
+   if(!sd) return;
+   if(sd->runeSets.empty()) return;
+   if(sd->runeSets.size() <= 0) return;
+
+	for (auto& set_data : sd->runeSets) {
+		if (&set_data == nullptr)
+			continue;
+		if(set_data.selected){
+			isSelectedSet = true;
+			p.tagID = sd->runeactivated_data.tagID = static_cast<uint16>(set_data.tagId);
+			p.runesetid = sd->runeactivated_data.runesetid = static_cast<uint32>(set_data.setId);
+			p.upgrade = sd->runeactivated_data.upgrade = static_cast<uint8>(set_data.upgrade);
+			p.failcount = set_data.failcount;
+			rune_count_bookactivated(sd, p.tagID, p.runesetid);
+				
+			break;
+		}
+		if(isSelectedSet)
+			break;
+	}
+	
+	if(!isSelectedSet)
+		return;
+
+	p.packetType = HEADER_ZC_ONLOG_ENABLE_RUNE;
+
+	clif_send( &p, sizeof( p ), sd, SELF );
+
+#if PACKETVER >= 20241001
+	// load reward per tag
+	for (auto& rune_data : rune_db)
+		clif_onlogreward_rune(sd, rune_data.first);
+#endif
+
+#endif
+}
+
+void clif_parse_decompo_rune( int32 fd, map_session_data* sd ){
+#if PACKETVER >= 20230802
+	std::unordered_map<t_itemid, uint32> material_item_list;
+
+	struct PACKET_CZ_RUNE_DECOMPO* p = (struct PACKET_CZ_RUNE_DECOMPO*)RFIFOP( fd, 0 );
+
+	if( !sd->state.runeui_open ){
+		clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_UINOTOPENED, material_item_list);
+		return;
+	}
+
+	uint16 index = server_index( p->index );
+
+	if( index >= MAX_INVENTORY ){
+		clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_INVENTORYSPACE, material_item_list);
+		return;
+	}
+
+	if( sd->inventory_data[index] == nullptr ){
+		clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_NOCARD, material_item_list);
+		return;
+	}
+
+	struct item& selected_item = sd->inventory.u.items_inventory[index];
+
+	if (selected_item.nameid != p->itemId) {
+		clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_UNKNOWN, material_item_list);
+		return;
+	}
+
+	struct item_data* id = itemdb_search(selected_item.nameid);
+
+	// Checking if decompoRune is empty
+	if (id->decompoRune.empty()) {
+		clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_INVALID, material_item_list);
+		return;
+	}
+
+	uint32 amount;
+	if(p->type == 1)
+		amount = 1;
+	else
+		amount = 30;
+
+	uint8 runeEntryit = 0;
+	for (const auto& runeEntry : id->decompoRune) {
+		runeEntryit++;
+
+		//ShowError("runeEntryit %d runeEntry.Second %d p->type %d \n",runeEntryit,runeEntry.second, p->type);
+
+		if(runeEntryit != p->type)
+			continue;
+
+		std::shared_ptr<s_runedecompo_db> runedecompo_data = runedecompo_db.find( runeEntry.second );
+		if(runedecompo_data == nullptr){
+			//ShowError("runedecompo_data not found in db \n");
+			clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_INVALID, material_item_list);
+			return;
+		}
+
+		std::unordered_map<uint16, uint16> materials;
+
+		if( sd->inventory.u.items_inventory[index].amount < amount ){
+			clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_NOTENOUGHITEMS, material_item_list);
+			return;
+		}
+
+		uint32 material_weight = 0;
+
+		//ShowError("runedecompo_data size %d \n",runedecompo_data->materials.size());
+		for( const auto &materialEntry : runedecompo_data->materials ){
+			struct s_runedecompo_material_data material_data = materialEntry.second;
+			//ShowError("Material list itemid %d, amountmin %d amountmax %d \n",material_data.material,material_data.amountmin,material_data.amountmax);
+
+			uint32 chance = material_data.chance;
+			if( chance == 0 ){
+				clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_INVALID, material_item_list);
+				return;
+			}
+			if( chance < 100000 && rnd_value( 0, 100000 ) > chance )
+				continue;
+
+			std::shared_ptr<item_data> item = item_db.find(material_data.material);
+			material_weight += item->weight;
+
+			uint32 random_amount = rnd_value( material_data.amountmin, material_data.amountmax );
+			material_item_list[material_data.material] = random_amount;
+			//ShowError("random_amount %d \n", random_amount);
+		}
+		
+		if(sd->weight + material_weight > sd->max_weight){
+			clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_WEIGHT, material_item_list);
+			return;
+		}
+
+		for( const auto& materialEntry : materials ){
+			if( pc_delitem( sd, materialEntry.first, materialEntry.second, 0, 0, LOG_TYPE_OTHER )  != 0 ){
+				clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_UNKNOWN, material_item_list);
+				return;
+			}
+		}
+
+		for( const auto& materialEntry : material_item_list ){
+			struct item item_material = {};
+
+			item_material.nameid = materialEntry.first;
+			item_material.identify = 1;
+
+			pc_additem( sd, &item_material, materialEntry.second, LOG_TYPE_OTHER );
+		}
+	}
+
+	if (pc_delitem(sd, index, amount, 0, 0, LOG_TYPE_OTHER) != 0){
+		clif_runedecompowindow_result(sd, ZC_RUNEDECOMPO_INVALID, material_item_list);
+		return;
+	}
+
+	clif_runedecompowindow_result( sd, ZC_RUNEDECOMPO_SUCCESS, material_item_list );
+#endif
+}
+
+void clif_runedecompowindow_result (map_session_data* sd, enum e_runedecompo_result result, std::unordered_map<t_itemid, uint32> material_item_list){
+#if PACKETVER >= 20230802
+	//ShowError("clif_runedecompowindow_result : %d \n", result);
+	struct PACKET_ZC_RESULT_RUNE_DECOMPO p = {};
+
+	p.packetType = HEADER_ZC_RESULT_RUNE_DECOMPO;
+	p.result = result;
+
+	uint8 material_number = 0;
+	if(result == ZC_RUNEDECOMPO_SUCCESS){
+		for (const auto& materialEntry : material_item_list) {
+			p.itemlistdecompo_rune[material_number] = materialEntry.first;
+			p.amountlistdecompo_rune[material_number] = materialEntry.second;
+
+			material_number++;
+			if (material_number > MAX_RUNEDECOMPO)
+				break;
+		}
+	}
+
+	for(int32 i = material_number; i < MAX_RUNEDECOMPO; i++){
+		p.itemlistdecompo_rune[material_number] = 0;
+		p.amountlistdecompo_rune[material_number] = 0;
+	}
+
+	clif_send( &p, sizeof( p ), sd, SELF );
 #endif
 }
 

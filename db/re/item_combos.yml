@@ -36133,58 +36133,58 @@ Body:
       bonus bIgnoreDefRace,RC_All;
   - Combos:
       - Combo:
-          - aegis_300456   # 300456
-          - aegis_300455   # 300455
+          - Icewind_Egg_Card   # 300456
+          - Copo_Card   # 300455
     Script: |
       bonus bVariableCastrate,-5;
   - Combos:
       - Combo:
           - Grey_Icewind_Card    # 300457
-          - aegis_300455   # 300455
+          - Copo_Card   # 300455
     Script: |
       .@r_shoes = getequiprefinerycnt(EQI_SHOES);
       bonus2 bAddSize,Size_Large,10+3*(.@r_shoes/2);
   - Combos:
       - Combo:
           - Icewind_Card    # 300458
-          - aegis_300455   # 300455
+          - Copo_Card   # 300455
     Script: |
       .@r_shoes = getequiprefinerycnt(EQI_SHOES);
       bonus2 bMagicAddSize,Size_Large,10+3*(.@r_shoes/2);
   - Combos:
       - Combo:
-          - aegis_300460   # 300460
-          - aegis_300459   # 300459
+          - Jormun_Guardian_Card   # 300460
+          - E_Rgan_Healer_Card   # 300459
     Script: |
       bonus2 bMagicAtkEle,Ele_Ghost,15;
       bonus2 bMagicAtkEle,Ele_Neutral,15;
       bonus2 bMagicAtkEle,Ele_Dark,15;
   - Combos:
       - Combo:
-          - aegis_300461   # 300461
-          - aegis_300459   # 300459
+          - Fake_Iwin_S_Card   # 300461
+          - E_Rgan_Healer_Card   # 300459
     Script: |
       bonus bShortAtkRate,15;
   - Combos:
       - Combo:
-          - aegis_300462   # 300462
-          - aegis_300459   # 300459
+          - S_Rgan_Warlock_Card   # 300462
+          - E_Rgan_Healer_Card   # 300459
     Script: |
       bonus2 bMagicAtkEle,Ele_Earth,15;
       bonus2 bMagicAtkEle,Ele_Fire,15;
       bonus2 bMagicAtkEle,Ele_Wind,15;
   - Combos:
       - Combo:
-          - aegis_300463   # 300463
-          - aegis_300459   # 300459
+          - S_Rgan_Healer_Card   # 300463
+          - E_Rgan_Healer_Card   # 300459
     Script: |
       bonus2 bMagicAtkEle,Ele_Poison,15;
       bonus2 bMagicAtkEle,Ele_Holy,15;
       bonus2 bMagicAtkEle,Ele_Water,15;
   - Combos:
       - Combo:
-          - aegis_300466   # 300466
-          - aegis_300459   # 300459
+          - E_Rgan_Cleaner_Card   # 300466
+          - E_Rgan_Healer_Card   # 300459
     Script: |
       bonus bLongAtkRate,15;
   - Combos:

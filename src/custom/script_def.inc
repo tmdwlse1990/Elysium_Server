@@ -29,3 +29,7 @@ BUILDIN_DEF(checkspecificcombo, "ii"),
 BUILDIN_DEF(checkallcombos, "i"),
 BUILDIN_DEF(activatespecificcombo, "ii"),  
 BUILDIN_DEF(deactivatespecificcombo, "ii"),
+
+// Rune System
+BUILDIN_DEF(runeui, ""),
+BUILDIN_DEF(getupgrade_rune, ""),

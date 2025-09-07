@@ -895,3 +895,34 @@ BUILDIN_FUNC(deactivatespecificcombo)
     script_pushint(st, 1);      
     return SCRIPT_CMD_SUCCESS;      
 }
+
+BUILDIN_FUNC( runeui ){
+#if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724
+	map_session_data* sd;
+
+	if( !script_charid2sd( 2, sd ) ){
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	clif_rune_ui_open( sd );
+
+	return SCRIPT_CMD_SUCCESS;
+#else
+	ShowError( "buildin_runeui: This command requires PACKETVER 2020-07-24 or newer.\n" );
+	return SCRIPT_CMD_FAILURE;
+#endif
+}
+
+BUILDIN_FUNC( getupgrade_rune ){
+#if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200724
+	map_session_data* sd;
+	if( !script_rid2sd(sd) )
+		return SCRIPT_CMD_FAILURE;
+
+	script_pushint(st,sd->runeactivated_data.upgrade);
+	return SCRIPT_CMD_SUCCESS;
+#else
+	ShowError( "buildin_getupgrade_rune: This command requires PACKETVER 2020-07-24 or newer.\n" );
+	return SCRIPT_CMD_FAILURE;
+#endif
+}

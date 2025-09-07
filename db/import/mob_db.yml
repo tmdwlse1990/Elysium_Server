@@ -1527,7 +1527,7 @@ Body:
         Rate: 520
       - Item: EP19_Unknown_Cell   # (1000823) Monstrous Cell
         Rate: 260
-      - Item: Rabbit_Iceslug_card   # (300468) Snow Rabbit Snail Card
+      - Item: Rabbit_Iceslug_Card   # (300468) Snow Rabbit Snail Card
         Rate: 1
         StealProtected: true
   - Id: 21970

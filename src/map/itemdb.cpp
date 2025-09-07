@@ -196,6 +196,21 @@ uint64 ItemDatabase::parseBodyNode(const ryml::NodeRef& node) {
 			item->subtype = 0;
 	}
 
+	if (this->nodeExists(node, "Decomposition")) {
+		const auto& decompositionNode = node["Decomposition"];
+		
+		for (const auto& decit : decompositionNode) {
+			std::string typeName;
+			c4::from_chars(decit.key(), &typeName);
+
+			uint16 typeNum;
+			if (!this->asUInt16(decompositionNode, typeName, typeNum))
+				return 0;
+			
+			item->decompoRune[typeName] = typeNum;
+		}
+	}
+
 	bool has_buy = false, has_sell = false;
 
 	if (this->nodeExists(node, "Buy")) {

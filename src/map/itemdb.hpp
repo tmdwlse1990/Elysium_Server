@@ -3336,6 +3336,7 @@ struct item_data
 	uint32 value_sell;
 	item_types type;
 	uint8 subtype;
+	std::map<std::string, uint16> decompoRune;	
 	int32 maxchance; //For logs, for external game info, for scripts: Max drop chance of this item (e.g. 0.01% , etc.. if it = 0, then monsters don't drop it, -1 denotes items sold in shops only) [Lupus]
 	uint8 sex;
 	uint32 equip;

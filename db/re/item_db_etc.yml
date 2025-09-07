@@ -53223,7 +53223,7 @@ Body:
          }
       }
   - Id: 300455
-    AegisName: aegis_300455
+    AegisName: Copo_Card
     Name: Copo Card
     Type: Card
     Weight: 10
@@ -53241,7 +53241,7 @@ Body:
          bonus2 bMagicAddSize,Size_Medium,12+4*(.@r/3);
       }
   - Id: 300456
-    AegisName: aegis_300456
+    AegisName: Icewind_Egg_Card
     Name: Icewind's Egg Card
     Type: Card
     Weight: 10
@@ -53299,7 +53299,7 @@ Body:
          bonus bCon,3;
       }
   - Id: 300459
-    AegisName: aegis_300459
+    AegisName: E_Rgan_Healer_Card
     Name: Jormungandr Church Bishop Card
     Type: Card
     Weight: 10
@@ -53315,7 +53315,7 @@ Body:
       bonus bSMatk,2;
       bonus bVariableCastrate,-3;
   - Id: 300460
-    AegisName: aegis_300460
+    AegisName: Jormun_Guardian_Card
     Name: Jormungandr Guardian Card
     Type: Card
     Weight: 10
@@ -53340,7 +53340,7 @@ Body:
          }
       }
   - Id: 300461
-    AegisName: aegis_300461
+    AegisName: Fake_Iwin_S_Card
     Name: Suspicious Iwin Soldier Card
     Type: Card
     Weight: 10
@@ -53359,7 +53359,7 @@ Body:
          }
       }
   - Id: 300462
-    AegisName: aegis_300462
+    AegisName: S_Rgan_Warlock_Card
     Name: Superior Rgan Shaman Card
     Type: Card
     Weight: 10
@@ -53384,7 +53384,7 @@ Body:
          }
       }
   - Id: 300463
-    AegisName: aegis_300463
+    AegisName: S_Rgan_Healer_Card
     Name: Superior Rgan Healer Card
     Type: Card
     Weight: 10
@@ -53409,7 +53409,7 @@ Body:
          }
       }
   - Id: 300464
-    AegisName: aegis_300464
+    AegisName: E_Rgan_Warlock_Card
     Name: Jormungandr Church Shaman Card
     Type: Card
     Weight: 10
@@ -53426,7 +53426,7 @@ Body:
          bonus bUseSPrate,7;
       }
   - Id: 300465
-    AegisName: aegis_300465
+    AegisName: E_Rgan_Guardian_Card
     Name: Jormungandr Sanctuary Guardian Card
     Type: Card
     Weight: 10
@@ -53458,7 +53458,7 @@ Body:
          }
       }
   - Id: 300466
-    AegisName: aegis_300466
+    AegisName: E_Rgan_Cleaner_Card
     Name: Jormungandr Sanctuary Cleaner Card
     Type: Card
     Weight: 10
@@ -53477,7 +53477,7 @@ Body:
          }
       }
   - Id: 300467
-    AegisName: aegis_300467
+    AegisName: Angel_Iceslug_Card
     Name: Angel Slug Card
     Type: Card
     Weight: 10
@@ -53492,7 +53492,7 @@ Body:
          bonus bCritical,-15;
       }
   - Id: 300468
-    AegisName: aegis_300468
+    AegisName: Rabbit_Iceslug_Card
     Name: Snow Rabbit Slug Card
     Type: Card
     Weight: 10
@@ -53507,7 +53507,7 @@ Body:
          bonus bCritical,-15;
       }
   - Id: 300469
-    AegisName: aegis_300469
+    AegisName: Melibe_Iceslug_Card
     Name: Melibe Slug Card
     Type: Card
     Weight: 10
@@ -53524,7 +53524,7 @@ Body:
          bonus bUseSPrate,7;
       }
   - Id: 300470
-    AegisName: aegis_300470
+    AegisName: Icebear_Card
     Name: Bear Bug Card
     Type: Card
     Weight: 10
@@ -53541,7 +53541,7 @@ Body:
          bonus bUseSPrate,7;
       }
   - Id: 300471
-    AegisName: aegis_300471
+    AegisName: F_Angel_Iceslug_Card
     Name: Fallen Angel Slug Card
     Type: Card
     Weight: 10
@@ -53557,7 +53557,7 @@ Body:
       bonus2 bAddEle,Ele_Dark,25;
       bonus bMaxHPrate,-20;
   - Id: 300472
-    AegisName: aegis_300472
+    AegisName: Demigod_Lasgand_Card
     Name: Ultimate Rasgandr Card
     Type: Card
     Weight: 10
@@ -53579,7 +53579,7 @@ Body:
          bonus bMatkRate,15;
       }
   - Id: 300473
-    AegisName: aegis_300473
+    AegisName: Snow_Angel_Card
     Name: Snowstorm Angel Card
     Type: Card
     Weight: 10
@@ -53595,7 +53595,7 @@ Body:
          bonus2 bAddClass,Class_Boss,10;
       }
   - Id: 300474
-    AegisName: aegis_300474
+    AegisName: Rgan_Chief_Clean_Card
     Name: Sanctuary Cleaning Chief Card
     Type: Card
     Weight: 10
@@ -94862,7 +94862,7 @@ Body:
       NoMail: true
       NoAuction: true
   - Id: 1001226
-    AegisName: aegis_1001226
+    AegisName: Ep20_Rgan_Core_F
     Name: Legan's Advanced Magic Core    # !todo check english name
     Type: Etc
     Buy: 2600
@@ -94870,7 +94870,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001227
-    AegisName: aegis_1001227
+    AegisName: Ep20_Coral_Bangle
     Name: Coral bracelet    # !todo check english name
     Type: Etc
     Buy: 3200
@@ -94878,7 +94878,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001228
-    AegisName: aegis_1001228
+    AegisName: Ep20_Shell_Hairpin
     Name: Seashell hairpin    # !todo check english name
     Type: Etc
     Buy: 3200
@@ -94886,7 +94886,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001229
-    AegisName: aegis_1001229
+    AegisName: Ep20_Seaweed_Belt
     Name: Seaweed Belt    # !todo check english name
     Type: Etc
     Buy: 3200
@@ -94894,7 +94894,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001230
-    AegisName: aegis_1001230
+    AegisName: Ep20_Cataphract_Piece
     Name: Scale Armor Fragment    # !todo check english name
     Type: Etc
     Buy: 3200
@@ -94902,7 +94902,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001231
-    AegisName: aegis_1001231
+    AegisName: Ep20_Fluor_Cell_Sour
     Name: Soft Fluorescent Cell (Sour)    # !todo check english name
     Type: Etc
     Buy: 4000
@@ -94910,7 +94910,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001232
-    AegisName: aegis_1001232
+    AegisName: Ep20_Fluor_Cell_Salty
     Name: Soft Fluorescent Cell (salty)    # !todo check english name
     Type: Etc
     Buy: 3200
@@ -94918,7 +94918,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001233
-    AegisName: aegis_1001233
+    AegisName: Ep20_Fluor_Cell_Sweet
     Name: Fluorescent Fluorescent Cell (Daldal)    # !todo check english name
     Type: Etc
     Buy: 3400
@@ -94926,7 +94926,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001234
-    AegisName: aegis_1001234
+    AegisName: Ep20_Ice_Bearskin
     Name: Bear Hide    # !todo check english name
     Type: Etc
     Buy: 3800
@@ -94934,21 +94934,21 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001235
-    AegisName: aegis_1001235
+    AegisName: Ep20_Unknown_Canine
     Name: Monster's Tooth    # !todo check english name
     Type: Etc
     Weight: 10
     Flags:
       BuyingStore: true
   - Id: 1001236
-    AegisName: aegis_1001236
+    AegisName: Ep20_Twinkling_Snow
     Name: Glittering Snowflakes    # !todo check english name
     Type: Etc
     Weight: 10
     Flags:
       BuyingStore: true
   - Id: 1001237
-    AegisName: aegis_1001237
+    AegisName: Ep20_Angels_Tail
     Name: Angel's Tail    # !todo check english name
     Type: Etc
     Buy: 15000
@@ -94956,7 +94956,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001238
-    AegisName: aegis_1001238
+    AegisName: Ep20_Mystic_Spl_Colt
     Name: Mystic Magic Mass    # !todo check english name
     Type: Etc
     Buy: 3400
@@ -94964,7 +94964,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001239
-    AegisName: aegis_1001239
+    AegisName: Ep20_Broken_Trident
     Name: Broken Trident    # !todo check english name
     Type: Etc
     Buy: 2600
@@ -94972,7 +94972,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001240
-    AegisName: aegis_1001240
+    AegisName: Ep20_Iwin_Private_C
     Name: Irwin Private Hat    # !todo check english name
     Type: Etc
     Buy: 1260
@@ -94980,7 +94980,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001241
-    AegisName: aegis_1001241
+    AegisName: Ep20_Iwin_Priva_Co_C
     Name: Private Irwin Hat    # !todo check english name
     Type: Etc
     Buy: 1350
@@ -94988,7 +94988,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001242
-    AegisName: aegis_1001242
+    AegisName: Ep20_Iwin_Corporal_C
     Name: Corporal Irwin Hat    # !todo check english name
     Type: Etc
     Buy: 1440
@@ -94996,7 +94996,7 @@ Body:
     Flags:
       BuyingStore: true
   - Id: 1001243
-    AegisName: aegis_1001243
+    AegisName: Ep20_Iwin_Sergeant_C
     Name: Arwin Manic Hat    # !todo check english name
     Type: Etc
     Buy: 3400
@@ -96492,7 +96492,7 @@ Body:
       NoMail: true
       NoAuction: true
   - Id: 1001478
-    AegisName: aegis_1001478
+    AegisName: Cubic_Dia
     Name: Pure Diamond
     Type: Etc
     Buy: 200000

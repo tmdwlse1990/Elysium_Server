@@ -51,6 +51,7 @@
 #include "pc_groups.hpp"
 #include "pet.hpp"
 #include "quest.hpp"
+#include "rune.hpp"
 #include "script.hpp"
 #include "storage.hpp"
 #include "trade.hpp"

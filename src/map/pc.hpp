@@ -393,6 +393,20 @@ struct s_collection_items
 	char refine;
 };
 
+struct s_runebook_data {
+	uint16 tagId;
+	uint32 bookId;
+};
+
+struct s_runeset_data {
+	uint16 tagId;
+	uint32 setId;
+	uint8 selected;
+	uint16 upgrade;
+	uint16 failcount;
+	uint8 reward;
+};
+
 class map_session_data : public block_list {
 public:
 	struct unit_data ud;
@@ -476,6 +490,7 @@ public:
 		bool roulette_open;
 		t_itemid item_reform;
 		uint64 item_enchant_index;
+		bool runeui_open;
 	} state;
 	struct {
 		unsigned char no_weapon_damage, no_magic_damage, no_misc_damage;
@@ -853,6 +868,17 @@ public:
 	// Battlegrounds queue system [MasterOfMuppets]
 	int32 bg_id, bg_queue_id;
 	int32 tid_queue_active; ///< Timer ID associated with players joining an active BG
+
+	std::vector<s_runeset_data> runeSets;
+	std::vector<s_runebook_data> runeBooks;
+
+	struct s_runeactivated_data {
+		uint16 tagID;
+		uint32 runesetid;
+		uint16 upgrade;
+		uint8 bookNumber;
+		bool loaded;
+	} runeactivated_data;
 
 #ifdef SECURE_NPCTIMEOUT
 	/**
