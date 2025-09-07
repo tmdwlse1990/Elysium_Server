@@ -1716,6 +1716,10 @@ int32 clif_spawn( struct block_list *bl, bool walking ){
 		clif_spawn_unit( bl, AREA_WOS );
 	}
 
+	unit_data* ud = unit_bl2ud(bl);
+	if (ud != nullptr && ud->body_size)
+	clif_body_size(bl, ud->body_size);
+
 	clif_refresh_clothcolor( *bl, AREA_WOS );
 
 	switch (bl->type)
@@ -2103,6 +2107,9 @@ void clif_move( struct unit_data& ud )
 		clif_ally_only = true;
 
 	clif_set_unit_walking( *bl, nullptr, ud, AREA_WOS );
+
+	if (ud.body_size)
+			clif_body_size(bl, ud.body_size);
 
 	clif_refresh_clothcolor( *bl, AREA_WOS );
 
@@ -5075,6 +5082,9 @@ void clif_getareachar_unit( map_session_data* sd,struct block_list *bl ){
 		clif_set_unit_idle( bl, false, SELF, sd );
 	}
 
+	if (ud != nullptr && ud->body_size)
+		clif_body_size(bl, ud->body_size);
+
 	clif_refresh_clothcolor( *bl, SELF, sd );
 
 	switch (bl->type)
@@ -6520,6 +6530,18 @@ void clif_status_change_sub(struct block_list *bl, int32 id, int32 type, int32 f
 	}
 #endif
 	clif_send(buf, packet_len(WBUFW(buf,0)), bl, target_type);
+}
+
+void clif_body_size(block_list* bl, int32 val1) {
+	map_session_data* sd;
+
+	nullpo_retv(bl);
+
+	sd = BL_CAST(BL_PC, bl);
+	if (val1)
+		clif_status_change_sub(bl, bl->id, EFST_CHANGE_SIZE_MONSTER, true, INFINITE_TICK, val1, 0, 0, ((sd ? (pc_isinvisible(sd) ? SELF : AREA) : AREA_WOS)));
+	else
+		clif_status_change_sub(bl, bl->id, EFST_CHANGE_SIZE_MONSTER, true, INFINITE_TICK, 100, 0, 0, ((sd ? (pc_isinvisible(sd) ? SELF : AREA) : AREA_WOS)));
 }
 
 /* Sends status effect to clients around the bl

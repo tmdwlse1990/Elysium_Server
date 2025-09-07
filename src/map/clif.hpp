@@ -1558,4 +1558,7 @@ void clif_parse_guild_alliance_message(int fd, map_session_data* sd);
 void clif_parse_macro_user_report(int32 fd, map_session_data* const sd);
 void clif_macro_user_report_ack(map_session_data* const sd, int32 status, const char* const report_name);
 
+// Body Size Controller
+void clif_body_size(block_list* bl, int32 val1);
+
 #endif /* CLIF_HPP */
