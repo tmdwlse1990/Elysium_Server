@@ -338,10 +338,10 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
 	  
 	if (equipment_only_bonus != 0) {  
 		if (equipment_only_bonus < 0) {  
-			sprintf(output, "   -> Hit Bonus (Items): %s", rathena::util::insert_comma(equipment_only_bonus).c_str());  
+			sprintf(output, "   -> Hit Bonus: %s", rathena::util::insert_comma(equipment_only_bonus).c_str());  
 			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
 		} else {  
-			sprintf(output, "   -> Hit Bonus (Items): +%s", rathena::util::insert_comma(equipment_only_bonus).c_str());  
+			sprintf(output, "   -> Hit Bonus: +%s", rathena::util::insert_comma(equipment_only_bonus).c_str());  
 			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
 		}  
 		additional_stats_found = true;  
