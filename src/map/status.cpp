@@ -4290,10 +4290,12 @@ int32 status_calc_pc_sub(map_session_data* sd, uint8 opt)
 							}    
 						}
 
-						if (combo_complete && combo->script) {    
-							run_script(combo->script, 0, sd->id, 0);    
-							if (!calculating)    
-								return 1;    
+						if (collection_validate_combo(sd, stor_id, combo_idx, true)) {  
+							if (combo->script) {  
+								run_script(combo->script, 0, sd->id, 0);  
+								if (!calculating)  
+									return 1;  
+							}  
 						}    
 					}    
 				}    

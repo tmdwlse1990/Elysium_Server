@@ -75,6 +75,7 @@ extern CollectionDatabase collection_db;
 void collection_counter(map_session_data* sd, int type, int val1, int val2);  
 void collection_save(map_session_data* sd, bool calc = true);  
 void collection_load_combo_states(map_session_data* sd);
+bool collection_validate_combo(map_session_data* sd, uint16 stor_id, size_t combo_index, bool check_active_state = true);
 void do_init_collection(void);  
 void do_final_collection(void);  
 void do_reload_collection(void);  

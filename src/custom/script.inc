@@ -485,56 +485,10 @@ BUILDIN_FUNC(getcollectionbonus)
 	return SCRIPT_CMD_SUCCESS;
 }  
 
-/*==========================================
-* checkcollectioncombo
-*------------------------------------------*/  
-BUILDIN_FUNC(checkcollectioncombo)  
-{  
-    map_session_data* sd;  
-    if (!script_rid2sd(sd))  
-        return SCRIPT_CMD_FAILURE;  
-      
-    int stor_id = script_getnum(st, 2);  
-      
-    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor_id);  
-    if (collection == nullptr) {  
-        script_pushint(st, 0);  
-        return SCRIPT_CMD_SUCCESS;  
-    }  
-      
-    const auto& player_items = sd->collection.items[stor_id];  
-    int active_combo_count = 0;  
-      
-    // Check each combo set  
-    for (const auto& combo : collection->combos) {  // Make sure 'combo' is properly declared  
-        bool combo_complete = true;  
-          
-        // Check if ALL items in this combo are present with requirements  
-        for (t_itemid combo_item : combo->items) {  
-            auto it = std::find_if(player_items.begin(), player_items.end(),  
-                [&](const s_collection_items& item) { return item.nameid == combo_item; });  
-                  
-            if (it == player_items.end() ||   
-                it->amount < combo->amount ||   
-                it->refine < combo->refine) {  
-                combo_complete = false;  
-                break;  
-            }  
-        }  
-          
-        if (combo_complete) {  
-            active_combo_count++;  
-        }  
-    }  
-      
-    script_pushint(st, active_combo_count);  
-    return SCRIPT_CMD_SUCCESS;  
-}
-
-/*==========================================
-* getcollectioncombos
-*------------------------------------------*/
-BUILDIN_FUNC(getcollectioncombos)    
+/*==========================================  
+* checkcollectioncombo  
+*------------------------------------------*/    
+BUILDIN_FUNC(checkcollectioncombo)    
 {    
     map_session_data* sd;    
     if (!script_rid2sd(sd))    
@@ -548,24 +502,77 @@ BUILDIN_FUNC(getcollectioncombos)
         return SCRIPT_CMD_SUCCESS;    
     }    
         
-    int32 combo_count = 0;  // Initialize to 0, not combo->items.size()  
+    const auto& player_items = sd->collection.items[stor_id];    
+    int active_combo_count = 0;    
         
-    // Iterate through combos and populate script arrays    
-    for (const auto& combo : collection->combos) {    
-        setd_sub_num(st, NULL, ".@combo_item_count", combo_count, static_cast<int>(combo->items.size()), NULL);    
-		setd_sub_num(st, NULL, ".@combo_amounts", combo_count, combo->amount, NULL);
-		setd_sub_str(st, NULL, ".@combo_names$", combo_count, combo->name.c_str(), NULL);
-        // Store combo items    
-        for (size_t i = 0; i < combo->items.size(); i++) {    
-            int index = combo_count * 10 + static_cast<int>(i); // Max 10 items per combo    
-            setd_sub_num(st, NULL, ".@combo_items", index, combo->items[i], NULL);    
+    // Check each combo set using indexed loop  
+    for (size_t combo_idx = 0; combo_idx < collection->combos.size(); combo_idx++) {  
+        auto& combo = collection->combos[combo_idx];  
+        bool combo_complete = true;    
+            
+        // Check if ALL items in this combo are present with requirements    
+        for (t_itemid combo_item : combo->items) {    
+            auto it = std::find_if(player_items.begin(), player_items.end(),    
+                [&](const s_collection_items& item) { return item.nameid == combo_item; });    
+                    
+            if (it == player_items.end() ||     
+                it->amount < combo->amount ||     
+                it->refine < combo->refine) {    
+                combo_complete = false;    
+                break;    
+            }    
         }    
             
-        combo_count++;    
+        if (combo_complete) {    
+            active_combo_count++;    
+        }    
     }    
         
-    script_pushint(st, combo_count);    
+    script_pushint(st, active_combo_count);    
     return SCRIPT_CMD_SUCCESS;    
+}
+
+/*==========================================
+* getcollectioncombos
+*------------------------------------------*/ 
+BUILDIN_FUNC(getcollectioncombos)      
+{      
+    map_session_data* sd;      
+    if (!script_rid2sd(sd))      
+        return SCRIPT_CMD_FAILURE;      
+          
+    int stor_id = script_getnum(st, 2);      
+          
+    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor_id);      
+    if (collection == nullptr) {      
+        script_pushint(st, 0);      
+        return SCRIPT_CMD_SUCCESS;      
+    }      
+          
+    int32 combo_count = 0;  // Initialize to 0, not combo->items.size()    
+      
+    // Store combo items using hash map for O(1) lookup    
+    static std::unordered_map<std::string, t_itemid> combo_item_map;    
+          
+    // Iterate through combos and populate script arrays      
+    for (const auto& combo : collection->combos) {      
+        setd_sub_num(st, NULL, ".@combo_item_count", combo_count, static_cast<int>(combo->items.size()), NULL);      
+        setd_sub_num(st, NULL, ".@combo_amounts", combo_count, combo->amount, NULL);  
+        setd_sub_str(st, NULL, ".@combo_names$", combo_count, combo->name.c_str(), NULL);  
+          
+        // Store combo items with hash map optimization     
+        for (size_t i = 0; i < combo->items.size(); i++) {      
+            std::string combo_key = std::to_string(combo_count) + "_" + std::to_string(i);    
+            combo_item_map[combo_key] = combo->items[i];    
+              
+            setd_sub_num(st, NULL, ".@combo_items", static_cast<int32>(combo_count * 10 + i), combo->items[i], NULL);      
+        }      
+              
+        combo_count++;      
+    }      
+          
+    script_pushint(st, combo_count);      
+    return SCRIPT_CMD_SUCCESS;      
 }
 
 /*==========================================
@@ -677,33 +684,41 @@ BUILDIN_FUNC(getcombocollectionlist)
 	return SCRIPT_CMD_SUCCESS;      
 }
 
-/*==========================================
-* checkspecificcombo
-*------------------------------------------*/
-BUILDIN_FUNC(checkspecificcombo)    
-{    
-    map_session_data* sd;    
-    if (!script_rid2sd(sd))    
-        return SCRIPT_CMD_FAILURE;    
-        
-    int stor_id = script_getnum(st, 2);    
-    int combo_index = script_getnum(st, 3);    
-        
-    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor_id);    
-    if (collection == nullptr || combo_index < 0 || combo_index >= collection->combos.size()) {    
-        script_pushint(st, 0);    
-        return SCRIPT_CMD_SUCCESS;    
-    }    
-      
-    // Check if combo is manually activated  
-    if (combo_index >= collection->active_combos.size() || !collection->active_combos[combo_index]) {  
+/*==========================================  
+* checkspecificcombo  
+*------------------------------------------*/  
+BUILDIN_FUNC(checkspecificcombo)      
+{      
+    map_session_data* sd;      
+    if (!script_rid2sd(sd))      
+        return SCRIPT_CMD_FAILURE;      
+          
+    int stor_id = script_getnum(st, 2);      
+    int combo_index = script_getnum(st, 3);      
+          
+    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor_id);      
+    if (collection == nullptr || combo_index < 0 || combo_index >= collection->combos.size()) {      
+        script_pushint(st, 0);      
+        return SCRIPT_CMD_SUCCESS;      
+    }      
+  
+    // Enhanced bounds checking for active_combos vector  
+    if (combo_index >= collection->active_combos.size()) {  
+        ShowError("checkspecificcombo: combo_index %d exceeds active_combos size %zu for stor_id %d\\n",   
+                  combo_index, collection->active_combos.size(), stor_id);  
         script_pushint(st, 0);  
         return SCRIPT_CMD_SUCCESS;  
     }  
         
-    // Rest of your existing validation code...  
-    script_pushint(st, 1);    
-    return SCRIPT_CMD_SUCCESS;    
+    // Check if combo is manually activated    
+    if (!collection->active_combos[combo_index]) {    
+        script_pushint(st, 0);    
+        return SCRIPT_CMD_SUCCESS;    
+    }    
+          
+    // Combo is active, return success  
+    script_pushint(st, 1);      
+    return SCRIPT_CMD_SUCCESS;      
 } 
 
 /*==========================================
@@ -735,72 +750,10 @@ BUILDIN_FUNC(checkallcombos)
     return SCRIPT_CMD_SUCCESS;      
 }
 
-/*==========================================
-* activatespecificcombo
-*------------------------------------------*/
-BUILDIN_FUNC(activatespecificcombo)  
-{  
-    map_session_data* sd;  
-    if (!script_rid2sd(sd))  
-        return SCRIPT_CMD_FAILURE;  
-      
-    int stor_id = script_getnum(st, 2);  
-    int combo_index = script_getnum(st, 3);  
-      
-    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor_id);  
-    if (collection == nullptr || combo_index < 0 || combo_index >= collection->combos.size()) {  
-        script_pushint(st, 0);  
-        return SCRIPT_CMD_SUCCESS;  
-    }  
-      
-    const auto& player_items = sd->collection.items[stor_id];  
-    auto& combo = collection->combos[combo_index];  
-      
-    // Check if combo requirements are met (inline validation)  
-    bool combo_complete = true;  
-    for (t_itemid combo_item : combo->items) {  
-        auto it = std::find_if(player_items.begin(), player_items.end(),  
-            [&](const s_collection_items& item) { return item.nameid == combo_item; });  
-              
-        if (it == player_items.end() ||   
-            it->amount < combo->amount ||   
-            it->refine < combo->refine) {  
-            combo_complete = false;  
-            break;  
-        }  
-    }  
-      
-    if (!combo_complete) {  
-        script_pushint(st, 0);  
-        return SCRIPT_CMD_SUCCESS;  
-    }  
-
-	collection->active_combos[combo_index] = true;
-
-    if (SQL_ERROR == Sql_Query(mmysql_handle,   
-        "INSERT INTO `collection_combos` (`account_id`, `char_id`, `stor_id`, `combo_index`, `is_active`) "  
-        "VALUES ('%d', '%d', '%d', '%d', '1') "  
-        "ON DUPLICATE KEY UPDATE `is_active` = '1'",   
-        sd->status.account_id, sd->status.char_id, stor_id, combo_index)) {  
-        Sql_ShowDebug(mmysql_handle);  
-    }
-
-    // Apply the specific combo's script  
-    if (combo->script) {  
-        run_script(combo->script, 0, sd->id, 0);  
-    }  
-      
-    // Trigger status recalculation  
-    status_calc_pc(sd, SCO_NONE);  
-      
-    script_pushint(st, 1);  
-    return SCRIPT_CMD_SUCCESS;  
-} 
-
-/*==========================================
-* deactivatespecificcombo
-*------------------------------------------*/
-BUILDIN_FUNC(deactivatespecificcombo)    
+/*==========================================  
+* activatespecificcombo  
+*------------------------------------------*/  
+BUILDIN_FUNC(activatespecificcombo)    
 {    
     map_session_data* sd;    
     if (!script_rid2sd(sd))    
@@ -814,20 +767,131 @@ BUILDIN_FUNC(deactivatespecificcombo)
         script_pushint(st, 0);    
         return SCRIPT_CMD_SUCCESS;    
     }    
+  
+    // Enhanced bounds checking for active_combos vector  
+    if (combo_index >= collection->active_combos.size()) {  
+        ShowError("activatespecificcombo: combo_index %d exceeds active_combos size %zu for stor_id %d\\n",   
+                  combo_index, collection->active_combos.size(), stor_id);  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
         
-    // Set the combo as inactive - ADD THIS LINE  
-    collection->active_combos[combo_index] = false;  
-
-    if (SQL_ERROR == Sql_Query(mmysql_handle,   
-        "UPDATE `collection_combos` SET `is_active` = '0' "  
-        "WHERE `account_id` = '%d' AND `char_id` = '%d' AND `stor_id` = '%d' AND `combo_index` = '%d'",   
-        sd->status.account_id, sd->status.char_id, stor_id, combo_index)) {  
+    // Use consolidated validation logic instead of inline validation  
+    if (!collection_validate_combo(sd, stor_id, combo_index, false)) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+  
+    // Begin transaction for database safety  
+    if (SQL_ERROR == Sql_Query(mmysql_handle, "START TRANSACTION")) {  
         Sql_ShowDebug(mmysql_handle);  
-    } 
-
-    // Recalculate status to remove combo bonuses  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+  
+    // Update combo state in memory first  
+    collection->active_combos[combo_index] = true;  
+  
+    // Update database with transaction safety  
+    if (SQL_ERROR == Sql_Query(mmysql_handle,     
+        "INSERT INTO `collection_combos` (`account_id`, `char_id`, `stor_id`, `combo_index`, `is_active`) "    
+        "VALUES ('%d', '%d', '%d', '%d', '1') "    
+        "ON DUPLICATE KEY UPDATE `is_active` = '1'",     
+        sd->status.account_id, sd->status.char_id, stor_id, combo_index)) {    
+          
+        Sql_ShowDebug(mmysql_handle);  
+        // Rollback on error  
+        Sql_Query(mmysql_handle, "ROLLBACK");  
+        collection->active_combos[combo_index] = false; // Revert memory state  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+  
+    // Commit transaction  
+    if (SQL_ERROR == Sql_Query(mmysql_handle, "COMMIT")) {  
+        Sql_ShowDebug(mmysql_handle);  
+        // Even if commit fails, the operation succeeded, so don't revert  
+    }  
+  
+    auto& combo = collection->combos[combo_index];  
+  
+    // Apply the specific combo's script    
+    if (combo->script) {    
+        run_script(combo->script, 0, sd->id, 0);    
+    }    
+        
+    // Trigger status recalculation    
     status_calc_pc(sd, SCO_NONE);    
         
     script_pushint(st, 1);    
     return SCRIPT_CMD_SUCCESS;    
+} 
+
+/*==========================================  
+* deactivatespecificcombo  
+*------------------------------------------*/  
+BUILDIN_FUNC(deactivatespecificcombo)      
+{      
+    map_session_data* sd;      
+    if (!script_rid2sd(sd))      
+        return SCRIPT_CMD_FAILURE;      
+          
+    int stor_id = script_getnum(st, 2);      
+    int combo_index = script_getnum(st, 3);      
+          
+    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor_id);      
+    if (collection == nullptr || combo_index < 0 || combo_index >= collection->combos.size()) {      
+        script_pushint(st, 0);      
+        return SCRIPT_CMD_SUCCESS;      
+    }      
+  
+    // Enhanced bounds checking for active_combos vector  
+    if (combo_index >= collection->active_combos.size()) {  
+        ShowError("deactivatespecificcombo: combo_index %d exceeds active_combos size %zu for stor_id %d\\n",   
+                  combo_index, collection->active_combos.size(), stor_id);  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+  
+    // Check if combo is already inactive  
+    if (!collection->active_combos[combo_index]) {  
+        script_pushint(st, 1); // Already inactive, consider it success  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+  
+    // Begin transaction for database safety  
+    if (SQL_ERROR == Sql_Query(mmysql_handle, "START TRANSACTION")) {  
+        Sql_ShowDebug(mmysql_handle);  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+  
+    // Set the combo as inactive in memory first  
+    collection->active_combos[combo_index] = false;  
+  
+    // Update database with transaction safety  
+    if (SQL_ERROR == Sql_Query(mmysql_handle,     
+        "UPDATE `collection_combos` SET `is_active` = '0' "    
+        "WHERE `account_id` = '%d' AND `char_id` = '%d' AND `stor_id` = '%d' AND `combo_index` = '%d'",     
+        sd->status.account_id, sd->status.char_id, stor_id, combo_index)) {    
+          
+        Sql_ShowDebug(mmysql_handle);  
+        // Rollback on error  
+        Sql_Query(mmysql_handle, "ROLLBACK");  
+        collection->active_combos[combo_index] = true; // Revert memory state  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }   
+  
+    // Commit transaction  
+    if (SQL_ERROR == Sql_Query(mmysql_handle, "COMMIT")) {  
+        Sql_ShowDebug(mmysql_handle);  
+        // Even if commit fails, the operation succeeded, so don't revert  
+    }  
+  
+    // Recalculate status to remove combo bonuses    
+    status_calc_pc(sd, SCO_NONE);      
+          
+    script_pushint(st, 1);      
+    return SCRIPT_CMD_SUCCESS;      
 }

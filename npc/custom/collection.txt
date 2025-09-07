@@ -1,12 +1,16 @@
 prontera,147,172,4	script	Collector	4_M_HUMERCHANT,{    
-	mes .@npc_name$ = "[^0080FFCollector^000000]";    
-	mes "Do you need something ?";	    
-	.@stor_count = getcollectionstore();    
+	mes .@npc_name$ = "[^0000FFCollector^000000]";    
+	mes "Do you need something ?";    	    
+	.@stor_count = getcollectionstore();
+	if (.@stor_count <= 0) {  
+		mes "No collection storages are currently available.";  
+		close;  
+	}    
 	for (.@i = 0; .@i < .@stor_count; .@i++)    
-		.@menu2$[.@i] = sprintf("[-] Collection Box %s", .@stor_name$[.@i]);    
+		.@menu2$[.@i] = sprintf("[-] %s Storage", .@stor_name$[.@i]);    
 	    
 	// Updated main menu with combo options    
-	.@s = select("[-] See Collection Book:[-] See Collection Benefit:[-] Open Collection Storage:[-] Check Combo Status");    
+	.@s = select("[-] See Collection :[-] See Collection Benefit:[-] Open Collection Storage:[-] Check Combo Status");    
 	clear;    
 	mes .@npc_name$;    
 	    
@@ -75,89 +79,97 @@ prontera,147,172,4	script	Collector	4_M_HUMERCHANT,{
 		openstorage2 .@stor_id[.@s2], STOR_MODE_PUT | STOR_MODE_GET;    
 		end;    
 	}      
-	else if (.@s == 4) {    
-		// Simplified combo menu showing only status  
-		mes "Please select collection Box for combo management";    
-		.@s2 = select(implode(.@menu2$, ":")) - 1;    
-			
-		// Get available combos for this storage    
-		.@combo_list_count = getcollectioncombos(.@stor_id[.@s2]);    
-			
-		if (.@combo_list_count <= 0) {    
-			mes "No combos available for this collection box.";    
-			close;    
-		}    
-		  
-		// BATCH PROCESSING: Get all combo statuses at once  
-		.@total_combos = checkallcombos(.@stor_id[.@s2]);  
-		  
-		mes sprintf("^0080FF%s Combo Management^000000", .@stor_name$[.@s2]);    
-		mes "";    
-		mes "Available combos:";    
-			
-		// Build simplified combo menu showing only status  
-		for (.@i = 0; .@i < .@combo_list_count; .@i++) {    
-			.@combo_status = .@combo_active[.@i];  
-			.@status_text$ = (.@combo_status) ? "^00FF00[ACTIVE]^000000" : "^FF0000[INACTIVE]^000000";    
+	else if (.@s == 4) {      
+		// Simplified combo menu showing only status    
+		mes "Please select collection Box for combo management";      
+		.@s2 = select(implode(.@menu2$, ":")) - 1;      
 			  
-			// Simplified menu - only show combo number and status   
-			.@combo_menu$[.@i] = sprintf("Combo %d %s", .@i + 1, .@status_text$);    
-		}    
+		// Get available combos for this storage      
+		.@combo_list_count = getcollectioncombos(.@stor_id[.@s2]);      
+			  
+		if (.@combo_list_count <= 0) {      
+			mes "No combos available for this collection box.";      
+			close;      
+		}      
 			
-		.@combo_menu$[.@combo_list_count] = "Back";    
+		// BATCH PROCESSING: Get all combo statuses at once    
+		.@total_combos = checkallcombos(.@stor_id[.@s2]);    
+			
+		mes sprintf("^0000FF%s Combo Management^000000", .@stor_name$[.@s2]);      
+		mes "";      
+		mes "Available combos:";      
+			  
+		// Build simplified combo menu showing only status    
+		for (.@i = 0; .@i < .@combo_list_count; .@i++) {      
+			.@combo_status = .@combo_active[.@i];    
+			.@status_text$ = (.@combo_status) ? "^0000FF[ACTIVE]^000000" : "^FF0000[INACTIVE]^000000";      
+				
+			// Create combo names from database (Archer Combo, Crusader Combo, etc.)  
+			.@combo_menu$[.@i] = sprintf("%s %s", .@combo_names$[.@i], .@status_text$);
+		}      
+			  
+		.@combo_menu$[.@combo_list_count] = "Back";      
+			  
+		mes "";      
+		mes "Select a combo to view requirements:";      
+		.@combo_choice = select(implode(.@combo_menu$, ":")) - 1;      
+			  
+		if (.@combo_choice == .@combo_list_count) {      
+			close;      
+		}      
+			
+		// Show combo requirements in dialogue    
+		clear;    
+		mes .@npc_name$;    
+		mes sprintf("^0000FF%s Requirements^000000", .@combo_names$[.@combo_choice]);
+		mes "";    
+			
+		// Display required items using getcollectioncombos data  
+		.@combo_desc$ = "Required items:\n";      
+			
+		.@combo_item_data_count = getcombocollectionlist(.@stor_id[.@s2], getcharid(3));  
+		  
+		for (.@j = 0; .@j < .@combo_item_count[.@combo_choice]; .@j++) {            
+			.@index = .@combo_choice * 10 + .@j;  
+			.@item_id = .@combo_items[.@index];    
+			.@current_amount = .@combo_current_amounts[.@index];    
+			.@required_amount = .@combo_required_amounts[.@index];    
+				
+			.@combo_desc$ += sprintf("     -> [%d/%d] ^0000FF%s^000000\n", .@current_amount, .@required_amount, getitemname(.@item_id));          
+		}  
+		mes .@combo_desc$;			
+		// Show current status    
+		.@current_status = checkspecificcombo(.@stor_id[.@s2], .@combo_choice);      
+		.@status_text$ = (.@current_status) ? "^0000FFACTIVE^000000" : "^FF0000INACTIVE^000000";    
+		mes sprintf("\nStatus: %s", .@status_text$);    
 			
 		mes "";    
-		mes "Select a combo to view requirements:";    
-		.@combo_choice = select(implode(.@combo_menu$, ":")) - 1;    
+		mes "What would you like to do?";    
 			
-		if (.@combo_choice == .@combo_list_count) {    
-			close;    
+		if (.@current_status) {      
+			.@action = select("Deactivate Combo:Back");
+			next;
+			if (.@action == 1) {    
+				.@result = deactivatespecificcombo(.@stor_id[.@s2], .@combo_choice);      
+				if (.@result) {      
+					mes sprintf("%s has been deactivated.", .@combo_names$[.@combo_choice]);
+				} else {      
+					mes "Failed to deactivate combo.";      
+				}      
+			}    
+		} else {      
+			.@action = select("Activate Combo:Back");
+			next;
+			if (.@action == 1) {    
+				.@result = activatespecificcombo(.@stor_id[.@s2], .@combo_choice);      
+				if (.@result) {      
+					mes sprintf("%s has been activated!", .@combo_names$[.@combo_choice]);
+				} else {      
+					mes "Failed to activate combo. Check if you have all required items.";      
+				}      
+			}    
 		}    
-		  
-		// Show combo requirements in dialogue  
-		clear;  
-		mes .@npc_name$;  
-		mes sprintf("^0080FFCombo %d Requirements^000000", .@combo_choice + 1);  
-		mes "";  
-		  
-		// Display required items  
-		.@combo_desc$ = "Required items:\n";  
-		for (.@j = 0; .@j < .@combo_item_count[.@combo_choice]; .@j++) {    
-			.@item_id = .@combo_items[.@combo_choice * 10 + .@j];    
-			.@combo_desc$ += sprintf("     ->^0000FF%s^000000\n", getitemname(.@item_id));  
-		}    
-		mes .@combo_desc$;  
-		  
-		// Show current status  
-		.@current_status = checkspecificcombo(.@stor_id[.@s2], .@combo_choice);    
-		.@status_text$ = (.@current_status) ? "^00FF00ACTIVE^000000" : "^FF0000INACTIVE^000000";  
-		mes sprintf("\nStatus: %s", .@status_text$);  
-		  
-		mes "";  
-		mes "What would you like to do?";  
-		  
-		if (.@current_status) {    
-			.@action = select("Deactivate Combo:Back");  
-			if (.@action == 1) {  
-				.@result = deactivatespecificcombo(.@stor_id[.@s2], .@combo_choice);    
-				if (.@result) {    
-					mes sprintf("Combo %d has been deactivated.", .@combo_choice + 1);    
-				} else {    
-					mes "Failed to deactivate combo.";    
-				}    
-			}  
-		} else {    
-			.@action = select("Activate Combo:Back");  
-			if (.@action == 1) {  
-				.@result = activatespecificcombo(.@stor_id[.@s2], .@combo_choice);    
-				if (.@result) {    
-					mes sprintf("Combo %d has been activated!", .@combo_choice + 1);    
-				} else {    
-					mes "Failed to activate combo. Check if you have all required items.";    
-				}    
-			}  
-		}  
-	}          
+	}            
 	close;
 
 S_PreProcess:

@@ -365,41 +365,51 @@ uint64 CollectionDatabase::parseBodyNode(const ryml::NodeRef& node)
 	return 1;	
 }
 
-std::shared_ptr<s_collection_item> CollectionDatabase::findItemInStor(uint16 stor_id, t_itemid nameid)  
-{  
-    std::shared_ptr<s_collection_stor> collection = this->find(stor_id);  
-    if (collection == nullptr)  
-        return nullptr;  
-  
-    // First check individual items  
-    for (std::shared_ptr<s_collection_item> entry : collection->items)  
-    {  
-        if (entry->nameid == nameid)  
-            return entry;  
-    }  
+std::shared_ptr<s_collection_item> CollectionDatabase::findItemInStor(uint16 stor_id, t_itemid nameid)    
+{    
+    std::shared_ptr<s_collection_stor> collection = this->find(stor_id);    
+    if (collection == nullptr)    
+        return nullptr;    
+    
+    // First check individual items    
+    for (std::shared_ptr<s_collection_item> entry : collection->items)    
+    {    
+        if (entry->nameid == nameid)    
+            return entry;    
+    }    
+        
+    // For combo items, return a static reference instead of creating temporary objects  
+    static thread_local std::unordered_map<t_itemid, std::shared_ptr<s_collection_item>> combo_item_cache;  
       
-    // Then check combo items  
-    for (std::shared_ptr<s_collection_combo> combo : collection->combos)  
-    {  
-        for (t_itemid combo_item : combo->items)  
-        {  
-            if (combo_item == nameid)  
-            {  
-                // Create a properly initialized collection item for combo items  
-                std::shared_ptr<s_collection_item> temp_entry = std::make_shared<s_collection_item>();  
-                temp_entry->nameid = nameid;  
-                temp_entry->amount = combo->amount;  
-                temp_entry->refine = combo->refine;  
-                temp_entry->withdraw = combo->withdraw;  
-                temp_entry->collection_fee = combo->collection_fee;  
-                temp_entry->withdraw_fee = collection->withdraw_fee; // Use storage-wide withdraw fee  
-                temp_entry->script = nullptr; // Don't share script pointers to avoid double-free  
-                return temp_entry;  
-            }  
-        }  
-    }  
-      
-    return nullptr;  
+    for (std::shared_ptr<s_collection_combo> combo : collection->combos)    
+    {    
+        for (t_itemid combo_item : combo->items)    
+        {    
+            if (combo_item == nameid)    
+            {    
+                // Use cached item or create once  
+                auto cache_key = (static_cast<uint64>(stor_id) << 32) | nameid;  
+                auto it = combo_item_cache.find(cache_key);  
+                if (it != combo_item_cache.end()) {  
+                    return it->second;  
+                }  
+                  
+                std::shared_ptr<s_collection_item> cached_entry = std::make_shared<s_collection_item>();    
+                cached_entry->nameid = nameid;    
+                cached_entry->amount = combo->amount;    
+                cached_entry->refine = combo->refine;    
+                cached_entry->withdraw = combo->withdraw;    
+                cached_entry->collection_fee = combo->collection_fee;    
+                cached_entry->withdraw_fee = collection->withdraw_fee;  
+                cached_entry->script = nullptr; // Never share script pointers  
+                  
+                combo_item_cache[cache_key] = cached_entry;  
+                return cached_entry;    
+            }    
+        }    
+    }    
+        
+    return nullptr;    
 }
 
 CollectionDatabase collection_db;
@@ -513,29 +523,95 @@ void collection_save(map_session_data* sd, bool calc)
 		status_calc_pc(sd, SCO_NONE);  
 }
 
-void collection_load_combo_states(map_session_data* sd) {  
-    if (SQL_ERROR == Sql_Query(mmysql_handle,  
-        "SELECT `stor_id`, `combo_index`, `is_active` FROM `collection_combos` "  
-        "WHERE `account_id` = '%d' AND `char_id` = '%d'",  
-        sd->status.account_id, sd->status.char_id)) {  
-        Sql_ShowDebug(mmysql_handle);  
+void collection_load_combo_states(map_session_data* sd) {    
+    if (!sd) {  
+        ShowError("collection_load_combo_states: Invalid session data\\n");  
         return;  
     }  
-  
-    while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {  
-        char* data;  
-        int stor_id, combo_index, is_active;  
+      
+    if (SQL_ERROR == Sql_Query(mmysql_handle,    
+        "SELECT `stor_id`, `combo_index`, `is_active` FROM `collection_combos` "    
+        "WHERE `account_id` = '%d' AND `char_id` = '%d'",    
+        sd->status.account_id, sd->status.char_id)) {    
           
-        Sql_GetData(mmysql_handle, 0, &data, NULL); stor_id = atoi(data);  
-        Sql_GetData(mmysql_handle, 1, &data, NULL); combo_index = atoi(data);  
-        Sql_GetData(mmysql_handle, 2, &data, NULL); is_active = atoi(data);  
-  
-        std::shared_ptr<s_collection_stor> collection = collection_db.find(stor_id);  
-        if (collection != nullptr && combo_index < collection->active_combos.size()) {  
-            collection->active_combos[combo_index] = (is_active == 1);  
+        Sql_ShowDebug(mmysql_handle);    
+        ShowError("collection_load_combo_states: Failed to load combo states for account %d, char %d\\n",   
+                  sd->status.account_id, sd->status.char_id);  
+        return;    
+    }    
+    
+    int loaded_count = 0;  
+    while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {    
+        char* data;    
+        int stor_id, combo_index, is_active;    
+            
+        if (SQL_SUCCESS != Sql_GetData(mmysql_handle, 0, &data, NULL)) {  
+            ShowError("collection_load_combo_states: Failed to get stor_id data\\n");  
+            continue;  
+        }  
+        stor_id = atoi(data);  
+          
+        if (SQL_SUCCESS != Sql_GetData(mmysql_handle, 1, &data, NULL)) {  
+            ShowError("collection_load_combo_states: Failed to get combo_index data\\n");  
+            continue;  
+        }  
+        combo_index = atoi(data);  
+          
+        if (SQL_SUCCESS != Sql_GetData(mmysql_handle, 2, &data, NULL)) {  
+            ShowError("collection_load_combo_states: Failed to get is_active data\\n");  
+            continue;  
+        }  
+        is_active = atoi(data);  
+    
+        std::shared_ptr<s_collection_stor> collection = collection_db.find(stor_id);    
+        if (collection != nullptr) {  
+            if (combo_index >= 0 && combo_index < collection->active_combos.size()) {  
+                collection->active_combos[combo_index] = (is_active == 1);  
+                loaded_count++;  
+            } else {  
+                ShowWarning("collection_load_combo_states: Invalid combo_index %d for stor_id %d\\n",   
+                           combo_index, stor_id);  
+            }  
+        } else {  
+            ShowWarning("collection_load_combo_states: Collection stor_id %d not found\\n", stor_id);  
+        }  
+    }    
+      
+    Sql_FreeResult(mmysql_handle);  
+    ShowInfo("collection_load_combo_states: Loaded %d combo states for account %d, char %d\\n",   
+             loaded_count, sd->status.account_id, sd->status.char_id);  
+}
+
+bool collection_validate_combo(map_session_data* sd, uint16 stor_id, size_t combo_index, bool check_active_state) {  
+    if (!sd) return false;  
+      
+    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor_id);  
+    if (!collection || combo_index >= collection->combos.size()) {  
+        return false;  
+    }  
+      
+    // Check if combo is manually activated (if required)  
+    if (check_active_state &&   
+        (combo_index >= collection->active_combos.size() || !collection->active_combos[combo_index])) {  
+        return false;  
+    }  
+      
+    const auto& player_items = sd->collection.items[stor_id];  
+    auto& combo = collection->combos[combo_index];  
+      
+    // Validate all combo requirements  
+    for (t_itemid combo_item : combo->items) {  
+        auto it = std::find_if(player_items.begin(), player_items.end(),  
+            [&](const s_collection_items& item) { return item.nameid == combo_item; });  
+              
+        if (it == player_items.end() ||   
+            it->amount < combo->amount ||   
+            it->refine < combo->refine) {  
+            return false;  
         }  
     }  
-    Sql_FreeResult(mmysql_handle);  
+      
+    return true;  
 }
 
 void do_init_collection(void)
