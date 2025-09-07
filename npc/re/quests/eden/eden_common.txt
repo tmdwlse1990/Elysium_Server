@@ -25,7 +25,7 @@
 
 // Common NPCs :: lv_tre
 //============================================================
-moc_para01,27,35,5	script	Secretary Lime Evenor	4_F_EDEN_OFFICER,{
+moc_para01,28,37,5	script	[ Secretary ]	4_F_EDEN_OFFICER,{
 	if (checkweight(1201,1) == 0 || (MaxWeight - Weight) < 2000) {
 		mes "- Wait a minute !! -";
 		mes "- Currently you're carrying -";
@@ -117,7 +117,7 @@ moc_para01,27,35,5	script	Secretary Lime Evenor	4_F_EDEN_OFFICER,{
 					mes "[Lime Evenor]";
 					mes "Hopefully you can do great work as an Eden's member.";
 					getitem 22508,1; //Para_Team_Mark_
-					next;
+					close;
 					break;
 				case 2:
 					mes "[Lime Evenor]";
@@ -211,6 +211,10 @@ moc_para01,27,35,5	script	Secretary Lime Evenor	4_F_EDEN_OFFICER,{
 		}
 	}
 	close;
+OnInit:
+	setunitdata( getnpcid(0), UNPC_GROUP_ID,6 );
+	setunittitle( getnpcid(0), "Lime Evenor" );
+	end;	
 }
 
 -	script	Eden Teleport Officer#0::eto	-1,{
@@ -312,7 +316,7 @@ OnTouch:
 		case 31: warp "umbala",94,154; end;
 		case 32: warp "malaya",234,199; end;
 		case 33: warp "verus04",115,243; end;
-		default: warp "prontera",116,72; end;
+		default: warp "prontera",166,168; end;
 	}
 	end;
 }
@@ -389,7 +393,7 @@ moc_para01,172,28,5	script	Eden's Intern#eden	883,{
 	close;
 }
 
-moc_para01,20,35,5	script	Office Assistant Neede	814,{
+moc_para01,13,30,5	script	[ Office Assistant ]	814,{
 	mes "[Neede]";
 	mes "I became a Eden's member several years ago, but it feels like it was yesterday.";
 	mes "I have been doing lots of work, so I didn't even notice how many years I spent here.";
@@ -431,8 +435,13 @@ moc_para01,20,35,5	script	Office Assistant Neede	814,{
 	mes "[Neede]";
 	mes "Huh? Did you hear that? Gosh~!";
 	close;
+OnInit:
+	setunitdata( getnpcid(0), UNPC_GROUP_ID,6 );
+	setunittitle( getnpcid(0), "Neede" );
+	end;	
 }
 
 function	script	F_HasEdenGroupMark	{
 	return (countitem(6219) > 0 || countitem(22508) > 0);
 }
+

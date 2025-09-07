@@ -17,7 +17,7 @@
 //= 3.0 Migrate/Integrate to Global Functions. [mazvi]
 //============================================================
 
-prontera,128,200,6	script	Platinum Skill NPC	94,{
+moc_para01,24,35,5	script	[ Platinum Skills ]	94,{
 	mes "[Platinum Skill NPC]";
 	mes "I can give you the special skills available to your job.";
 	mes "Would you like these skills now?";
@@ -31,4 +31,9 @@ prontera,128,200,6	script	Platinum Skill NPC	94,{
 	mes "[Platinum Skill NPC]";
 	mes "There you go!";
 	close;
+	
+OnInit:
+	setunitdata( getnpcid(0), UNPC_GROUP_ID,6 );
+	setunittitle( getnpcid(0), "Karnal" );
+	end;
 }

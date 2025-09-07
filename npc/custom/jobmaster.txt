@@ -16,7 +16,7 @@
 //= 2.0 Added 4th class [Lemongrass]
 //============================================================
 
-prontera,153,193,6	script	Job Master	123,{
+moc_para01,28,35,5	script	[ Job Master ]	4_M_SAKRAYROYAL,{
 function Get_Job_Equip;
 // Checks if the Player has the required level.
 // closes if not, returns if yes
@@ -478,21 +478,69 @@ function	Get_Job_Equip	{
 		switch(BaseClass) {
 			// First Class
 			case Job_Swordman:
-				getitem 1108,1;	break;	//	Blade [4]
+				getitem 14545,5;		// 300% Field Manual
+				getitem 12412,5;		// 200% Bubble Gum
+				getitem 13874,1;		// Swordman Card Box
+				getitem 13945,1;		// Swordman Package
+				getitem 24246,1;		// Swordman Shadow Earring
+				getitem 24250,1;		// Swordman Shadow Pendant
+				break;
 			case Job_Mage:
-				getitem 1602,1;	break;	//	Rod [4]
+				getitem 14545,5;		// 300% Field Manual
+				getitem 12412,5;		// 200% Bubble Gum
+				getitem 13871,1;		// Magician Card Box
+				getitem 13946,1;		// Magician Package
+				getitem 24249,1;		// Magician Shadow Earring
+				getitem 24254,1;		// Magician Shadow Pendant
+				break;
 			case Job_Archer:
-				getitem 1705,1;	break;	//	Composite Bow [4]
+				getitem 14545,5;		// 300% Field Manual
+				getitem 12412,5;		// 200% Bubble Gum
+				getitem 13873,1;		// Archer Card Box
+				getitem 13948,1;		// Archer Package
+				getitem 28392,1;		// Archer Shadow Earring
+				getitem 24255,1;		// Archer Shadow Pendant
+				break;
 			case Job_Acolyte:
-				getitem 1505,1;	break;	//	Mace [4]
+				getitem 14545,5;		// 300% Field Manual
+				getitem 12412,5;		// 200% Bubble Gum
+				getitem 13872,1;		// Acolyte Card Box
+				getitem 13947,1;		// Acolyte Package
+				getitem 24248,1;		// Acolyte Shadow Earring
+				getitem 24252,1;		// Acolyte Shadow Pendant
+				break;
 			case Job_Merchant:
-				getitem 1302,1;	break;	//	Axe [4]
+				getitem 14545,5;		// 300% Field Manual
+				getitem 12412,5;		// 200% Bubble Gum
+				getitem 13876,1;		// Merchant Card Box
+				getitem 13949,1;		// Merchant Package
+				getitem 24247,1;		// Merchant Shadow Earring
+				getitem 24251,1;		// Merchant Shadow Pendant
+				break;
 			case Job_Thief:
-				getitem 1208,1;	break;	//	Main Gauche [4]
+				getitem 14545,5;		// 300% Field Manual
+				getitem 12412,5;		// 200% Bubble Gum
+				getitem 13875,1;		// Thief Card Box
+				getitem 13950,1;		// Thief Package
+				getitem 28391,1;		// Thief Shadow Earring
+				getitem 24253,1;		// Thief Shadow Pendant
+				break;
 			case Job_Gunslinger:
-				getitem 13101,1; break;	//	Six Shooter [2]
+				getitem 14545,5;		// 300% Field Manual
+				getitem 12412,5;		// 200% Bubble Gum
+				getitem 800005,1;		// Paradise Gunslinger Revolver
+				getitem 810003,1;		// Paradise Gunslinger Rifle
+				getitem 24319,1;		// Gunslinger Shadow Shield
+				getitem 24283,1;		// Gunslinger Shadow Weapon
+				break;
 			case Job_Ninja:
-				getitem 13010,1; break;	//	Asura [2]
+				getitem 14545,5;		// 300% Field Manual
+				getitem 12412,5;		// 200% Bubble Gum
+				getitem 650011,1;		// Paradise Ninja Crucifixion Shuriken
+				getitem 650010,1;		// Paradise Ninja Punishment Shuriken
+				getitem 24314,1;		// Ninja Shadow Shield
+				getitem 24285,1;		// Ninja Shadow Weapon
+				break;
 		}
 	}
 	return;
@@ -510,7 +558,7 @@ OnInit:
 	.SecondExpanded = true;				// Enable new expanded second classes: Ex. Super Novice, Kagerou/Oboro, Rebellion?
 	.BabyNovice = true;					// Enable Baby novice classes? Disable it if you like player must have parent to get job baby.
 	.BabyClass = true;					// Enable Baby classes?
-	.BabyThird = true;					// Enable Baby third classes?
+	.BabyThird = false;					// Enable Baby third classes?
 	.BabyExpanded = true;				// Enable Baby Expanded classes: Ex. Baby Ninja, Baby Taekwon, etc.
 	.BabySummoner = true;				// Enable Baby Summoner?
 	.LastJob = true;					// Enforce linear class changes?
@@ -529,6 +577,9 @@ OnInit:
 	setarray .Req_SHandler[0],200,60;	// Minimum base level, job level to turn into Spirit Handler
 	.SNovice = 45;						// Minimum base level to turn into Super Novice
 	
+	setunitdata( getnpcid(0), UNPC_GROUP_ID,6 );
+	setunittitle( getnpcid(0), "Carlos" );
+	
 	// Setting adjustments by PACKETVER
 	if( PACKETVER < 20161207 ) {
 		if( .BabyExpanded )
@@ -540,4 +591,3 @@ OnInit:
 	}
 	end;
 }
-
