@@ -25683,6 +25683,57 @@ void clif_parse_macro_checker( int32 fd, map_session_data* sd ){
 #endif
 }
 
+void clif_quest_status_ack(map_session_data* const sd, const PACKET_CZ_QUEST_STATUS_REQ_SUB* const QuestList, const uint16 QuestCount)
+{
+	uint8 Buffer[2048];
+	
+	const uint16 PacketLength = sizeof(PACKET_ZC_QUEST_STATUS_ACK) + QuestCount * sizeof(PACKET_ZC_QUEST_STATUS_ACK_SUB);
+	if (PacketLength > sizeof(Buffer))
+	{
+		// Buffer Overflow
+		return;
+	}
+
+	PACKET_ZC_QUEST_STATUS_ACK* const Packet = reinterpret_cast<PACKET_ZC_QUEST_STATUS_ACK*>(Buffer);
+	Packet->PacketType = HEADER_ZC_QUEST_STATUS_ACK;
+	Packet->PacketLength = PacketLength;
+
+	PACKET_ZC_QUEST_STATUS_ACK_SUB* const List = reinterpret_cast<PACKET_ZC_QUEST_STATUS_ACK_SUB*>(Buffer + sizeof(PACKET_ZC_QUEST_STATUS_ACK));
+	for (size_t Num = 0; Num < QuestCount; ++Num)
+	{
+		const uint32 QuestID = QuestList[Num].QuestID;
+		uint8 QuestStatus = Q_INACTIVE;
+
+		for (size_t QuestNum = 0; QuestNum < sd->num_quests; ++QuestNum)
+		{
+			if (QuestID == sd->quest_log[QuestNum].quest_id)
+			{
+				QuestStatus = (sd->quest_log[QuestNum].state == Q_COMPLETE);
+				break;
+			}
+		}
+
+		List[Num].QuestID = QuestID;
+		List[Num].QuestStatus = QuestStatus;
+	}
+
+	clif_send(Packet, Packet->PacketLength, sd, SELF);
+}
+
+void clif_parse_quest_status(const int fd, map_session_data* const sd)
+{
+	const PACKET_CZ_QUEST_STATUS_REQ* const Packet = reinterpret_cast<PACKET_CZ_QUEST_STATUS_REQ*>(RFIFOP(fd, 0));
+	if (Packet->PacketLength <= (sizeof(PACKET_CZ_QUEST_STATUS_REQ) + sizeof(PACKET_CZ_QUEST_STATUS_REQ_SUB)))
+	{
+		return;
+	}
+
+	const PACKET_CZ_QUEST_STATUS_REQ_SUB* const QuestList = reinterpret_cast<PACKET_CZ_QUEST_STATUS_REQ_SUB*>(RFIFOP(fd, sizeof(PACKET_CZ_QUEST_STATUS_REQ)));
+	const uint16 QuestCount = uint16(int16(Packet->PacketLength - sizeof(PACKET_CZ_QUEST_STATUS_REQ)) / sizeof(PACKET_CZ_QUEST_STATUS_REQ_SUB));
+	clif_quest_status_ack(sd, QuestList, QuestCount);
+}
+
+
 /// In clients 2025-01-22 and newer if you hold shift and right-click an item in the storage,
 /// the item will be moved to the favorite tab of the inventory.
 /// However if it is a stackable item and that item already exists in your inventory, it will

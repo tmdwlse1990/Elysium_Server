@@ -2096,12 +2096,6 @@ struct PACKET_CZ_REQ_REPORT_USER{
 } __attribute__((packed));
 DEFINE_PACKET_HEADER(CZ_REQ_REPORT_USER, 0xbe2);
 
-struct PACKET_CZ_QUEST_STATUS_REQ{
-	int16 packetType;
-	int16 packetLength;
-} __attribute__((packed));
-DEFINE_PACKET_HEADER(CZ_QUEST_STATUS_REQ, 0xbf3);
-
 struct PACKET_CZ_MOVE_ITEM_TO_PERSONAL{
 	int16 packetType;
 	uint32 unknown;

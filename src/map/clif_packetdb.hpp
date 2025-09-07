@@ -2031,8 +2031,8 @@
 	parseable_packet( HEADER_CZ_REQ_EMOTION_EXPANSION, sizeof( struct PACKET_CZ_REQ_EMOTION_EXPANSION ), clif_parse_dull, 0 );
 #endif
 
-#if PACKETVER_MAIN_NUM >= 20230802
-	parseable_packet( HEADER_CZ_QUEST_STATUS_REQ, -1, clif_parse_dull, 0 );
+#if (PACKETVER_MAIN_NUM >= 20240516)
+	parseable_packet(HEADER_CZ_QUEST_STATUS_REQ, -1, clif_parse_quest_status, 0);
 #endif
 
 #if PACKETVER_MAIN_NUM >= 20230830
