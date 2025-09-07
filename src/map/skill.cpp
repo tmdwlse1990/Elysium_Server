@@ -8407,7 +8407,11 @@ int32 skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, 
 		clif_skill_damage( *src, *bl, tick, status_get_amotion(src), 0, DMGVAL_IGNORE, 1, skill_id, skill_lv, DMG_SINGLE );
 		break;
 
-	// EDP also give +25% WATK poison pseudo element to user.
+	case DE_BERSERKAIZER:
+		clif_skill_nodamage(src, *bl, skill_id, skill_lv);
+		break;
+
+		// EDP also give +25% WATK poison pseudo element to user.
 	case ASC_EDP:
 		clif_skill_nodamage(src,*bl,skill_id,skill_lv,
 			sc_start(src,bl,type,100,skill_lv,skill_get_time(skill_id,skill_lv)));
@@ -9218,7 +9222,7 @@ int32 skill_castend_nodamage_id (struct block_list *src, struct block_list *bl, 
 	case NPC_SELFDESTRUCTION:
 		//Self Destruction hits everyone in range (allies+enemies)
 		//Except for Summoned Marine spheres on non-versus maps, where it's just enemies and your own slaves.
-		if ((md == nullptr || md->special_state.ai == AI_SPHERE) && !map_flag_vs(src->m)) {
+		if ( ((md == nullptr || md->special_state.ai == AI_SPHERE) && !map_flag_vs(src->m))	|| (md != nullptr && map_getmapflag(src->m, MF_NO_NPC_SELFDESTRUCTION_ON_ALL)) ) {
 			// Enable Marine Spheres to damage own Homunculus and summons outside PVP
 			if (battle_config.alchemist_summon_setting&8)
 				i = BCT_ENEMY|BCT_SLAVE;

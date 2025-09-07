@@ -6263,6 +6263,10 @@ void status_calc_bl_main(struct block_list& bl, std::bitset<SCB_MAX> flag)
 	* if(flag[SCB_RANGE])
 	**/
 
+	if (flag[SCB_RANGE]) {
+		status->rhw.range = b_status->rhw.range;
+	}
+
 	if(flag[SCB_MAXHP]) {
 		if( bl.type == BL_PC ) {
 			status->max_hp = status_calc_maxhp_pc( *sd, status->vit );

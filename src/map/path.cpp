@@ -212,7 +212,7 @@ static int32 heap_update_node(struct node_heap *heap, struct path_node *node)
 	int32 i;
 	ARR_FIND(0, BHEAP_LENGTH(*heap), i, BHEAP_DATA(*heap)[i] == node);
 	if (i == BHEAP_LENGTH(*heap)) {
-		ShowError("heap_update_node: node not found\n");
+		ShowInfo("heap_update_node: node not found\n");
 		return 1;
 	}
 	BHEAP_UPDATE(*heap, i, NODE_MINTOPCMP);

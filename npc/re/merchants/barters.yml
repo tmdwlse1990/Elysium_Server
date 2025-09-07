@@ -64,4 +64,7 @@ Footer:
   - Path: npc/re/merchants/barters/refine.yml
   - Path: npc/re/merchants/barters/rgsr_in.yml
   - Path: npc/re/merchants/barters/Pet_Groomer.yml
+  - Path: npc/re/merchants/barters/quests_19_daily.yml
+  - Path: npc/re/merchants/barters/quests_19_misc.yml
+  - Path: npc/re/merchants/barters/ep19_new_content.yml
 
