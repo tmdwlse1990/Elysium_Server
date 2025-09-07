@@ -5065,6 +5065,7 @@ void MapServer::finalize(){
 	do_final_path();
 	do_final_title();
 	do_final_collection();
+	do_final_emotions();	
 
 	map_db->destroy(map_db, map_db_final);
 
@@ -5443,6 +5444,7 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	do_init_buyingstore();
 	do_init_title();
 	do_init_collection();
+	do_init_emotions();	
 
 	npc_event_do_oninit();	// Init npcs (OnInit)
 
