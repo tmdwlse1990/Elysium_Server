@@ -6865,7 +6865,6 @@ BUILDIN_FUNC(countinarray)
  *------------------------------------------*/
 BUILDIN_FUNC(setlook)
 {
-	// TODO: no checks at all... [Lemongrass]
 	int32 type,val;
 	TBL_PC* sd;
 
@@ -6928,13 +6927,13 @@ BUILDIN_FUNC(changelook){
 			break;
 
 		case LOOK_BODY2:
-			if( val < JOB_NOVICE ){
-				ShowError( "buildin_changelook: Invalid body style. Minimum: %d\n", JOB_NOVICE );
+			if( val < MIN_BODY_STYLE ){
+				ShowError( "buildin_changelook: Invalid body style. Minimum: %d\n", MIN_BODY_STYLE );
 				return SCRIPT_CMD_FAILURE;
 			}
 
-			if( val >= JOB_MAX ){
-				ShowError( "buildin_changelook: Invalid body style. Maximum: %d\n", ( JOB_MAX - 1 ) );
+			if( val > MAX_BODY_STYLE ){
+				ShowError( "buildin_changelook: Invalid body style. Maximum: %d\n", MAX_BODY_STYLE );
 				return SCRIPT_CMD_FAILURE;
 			}
 			break;

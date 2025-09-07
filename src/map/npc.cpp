@@ -339,8 +339,6 @@ uint64 StylistDatabase::parseBodyNode( const ryml::NodeRef& node ){
 						return 0;
 					}
 
-					// TODO: Unsupported for now => This is job specific now
-#if 0
 					if( value < MIN_BODY_STYLE ){
 						this->invalidWarning( optionNode["Value"], "stylist_parseBodyNode: body style \"%u\" is too low...\n", value );
 						return 0;
@@ -348,7 +346,6 @@ uint64 StylistDatabase::parseBodyNode( const ryml::NodeRef& node ){
 						this->invalidWarning( optionNode["Value"], "stylist_parseBodyNode: body style \"%u\" is too high...\n", value );
 						return 0;
 					}
-#endif
 					break;
 			}
 
