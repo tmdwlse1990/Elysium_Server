@@ -183,10 +183,10 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
 	if (sd->battle_status.watk != 0 || sd->battle_status.watk2 != 0) {  
 		int total_watk = sd->battle_status.watk + sd->battle_status.watk2;  
 		if (total_watk < 0) {  
-			sprintf(output, "   -> Equipment Attack (Weapon): %s", rathena::util::insert_comma(total_watk).c_str());  
+			sprintf(output, "   -> Equipment ATK: %s", rathena::util::insert_comma(total_watk).c_str());  
 			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
 		} else {  
-			sprintf(output, "   -> Equipment Attack (Weapon): +%s", rathena::util::insert_comma(total_watk).c_str());  
+			sprintf(output, "   -> Equipment ATK: +%s", rathena::util::insert_comma(total_watk).c_str());  
 			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
 		}  
 		atk_def_found = true;  
@@ -196,10 +196,10 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
     // bBaseAtk (Equipment ATK bonus in Renewal)  
     if (sd->bonus.eatk != 0) {        
         if (sd->bonus.eatk < 0) {        
-            sprintf(output, "   -> Base Attack: %s", rathena::util::insert_comma(sd->bonus.eatk).c_str());        
+            sprintf(output, "   -> Base ATK: %s", rathena::util::insert_comma(sd->bonus.eatk).c_str());        
             clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);        
         } else {        
-            sprintf(output, "   -> Base Attack: +%s", rathena::util::insert_comma(sd->bonus.eatk).c_str());        
+            sprintf(output, "   -> Base ATK: +%s", rathena::util::insert_comma(sd->bonus.eatk).c_str());        
             clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);      
         }        
         atk_def_found = true;        
@@ -209,27 +209,43 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
     if (sd->base_status.batk != sd->battle_status.batk) {  
         int batk_bonus = sd->battle_status.batk - sd->base_status.batk;  
         if (batk_bonus < 0) {        
-            sprintf(output, "   -> Base ATK (bBaseAtk): %s", rathena::util::insert_comma(batk_bonus).c_str());        
+            sprintf(output, "   -> Base ATK: %s", rathena::util::insert_comma(batk_bonus).c_str());        
             clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);        
         } else {        
-            sprintf(output, "   -> Base ATK (bBaseAtk): +%s", rathena::util::insert_comma(batk_bonus).c_str());        
+            sprintf(output, "   -> Base ATK: +%s", rathena::util::insert_comma(batk_bonus).c_str());        
             clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);      
         }        
         atk_def_found = true;        
     }  
 #endif
 
-	// bMatk (Right-side MATK - visible in status window)  
-	int rightside_matk = pc_rightside_matk(sd);  
-	if (rightside_matk != 0) {        
-		if (rightside_matk < 0) {        
-			sprintf(output, "   -> Right-side MATK: %s", rathena::util::insert_comma(rightside_matk).c_str());        
-			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);        
-		} else {        
-			sprintf(output, "   -> Right-side MATK: +%s", rathena::util::insert_comma(rightside_matk).c_str());        
-			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);      
-		}        
-		atk_def_found = true;        
+	// bMatk - Equipment MATK bonus (including weapon MagicAttack)  
+	int total_matk_bonus = 0;  
+	  
+	// Equipment bMatk bonuses  
+	if (sd->bonus.ematk != 0) {  
+		total_matk_bonus += sd->bonus.ematk;  
+	}  
+	  
+#ifdef RENEWAL  
+	// Weapon MagicAttack values  
+	if (sd->battle_status.rhw.matk > 0) {  
+		total_matk_bonus += sd->battle_status.rhw.matk;  
+	}  
+	if (sd->battle_status.lhw.matk > 0) {  
+		total_matk_bonus += sd->battle_status.lhw.matk;  
+	}  
+#endif  
+	  
+	if (total_matk_bonus != 0) {  
+		if (total_matk_bonus < 0) {  
+			sprintf(output, "   -> Equipment MATK: %s", rathena::util::insert_comma(total_matk_bonus).c_str());  
+			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
+		} else {  
+			sprintf(output, "   -> Equipment MATK: +%s", rathena::util::insert_comma(total_matk_bonus).c_str());  
+			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
+		}  
+		atk_def_found = true;  
 	}      
 
 	// // bMatk2 (Hidden MATK - not visible in status window)
@@ -301,14 +317,34 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
     clif_displaymessage(fd, " * Additional Stats");    
     bool additional_stats_found = false;  
 
-	// bHit - Flat Hit bonus (from battle_status vs base calculation)  
-	if (sd->battle_status.hit > sd->base_status.hit) {  
-		int hit_bonus = sd->battle_status.hit - sd->base_status.hit;  
-		if (hit_bonus != 0) {  
-			sprintf(output, "   -> Hit Bonus: +%s", rathena::util::insert_comma(hit_bonus).c_str());  
+	// bHit - Equipment Hit bonus only  
+	int total_hit_bonus = 0;  
+	  
+	// Calculate pure natural hit (stats only)  
+	int natural_hit = 0;  
+#ifdef RENEWAL  
+		natural_hit = sd->status.base_level + sd->status.dex + (sd->status.luk / 3) + 175 + (2 * sd->status.con);  
+#else  
+		natural_hit = sd->status.base_level + sd->status.dex;  
+#endif  
+	  
+	// Equipment-only hit bonus = base_status.hit - natural_hit  
+	int equipment_only_bonus = sd->base_status.hit - natural_hit;  
+	  
+	// Add arrow hit bonus (this is equipment-related)  
+	if (sd->bonus.arrow_hit != 0) {  
+		equipment_only_bonus += sd->bonus.arrow_hit;  
+	}  
+	  
+	if (equipment_only_bonus != 0) {  
+		if (equipment_only_bonus < 0) {  
+			sprintf(output, "   -> Hit Bonus (Items): %s", rathena::util::insert_comma(equipment_only_bonus).c_str());  
+			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
+		} else {  
+			sprintf(output, "   -> Hit Bonus (Items): +%s", rathena::util::insert_comma(equipment_only_bonus).c_str());  
 			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
-			additional_stats_found = true;  
 		}  
+		additional_stats_found = true;  
 	}
 
 	// bonus bHitRate
@@ -324,14 +360,34 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
         additional_stats_found = true;    
     }    
 
-	// bCritical - Flat Critical bonus (stored in battle_status.cri)  
-	if (sd->battle_status.cri > sd->base_status.cri) {  
-		int cri_bonus = (sd->battle_status.cri - sd->base_status.cri) / 10; // Convert from internal format  
-		if (cri_bonus != 0) {  
-			sprintf(output, "   -> Critical Bonus: +%s", rathena::util::insert_comma(cri_bonus).c_str());  
+	// bCritical - Flat Critical bonus (including equipment)  
+	int total_cri_bonus = 0;  
+	  
+	// Calculate natural critical (stats only, no equipment/skills)  
+	int natural_cri = 0;  
+#ifdef RENEWAL  
+		natural_cri = (sd->status.base_level / 10) + 10 + (sd->status.luk * 3);  
+#else  
+		natural_cri = 10 + (sd->status.luk * 10 / 3);  
+#endif  
+	  
+	// Equipment critical bonus = base_status.cri - natural_cri  
+	int equipment_cri_bonus = (sd->base_status.cri - natural_cri) / 10; // Convert from internal format  
+	  
+	// Status effect critical bonus = battle_status.cri - base_status.cri    
+	int status_cri_bonus = (sd->battle_status.cri - sd->base_status.cri) / 10;  
+	  
+	total_cri_bonus = equipment_cri_bonus + status_cri_bonus;  
+	  
+	if (total_cri_bonus != 0) {  
+		if (total_cri_bonus < 0) {  
+			sprintf(output, "   -> Critical Bonus: %s", rathena::util::insert_comma(total_cri_bonus).c_str());  
+			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
+		} else {  
+			sprintf(output, "   -> Critical Bonus: +%s", rathena::util::insert_comma(total_cri_bonus).c_str());  
 			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
-			additional_stats_found = true;  
 		}  
+		additional_stats_found = true;  
 	}
 
 	// bCriticalRate
@@ -360,14 +416,34 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
         additional_stats_found = true;    
     }    
 
-	// bFlee - Flat Flee bonus  
-	if (sd->battle_status.flee > sd->base_status.flee) {  
-		int flee_bonus = sd->battle_status.flee - sd->base_status.flee;  
-		if (flee_bonus != 0) {  
-			sprintf(output, "   -> Flee Bonus: +%s", rathena::util::insert_comma(flee_bonus).c_str());  
+	// bFlee - Flat Flee bonus (including equipment)  
+	int total_flee_bonus = 0;  
+	  
+	// Calculate natural flee (stats only, no equipment/skills)  
+	int natural_flee = 0;  
+#ifdef RENEWAL  
+		natural_flee = sd->status.base_level + sd->status.agi + (sd->status.luk / 5) + 100 + (2 * sd->status.con);  
+#else  
+		natural_flee = sd->status.base_level + sd->status.agi;  
+#endif  
+	  
+	// Equipment flee bonus = base_status.flee - natural_flee  
+	int equipment_flee_bonus = sd->base_status.flee - natural_flee;  
+	  
+	// Status effect flee bonus = battle_status.flee - base_status.flee    
+	int status_flee_bonus = sd->battle_status.flee - sd->base_status.flee;  
+	  
+	total_flee_bonus = equipment_flee_bonus + status_flee_bonus;  
+	  
+	if (total_flee_bonus != 0) {  
+		if (total_flee_bonus < 0) {  
+			sprintf(output, "   -> Flee Bonus: %s", rathena::util::insert_comma(total_flee_bonus).c_str());  
+			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
+		} else {  
+			sprintf(output, "   -> Flee Bonus: +%s", rathena::util::insert_comma(total_flee_bonus).c_str());  
 			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
-			additional_stats_found = true;  
 		}  
+		additional_stats_found = true;  
 	}
 
 	// bFleeRate
@@ -383,12 +459,25 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
         additional_stats_found = true;    
     }    
 
-	// bFlee2 - Flat Perfect Dodge bonus  
-	if (sd->battle_status.flee2 > sd->base_status.flee2) {  
-		int flee2_bonus = (sd->battle_status.flee2 - sd->base_status.flee2) / 10; // Convert from internal format  
-		if (flee2_bonus != 0) {  
-			sprintf(output, "   -> Perfect Dodge Bonus: +%s", rathena::util::insert_comma(flee2_bonus).c_str());  
-			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
+	// bFlee2 - Flat Perfect Dodge bonus (excluding base stats)  
+	int total_flee2_bonus = 0;  
+	  
+	// Only calculate if the character actually has flee2 calculated (not 0)  
+	if (sd->battle_status.flee2 > 0) {  
+		int pure_natural_flee2 = (sd->status.luk + 10);
+		
+		int equipment_skill_flee2_bonus = (sd->base_status.flee2 - pure_natural_flee2);
+ 
+		total_flee2_bonus = equipment_skill_flee2_bonus / 10;
+		  
+		if (total_flee2_bonus != 0) {  
+			if (total_flee2_bonus < 0) {  
+				sprintf(output, "   -> Perfect Dodge Bonus: %s", rathena::util::insert_comma(total_flee2_bonus).c_str());  
+				clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
+			} else {  
+				sprintf(output, "   -> Perfect Dodge Bonus: +%s", rathena::util::insert_comma(total_flee2_bonus).c_str());  
+				clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
+			}  
 			additional_stats_found = true;  
 		}  
 	}
@@ -454,22 +543,25 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
         additional_stats_found = true;    
     }    
 
-	// bAspd
-    if (sd->bonus.aspd_add != 0) {    
-        if (sd->bonus.aspd_add < 0) {    
-            sprintf(output, "   -> ASPD Add: %s", rathena::util::insert_comma(sd->bonus.aspd_add).c_str());    
-            clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);    
-        } else {    
-            sprintf(output, "   -> ASPD Add: +%s", rathena::util::insert_comma(sd->bonus.aspd_add).c_str());    
-            clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);    
-        }    
-        additional_stats_found = true;    
-    }
+	// bAspd - Equipment ASPD bonus only  
+	if (sd->bonus.aspd_add != 0) {  
+		// Convert from internal format (aspd_add is stored as negative values for bonuses)  
+		int aspd_bonus = -sd->bonus.aspd_add / 10;  
+		  
+		if (aspd_bonus < 0) {  
+			sprintf(output, "   -> ASPD Bonus: %s", rathena::util::insert_comma(aspd_bonus).c_str());  
+			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
+		} else {  
+			sprintf(output, "   -> ASPD Bonus: +%s", rathena::util::insert_comma(aspd_bonus).c_str());  
+			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
+		}  
+		additional_stats_found = true;  
+	}
     
 	// bAspdRate - ASPD Rate bonus  
-	#ifndef RENEWAL_ASPD  
+#ifndef RENEWAL_ASPD  
 	if (sd->battle_status.aspd_rate != 1000) {    
-		int aspd_rate_bonus = (1000 - sd->battle_status.aspd_rate) / 10;  // Convert back to percentage  
+		int aspd_rate_bonus = (1000 - sd->battle_status.aspd_rate) / 10;
 		if (aspd_rate_bonus < 0) {    
 			sprintf(output, "   -> ASPD Rate: %s%%", rathena::util::insert_comma(aspd_rate_bonus).c_str());    
 			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);    
@@ -479,7 +571,7 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
 		}    
 		additional_stats_found = true;    
 	}  
-	#else  
+#else  
 	// For Renewal, use aspd_rate2 which starts at 0  
 	if (sd->battle_status.aspd_rate2 != 0) {    
 		sprintf(output, "   -> ASPD Rate: %s%s%%",   
@@ -488,7 +580,7 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
 		clif_messagecolor(sd, sd->battle_status.aspd_rate2 > 0 ? color_table[COLOR_WHITE] : color_table[COLOR_RED], output, false, SELF);    
 		additional_stats_found = true;    
 	}  
-	#endif
+#endif
 
 	// bAtkRange - Attack Range bonus  
 	// Note: This shows total range including weapon base + bonuses  
@@ -1686,7 +1778,20 @@ void atcommand_gspecificbonuses_sub(int fd, class map_session_data *sd) {
 		clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
 		damage_modifiers_found = true;  
 	}  
-	  
+
+	// bCriticalAddRace - Critical bonus vs Race  
+	for (int race = 0; race < RC_MAX; race++) {  
+		if (sd->indexed_bonus.critaddrace[race] != 0) {  
+			std::string race_name = get_race_name(race);  
+			sprintf(output, "   -> Critical vs %s race: %s%s",  
+					race_name.c_str(),  
+					sd->indexed_bonus.critaddrace[race] > 0 ? "+" : "",  
+					rathena::util::insert_comma(sd->indexed_bonus.critaddrace[race] / 10).c_str());  
+			clif_messagecolor(sd, sd->indexed_bonus.critaddrace[race] > 0 ? color_table[COLOR_WHITE] : color_table[COLOR_RED], output, false, SELF);  
+			damage_modifiers_found = true;  
+		}  
+	}
+
 	if (!damage_modifiers_found) {  
 		clif_displaymessage(fd, "   -> No damage modifier bonuses found");  
 	}
