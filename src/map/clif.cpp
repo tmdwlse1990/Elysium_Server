@@ -658,7 +658,7 @@ int32 clif_send(const void* buf, int32 len, struct block_list* bl, enum send_tar
 				if( sd->id == bl->id && (type == GUILD_WOS || type == GUILD_SAMEMAP_WOS || type == GUILD_AREA_WOS) )
 					continue;
 
-				if( type != GUILD && type != GUILD_NOBG && type != GUILD_WOS && sd->m != bl->m )
+				if( type != GUILD && type != GUILD_NOBG && type != GUILD_WOS && type != GUILD_ALLIANCE && sd->bl.m != bl->m )
 					continue;
 
 				if( (type == GUILD_AREA || type == GUILD_AREA_WOS) && (sd->x < x0 || sd->y < y0 || sd->x > x1 || sd->y > y1) )
@@ -669,6 +669,39 @@ int32 clif_send(const void* buf, int32 len, struct block_list* bl, enum send_tar
 				WFIFOSET(fd,len);
 			}
 		}
+
+		if (type == GUILD_ALLIANCE)
+		{
+			for (const guild_alliance& Alliance : g.alliance)
+			{
+				if (Alliance.guild_id == 0 || Alliance.opposition != 0)
+				{
+					continue;
+				}
+
+				const std::shared_ptr<MapGuild>& AllianceGuild = guild_search(Alliance.guild_id);
+				if (AllianceGuild == nullptr)
+				{
+					continue;
+				}
+
+				for (size_t Num = 0; Num < AllianceGuild->guild.max_member; ++Num)
+				{
+					if ((sd = AllianceGuild->guild.member[Num].sd) != nullptr)
+					{
+						if (!session_isActive(fd = sd->fd))
+						{
+							continue;
+						}
+						
+						WFIFOHEAD(fd, len);
+						memcpy(WFIFOP(fd, 0), buf, len);
+						WFIFOSET(fd, len);
+					}
+				}
+			}
+		}
+
 		if (!enable_spy) //Skip unnecessary parsing. [Skotlex]
 			break;
 
@@ -25881,6 +25914,59 @@ void clif_emotion2_expantion_list(map_session_data* const sd, const std::vector<
 
 	WFIFOSET(fd, PacketTotalSize);
 #endif
+}
+
+void clif_guild_alliance_message(const mmo_guild& InGuild, const char* const InMessage, const size_t InLength)
+{
+	if (!InLength)
+	{
+		return;
+	}
+
+	uint8 Buffer[256];
+	
+	const size_t MaxMessageLength = sizeof(Buffer) - 5; // sizeof(PacketType) + sizeof(PacketLength) + 1 for null trailing character 
+	size_t Length = InLength;
+	if (InLength > MaxMessageLength)
+	{
+		ShowWarning("clif_guild_alliance_message: Original message '%s' was truncated (length = %u, maximum = %u, guild_id = %u).\n", InMessage, uint32(InLength), uint32(MaxMessageLength), InGuild.guild_id);
+		Length = MaxMessageLength;
+	}
+
+	WBUFW(Buffer, 0) = 0x0bde;
+	WBUFW(Buffer, 2) = static_cast<uint16>(InLength);
+	safestrncpy(WBUFCP(Buffer, 4), InMessage, Length + 1);
+
+	map_session_data* sd;
+	if ((sd = guild_getavailablesd(InGuild)) != NULL)
+	{
+		clif_send(Buffer, WBUFW(Buffer, 2), &sd->bl, GUILD_ALLIANCE);
+	}
+}
+
+void clif_parse_guild_alliance_message(int fd, map_session_data* sd)
+{
+	char Name[NAME_LENGTH]; 
+	char Message[CHAT_SIZE_MAX];
+	char Output[CHAT_SIZE_MAX + NAME_LENGTH * 2];
+
+	if (!clif_process_message(sd, false, Name, Message, Output))
+	{
+		return;
+	}
+
+	if (sd->status.guild_id == 0)
+	{
+		return;
+	}
+
+	std::shared_ptr<MapGuild> Guild = guild_search(sd->status.guild_id);
+	if (Guild == nullptr)
+	{
+		return;
+	}
+
+	clif_guild_alliance_message(Guild->guild, Output, strlen(Output));
 }
 
 /*==========================================

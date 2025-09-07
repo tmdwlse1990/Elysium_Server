@@ -2049,6 +2049,10 @@
 	packet(HEADER_ZC_EMOTION2_EXPANTION_LIST, -1);
 #endif
 
+#if (PACKETVER_MAIN_NUM >= 20231220)
+	parseable_packet(0x0bdd, -1, clif_parse_guild_alliance_message, 2, 4);
+#endif
+
 #if PACKETVER_MAIN_NUM >= 20240502
 	parseable_packet( HEADER_CZ_GM_CHECKER, sizeof( struct PACKET_CZ_GM_CHECKER ), clif_parse_macro_checker, 0 );
 #endif

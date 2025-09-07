@@ -227,6 +227,7 @@ enum send_target : uint8_t {
 	GUILD_AREA,
 	GUILD_AREA_WOS,
 	GUILD_NOBG,
+	GUILD_ALLIANCE,
 	DUEL,
 	DUEL_WOS,
 	SELF,
@@ -1537,5 +1538,8 @@ void clif_parse_emotion2_expantion(const int fd, map_session_data* const sd);
 void clif_emotion2_expantion(map_session_data* const sd, const uint16 ExpantionId, const bool bRented, const uint32 RentEndTime);
 void clif_emotion2_expantion_fail(map_session_data* const sd, const uint16 ExpantionId, enum EEmotionExpantionStatus Status);
 void clif_emotion2_expantion_list(map_session_data* const sd, const std::vector<PACKET_ZC_EMOTION2_EXPANTION_LIST_SUB>& List);
+
+void clif_guild_alliance_message(const mmo_guild& InGuild, const char* const InMessage, const size_t InLength);
+void clif_parse_guild_alliance_message(int fd, map_session_data* sd);
 
 #endif /* CLIF_HPP */
