@@ -642,6 +642,7 @@ int32 clif_send(const void* buf, int32 len, struct block_list* bl, enum send_tar
 	case GUILD_SAMEMAP_WOS:
 	case GUILD:
 	case GUILD_WOS:
+	case GUILD_ALLIANCE:
 	case GUILD_NOBG: {
 		if (!sd || !sd->status.guild_id || !sd->guild)
 			break;
@@ -658,7 +659,7 @@ int32 clif_send(const void* buf, int32 len, struct block_list* bl, enum send_tar
 				if( sd->id == bl->id && (type == GUILD_WOS || type == GUILD_SAMEMAP_WOS || type == GUILD_AREA_WOS) )
 					continue;
 
-				if( type != GUILD && type != GUILD_NOBG && type != GUILD_WOS && type != GUILD_ALLIANCE && sd->bl.m != bl->m )
+				if( type != GUILD && type != GUILD_NOBG && type != GUILD_WOS && type != GUILD_ALLIANCE && sd->m != bl->m )
 					continue;
 
 				if( (type == GUILD_AREA || type == GUILD_AREA_WOS) && (sd->x < x0 || sd->y < y0 || sd->x > x1 || sd->y > y1) )
@@ -25940,7 +25941,7 @@ void clif_guild_alliance_message(const mmo_guild& InGuild, const char* const InM
 	map_session_data* sd;
 	if ((sd = guild_getavailablesd(InGuild)) != NULL)
 	{
-		clif_send(Buffer, WBUFW(Buffer, 2), &sd->bl, GUILD_ALLIANCE);
+		clif_send(Buffer, WBUFW(Buffer, 2), sd, GUILD_ALLIANCE);
 	}
 }
 
@@ -25967,6 +25968,105 @@ void clif_parse_guild_alliance_message(int fd, map_session_data* sd)
 	}
 
 	clif_guild_alliance_message(Guild->guild, Output, strlen(Output));
+}
+
+void clif_parse_macro_user_report(int32 fd, map_session_data* const sd)
+{
+#if (PACKETVER_MAIN_NUM > 20230915)
+	nullpo_retv(sd);
+
+	PACKET_CZ_MACRO_USER_REPORT_REQ* const Packet = reinterpret_cast<PACKET_CZ_MACRO_USER_REPORT_REQ*>(RFIFOP(fd, 0));
+
+	//
+	// Packets that may be forged needs to be integrity checked before processing them.
+	//
+
+	if (Packet->ReportType > 1)
+	{
+		return;
+	}
+
+	if (Packet->ReporterAID == Packet->ReportedAID)
+	{
+		return;
+	}
+
+	if (Packet->ReporterAID != sd->status.account_id)
+	{
+		return;
+	}
+
+	map_session_data* tsd = map_id2sd(Packet->ReportedAID);
+	if (tsd == nullptr)
+	{
+		clif_macro_user_report_ack(sd, MACRO_USER_REPORT_INVALID, nullptr);
+		return;
+	}
+
+	//
+	// Checks whether the reported user character name matches.
+	//
+
+	if (strcmpi(Packet->ReportName, tsd->status.name) != 0)
+	{
+		clif_macro_user_report_ack(sd, MACRO_USER_REPORT_INVALID, nullptr);
+		return;
+	}
+
+	//
+	// Limits the maximum report count per reporter user.
+	//
+
+	const uint32 ReportCount = static_cast<uint32>(pc_readreg2(sd, "#MUR_ReportCount"));
+	if (ReportCount > 999)
+	{
+		clif_macro_user_report_ack(sd, MACRO_USER_REPORT_COUNTLIMIT, nullptr);
+		return;
+	}
+
+	pc_setreg2(sd, "#MUR_ReportCount", ReportCount + 1);
+
+	//
+	// Limits the interval between reports per reporter user.
+	//
+
+	const uint32 LastReportTime = static_cast<uint32>(pc_readreg2(sd, "#MUR_LastReportTime"));
+	if (LastReportTime > 0 && LastReportTime + 60 > time(nullptr))
+	{
+		clif_macro_user_report_ack(sd, MACRO_USER_REPORT_COOLTIME, nullptr);
+		return;
+	}
+
+	pc_setreg2(sd, "#MUR_LastReportTime", static_cast<uint32>(time(nullptr)));
+
+	chrif_macro_user_report(Packet->ReporterAID, Packet->ReportedAID, Packet->ReportType, Packet->ReportMessage);
+	clif_macro_user_report_ack(sd, MACRO_USER_REPORT_SUCCESS, Packet->ReportName);
+#endif
+}
+
+void clif_macro_user_report_ack(map_session_data* const sd, int32 status, const char* const report_name)
+{
+#if (PACKETVER_MAIN_NUM > 20230915)
+	nullpo_retv(sd);
+
+	const int fd = sd->fd;
+
+	PACKET_ZC_MACRO_USER_REPORT_ACK* const Packet = reinterpret_cast<PACKET_ZC_MACRO_USER_REPORT_ACK*>(packet_buffer);
+	Packet->PacketType = HEADER_ZC_MACRO_USER_REPORT_ACK;
+	Packet->ReporterAID = sd->status.account_id;
+
+	if (report_name != nullptr)
+	{
+		memcpy(Packet->ReportName, report_name, NAME_LENGTH);
+	}
+	else
+	{
+		memset(Packet->ReportName, '\0', NAME_LENGTH);
+	}
+
+	Packet->Status = status;
+	clif_send(Packet, sizeof(PACKET_ZC_MACRO_USER_REPORT_ACK), sd, SELF);
+#endif
 }
 
 /*==========================================
