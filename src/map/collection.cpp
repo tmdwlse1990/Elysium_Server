@@ -379,7 +379,7 @@ std::shared_ptr<s_collection_item> CollectionDatabase::findItemInStor(uint16 sto
     }    
         
     // For combo items, return a static reference instead of creating temporary objects  
-    static thread_local std::unordered_map<t_itemid, std::shared_ptr<s_collection_item>> combo_item_cache;  
+    static thread_local std::unordered_map<uint64, std::shared_ptr<s_collection_item>> combo_item_cache;  
       
     for (std::shared_ptr<s_collection_combo> combo : collection->combos)    
     {    
