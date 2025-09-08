@@ -869,7 +869,7 @@ std::tuple<e_runereward_result, uint8> rune_askreward(map_session_data* sd, uint
 	}
 
 	// Get max reward
-	max_reward = runeset_data->rewards.size();
+	max_reward = static_cast<int32>(runeset_data->rewards.size());
 
 	// Check if reward is more or already have it
 	if (it_setrune_data->reward >= reward)

@@ -19561,7 +19561,7 @@ BUILDIN_FUNC(setunitdata)
 				unit_data* ud = unit_bl2ud(bl);
 				if(ud != nullptr)
 				{
-					ud->body_size = (uint16)value;	// 100 = normal size
+					ud->body_size = (uint8)value;
 
 					clif_body_size(bl, ud->body_size);
 				}
