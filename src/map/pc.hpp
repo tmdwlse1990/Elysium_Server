@@ -1153,6 +1153,14 @@ struct s_job_info {
 		uint8 group_lv;
 	} noenter_map;
 	std::vector<uint16> alternate_outfits;
+	struct script_code* script;
+
+    ~s_job_info() {  
+        if (this->script != nullptr) {  
+            script_free_code(this->script);  
+            this->script = nullptr;  
+        }  
+    }
 };
 
 class JobDatabase : public TypesafeCachedYamlDatabase<uint16, s_job_info> {

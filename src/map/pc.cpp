@@ -14466,6 +14466,33 @@ uint64 JobDatabase::parseBodyNode(const ryml::NodeRef& node) {
 						}
 					}
 				}
+			}  
+ 
+			std::shared_ptr<s_job_info> job_info = this->find(static_cast<uint16>(job_id));    
+			  
+			if (!exists) {  
+				job_info = std::make_shared<s_job_info>();  
+				// initialize job_info fields  
+			}  
+			  
+			// Then in your Script parsing:  
+			if (this->nodeExists(node, "Script")) {  
+				std::string script;  
+				  
+				if (!this->asString(node, "Script", script)) {  
+					return 0;  
+				}  
+				  
+				if (job_info->script) {  
+					script_free_code(job_info->script);  
+					job_info->script = nullptr;  
+				}  
+				  
+				job_info->script = parse_script(script.c_str(), this->getCurrentFile().c_str(), this->getLineNumber(node["Script"]), SCRIPT_IGNORE_EXTERNAL_BRACKETS);  
+			} else {  
+				if (!exists) {  
+					job_info->script = nullptr;  
+				}  
 			}
 
 			if (!exists)

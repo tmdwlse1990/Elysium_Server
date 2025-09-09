@@ -4329,6 +4329,10 @@ int32 status_calc_pc_sub(map_session_data* sd, uint8 opt)
 		base_status->crt += bonus[PARAM_CRT];
 	}
 
+    if( job_info->script ){  
+        run_script( job_info->script, 0, sd->id, 0 );  
+    }
+
 	// If a Super Novice has never died and is at least joblv 70, he gets all stats +10
 	if(((sd->class_&MAPID_UPPERMASK) == MAPID_SUPER_NOVICE && (sd->status.job_level >= 70  || sd->class_&JOBL_THIRD)) && sd->die_counter == 0) {
 		base_status->str += 10;
