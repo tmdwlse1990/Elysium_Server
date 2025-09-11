@@ -5451,9 +5451,9 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 
 	npc_event_do_oninit();	// Init npcs (OnInit)
 
-	if(battle_config.function_autocombat_move_min > battle_config.function_autocombat_move_max){
-		ShowError("function_autocombat_move_min > function_autocombat_move_max, forcing to 1 \n");
-		battle_config.function_autocombat_move_min = 1;
+	if(battle_config.autocombat_move_min > battle_config.autocombat_move_max){
+		ShowError("autocombat_move_min > autocombat_move_max, forcing to 1 \n");
+		battle_config.autocombat_move_min = 1;
 	}
 
 	if (battle_config.pk_mode)

@@ -3177,8 +3177,8 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type)
 				base_exp = job_exp = 0;
 
 			if (sd && sd->state.autocombat) {
-				base_exp = base_exp * battle_config.function_autocombat_exp_ratio / 100;
-				job_exp = job_exp * battle_config.function_autocombat_exp_ratio / 100;
+				base_exp = base_exp * battle_config.autocombat_exp_ratio / 100;
+				job_exp = job_exp * battle_config.autocombat_exp_ratio / 100;
 			}
 
 			if ( ( temp = tmpsd[i]->status.party_id)>0 ) {
@@ -3297,7 +3297,7 @@ int32 mob_dead(struct mob_data *md, struct block_list *src, int32 type)
 						continue;
 
 					if (sd && sd->state.autocombat)
-						drop_rate = drop_rate * battle_config.function_autocombat_drop_ratio / 100;
+						drop_rate = drop_rate * battle_config.autocombat_drop_ratio / 100;
 
 					std::shared_ptr<s_mob_drop> mobdrop = std::make_shared<s_mob_drop>();
 

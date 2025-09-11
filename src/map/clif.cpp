@@ -9974,7 +9974,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 
 			if( sd->fakename[0] ) {
 				safestrncpy( packet.name, sd->fakename, NAME_LENGTH );
-				if (!(battle_config.function_autocombat_prefixname && sd->state.autocombat)) {
+				if (!(battle_config.autocombat_prefixname && sd->state.autocombat)) {
 					clif_send(&packet, sizeof(packet), src, target);
 					return;
 				}

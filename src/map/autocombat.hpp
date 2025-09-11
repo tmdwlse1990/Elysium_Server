@@ -189,6 +189,7 @@ int buildin_autocombat_sub(struct block_list* bl, va_list ap);
 int buildin_autocombat_monsters_sub(struct block_list* bl, va_list ap);
 unsigned int ac_check_target_alive(map_session_data* sd);
 int ac_check_surround_monster(map_session_data* sd);
+bool find_ac_mob(map_session_data* sd, int mob_id);
 bool ac_teleport(map_session_data* sd);
 int ac_ammochange(map_session_data* sd, struct mob_data* md, const unsigned short* ammoIds, const unsigned short* ammoElements, const unsigned short* ammoAtk, size_t ammoCount, int rqAmount, const unsigned short* ammoLevels);
 void ac_arrowchange(map_session_data* sd, struct mob_data* md);

@@ -12540,7 +12540,7 @@ static bool status_change_start_post_delay(block_list* src, block_list* bl, sc_t
 			val4 = tick / tick_time;
 			break;
 		case SC_AUTOCOMBAT:
-			tick_time = battle_config.function_autocombat_timer;
+			tick_time = battle_config.autocombat_timer;
 			val4 = tick / tick_time;
 
 			if (sd && !ac_changestate_autocombat(sd, 1))
@@ -14299,7 +14299,7 @@ TIMER_FUNC(status_change_timer){
 	switch(type) {
 	case SC_AUTOCOMBAT:
 		if (ac_status(sd))
-			sce->timer = add_timer(battle_config.function_autocombat_timer + tick, status_change_timer, bl->id, data);
+			sce->timer = add_timer(battle_config.autocombat_timer + tick, status_change_timer, bl->id, data);
 		return 0;
 		break;		
 	case SC_MAXIMIZEPOWER:

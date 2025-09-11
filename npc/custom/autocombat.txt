@@ -20,6 +20,7 @@
 //= 1.5 Merged enable/disable skills into ON/OFF menu method
 //= 1.6 Change input method for adding buff items to menu method
 //= 1.7 Change autocombat rental item into timer method
+//= 1.8 Change autocombat timer to match event_queue
 //============================================================
 -	script	bot_at	-1,{
 
@@ -29,7 +30,7 @@
 OnInit:  
     .duration = 3600000 * 4; // 4 hour in milliseconds  
     .remaining_time = .duration;  
-    .start_time = 0;  
+    .start_time = gettimetick(2);  
     end;  
   
 OnHour00: // 12am server time will reset duration  
@@ -42,11 +43,17 @@ OnHour00: // 12am server time will reset duration
     end;
 
 function calculate_remaining_time {
-    .@remaining_time = .remaining_time;
-    .@hours = .@remaining_time / 3600000;
-    .@minutes = (.@remaining_time % 3600000) / 60000;
-    .@seconds = (.@remaining_time % 60000) / 1000;
-    return .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds.";
+    if (.start_time == 0) {  
+        .@remaining_time = .remaining_time;  
+    } else {  
+        .@elapsed_time = (gettimetick(2) - .start_time) * 1000;  
+        .@remaining_time = .remaining_time - .@elapsed_time;  
+        if (.@remaining_time < 0) .@remaining_time = 0;  
+    }  
+    .@hours = .@remaining_time / 3600000;  
+    .@minutes = (.@remaining_time % 3600000) / 60000;  
+    .@seconds = (.@remaining_time % 60000) / 1000;  
+    return .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds.";  
 }
 
 function	reset	{
@@ -92,9 +99,27 @@ OnMainMenu:
 			} else {
 				//autocombat_fromitem(50501);
 				// Start autocombat
-				sc_start4 SC_AUTOCOMBAT, .remaining_time, 1, 0, 0, 0;
-				.start_time = gettimetick(2); // Record start time
-				message strcharinfo(0), "Autocombat started. Timer set for: " + calculate_remaining_time();
+				.@saved_remaining = getd("autocombat_remaining_" + getcharid(0));
+				.@saved_start    = getd("autocombat_start_" + getcharid(0));
+
+				// If no record, default to full duration
+				if (.@saved_remaining == 0) .@saved_remaining = .duration;
+				if (.@saved_start == 0) .@saved_start = gettimetick(2);
+
+				// Calculate elapsed
+				.@elapsed = (gettimetick(2) - .@saved_start) * 1000;
+				.@remaining = .@saved_remaining - .@elapsed;
+
+				// Prevent negative
+				if (.@remaining <= 0) .@remaining = 0;
+
+				// Save new values
+				setd("autocombat_remaining_" + getcharid(0), .@remaining);
+				setd("autocombat_start_" + getcharid(0), gettimetick(2));
+
+				// Start SC with remaining time
+				sc_start4 SC_AUTOCOMBAT, .@remaining, 1, 0, 0, 0;
+				message strcharinfo(0), "Autocombat started. Timer left: " + (.@remaining / 60000) + " minutes.";
 			}
 			break;
 		case 2:
@@ -399,8 +424,8 @@ teleport_menu:
 	mes ac_getautocombatstring(6,0);
 
 	.@teleport_menu = select(
-	ac_getautocombatint(12,0)?"^FF0000(OFF)^000000 Enable fly wing to teleport":"^008000(ON)^000000 Enable fly wing to teleport"
-	,ac_getautocombatint(13,0)?"^FF0000(OFF)^000000 Enable teleport skill to teleport":"^008000(ON)^000000 Enable teleport skill to teleport"
+	ac_getautocombatint(12,0)?"^008000(ON)^000000 Disable fly wing teleport":"^FF0000(OFF)^000000 Enable fly wing to teleport"
+	,ac_getautocombatint(13,0)?"^008000(ON)^000000 Disable teleport skill":"^FF0000(OFF)^000000 Enable teleport skill to teleport"
 	,"Set the minimum HP value for emergency teleport"
 	,"Adjust the teleport delay if no monster is encountered within that time"
 	,"Adjust the max number of monster that can target you before being teleported"
@@ -965,41 +990,32 @@ sit_regen_menu:
 	goto(sit_regen_menu);
 	end;
 
-OnStop:
-    if(ac_getstate()) {
-        // Calculate elapsed time
-        .@elapsed_time = (gettimetick(2) - .start_time) * 1000;
-        .remaining_time -= .@elapsed_time;
-
-        if (.remaining_time < 0) {
-            .remaining_time = 0;
-        }
-
-        sc_end SC_AUTOCOMBAT;
-        setd(".remaining_time_" + getcharid(0), .remaining_time); // Save remaining time for the player
-        message strcharinfo(0), "autocombat stopped. Remaining time: " + calculate_remaining_time();
-    } else {
-        mes "You have no active autocombat to stop.";
-    }
-    end;
-
-OnPCLogoutEvent:
-
-	reset();
-
-    if(ac_getstate()) {
-        // Calculate elapsed time
-        .@elapsed_time = (gettimetick(2) - .start_time) * 1000;
-        .remaining_time -= .@elapsed_time;
-
-        if (.remaining_time < 0) {
-            .remaining_time = 0;
-        }
-
-        sc_end SC_AUTOCOMBAT;
-        setd(".remaining_time_" + getcharid(0), .remaining_time); // Save remaining time for the player
-    }
-	
+OnStop:  
+    if(ac_getstate()) {  
+        .@player_remaining = getd("autocombat_remaining_" + getcharid(0));  
+        .@player_start_time = getd("autocombat_start_" + getcharid(0));  
+          
+        // Handle uninitialized variables  
+        if (.@player_remaining == 0) .@player_remaining = .remaining_time;  
+        if (.@player_start_time == 0) .@player_start_time = .start_time;  
+          
+        // Calculate elapsed time  
+        .@elapsed_time = (gettimetick(2) - .@player_start_time) * 1000;  
+        .@player_remaining -= .@elapsed_time;  
+          
+        if (.@player_remaining < 0) {  
+            .@player_remaining = 0;  
+        }  
+          
+        sc_end SC_AUTOCOMBAT;  
+        setd("autocombat_remaining_" + getcharid(0), .@player_remaining);  
+          
+        // Format time properly  
+        .@hours = .@player_remaining / 3600000;  
+        .@minutes = (.@player_remaining % 3600000) / 60000;  
+        .@seconds = (.@player_remaining % 60000) / 1000;  
+        message strcharinfo(0), "Autocombat stopped. Remaining time: " + .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds.";  
+    }  
     end;	
 }
 

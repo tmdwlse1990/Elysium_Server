@@ -6,4 +6,4 @@
 //--------------------------------------------------------------
 
 //Feature control (on/off) settings
-import: conf/battle/function.conf
+import: conf/battle/autocombat.conf

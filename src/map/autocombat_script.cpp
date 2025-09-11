@@ -577,7 +577,7 @@ bool handleAutocombat_fromitem(map_session_data* sd, t_itemid item_id, t_tick ma
 	t_tick duration_ = 0;
 	std::shared_ptr<item_data> id;
 
-	switch (battle_config.function_autocombat_duration_type) {
+	switch (battle_config.autocombat_duration_type) {
 	case 0:
 		uint32 item_expire_time;
 

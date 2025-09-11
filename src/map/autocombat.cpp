@@ -318,7 +318,7 @@ void ac_skill_range_calc(map_session_data* sd) {
 }
 
 void ac_mob_ai_search_mvpcheck(struct block_list* bl, struct mob_data* md){
-	if (!battle_config.function_autocombat_teleport_mvp)
+	if (!battle_config.autocombat_teleport_mvp)
 		return;
 
 	if (bl->type == BL_PC) {
@@ -344,35 +344,41 @@ void ac_priority_on_hit(map_session_data* sd, struct block_list* src) {
 	if(sd->state.autocombat){
 
 		// Teleport condition if hp is bellow limit
-		if ((!sd->ac.teleport.use_teleport || !sd->ac.teleport.use_flywing) // player myst allow teleport or flywing
+		if ((sd->ac.teleport.use_teleport || sd->ac.teleport.use_flywing) // player must allow teleport or flywing
 			&& sd->ac.teleport.min_hp // player must have set min hp value to tp
-			&& (status->hp * 100 / sd->ac.teleport.min_hp) < sd->status.max_hp) { // player hp is bellow min hp
+			&& (status->hp * 100 / sd->status.max_hp) < sd->ac.teleport.min_hp) { // player hp is bellow min hp
 
 			if (ac_teleport(sd))
 				return;
 		}
 
 		// Change if no target and priority to defend player and attacker is a mob
-		if (!sd->ac.mobs.aggressive_behavior // 0 attack
-			&& src->type == BL_MOB) {
-			if (!sd->ac.target_id) {
-
-				// if player have an item to pick, remove it
-				if (sd->ac.itempick_id)
-					sd->ac.itempick_id = 0;
-
-				ac_target_change(sd, src->id);
-			}
-			else if (sd->ac.target_id) { // priority to the mob who hit if closest
-				target = map_id2bl(sd->ac.target_id);
-				if (target != nullptr) {
-					target_distance = distance(sd->x - target->x, sd->y - target->y);
-					src_distance = distance(sd->x - src->x, sd->y - src->y);
-
-					if (src_distance < target_distance)
-						ac_target_change(sd, src->id);
-				}
-			}
+		if (src->type == BL_MOB) {  
+			TBL_MOB* md = (TBL_MOB*)src;  
+			  
+			// First check if this monster is on the exclusion list (don't attack list)  
+			bool monster_excluded = find_ac_mob(sd, md->mob_id);  
+			  
+			if (!monster_excluded && !sd->ac.mobs.aggressive_behavior) { // 0 attack, and not excluded  
+				if (!sd->ac.target_id) {  
+					// if player have an item to pick, remove it  
+					if (sd->ac.itempick_id)  
+						sd->ac.itempick_id = 0;  
+		  
+					ac_target_change(sd, src->id);  
+				}  
+				else if (sd->ac.target_id) { // priority to the mob who hit if closest  
+					target = map_id2bl(sd->ac.target_id);  
+					if (target != nullptr) {  
+						target_distance = distance(sd->x - target->x, sd->y - target->y);  
+						src_distance = distance(sd->x - src->x, sd->y - src->y);  
+		  
+						if (src_distance < target_distance)  
+							ac_target_change(sd, src->id);  
+					}  
+				}  
+			}  
+			// If monster is excluded, do nothing (don't attack it even if aggressive)  
 		}
 
 		sd->ac.last_hit = gettick();
@@ -608,7 +614,7 @@ unsigned int ac_check_item_pickup_onfloor(map_session_data* sd) {
 		int itempick_id_ = 0;
 
 		// Iterate through the detection radius to find a suitable item
-		for (int radius = 0; radius < battle_config.function_autocombat_pdetection; ++radius) {
+		for (int radius = 0; radius < battle_config.autocombat_pdetection; ++radius) {
 			map_foreachinarea(
 				buildin_autopick_sub,
 				sd->m,
@@ -677,6 +683,10 @@ bool ac_check_target(map_session_data* sd, unsigned int id) {
 	// Check for hidden or cloaked state
 	if (md->sc.option & (OPTION_HIDE | OPTION_CLOAK))
 		return false;
+
+	if (find_ac_mob(sd, md->mob_id)) {  
+		return false; // Don't target excluded monsters  
+	}
 
 	if (!sd->ac.mobs.id.empty() &&
 		std::find(sd->ac.mobs.id.begin(), sd->ac.mobs.id.end(), md->mob_id) != sd->ac.mobs.id.end()) {
@@ -758,7 +768,7 @@ unsigned int ac_check_target_alive(map_session_data* sd) {
 		ac_target_change(sd, 0);
 
 		// Search for a new target within detection radius
-		for (int radius = 0; radius < battle_config.function_autocombat_mdetection; ++radius) {
+		for (int radius = 0; radius < battle_config.autocombat_mdetection; ++radius) {
 			map_foreachinarea(
 				buildin_autocombat_sub,
 				sd->m,
@@ -788,7 +798,7 @@ int ac_check_surround_monster(map_session_data* sd) {
     ac_target_change(sd, 0);
 
     // Search for a new target within detection radius
-    for (int radius = 0; radius < battle_config.function_autocombat_mdetection; ++radius) {
+    for (int radius = 0; radius < battle_config.autocombat_mdetection; ++radius) {
         map_foreachinarea(
             buildin_autocombat_monsters_sub,
             sd->m,
@@ -807,7 +817,7 @@ int ac_check_surround_monster(map_session_data* sd) {
 
 bool ac_teleport(map_session_data* sd) {
 	// Early exit if teleportation is disabled globally or via configuration
-	if (!sd->state.autocombat || !battle_config.function_autocombat_teleport)
+	if (!sd->state.autocombat || !battle_config.autocombat_teleport)
 		return false;
 
 	map_data* mapdata = map_getmapdata(sd->m);
@@ -1036,7 +1046,7 @@ bool ac_elemstrong(const mob_data* md, int ele) {
 
 // Determines if an element is allowed against the target mob's defense element
 bool ac_elemallowed(struct mob_data* md, int ele) {
-	if (!md || &md == nullptr)
+	if (!md || md == nullptr)
 		return true; // Default to allowed if the mob data is invalid
 
 	const int def_ele = md->status.def_ele;
@@ -1117,14 +1127,14 @@ int ac_status(map_session_data* sd) {
 		return 0;
 	}
 
-	if (battle_config.function_autocombat_duration_type) {
+	if (battle_config.autocombat_duration_type) {
 		if (sd->ac.duration_ <= 0) {
 			std::string msg = "Automessage - You don't have timer left on autocombat system!";
 			ac_message(sd, "TimerOut", msg.data(), 5, nullptr);
 			return -1;
 		}
 
-		sd->ac.duration_ = sd->ac.duration_ - battle_config.function_autocombat_timer;
+		sd->ac.duration_ = sd->ac.duration_ - battle_config.autocombat_timer;
 		pc_setaccountreg(sd, add_str("#ac_duration"), sd->ac.duration_);
 	}
 
@@ -1177,7 +1187,7 @@ int ac_status(map_session_data* sd) {
 		ac_check_item_pickup(sd, map_id2bl(sd->ac.itempick_id)); // Check the validity of it
 
 	// Priority 6 - Pick up
-	if (battle_config.function_autocombat_pickup && ac_status_pickup(sd, last_tick))
+	if (battle_config.autocombat_pickup && ac_status_pickup(sd, last_tick))
 		return 6;
 
 	if(!sd->ac.target_id) // no item to pick up so lf for a target to attack
@@ -1198,7 +1208,7 @@ int ac_status(map_session_data* sd) {
 	}
 
 	// Priority 8 - Move
-	if (battle_config.function_autocombat_movetype == 2)
+	if (battle_config.autocombat_movetype == 2)
 		ac_move_path(sd);
 	else
 		ac_move_short(sd, last_tick);
@@ -1310,7 +1320,7 @@ bool ac_status_pickup(map_session_data* sd, t_tick last_tick) {
 			struct flooritem_data* fitem = (struct flooritem_data*)fitem_bl;
 			if (check_distance_bl(sd, fitem_bl, 2)) { // Distance is bellow 2 cells, pick up
 				t_tick pick_ = DIFF_TICK(last_tick, sd->ac.last_pick);
-				if (pick_ < battle_config.function_autocombat_pickup_delay) {
+				if (pick_ < battle_config.autocombat_pickup_delay) {
 					return true; // wait for the delay
 				}
 
@@ -1335,7 +1345,7 @@ bool ac_status_pickup(map_session_data* sd, t_tick last_tick) {
 //Auto-heal skill
 bool ac_status_heal(map_session_data* sd, const status_data* status, t_tick last_tick) {
 	// Check if auto-healing is enabled and the list of auto-healing skills is not empty
-	if (!battle_config.function_autocombat_autoheal || sd->ac.autoheal.empty()) {
+	if (!battle_config.autocombat_autoheal || sd->ac.autoheal.empty()) {
 		return false;
 	}
 
@@ -1363,15 +1373,16 @@ bool ac_status_heal(map_session_data* sd, const status_data* status, t_tick last
 			skill_consume_requirement(sd, autoheal.skill_id, autoheal.skill_lv, 2);
 
 			// Apply global cooldown if applicable
-			if (battle_config.function_autocombat_bskill_delay > 0) {
+			if (battle_config.autocombat_bskill_delay > 0) {
 				t_tick skill_delay = skill_get_delay(autoheal.skill_id, autoheal.skill_lv);
-				if (skill_delay < battle_config.function_autocombat_bskill_delay) {
-					t_tick new_cd = last_tick + battle_config.function_autocombat_bskill_delay + skill_get_cast(autoheal.skill_id, autoheal.skill_lv);
+				if (skill_delay < battle_config.autocombat_bskill_delay) {
+					t_tick new_cd = last_tick + battle_config.autocombat_bskill_delay + skill_get_cast(autoheal.skill_id, autoheal.skill_lv);
 					if (sd->ac.skill_cd < new_cd) {
 						sd->ac.skill_cd = new_cd;
 					}
 				}
 			}
+			const_cast<s_autoheal&>(autoheal).last_use = last_tick + skill_get_delay(autoheal.skill_id, autoheal.skill_lv);
 
 			return true; // Healing skill successfully used
 		}
@@ -1384,7 +1395,7 @@ bool ac_status_heal(map_session_data* sd, const status_data* status, t_tick last
 bool ac_status_potion(map_session_data* sd, const status_data* status) {
 	bool potion_used = false;
 	// Check if the auto-potion feature is enabled
-	if (!battle_config.function_autocombat_autopotion || sd->ac.autopotion.empty())
+	if (!battle_config.autocombat_autopotion || sd->ac.autopotion.empty())
 		return false;
 
 	// Iterate through the auto-potion configuration
@@ -1412,7 +1423,7 @@ bool ac_status_potion(map_session_data* sd, const status_data* status) {
 
 // Automatically sit to rest or stand when conditions are met
 bool ac_status_rest(map_session_data* sd, const status_data* status, t_tick last_tick) {
-    if (!battle_config.function_autocombat_sittorest || !sd->ac.autositregen.is_active)
+    if (!battle_config.autocombat_sittorest || !sd->ac.autositregen.is_active)
         return false; // Return early if the feature or regen is inactive
 
     // Calculate the time since the last hit
@@ -1457,7 +1468,7 @@ bool ac_status_rest(map_session_data* sd, const status_data* status, t_tick last
 // Automatically use buff skills
 bool ac_status_buffs(map_session_data* sd, t_tick last_tick) {
 
-	if (!battle_config.function_autocombat_buffskill || sd->ac.autobuffskills.empty())
+	if (!battle_config.autocombat_buffskill || sd->ac.autobuffskills.empty())
 		return false; // Return early if the feature is disabled or no buffs are configured
 
 	if (last_tick < sd->ac.skill_cd) 
@@ -1486,9 +1497,9 @@ bool ac_status_buffs(map_session_data* sd, t_tick last_tick) {
 				skill_consume_requirement(sd, autobuff.skill_id, autobuff.skill_lv, 2);
 
 				// Handle skill cooldown adjustment
-				if (battle_config.function_autocombat_bskill_delay &&
-					skill_get_delay(autobuff.skill_id, autobuff.skill_lv) < battle_config.function_autocombat_bskill_delay) {
-					sd->ac.skill_cd = last_tick + battle_config.function_autocombat_bskill_delay +
+				if (battle_config.autocombat_bskill_delay &&
+					skill_get_delay(autobuff.skill_id, autobuff.skill_lv) < battle_config.autocombat_bskill_delay) {
+					sd->ac.skill_cd = last_tick + battle_config.autocombat_bskill_delay +
 						skill_get_cast(autobuff.skill_id, autobuff.skill_lv);
 				}
 
@@ -1597,7 +1608,7 @@ bool ac_checkactivestatus(map_session_data* sd, sc_type type) {
 // Automatically use buff items
 bool ac_status_buffitem(map_session_data* sd, t_tick last_tick) {
     // Return early if the feature is disabled or no buff items are configured
-    if (!battle_config.function_autocombat_buffitems || sd->ac.autobuffitems.empty()) {
+    if (!battle_config.autocombat_buffitems || sd->ac.autobuffitems.empty()) {
         return false;
     }
 
@@ -1627,7 +1638,7 @@ bool ac_status_attack(map_session_data* sd, struct mob_data* md_target, t_tick l
 	if (!md_target)
 		return false;
 
-	if (!battle_config.function_autocombat_attackskill || last_tick < sd->ac.skill_cd || sd->ac.autocombatskills.empty())
+	if (!battle_config.autocombat_attackskill || last_tick < sd->ac.skill_cd || sd->ac.autocombatskills.empty())
 		return false;
 
 	t_tick attack_delay = DIFF_TICK(last_tick, sd->ac.last_attack);
@@ -1699,9 +1710,9 @@ bool ac_status_attack(map_session_data* sd, struct mob_data* md_target, t_tick l
 		sd->idletime = current_time;
 		skill_consume_requirement(sd, skill.skill_id, skill.skill_lv, 2);
 
-		if (battle_config.function_autocombat_askill_delay &&
-			skill_get_delay(skill.skill_id, skill.skill_lv) < battle_config.function_autocombat_askill_delay) {
-			sd->ac.skill_cd = last_tick + battle_config.function_autocombat_askill_delay +
+		if (battle_config.autocombat_askill_delay &&
+			skill_get_delay(skill.skill_id, skill.skill_lv) < battle_config.autocombat_askill_delay) {
+			sd->ac.skill_cd = last_tick + battle_config.autocombat_askill_delay +
 				skill_get_cast(skill.skill_id, skill.skill_lv);
 			sd->ac.last_attack = last_tick;
 		}
@@ -1735,8 +1746,8 @@ bool ac_move_short(map_session_data* sd, t_tick last_tick) {
 	if (unit_is_walking(sd))
 		return false;
 
-	const int max_distance = battle_config.function_autocombat_move_max;
-	const int min_distance = battle_config.function_autocombat_move_min;
+	const int max_distance = battle_config.autocombat_move_max;
+	const int min_distance = battle_config.autocombat_move_min;
 	const int grid_size = max_distance * 2 + 1;
 	const int grid_area = grid_size * grid_size;
 
@@ -1751,7 +1762,7 @@ bool ac_move_short(map_session_data* sd, t_tick last_tick) {
 	dx = (dx >= 0) ? std::max(dx, min_distance) : -std::max(-dx, min_distance);
 	dy = (dy >= 0) ? std::max(dy, min_distance) : -std::max(-dy, min_distance);
 
-	if (battle_config.function_autocombat_movetype == 1) {
+	if (battle_config.autocombat_movetype == 1) {
 		int target_x = sd->ac.lastposition.dx + sd->x;
 		int target_y = sd->ac.lastposition.dy + sd->y;
 
@@ -1783,7 +1794,7 @@ bool ac_move_short(map_session_data* sd, t_tick last_tick) {
 			sd->ac.last_move = last_tick;
 			valid_move_found = true;
 
-			if (battle_config.function_autocombat_movetype == 1) {
+			if (battle_config.autocombat_movetype == 1) {
 				sd->ac.lastposition.dx = dx;
 				sd->ac.lastposition.dy = dy;
 			}
@@ -2105,14 +2116,14 @@ bool ac_changestate_autocombat(map_session_data* sd, int flag) {
 
 	switch (flag) {
 	case 1:
-		if (battle_config.function_autocombat_iplimit) {
+		if (battle_config.autocombat_iplimit) {
 			iter = mapit_getallusers();
 			for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter))
 			{
 				if (pl_sd->id != sd->id && session[sd->fd]->client_addr == pl_sd->ac.client_addr && pl_sd->state.autocombat)
 					ip_limitation++;
 
-				if (ip_limitation > battle_config.function_autocombat_iplimit) {
+				if (ip_limitation > battle_config.autocombat_iplimit) {
 					std::string msg = "There is already an account using autocombat";
 					ac_message(sd, "FlagOff", msg.data(), 5, nullptr);
 					mapit_free(iter);
@@ -2122,7 +2133,7 @@ bool ac_changestate_autocombat(map_session_data* sd, int flag) {
 			mapit_free(iter);
 		}
 
-		if (battle_config.function_autocombat_gepardlimit) {
+		if (battle_config.autocombat_gepardlimit) {
 			iter = mapit_getallusers();
 			for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter))
 			{
@@ -2130,7 +2141,7 @@ bool ac_changestate_autocombat(map_session_data* sd, int flag) {
 				//if (pl_sd->bl.id != sd->bl.id && session[sd->fd]->gepard_info.unique_id == pl_sd->ac.unique_id && pl_sd->state.autocombat)
 				//	gepard_limitation++;
 
-				if (gepard_limitation > battle_config.function_autocombat_gepardlimit) {
+				if (gepard_limitation > battle_config.autocombat_gepardlimit) {
 					std::string msg = "There is already an account using autocombat";
 					ac_message(sd, "FlagOff", msg.data(), 5, nullptr);
 					mapit_free(iter);
@@ -2141,31 +2152,31 @@ bool ac_changestate_autocombat(map_session_data* sd, int flag) {
 		}
 
 		mapdata = map_getmapdata(sd->m);
-		if (!battle_config.function_autocombat_allow_town && mapdata->getMapFlag(MF_TOWN)) {
+		if (!battle_config.autocombat_allow_town && mapdata->getMapFlag(MF_TOWN)) {
 			std::string msg = "Automessage - autocombat is not allowed in town!";
 			ac_message(sd, "FlagOff", msg.data(), 5, nullptr);
 			return false;
 		}
 
-		if (!battle_config.function_autocombat_allow_pvp && mapdata->getMapFlag(MF_PVP)) {
+		if (!battle_config.autocombat_allow_pvp && mapdata->getMapFlag(MF_PVP)) {
 			std::string msg = "Automessage - autocombat is not allowed in pvp map!";
 			ac_message(sd, "FlagOff", msg.data(), 5, nullptr);
 			return false;
 		}
 
-		if (!battle_config.function_autocombat_allow_gvg && mapdata_flag_gvg2(mapdata)) {
+		if (!battle_config.autocombat_allow_gvg && mapdata_flag_gvg2(mapdata)) {
 			std::string msg = "Automessage - autocombat is not allowed in woe!";
 			ac_message(sd, "FlagOff", msg.data(), 5, nullptr);
 			return false;
 		}
 
-		if (!battle_config.function_autocombat_allow_bg && mapdata->getMapFlag(MF_BATTLEGROUND)) {
+		if (!battle_config.autocombat_allow_bg && mapdata->getMapFlag(MF_BATTLEGROUND)) {
 			std::string msg = "Automessage - autocombat is not allowed in battleground map!";
 			ac_message(sd, "FlagOff", msg.data(), 5, nullptr);
 			return false;
 		}
 
-		if (battle_config.function_autocombat_hateffect) {
+		if (battle_config.autocombat_hateffect) {
 			struct unit_data* ud = unit_bl2ud(sd);
 
 			for (const auto& effectID : AC_HATEFFECTS) {
@@ -2182,7 +2193,7 @@ bool ac_changestate_autocombat(map_session_data* sd, int flag) {
 			}
 		}
 
-		if (battle_config.function_autocombat_prefixname) {
+		if (battle_config.autocombat_prefixname) {
 			char temp_name[NAME_LENGTH];
 			safestrncpy(temp_name, AC_PREFIX_NAME, sizeof(temp_name));
 			strncat(temp_name, sd->status.name, sizeof(temp_name) - strlen(temp_name) - 1);
@@ -2216,7 +2227,7 @@ bool ac_changestate_autocombat(map_session_data* sd, int flag) {
 		break;
 
 	case 2:
-		if (battle_config.function_autocombat_prefixname && sd->fakename[0]) {
+		if (battle_config.autocombat_prefixname && sd->fakename[0]) {
 			sd->fakename[0] = '\0';
 			clif_name_area(sd);
 			if (sd->disguise)
@@ -2243,7 +2254,7 @@ bool ac_changestate_autocombat(map_session_data* sd, int flag) {
 		}
 
 
-		if (battle_config.function_autocombat_hateffect) {
+		if (battle_config.autocombat_hateffect) {
 			struct unit_data* ud = unit_bl2ud(sd);
 
 			for (const auto& effectID : AC_HATEFFECTS) {
