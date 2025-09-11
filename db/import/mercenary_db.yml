@@ -67,8 +67,8 @@ Body:
     Sp: 1000
     Attack: 1076000
     Attack2: 1280000
-    Defense: 640
-    MagicDefense: 300
+    Defense: 80
+    MagicDefense: 80
     Str: 130
     Agi: 130
     Vit: 30

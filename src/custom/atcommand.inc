@@ -178,18 +178,25 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
     // Atk/Def Section (Fixed with missing bonuses)  
     clif_displaymessage(fd, " * Atk/Def");      
     bool atk_def_found = false;    
-
+  
+#ifdef RENEWAL
 	// bAtk, SP_ATK1, bAtk2, SP_ATK2
-	if (sd->battle_status.watk != 0 || sd->battle_status.watk2 != 0) {  
-		int total_watk = sd->battle_status.watk + sd->battle_status.watk2;  
-		if (total_watk < 0) {  
-			sprintf(output, "   -> Equipment ATK: %s", rathena::util::insert_comma(total_watk).c_str());  
-			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
-		} else {  
-			sprintf(output, "   -> Equipment ATK: +%s", rathena::util::insert_comma(total_watk).c_str());  
-			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
-		}  
-		atk_def_found = true;  
+	if (sd->battle_status.watk != 0 || sd->battle_status.watk2 != 0)    
+		int total_watk = sd->battle_status.watk + sd->battle_status.watk2;    
+#else  
+	if (sd->battle_status.rhw.atk != 0 || sd->battle_status.rhw.atk2 != 0 ||   
+		sd->battle_status.lhw.atk != 0 || sd->battle_status.lhw.atk2 != 0) {    
+		int total_watk = sd->battle_status.rhw.atk + sd->battle_status.rhw.atk2 +   
+						 sd->battle_status.lhw.atk + sd->battle_status.lhw.atk2;    
+#endif  
+		if (total_watk < 0) {    
+			sprintf(output, "   -> Equipment ATK: %s", rathena::util::insert_comma(total_watk).c_str());    
+			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);    
+		} else {    
+			sprintf(output, "   -> Equipment ATK: +%s", rathena::util::insert_comma(total_watk).c_str());    
+			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);    
+		}    
+		atk_def_found = true;    
 	} 
 
 #ifdef RENEWAL  
