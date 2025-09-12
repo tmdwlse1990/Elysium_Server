@@ -891,6 +891,26 @@ s_npc_barter::~s_npc_barter(){
 
 BarterDatabase barter_db;
 
+struct npc_data* npc_create_dummy_barter_npc(const char *npcname) {
+	struct npc_data* nd = npc_create_npc(-1, 0, 0);
+
+	npc_parsename(nd, npcname, nullptr, nullptr, __FILE__ ":" QUOTE(__LINE__));
+
+	nd->class_ = -1;
+	nd->speed = 200;
+
+	nd->type = BL_NPC;
+	nd->subtype = NPCTYPE_BARTER;
+
+	nd->u.barter.extended = false;
+
+	map_addiddb(nd);
+
+	strdb_put(npcname_db, npcname, nd);
+
+	return nd;
+}
+
 /**
  * Returns the viewdata for normal NPC classes.
  * @param class_: NPC class ID

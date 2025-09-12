@@ -33,3 +33,8 @@ BUILDIN_DEF(deactivatespecificcombo, "ii"),
 // Rune System
 BUILDIN_DEF(runeui, ""),
 BUILDIN_DEF(getupgrade_rune, ""),
+
+// Barter System Script
+BUILDIN_DEF(barter_clear, "s"),
+BUILDIN_DEF(barter_add, "svi*"),
+BUILDIN_DEF2(barter_add, "barter_add_ex", "svii*"),

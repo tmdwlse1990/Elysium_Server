@@ -926,3 +926,151 @@ BUILDIN_FUNC( getupgrade_rune ){
 	return SCRIPT_CMD_FAILURE;
 #endif
 }
+
+/*==========================================
+ * Removes all items from a barter shop
+ * barter_clear <npc name>;
+ *------------------------------------------*/
+BUILDIN_FUNC(barter_clear)
+{
+	const char* npcname = script_getstr(st, 2);
+	std::shared_ptr<s_npc_barter> barter = barter_db.find(npcname);
+	
+	if (barter != nullptr) {
+		barter->items.clear();
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/*==========================================
+* Add an item to the barter shop
+* Not extended:
+* barter_add <npc name>,<item id>,<stock>,<req item id>,<req amount>;
+*
+* Extended:
+* barter_add_ex <npc name>,<item id>,<stock>,<zeny>{,<req item id>,<req amount>,<req refine>}*;
+*------------------------------------------*/
+BUILDIN_FUNC(barter_add)
+{
+	const char* npcname = script_getstr(st, 2);
+	std::shared_ptr<s_npc_barter> barter = barter_db.find(npcname);
+	struct npc_data* nd = npc_name2id(npcname);
+	const char* command = script_getfuncname(st);
+
+	if (barter == nullptr) {
+		barter = std::make_shared<s_npc_barter>();
+		barter->name = npcname;
+		barter_db.put(npcname, barter);
+	}
+
+	if (nd == nullptr) {
+		nd = npc_create_dummy_barter_npc(npcname);
+	}
+
+	uint16 index = static_cast<uint16>(barter->items.size());
+
+	std::shared_ptr<s_npc_barter_item> item = std::make_shared<s_npc_barter_item>();
+	item->index = index;
+	barter->items[index] = item;
+	
+	if (strcmpi(command, "barter_add_ex") == 0) {
+		nd->u.barter.extended = true;
+	
+		if (script_isstring(st, 3)) {
+			const char* name = script_getstr(st, 3);
+	
+			std::shared_ptr<item_data> id = item_db.searchname(name);
+	
+			if (id == nullptr) {
+				ShowError("buildin_barter_add: Nonexistant item %s\n", name);
+				return SCRIPT_CMD_FAILURE;
+			}
+	
+			item->nameid = id->nameid;
+		}
+		else {
+			item->nameid = script_getnum(st, 3);
+		}
+	
+		item->stock = script_getnum(st, 4);
+		item->stockLimited = false;
+		item->price = script_getnum(st, 5);
+	
+		int offset = 6;
+	
+		while (script_hasdata(st, offset) && script_hasdata(st, offset + 1) && script_hasdata(st, offset + 2)) {
+			std::shared_ptr<s_npc_barter_requirement> requirement = std::make_shared<s_npc_barter_requirement>();
+	
+			requirement->index = (uint16)item->requirements.size();
+	
+			if (script_isstring(st, offset)) {
+				const char* name = script_getstr(st, offset);
+	
+				std::shared_ptr<item_data> id = item_db.searchname(name);
+	
+				if (id == nullptr) {
+					ShowError("buildin_barter_add: Nonexistant item %s\n", name);
+					return SCRIPT_CMD_FAILURE;
+				}
+	
+				requirement->nameid = id->nameid;
+			}
+			else {
+				requirement->nameid = script_getnum(st, offset);
+			}
+	
+			requirement->amount = script_getnum(st, offset + 1);
+			requirement->refine = script_getnum(st, offset + 2);
+			item->requirements[requirement->index] = requirement;
+			offset += 3;
+		}
+	}
+	else {
+		nd->u.barter.extended = false;
+	
+		if (script_isstring(st, 3)) {
+			const char* name = script_getstr(st, 3);
+		
+			std::shared_ptr<item_data> id = item_db.searchname(name);
+		
+			if (id == nullptr) {
+				ShowError("buildin_barter_add: Nonexistant item %s\n", name);
+				return SCRIPT_CMD_FAILURE;
+			}
+		
+			item->nameid = id->nameid;
+		}
+		else {
+			item->nameid = script_getnum(st, 3);
+		}
+		
+		item->stock = script_getnum(st, 4);
+		item->stockLimited = false;
+	
+		std::shared_ptr<s_npc_barter_requirement> requirement = std::make_shared<s_npc_barter_requirement>();
+		
+		requirement->index = 0;
+		
+		if (script_isstring(st, 5)) {
+			const char* name = script_getstr(st, 5);
+		
+			std::shared_ptr<item_data> id = item_db.searchname(name);
+		
+			if (id == nullptr) {
+				ShowError("buildin_barter_add: Nonexistant item %s\n", name);
+				return SCRIPT_CMD_FAILURE;
+			}
+		
+			requirement->nameid = id->nameid;
+		}
+		else {
+			requirement->nameid = script_getnum(st, 5);
+		}
+		
+		requirement->amount = script_getnum(st, 6);
+		item->requirements[0] = requirement;
+	}
+
+	return SCRIPT_CMD_SUCCESS;
+}

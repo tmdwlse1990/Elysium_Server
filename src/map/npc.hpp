@@ -2868,6 +2868,7 @@ enum npce_event : uint8 {
 	NPCE_MAX
 };
 
+struct npc_data* npc_create_dummy_barter_npc(const char* npcname);
 struct view_data* npc_get_viewdata(int32 class_);
 int32 npc_chat_sub(struct block_list* bl, va_list ap);
 int32 npc_event_dequeue(map_session_data* sd,bool free_script_stack=true);
