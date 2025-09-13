@@ -8035,11 +8035,7 @@ ACMD_FUNC(mobinfo)
 		else
 			sprintf(atcmd_output, msg_txt(sd,1241), mob->name.c_str(), mob->jname.c_str(), mob->sprite.c_str(), mob->id); // Monster: '%s'/'%s'/'%s' (%d)
 		clif_displaymessage(fd, atcmd_output);
-
-		std::string formatted_hp = rathena::util::insert_comma(mob->status.max_hp);  
-		std::string formatted_base_exp = rathena::util::insert_comma(static_cast<int32>(base_exp));  
-		std::string formatted_job_exp = rathena::util::insert_comma(static_cast<int32>(job_exp));  
-		sprintf(atcmd_output, msg_txt(sd,1242), mob->lv, formatted_hp.c_str(), formatted_base_exp.c_str(), formatted_job_exp.c_str(), MOB_HIT(mob), MOB_FLEE(mob)); //  Lv:%d  HP:%d  Base EXP:%llu  Job EXP:%llu  HIT:%d  FLEE:%d
+		sprintf(atcmd_output, msg_txt(sd,1242), mob->lv, mob->status.max_hp, base_exp, job_exp, MOB_HIT(mob), MOB_FLEE(mob)); //  Lv:%d  HP:%d  Base EXP:%llu  Job EXP:%llu  HIT:%d  FLEE:%d
 		clif_displaymessage(fd, atcmd_output);
 		sprintf(atcmd_output, msg_txt(sd,1243), //  DEF:%d  MDEF:%d  STR:%d  AGI:%d  VIT:%d  INT:%d  DEX:%d  LUK:%d
 			mob->status.def, mob->status.mdef,mob->status.str, mob->status.agi,
@@ -8082,14 +8078,21 @@ ACMD_FUNC(mobinfo)
 				int32 droprate = mob_getdroprate( sd, mob, entry->rate, drop_modifier );
 
 				sprintf(atcmd_output2, " - %s  %02.02f%%", item_db.create_item_link( id ).c_str(), (float)droprate / 100);
-				clif_displaymessage(fd, atcmd_output2);
+				strcat(atcmd_output, atcmd_output2);
+				if (++j % 3 == 0) {
+					clif_displaymessage(fd, atcmd_output);
+					strcpy(atcmd_output, " ");
+				}
+			}
+
+			if( j % 3 != 0 ){
+				clif_displaymessage(fd, atcmd_output);
 			}
 		}
 
 		// mvp
 		if( mob->get_bosstype() == BOSSTYPE_MVP ){
-			std::string formatted_mexp = rathena::util::insert_comma(static_cast<int32>(mob->mexp));  
-			sprintf(atcmd_output, msg_txt(sd,1247), formatted_mexp.c_str()); //  MVP Bonus EXP:%llu
+			sprintf(atcmd_output, msg_txt(sd,1247), mob->mexp); //  MVP Bonus EXP:%llu
 			clif_displaymessage(fd, atcmd_output);
 			clif_displaymessage(fd, msg_txt(sd,1248)); //  MVP drops:
 			strcpy(atcmd_output, " ");
@@ -8116,8 +8119,16 @@ ACMD_FUNC(mobinfo)
 					}
 					if (mvppercent > 0) {
 						sprintf(atcmd_output2, " - %s  %02.02f%%", item_db.create_item_link( id ).c_str(), mvppercent);
-						clif_displaymessage(fd, atcmd_output2);
+						strcat(atcmd_output, atcmd_output2);
+						if (++j % 3 == 0) {
+							clif_displaymessage(fd, atcmd_output);
+							strcpy(atcmd_output, " ");
+						}
 					}
+				}
+
+				if( j % 3 != 0 ){
+					clif_displaymessage(fd, atcmd_output);
 				}
 			}
 		}
