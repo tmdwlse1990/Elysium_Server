@@ -348,6 +348,39 @@ TIMER_FUNC(map_freeblock_timer){
 	return 0;
 }
 
+FreeBlockLock::FreeBlockLock(bool startLocked) {
+	this->locked = false;
+
+	if (startLocked) {
+		this->lock();
+	}
+}
+
+FreeBlockLock::~FreeBlockLock() {
+	if (this->locked) {
+		this->unlock();
+	}
+}
+
+void FreeBlockLock::lock() {
+	if (!this->locked) {
+		map_freeblock_lock();
+		this->locked = true;
+	} else {
+		ShowWarning("FreeBlockLock is already locked.\n");
+	}
+}
+
+void FreeBlockLock::unlock() {
+	if (this->locked) {
+		map_freeblock_unlock();
+		this->locked = false;
+	} else {
+		ShowWarning("FreeBlockLock is not locked.\n");
+	}
+}
+
+
 //
 // blocklist
 //
@@ -758,7 +791,7 @@ int32 map_foreachinrangeV(int32 (*func)(struct block_list*,va_list),struct block
 	if( bl_list_count >= BL_LIST_MAX )
 		ShowWarning("map_foreachinrange: block count too many!\n");
 
-	map_freeblock_lock();
+	FreeBlockLock freeLock;
 
 	for( i = blockcount; i < bl_list_count; i++ ) {
 		if( bl_list[ i ]->prev ) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
@@ -767,8 +800,6 @@ int32 map_foreachinrangeV(int32 (*func)(struct block_list*,va_list),struct block
 			va_end(ap_copy);
 		}
 	}
-
-	map_freeblock_unlock();
 
 	bl_list_count = blockcount;
 	return returnCount;	//[Skotlex]
@@ -880,7 +911,7 @@ int32 map_foreachinareaV(int32 (*func)(struct block_list*, va_list), int16 m, in
 	if (bl_list_count >= BL_LIST_MAX)
 		ShowWarning("map_foreachinarea: block count too many!\n");
 
-	map_freeblock_lock();
+	FreeBlockLock freeLock;
 
 	for (i = blockcount; i < bl_list_count; i++) {
 		if (bl_list[i]->prev) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
@@ -889,8 +920,6 @@ int32 map_foreachinareaV(int32 (*func)(struct block_list*, va_list), int16 m, in
 			va_end(ap_copy);
 		}
 	}
-
-	map_freeblock_unlock();
 
 	bl_list_count = blockcount;
 	return returnCount;
@@ -981,9 +1010,9 @@ int32 map_forcountinrange(int32 (*func)(struct block_list*,va_list), struct bloc
 	if( bl_list_count >= BL_LIST_MAX )
 		ShowWarning("map_forcountinrange: block count too many!\n");
 
-	map_freeblock_lock();
+	FreeBlockLock freeLock;
 
-	for( i = blockcount; i < bl_list_count; i++ )
+	for( i = blockcount; i < bl_list_count; i++ ) {
 		if( bl_list[ i ]->prev ) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
 			va_start(ap, type);
 			returnCount += func(bl_list[ i ], ap);
@@ -991,8 +1020,7 @@ int32 map_forcountinrange(int32 (*func)(struct block_list*,va_list), struct bloc
 			if( count && returnCount >= count )
 				break;
 		}
-
-	map_freeblock_unlock();
+	}
 
 	bl_list_count = blockcount;
 	return returnCount;	//[Skotlex]
@@ -1041,9 +1069,9 @@ int32 map_forcountinarea(int32 (*func)(struct block_list*,va_list), int16 m, int
 	if( bl_list_count >= BL_LIST_MAX )
 		ShowWarning("map_forcountinarea: block count too many!\n");
 
-	map_freeblock_lock();
+	FreeBlockLock freeLock;
 
-	for( i = blockcount; i < bl_list_count; i++ )
+	for( i = blockcount; i < bl_list_count; i++ ) {
 		if(bl_list[ i ]->prev) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
 			va_start(ap, type);
 			returnCount += func(bl_list[ i ], ap);
@@ -1051,8 +1079,7 @@ int32 map_forcountinarea(int32 (*func)(struct block_list*,va_list), int16 m, int
 			if( count && returnCount >= count )
 				break;
 		}
-
-	map_freeblock_unlock();
+	}
 
 	bl_list_count = blockcount;
 	return returnCount;	//[Skotlex]
@@ -1173,16 +1200,15 @@ int32 map_foreachinmovearea(int32 (*func)(struct block_list*,va_list), struct bl
 	if( bl_list_count >= BL_LIST_MAX )
 		ShowWarning("map_foreachinmovearea: block count too many!\n");
 
-	map_freeblock_lock();	// Prohibit the release from memory
+	FreeBlockLock freeLock;
 
-	for( i = blockcount; i < bl_list_count; i++ )
+	for( i = blockcount; i < bl_list_count; i++ ) {
 		if( bl_list[ i ]->prev ) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
 			va_start(ap, type);
 			returnCount += func(bl_list[ i ], ap);
 			va_end(ap);
 		}
-
-	map_freeblock_unlock();	// Allow Free
+	}
 
 	bl_list_count = blockcount;
 	return returnCount;
@@ -1221,17 +1247,16 @@ int32 map_foreachincell(int32 (*func)(struct block_list*,va_list), int16 m, int1
 
 	if( bl_list_count >= BL_LIST_MAX )
 		ShowWarning("map_foreachincell: block count too many!\n");
+	
+	FreeBlockLock freeLock;
 
-	map_freeblock_lock();
-
-	for( i = blockcount; i < bl_list_count; i++ )
+	for( i = blockcount; i < bl_list_count; i++ ) {
 		if( bl_list[ i ]->prev ) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
 			va_start(ap, type);
 			returnCount += func(bl_list[ i ], ap);
 			va_end(ap);
 		}
-
-	map_freeblock_unlock();
+	}
 
 	bl_list_count = blockcount;
 	return returnCount;
@@ -1407,16 +1432,15 @@ int32 map_foreachinpath(int32 (*func)(struct block_list*,va_list),int16 m,int16 
 	if( bl_list_count >= BL_LIST_MAX )
 		ShowWarning("map_foreachinpath: block count too many!\n");
 
-	map_freeblock_lock();
+	FreeBlockLock freeLock;
 
-	for( i = blockcount; i < bl_list_count; i++ )
+	for( i = blockcount; i < bl_list_count; i++ ) {
 		if( bl_list[ i ]->prev ) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
 			va_start(ap, type);
 			returnCount += func(bl_list[ i ], ap);
 			va_end(ap);
 		}
-
-	map_freeblock_unlock();
+	}
 
 	bl_list_count = blockcount;
 	return returnCount;	//[Skotlex]
@@ -1574,16 +1598,15 @@ int32 map_foreachindir(int32 (*func)(struct block_list*, va_list), int16 m, int1
 	if( bl_list_count >= BL_LIST_MAX )
 		ShowWarning("map_foreachindir: block count too many!\n");
 
-	map_freeblock_lock();
+	FreeBlockLock freeLock;
 
-	for( i = blockcount; i < bl_list_count; i++ )
+	for( i = blockcount; i < bl_list_count; i++ ) {
 		if( bl_list[ i ]->prev ) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
 			va_start(ap, type);
 			returnCount += func(bl_list[ i ], ap);
 			va_end(ap);
 		}
-
-	map_freeblock_unlock();
+	}
 
 	bl_list_count = blockcount;
 	return returnCount;
@@ -1620,16 +1643,15 @@ int32 map_foreachinmap(int32 (*func)(struct block_list*,va_list), int16 m, int32
 	if( bl_list_count >= BL_LIST_MAX )
 		ShowWarning("map_foreachinmap: block count too many!\n");
 
-	map_freeblock_lock();
+	FreeBlockLock freeLock;
 
-	for( i = blockcount; i < bl_list_count ; i++ )
+	for( i = blockcount; i < bl_list_count ; i++ ) {
 		if( bl_list[ i ]->prev ) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
 			va_start(ap, type);
 			returnCount += func(bl_list[ i ], ap);
 			va_end(ap);
 		}
-
-	map_freeblock_unlock();
+	}
 
 	bl_list_count = blockcount;
 	return returnCount;
