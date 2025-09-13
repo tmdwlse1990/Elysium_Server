@@ -3005,6 +3005,180 @@ ACMD_FUNC(reloadcollectiondb){
 }
 
 /*==========================================
+ * Show Monster DB Info   v 2.0
+ * originally by [Lupus]
+ * edited by [Louis T Steinhil]
+ *------------------------------------------*/
+ACMD_FUNC(mobinfo2)
+{
+	unsigned char msize[SZ_ALL][7] = { "Small", "Medium", "Large" };
+	unsigned char mrace[RC_ALL][11] = { "Formless", "Undead", "Beast", "Plant", "Insect", "Fish", "Demon", "Demi-Human", "Angel", "Dragon", "Player" };
+	unsigned char melement[ELE_ALL][8] = { "Neutral", "Water", "Earth", "Fire", "Wind", "Poison", "Holy", "Dark", "Ghost", "Undead" };
+	char atcmd_output2[CHAT_SIZE_MAX];
+	uint16 mob_ids[MAX_SEARCH], count;
+	uint16 i;
+
+	memset(atcmd_output, '\0', sizeof(atcmd_output));
+	memset(atcmd_output2, '\0', sizeof(atcmd_output2));
+
+	if (!message || !*message) {
+		clif_displaymessage(fd, msg_txt(sd,1239)); // Please enter a monster name/ID (usage: @mobinfo <monster_name_or_monster_ID>).
+		return -1;
+	}
+
+	// If monster identifier/name argument is a name
+	i = util::strtoint32def(message);
+	if (i != 0 && (i = mobdb_checkid(i)))
+	{
+		mob_ids[0] = i;
+		count = 1;
+	} else
+		count = mobdb_searchname_array(message, mob_ids, MAX_SEARCH);
+
+	if (!count) {
+		clif_displaymessage(fd, msg_txt(sd,40)); // Invalid monster ID or name.
+		return -1;
+	}
+
+	if (count >= MAX_SEARCH) {
+		sprintf(atcmd_output, msg_txt(sd,269), MAX_SEARCH); // Displaying first %d matches
+		clif_displaymessage(fd, atcmd_output);
+		count = MAX_SEARCH;
+	}
+	for (uint16 k = 0; k < count; k++) {
+		std::shared_ptr<s_mob_db> mob = mob_db.find(mob_ids[k]);
+
+		if (mob == nullptr)
+			continue;
+
+		t_exp base_exp = mob->base_exp;
+		t_exp job_exp = mob->job_exp;
+
+		if (pc_isvip(sd)) { // Display EXP rate increase for VIP
+			base_exp += (base_exp * battle_config.vip_base_exp_increase) / 100;
+			job_exp += (job_exp * battle_config.vip_job_exp_increase) / 100;
+		}
+#ifdef RENEWAL_EXP
+		if( battle_config.atcommand_mobinfo_type ) {
+			int32 penalty = pc_level_penalty_mod( sd, PENALTY_EXP, mob );
+
+			base_exp = base_exp * penalty / 100;
+			job_exp = job_exp * penalty / 100;
+		}
+#endif
+		// stats
+		if( mob->get_bosstype() == BOSSTYPE_MVP )
+			sprintf(atcmd_output, "MVP Monster: %s | %s | %s (%d)", mob->name.c_str(), mob->jname.c_str(), mob->sprite.c_str(), mob->id);
+		else
+			sprintf(atcmd_output, "Monster: %s | %s | %s (%d)", mob->name.c_str(), mob->jname.c_str(), mob->sprite.c_str(), mob->id);
+		clif_displaymessage(fd, atcmd_output);
+
+		std::string formatted_lv = rathena::util::insert_comma(mob->lv);
+		std::string formatted_hp = rathena::util::insert_comma(mob->status.max_hp);
+		std::string formatted_base_exp = rathena::util::insert_comma(static_cast<int32>(base_exp));
+		std::string formatted_job_exp = rathena::util::insert_comma(static_cast<int32>(job_exp));
+		std::string formatted_hit = rathena::util::insert_comma(MOB_HIT(mob));
+		std::string formatted_flee = rathena::util::insert_comma(MOB_FLEE(mob));
+
+		sprintf(atcmd_output, "Lv: %s  HP: %s  Base EXP: %s  Job EXP: %s  HIT: %s  FLEE: %s", formatted_lv.c_str(), formatted_hp.c_str(), formatted_base_exp.c_str(), formatted_job_exp.c_str(), formatted_hit.c_str(), formatted_flee.c_str());    
+		clif_displaymessage(fd, atcmd_output);
+
+		std::string formatted_def = rathena::util::insert_comma(mob->status.def);
+		std::string formatted_mdef = rathena::util::insert_comma(mob->status.mdef);
+		std::string formatted_str = rathena::util::insert_comma(mob->status.str);
+		std::string formatted_agi = rathena::util::insert_comma(mob->status.agi);
+		std::string formatted_vit = rathena::util::insert_comma(mob->status.vit);
+		std::string formatted_int = rathena::util::insert_comma(mob->status.int_);
+		std::string formatted_dex = rathena::util::insert_comma(mob->status.dex);
+		std::string formatted_luk = rathena::util::insert_comma(mob->status.luk);
+
+		sprintf(atcmd_output, "DEF: %s  MDEF: %s  STR: %s  AGI: %s  VIT: %s  INT: %s  DEX: %s  LUK: %s", formatted_def.c_str(), formatted_mdef.c_str(), formatted_str.c_str(), formatted_agi.c_str(), formatted_vit.c_str(), formatted_int.c_str(), formatted_dex.c_str(), formatted_luk.c_str());
+		clif_displaymessage(fd, atcmd_output);
+
+		std::string formatted_atk1 = rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk);
+		std::string formatted_atk2 = rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk2);
+		std::string formatted_range1 = rathena::util::insert_comma(mob->status.rhw.range);
+		std::string formatted_range2 = rathena::util::insert_comma(mob->range2);
+		std::string formatted_range3 = rathena::util::insert_comma(mob->range3);
+		std::string formatted_ele_lv = rathena::util::insert_comma(mob->status.ele_lv);
+
+		sprintf(atcmd_output, "ATK: %s~%s  Range: %s~%s~%s  Size: %s  Race: %s  Element: %s (Lv: %s)", formatted_atk1.c_str(), formatted_atk2.c_str(), formatted_range1.c_str(), formatted_range2.c_str(), formatted_range3.c_str(), msize[mob->status.size], mrace[mob->status.race], melement[mob->status.def_ele], formatted_ele_lv.c_str());
+		clif_displaymessage(fd, atcmd_output);
+
+#ifdef RENEWAL    
+		std::string formatted_res = rathena::util::insert_comma(mob->status.res);
+		std::string formatted_mres = rathena::util::insert_comma(mob->status.mres);
+
+		sprintf(atcmd_output, "RES: %s  MRES: %s", formatted_res.c_str(), formatted_mres.c_str());      
+		clif_displaymessage(fd, atcmd_output);
+#endif
+		// drops
+		clif_displaymessage(fd, msg_txt(sd,1245)); //  Drops:
+		if( mob->dropitem.empty() ){
+			clif_displaymessage(fd, msg_txt(sd,1246)); // This monster has no drops.
+		}else{
+			int32 drop_modifier = 100;
+#ifdef RENEWAL_DROP
+			if( battle_config.atcommand_mobinfo_type ){
+				drop_modifier = pc_level_penalty_mod( sd, PENALTY_DROP, mob );
+			}
+#endif
+
+			for( const std::shared_ptr<s_mob_drop>& entry : mob->dropitem ){
+				if (entry->nameid == 0 || entry->rate < 1)
+					continue;
+
+				std::shared_ptr<item_data> id = item_db.find(entry->nameid);
+
+				if (id == nullptr)
+					continue;
+
+				int32 droprate = mob_getdroprate( sd, mob, entry->rate, drop_modifier );
+				sprintf(atcmd_output, " - %s %02.02f%%", item_db.create_item_link(id).c_str(), (float)droprate / 100);
+				clif_displaymessage(fd, atcmd_output);
+			}
+		}
+
+		// mvp
+		if( mob->get_bosstype() == BOSSTYPE_MVP ){
+
+			std::string formatted_mexp = rathena::util::insert_comma(static_cast<int32>(mob->mexp));  
+
+			sprintf(atcmd_output, "MVP Bonus EXP: %s", formatted_mexp.c_str());
+			clif_displaymessage(fd, atcmd_output);
+			clif_displaymessage(fd, msg_txt(sd,1248)); //  MVP drops:
+
+			if( mob->mvpitem.empty() ){
+				clif_displaymessage(fd, msg_txt(sd,1249)); // This monster has no MVP drops.
+			}else{
+				float mvpremain = 100.0; //Remaining drop chance for official mvp drop mode
+
+				for( const std::shared_ptr<s_mob_drop>& entry : mob->mvpitem ){
+					if (entry->nameid == 0)
+						continue;
+
+					std::shared_ptr<item_data> id = item_db.find(entry->nameid);
+
+					if (id == nullptr)
+						continue;
+
+					//Because if there are 3 MVP drops at 50%, the first has a chance of 50%, the second 25% and the third 12.5%
+					float mvppercent = (float)entry->rate * mvpremain / 10000.0f;
+					if(battle_config.item_drop_mvp_mode == 0) {
+						mvpremain -= mvppercent;
+					}
+					if (mvppercent > 0) {
+						sprintf(atcmd_output, " - %s %02.02f%%", item_db.create_item_link(id).c_str(), mvppercent);
+						clif_displaymessage(fd, atcmd_output);
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+/*==========================================
 * @ws - Open the searchstore UI with found sold items
 *------------------------------------------*/
 ACMD_FUNC(whosell)
