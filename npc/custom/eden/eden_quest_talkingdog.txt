@@ -1,0 +1,477 @@
+//===== rAthena Script =======================================
+//= Eden Group Quest - Quests NPCs
+//===== Description: =========================================
+//= Eden Group Headquarter NPCs.
+//===== Changelogs: ==========================================
+//= 1.0 First Version. [L0ne_W0lf]
+//= 1.1 Removed unencoded comments (Korean -> Gibberish)
+//=     Readded the GM helper NPC, commented out.
+//= 1.2 Some little optimization here and there. [Masao]
+//= 1.3 Added Instructor Ur and the new Quests which come
+//=     alongside him. Special thanks to Chilly for the base. [Masao]
+//= 1.4 Partial cleaning and bug fixing. [Euphy]
+//= 1.4a Added 'npcskill' command. [Euphy]
+//= 1.4b Added 'disable_items' command. [Euphy]
+//= 1.5 Added GM management function. [Euphy]
+//= 1.6 Kagerou/Oboro support (Class -> BaseClass) [Euphy]
+//= 2.0 Updated Instructor Ur's quests. [Capuche]
+//= 2.1 Updated Blacksmith Thorn and Weapons Expert NPC. [Capuche]
+//= 2.2 Added support to Para_Team_Mark_ in Eden Group. [Ragno]
+//= 2.3 Added use of F_HasEdenGroupMark function. [Ragno]
+//= 2.4 Adds quest management, progression, and warp points to 
+//=		support multi-step training quests for players.. [Louis T Steinhil]
+//============================================================
+
+moc_fild11,180,253,5	script	Talking Dog#para03	4_RUS_DWOLF,{
+    mes "[Talking Dog]";  
+
+    // Route to appropriate quest state handler  
+    switch(para_suv01) {  
+        case 1: callsub S_InitialPasswordCheck; break;  
+        case 2: callsub S_CondorHuntProgress; break;  
+        case 3: callsub S_WolfHuntProgress; break;  
+        case 4: callsub S_ScorpionHuntProgress; break;  
+        case 5: callsub S_TrainingComplete; break;  
+        default:  
+            if (para_suv01 > 5) callsub S_PostTrainingChat;  
+            else callsub S_DefaultGreeting;  
+    }  
+    close;  
+
+// Enhanced password check with quest management  
+S_InitialPasswordCheck:  
+    mes "kkkkuuuuahhh.";  
+    mes "rrrrrruuuuhh.";  
+    mes "bowwow..";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "What's up?";  
+    mes "You are!";  
+    mes "A member of the Eden Group.";  
+    mes "Have you come to give me a meal? I don't like drinks.";  
+    next;  
+      
+    switch (select("Boya is really perfect.:Boya is really great.:Boya is really soft.:Quest Help")) {  
+        case 1: callsub S_WrongPassword; break;  
+        case 2: callsub S_CorrectPassword; break;  
+        case 3: callsub S_ConfusedResponse; break;  
+        case 4: callsub S_QuestManagement; break;  
+    }  
+    return;
+
+S_WrongPassword:  
+    mes "[Talking Dog]";  
+    mes "Uhh...";  
+    mes "What are you saying.";  
+    return;  
+  
+S_CorrectPassword:  
+    mes "[Talking Dog]";  
+    mes "Ahh... um...";  
+    mes "Gosh, did you come here to participate in the training?";  
+    mes "If Boya sent you then you know that it's battle training.";  
+    mes "Bow wow...";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "If so, should I start securing this oasis more clearly?";  
+    mes "Can you see a Condor flying?";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "Can you scare them away for me?";  
+    mes "So people can use this oasis safer and more comfortably.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "We should hunt at least 10 Condors, ok?";  
+    mes "I will sleep for a while.";  
+    mes "Krrrr woo bow...";  
+    para_suv01 = 2;  
+    changequest 7128,7129;  
+    return;  
+  
+S_ConfusedResponse:  
+    mes "[Talking Dog]";  
+    mes "Are you ok?";  
+    mes "Haven't you seen a talking dog before?";  
+    mes "What are you talking about?";  
+    return;  
+  
+S_CondorHuntProgress:  
+    if (checkquest(7129,HUNTING) == 2) {  
+        callsub S_CondorHuntComplete;  
+    } else {  
+        callsub S_CondorHuntReminder;  
+    }  
+    return;  
+  
+S_CondorHuntComplete:  
+    mes "[Talking Dog]";  
+    mes "Woooohh...";  
+    mes "Great!";  
+    mes "I can feel my youth from you.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "Nevermind.";  
+    mes "Let's find the next target kk!";  
+    mes "Ok. Let's drive the Desert Wolves out of here.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "If they grow up they will become dangerous.";  
+    mes "......";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "Why, why are you looking at me like that?";  
+    mes "They are wolves and I am a nice dog.";  
+    mes "But I haven't always been a dog my entire life.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "I will show you that you don't have to pity me at all.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "They pee wherever and have no shame.";  
+    mes "Just waving their tails when they grow up and biting people without any care!";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "You must hunt at least 10!";  
+    mes "Exactly 10!";  
+    mes "Go go go!";  
+    para_suv01 = 3;  
+    changequest 7129,7130;  
+    return;  
+
+S_CondorHuntReminder:  
+    mes "[Talking Dog]";  
+    mes "First let's follow the bald and noisy bird.";  
+    mes "Yes Condors.";  
+    mes "Kill 10 Condors. It seems too easy, right?";  
+    mes "Oh, if you are tired I will help you.";  
+    next;  
+    switch(select("Get healed:Quest Management:Continue hunting")) {  
+        case 1: callsub S_HealPlayer; break;  
+        case 2: callsub S_QuestManagement; break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_WolfHuntProgress:  
+    if (checkquest(7130,HUNTING) == 2) {  
+        callsub S_WolfHuntComplete;  
+    } else {  
+        callsub S_WolfHuntReminder;  
+    }  
+    return;  
+  
+S_WolfHuntComplete:  
+    mes "[Talking Dog]";  
+    mes "You are so perfect.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "Or not. Hehe, anyway thanks for your help.";  
+    mes "The oasis has almost been secured now.";  
+    mes "Ok, it's the last step!";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "There's an annoying monster that hides in the sand and poisons people out of nowhere.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "All beautiful things have some poison inside but these actually kill.";  
+    mes "Kill Scorpions which are called the poison of the desert!";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "It's the last step so let's make it simple";  
+    mes "Just hunt 5!";  
+    mes "Bow wow!";  
+    para_suv01 = 4;  
+    changequest 7130,7131;  
+    return;  
+  
+S_WolfHuntReminder:  
+    mes "[Talking Dog]";  
+    mes "I don't want you to show any pity.";  
+    mes "I am a dog with a golden heart.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "After hunting the 10 Desert Wolves come back again.";  
+    mes "Oh, if you are tired I will help you.";  
+    next;  
+    switch(select("Get healed:Quest Management:Continue hunting")) {  
+        case 1: callsub S_HealPlayer; break;  
+        case 2: callsub S_QuestManagement; break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_ScorpionHuntProgress:  
+    if (checkquest(7131,HUNTING) == 2) {  
+        callsub S_ScorpionHuntComplete;  
+    } else {  
+        callsub S_ScorpionHuntReminder;  
+    }  
+    return;  
+  
+S_ScorpionHuntComplete:  
+    mes "[Talking Dog]";  
+    mes "Um. Excellent.";  
+    mes "You are awesome!";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "Thanks to your effort the oasis is secure.";  
+    mes "Don't look around!";  
+    mes "If I say it's secure!";  
+    mes "Uhuhuhuh aaaang!";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "Here here here.";  
+    mes "If I dig more and more, I can find Scorpions but";  
+    mes "this oasis will be safer for sure.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "You can be proud and confident by yourself and do your best.";  
+    mes "You've helped a lot to make my rest comfortable.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "You've helped to conquer the desert,";  
+    mes "and passed the beginner training steps so I will stamp my feet.";  
+    mes "krrrrreuung. hup.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "Go back to the Eden Group headquarters and show it to the flashy Rune Knight.";  
+    mes "Let me say again that you are great!";  
+    mes "Hooooohooo~";  
+    para_suv01 = 5;  
+    changequest 7131,7132;  
+    return;  
+  
+S_ScorpionHuntReminder:  
+    mes "[Talking Dog]";  
+    mes "Let's hunt only 5 Scorpions.";  
+    mes "So we can make peace in this oasis.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "When I take a nap they won't chew my tail anymore.";  
+    mes "Due to this mistake my feet won't be hurt at all.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "You can fight.";  
+    mes "I can rest more comfortably.";  
+    mes "Other people are going to be safer too.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "Everyone will think fondly of the Eden Group.";  
+    mes "Oh, if you are tired I will help you.";  
+    next;  
+    switch(select("Get healed:Quest Management:Continue hunting")) {  
+        case 1: callsub S_HealPlayer; break;  
+        case 2: callsub S_QuestManagement; break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_TrainingComplete:  
+    mes "[Talking Dog]";  
+    mes "kkkkkaaaaauuuunnng.";  
+    mes "oopssss kup.";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "Why are you still here?";  
+    mes "You are done here.";  
+    mes "Hooooo bow wow.";  
+    return;  
+  
+S_PostTrainingChat:  
+    mes "[Talking Dog]";  
+    mes "Hey man~ What's going on?";  
+    mes "What about the Rune Knight?";  
+    mes "Krrrrr...";  
+    mes "Hyuk huk...";  
+    next;  
+    mes "[Talking Dog]";  
+    mes "The Eden Group is cool.";  
+    mes "They're a really good group.";  
+    mes "They accepted a wandering talking dog.";  
+    next;  
+    switch(select("Quest Management:Just chatting:Leave")) {  
+        case 1: callsub S_QuestManagement; break;  
+        case 2:  
+            mes "[Talking Dog]";  
+            mes "Take care and good luck with your adventures!";  
+            break;  
+        case 3: break;  
+    }  
+    return;   
+  
+S_HealPlayer:  
+    mes "-When the dog barked, your HP and SP recovered.-";  
+    npcskill "AL_HEAL",11,99,60;  
+    percentheal 100,100;  
+    return;  
+  
+// Quest Management Functions  
+S_QuestManagement:  
+    mes "[Talking Dog]";  
+    mes "Woof! What do you need help with regarding your desert training?";  
+    next;  
+    switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
+        case 1: callsub S_ViewCurrentQuest; break;  
+        case 2: callsub S_AbandonQuest; break;  
+        case 3: callsub S_QuestStatus; break;  
+        case 4: mes "Bow wow! Come back if you need help!"; break;  
+    }  
+    return;  
+  
+S_ViewCurrentQuest:  
+    mes "[Talking Dog]";  
+    mes "Your current desert training progress:";  
+    mes " ";  
+      
+    switch(para_suv01) {  
+        case 1:  
+            mes "^0000FFPassword Verification^000000";  
+            mes "  Status: Tell me the correct password from Boya";  
+            break;  
+        case 2:  
+            mes "^00FF00Condor Hunt^000000 - In Progress";  
+            mes "  Status: Hunt 10 Condors around the oasis";  
+            break;  
+        case 3:  
+            mes "^00FF00Desert Wolf Hunt^000000 - In Progress";  
+            mes "  Status: Hunt 10 Desert Wolves";  
+            break;  
+        case 4:  
+            mes "^00FF00Scorpion Hunt^000000 - In Progress";  
+            mes "  Status: Hunt 5 Scorpions (Final step!)";  
+            break;  
+        case 5:  
+            mes "^0000FFDesert Training Complete^000000";  
+            mes "  Status: Return to Boya at Eden Group HQ";  
+            break;  
+        default:  
+            mes "^FF0000No active desert training quest.^000000";  
+            mes "^FF0000You might need to talk to Instructor Boya first.^000000";  
+            break;  
+    }  
+    return;  
+  
+S_AbandonQuest:  
+    if (para_suv01 < 1 || para_suv01 > 4) {  
+        mes "[Talking Dog]";  
+        mes "Woof! You don't have any active desert training to abandon.";  
+        return;  
+    }  
+      
+    mes "[Talking Dog]";  
+    mes "^FF0000Warning:^000000 Abandoning your desert training will reset all progress!";  
+    mes "Are you sure you want to give up? The oasis needs your help!";  
+    next;  
+      
+    if (select("Yes, abandon training:No, continue training") == 2) {  
+        mes "[Talking Dog]";  
+        mes "Good choice! The desert creatures won't defeat themselves!";  
+        return;  
+    }  
+      
+    // Handle quest abandonment  
+    switch(para_suv01) {  
+        case 1:  
+            para_suv01 = 0;  
+            erasequest 7128;  
+            break;  
+        case 2:  
+            para_suv01 = 0;  
+            erasequest 7128;  
+            if (checkquest(7129) >= 0) erasequest 7129;  
+            break;  
+        case 3:  
+            para_suv01 = 0;  
+            erasequest 7128;  
+            if (checkquest(7129) >= 0) erasequest 7129;  
+            if (checkquest(7130) >= 0) erasequest 7130;  
+            break;  
+        case 4:  
+            para_suv01 = 0;  
+            erasequest 7128;  
+            if (checkquest(7129) >= 0) erasequest 7129;  
+            if (checkquest(7130) >= 0) erasequest 7130;  
+            if (checkquest(7131) >= 0) erasequest 7131;  
+            break;  
+    }  
+      
+    mes "[Talking Dog]";  
+    mes "Woof... Desert training abandoned.";  
+    mes "The oasis will miss your help, but you can always restart with Boya.";  
+    return;  
+  
+S_QuestStatus:  
+    mes "[Talking Dog]";  
+    mes "Let me check your hunting progress...";  
+    mes " ";  
+      
+    switch(para_suv01) {  
+        case 2:  
+            .@progress = checkquest(7129,HUNTING);  
+            if (.@progress == 2) {  
+                mes "^00FF00Condor Hunt: COMPLETE!^000000";  
+                mes "Come talk to me to proceed to the next step.";  
+            } else {  
+                mes "^FFFFFFCondor Hunt: In Progress^000000";
+                mes "Keep hunting those noisy birds around the oasis.";  
+            }  
+            break;  
+        case 3:  
+            .@progress = checkquest(7130,HUNTING);  
+            if (.@progress == 2) {  
+                mes "^00FF00Desert Wolf Hunt: COMPLETE!^000000";  
+                mes "Come talk to me to proceed to the final step.";  
+            } else {  
+                mes "^FFFFFFDesert Wolf Hunt: In Progress^000000";  
+                mes "Keep hunting those troublesome wolves.";  
+            }  
+            break;  
+        case 4:  
+            .@progress = checkquest(7131,HUNTING);  
+            if (.@progress == 2) {  
+                mes "^00FF00Scorpion Hunt: COMPLETE!^000000";  
+                mes "Come talk to me to finish your desert training!";  
+            } else {  
+                mes "^FFFFFFScorpion Hunt: In Progress^000000";  
+                mes "Just 5 more scorpions to secure the oasis!";  
+            }  
+            break;  
+        default:  
+            mes "^FF0000No active hunting quests to check.^000000";  
+            break;  
+    }  
+    return;  
+  
+// Enhanced greeting with quest management option  
+S_DefaultGreeting:  
+    mes "Hey look.";  
+    mes "I'm a talking dog.";  
+    mes "Not a wolf.";  
+    mes "I wasn't a dog originally...";  
+    next;  
+    if (callfunc("F_HasEdenGroupMark")) {  
+        mes "[Talking Dog]";  
+        mes "Anyway are you an Eden Group member?";  
+        mes "Oh good to see you.";  
+        mes "I am also a member of Eden Group.";  
+        next;  
+        switch(select("Quest Management:Just saying hello:Leave")) {  
+            case 1: callsub S_QuestManagement; break;  
+            case 2:   
+                mes "[Talking Dog]";  
+                mes "Take care and good luck with your adventures!";  
+                break;  
+            case 3: break;  
+        }  
+    } else {  
+        mes "[Talking Dog]";  
+        mes "Why are you looking at me like that?";  
+        mes "......";  
+    }  
+    return;  
+
+OnInit:  
+    setunitdata( getnpcid(0), UNPC_GROUP_ID, 6);  
+    //setunittitle( getnpcid(0), "Talking Dog" );  
+    end;	
+}
