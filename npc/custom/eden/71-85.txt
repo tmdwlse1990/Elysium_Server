@@ -1,0 +1,382 @@
+//===== rAthena Script =======================================  
+//= Eden Group Quests - Mission [71 - 85]  
+//===== By: ==================================================  
+//= L0ne_W0lf  
+//= Louis_T_Steinhil  
+//===== Current Version: =====================================  
+//= 1.8  
+//===== Compatible With: =====================================  
+//= rAthena Project  
+//===== Description: =========================================  
+//= Repetable Quests for Players between Baselevel 71 - 85.  
+//===== Additional Comments: =================================  
+//= 1.0 First Version.  
+//= 1.1 Some little optimization here and there. [Masao]  
+//= 1.2 Optimized. [Euphy]  
+//= 1.3 Updated to match the official scripts. [Euphy]  
+//= 1.4 Added support to Para_Team_Mark_ in Eden Group. [Ragno]  
+//= 1.5 Added use of F_HasEdenGroupMark function. [Ragno]  
+//= 1.6 Modified to match 11-25 quest structure. [LTSteinhil]  
+//= 1.7 Added quest management menu for accept/abandon all quests. [LTSteinhil] 
+//= 1.8 Restructured to match array-based system. [LTSteinhil]  
+//============================================================  
+  
+moc_para01,44,38,3	script	Mission [71 - 85]#Tuto	4_BOARD3,{  
+	if (!callfunc("F_HasEdenGroupMark")) {  
+		mes "- You need to have an -";  
+		mes "- ^4d4dff'Eden Group Mark'^000000 -";  
+		mes "- to receive these missions. -";  
+		close;  
+	}  
+  
+	// Clear the original quest data (no longer used).  
+	if (slv_quest) set slv_quest,0;  
+	if (checkquest(10102) > -1 || checkquest(10103) > -1 || checkquest(10104) > -1 || checkquest(10105) > -1 || checkquest(10106) > -1) {  
+		for(set .@quest,10102; .@quest<=10106; set .@quest,.@quest+1) {  
+			if (checkquest(.@quest) > -1)  
+				erasequest .@quest;  
+		}  
+		mes "- Since the client has moved -";  
+		mes "- to another place, -";  
+		mes "- the application form has been removed. -";  
+		next;  
+	}  
+  
+	if (BaseLevel < 71) {  
+		mes " - There are no tasks - ";  
+		mes " - open for you right now. - ";  
+		close;  
+	}  
+	  
+	mes " - Mission bulletin board -";  
+	mes " - for expert adventurers. -";  
+	mes " ";  
+	mes " - Quest Management Menu -";
+	next;  
+	switch(select("^0000FFAccept All Available Quests^000000:" +  
+					"^FF0000Abandon All Active Quests^000000:" +  
+					"Claim Rewards:" +  
+					"Choose Specific Quest:" +  
+					"View Active Quests:" +  
+					"Warp Locations:" +  
+					"Cancel")) {  
+		case 1: callsub L_AcceptAll;  
+		case 2: callsub L_AbandonAll;  
+		case 3: callsub L_ClaimRewards;  
+		case 4: callsub L_ChooseQuests;  
+		case 5: callsub L_ViewQuests;  
+		case 6:  
+			mes " - Warp Location Menu -";  
+			mes " ";  
+			mes " - Select a location to warp to -";  
+			next;  
+			switch(select("Amatsu:" +  
+						  "Ayothaya:" +  
+						  "Brasilis:" +  
+						  "Clock Tower:" +  
+						  "Glast Heim:" +  
+						  "Juno:" +  
+						  "Luoyang:" +  
+						  "Moscovia:" +  
+						  "Sphinx Dungeon:" +  
+						  "Cancel:")) {  
+				case 1: callsub L_WarpLocation,"amatsu",198,84,"Amatsu";  
+				case 2: callsub L_WarpLocation,"ayothaya",208,166,"Ayothaya";  
+				case 3: callsub L_WarpLocation,"brasilis",196,217,"Brasilis";  
+				case 4: callsub L_WarpLocation,"aldebaran",140,131,"Clock Tower";  
+				case 5: callsub L_WarpLocation,"glast_01",375,304,"Glast Heim";  
+				case 6: callsub L_WarpLocation,"yuno",158,125,"Juno";  
+				case 7: callsub L_WarpLocation,"louyang",217,100,"Luoyang";  
+				case 8: callsub L_WarpLocation,"moscovia",223,184,"Moscovia";  
+				case 9: callsub L_WarpLocation,"morocc",156,46,"Sphinx Dungeon";  
+				case 10: close; break;  
+			} 
+		case 7: close; break;  
+	}  
+  
+L_Quest:  
+	.@quest_status = checkquest(getarg(0)+40,PLAYTIME);  
+	if (.@quest_status == 0 || .@quest_status == 1) {  
+		mes " - Mission ^4d4dff"+ getarg(1) +"^000000 - ";  
+		mes " - is already finished for today. - ";  
+		mes " ";  
+		close;  
+	}  
+	mes " - Mission '"+ getarg(1) +"' - ";  
+	for ( .@i = 2; .@i < getargcount(); .@i++ )  
+		mes getarg(.@i);  
+	mes " ";  
+	  
+	// Display rewards using arrays  
+	if (getarg(0) >= 10107 && getarg(0) <= 10123) {  
+		.@index = getarg(0) - 10107;  
+	} else if (getarg(0) >= 5055 && getarg(0) <= 5057) {  
+		.@index = getarg(0) - 5055 + 17; // Offset for 5055-5057 range  
+	}  
+	mes "^009500Rewards:^000000";  
+	mes "- Base Exp: " + F_InsertComma(.base_exp[.@index]);  
+	mes "- Job Exp: " + F_InsertComma(.job_exp[.@index]);  
+	mes "- " + F_InsertComma(.item_amount[.@index]) + "x ^0000FF" + mesitemicon(.item_reward[.@index]) + "  " + getitemname(.item_reward[.@index]) + "^000000";  
+	mes " ";  
+	  
+	next;  
+	if (select("I will do this mission.:Look for other missions.") == 2) {  
+		mes " - Let's search for -";  
+		mes " - other missions. - ";  
+		close;  
+	}  
+	for ( .@i = 2; .@i < getargcount(); .@i++ )  
+		mes getarg(.@i);  
+	setquest getarg(0);  
+	close;  
+  
+L_AcceptAll:  
+	.@count = 0;  
+	// Handle 10107-10123 range  
+	for (.@i = 10107; .@i <= 10123; .@i++) {  
+		if (checkquest(.@i) == -1 && checkquest(.@i+40,PLAYTIME) != 0 && checkquest(.@i+40,PLAYTIME) != 1) {  
+			setquest .@i;  
+			.@count++;  
+		}  
+	}  
+	// Handle 5055-5057 range  
+	for (.@i = 5055; .@i <= 5057; .@i++) {  
+		if (checkquest(.@i) == -1 && checkquest(.@i+40,PLAYTIME) != 0 && checkquest(.@i+40,PLAYTIME) != 1) {  
+			setquest .@i;  
+			.@count++;  
+		}  
+	}  
+	if (.@count > 0) {  
+		mes " - Successfully accepted -";  
+		mes " - " + .@count + " missions! -";  
+	}  
+	else {  
+		mes " - No available missions to accept. -";  
+	}  
+	close;  
+  
+L_AbandonAll:  
+	.@count = 0;  
+	// Handle 10107-10123 range  
+	for (.@i = 10107; .@i <= 10123; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			erasequest .@i;  
+			.@count++;  
+		}  
+	}  
+	// Handle 5055-5057 range  
+	for (.@i = 5055; .@i <= 5057; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			erasequest .@i;  
+			.@count++;  
+		}  
+	}  
+	if (.@count > 0) {  
+		mes " - Successfully abandoned -";  
+		mes " - " + .@count + " missions. -";  
+	}  
+	else {  
+		mes " - No active missions to abandon. -";  
+	}  
+	close;  
+  
+L_ChooseQuests:  
+	mes " - Choose Specific Quest -";  
+	next;  
+	switch(select("Hunt Requiem:" +  
+				  "Hunt Marduk:" +  
+				  "Hunt Pasana:" +  
+				  "Hunt Dark Frame:" +  
+				  "Hunt Evil Druid:" +  
+				  "Hunt Wraith:" +  
+				  "Hunt Raydric Archer:" +  
+				  "Hunt Grand Peco:" +  
+				  "Hunt Sleeper:" +  
+				  "Hunt Goat:" +  
+				  "Hunt Harpy:" +  
+				  "Hunt Clock:" +  
+				  "Hunt Punk:" +  
+				  "Hunt Rideword:" +  
+				  "Hunt Kikimora:" +  
+				  "Hunt Miyabi Doll:" +  
+				  "Hunt Mi Gao:" +  
+				  "Hunt Headless Mule:" +  
+				  "Hunt Tamruan:" +  
+				  "Gather Festival Masks:" +  
+				  "Cancel")) {  
+		case 1: callsub L_Quest,10107,"Hunt Requiem"," - Hunt 10 ^4d4dff'Requiems'^000000 - "," - in Sphinx Dungeon. - ";  
+		case 2: callsub L_Quest,10108,"Hunt Marduk"," - Hunt 10 ^4d4dff'Marduks'^000000 - "," - in Sphinx Dungeon. - ";  
+		case 3: callsub L_Quest,10109,"Hunt Pasana"," - Hunt 10 ^4d4dff'Pasanas'^000000 - "," - in Sphinx Dungeon. - ";  
+		case 4: callsub L_Quest,10110,"Hunt Dark Frame"," - Hunt 10 ^4d4dff'Dark Frames'^000000 - "," - in Glast Heim. - ";  
+		case 5: callsub L_Quest,10111,"Hunt Evil Druid"," - Hunt 10 ^4d4dff'Evil Druids'^000000 - "," - in Glast Heim . - ";  
+		case 6: callsub L_Quest,10112,"Hunt Wraith"," - Hunt 10 ^4d4dff'Wraiths'^000000 - "," - in Glast Heim. - ";  
+		case 7: callsub L_Quest,10113,"Hunt Raydric Archer"," - Hunt 10 ^4d4dff'Raydric Archers'^000000 - "," - in Glast Heim. - ";  
+		case 8: callsub L_Quest,10114,"Hunt Grand Peco"," - Hunt 20 ^4d4dff'Grand Pecos'^000000 - "," - around Juno fields. - ";  
+		case 9: callsub L_Quest,10115,"Hunt Sleeper"," - Hunt 20 ^4d4dff'Sleepers'^000000 - "," - around Juno fields. - ";  
+		case 10: callsub L_Quest,10116,"Hunt Goat"," - Hunt 20 ^4d4dff'Goats'^000000 - "," - around Juno fields. - ";  
+		case 11: callsub L_Quest,10117,"Hunt Harpy"," - Hunt 20 ^4d4dff'Harpies'^000000 - "," - around Juno fields. - ";  
+		case 12: callsub L_Quest,10118,"Hunt Clock"," - Hunt 15 ^4d4dff'Clocks'^000000 - "," - in Clock Tower. - ";  
+		case 13: callsub L_Quest,10119,"Hunt Punk"," - Hunt 15 ^4d4dff'Punks'^000000 - "," - in Clock Tower. - ";  
+		case 14: callsub L_Quest,10120,"Hunt Rideword"," - Hunt 15 ^4d4dff'Ridewords'^000000 - "," - in Clock Tower. - ";  
+		case 15: callsub L_Quest,10121,"Hunt Kikimora"," - Hunt 15 ^4d4dff'Kikimoras'^000000 - "," - in Moscovia dungeons. - ";  
+		case 16: callsub L_Quest,10122,"Hunt Miyabi Doll"," - Hunt 15 ^4d4dff'Miyabi Dolls'^000000 - "," - in Amatsu dungeons. - ";  
+		case 17: callsub L_Quest,10123,"Hunt Mi Gao"," - Hunt 15 ^4d4dff'Mi Gaos'^000000 - "," - in Luoyang dungeons. - ";  
+		case 18: callsub L_Quest,5055,"Hunt Headless Mule"," - Hunt 15 ^4d4dff'Headless Mules'^000000 - "," - in Brasilis fields. - ";  
+		case 19: callsub L_Quest,5056,"Hunt Tamruan"," - Hunt 15 ^4d4dff'Tamruans'^000000 - "," - in Ayothaya dungeons. - ";  
+		case 20: callsub L_Quest,5057,"Gather Festival Masks"," - Collect 30 ^4d4dff'Festival Masks'^000000 - "," - from Dumpling Child monsters. - ";  
+		case 21:  
+			mes " - Stop reading the bulletin board. - ";  
+			close;  
+			break;  
+	}  
+  
+L_ViewQuests:  
+	.@count = 0;  
+	mes " - Your Active Missions: -";  
+	mes " ";  
+	  
+	// Handle 10107-10123 range  
+	for (.@i = 10107; .@i <= 10123; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			.@count++;  
+			switch(.@i) {  
+				case 10107: mes " > Hunt Requiem"; break;  
+				case 10108: mes " > Hunt Marduk"; break;  
+				case 10109: mes " > Hunt Pasana"; break;  
+				case 10110: mes " > Hunt Dark Frame"; break;  
+				case 10111: mes " > Hunt Evil Druid"; break;  
+				case 10112: mes " > Hunt Wraith"; break;  
+				case 10113: mes " > Hunt Raydric Archer"; break;  
+				case 10114: mes " > Hunt Grand Peco"; break;  
+				case 10115: mes " > Hunt Sleeper"; break;  
+				case 10116: mes " > Hunt Goat"; break;  
+				case 10117: mes " > Hunt Harpy"; break;  
+				case 10118: mes " > Hunt Clock"; break;  
+				case 10119: mes " > Hunt Punk"; break;  
+				case 10120: mes " > Hunt Rideword"; break;  
+				case 10121: mes " > Hunt Kikimora"; break;  
+				case 10122: mes " > Hunt Miyabi Doll"; break;  
+				case 10123: mes " > Hunt Mi Gao"; break;  
+			}  
+		}  
+	}  
+	  
+	// Handle 5055-5057 range  
+	for (.@i = 5055; .@i <= 5057; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			.@count++;  
+			switch(.@i) {  
+				case 5055: mes " > Hunt Headless Mule"; break;  
+				case 5056: mes " > Hunt Tamruan"; break;  
+				case 5057: mes " > Gather Festival Masks"; break;  
+			}  
+		}  
+	}  
+	  
+	if (.@count == 0) {  
+		mes " - No active missions. -";  
+	}  
+	else {  
+		mes " ";  
+		mes " - Total: " + .@count + " missions -";  
+	}  
+	close;  
+  
+L_ClaimRewards:  
+	.@rewards_claimed = 0;  
+	  
+	// Handle 10107-10123 range  
+	for(.@i = 10107; .@i <= 10123; .@i++) {  
+		.@j = checkquest(.@i, HUNTING);  
+		.@index = .@i - 10107; // Calculate array index  
+		  
+		if (.@j == 2) {  
+			// Display quest completion message  
+			switch(.@i) {  
+				case 10107: mes " - Claiming reward for Hunt Requiem -"; break;  
+				case 10108: mes " - Claiming reward for Hunt Marduk -"; break;  
+				case 10109: mes " - Claiming reward for Hunt Pasana -"; break;  
+				case 10110: mes " - Claiming reward for Hunt Dark Frame -"; break;  
+				case 10111: mes " - Claiming reward for Hunt Evil Druid -"; break;  
+				case 10112: mes " - Claiming reward for Hunt Wraith -"; break;  
+				case 10113: mes " - Claiming reward for Hunt Raydric Archer -"; break;  
+				case 10114: mes " - Claiming reward for Hunt Grand Peco -"; break;  
+				case 10115: mes " - Claiming reward for Hunt Sleeper -"; break;  
+				case 10116: mes " - Claiming reward for Hunt Goat -"; break;  
+				case 10117: mes " - Claiming reward for Hunt Harpy -"; break;  
+				case 10118: mes " - Claiming reward for Hunt Clock -"; break;  
+				case 10119: mes " - Claiming reward for Hunt Punk -"; break;  
+				case 10120: mes " - Claiming reward for Hunt Rideword -"; break;  
+				case 10121: mes " - Claiming reward for Hunt Kikimora -"; break;  
+				case 10122: mes " - Claiming reward for Hunt Miyabi Doll -"; break;  
+				case 10123: mes " - Claiming reward for Hunt Mi Gao -"; break;  
+			}  
+			  
+			// Give rewards using arrays  
+			erasequest .@i;
+			getexp .base_exp[.@index], .job_exp[.@index];  
+			getitem .item_reward[.@index], .item_amount[.@index];  
+			.@rewards_claimed++;  
+		}  
+	}  
+	  
+	// Handle 5055-5057 range  
+	for(.@i = 5055; .@i <= 5057; .@i++) {  
+		if (.@i == 5057) {  
+			// Special handling for collection quest  
+			if (checkquest(5057) > -1 && countitem(7187) >= 30) {  
+				mes " - Claiming reward for Gather Festival Masks -";  
+				delitem 7187, 30;  
+				erasequest 5057;
+				.@index = .@i - 5055 + 17; // Offset for 5055-5057 range  
+				getexp .base_exp[.@index], .job_exp[.@index];  
+				getitem .item_reward[.@index], .item_amount[.@index];  
+				.@rewards_claimed++;  
+			}  
+		} else {  
+			.@j = checkquest(.@i, HUNTING);  
+			.@index = .@i - 5055 + 17; // Offset for 5055-5057 range  
+			  
+			if (.@j == 2) {  
+				// Display quest completion message  
+				switch(.@i) {  
+					case 5055: mes " - Claiming reward for Hunt Headless Mule -"; break;  
+					case 5056: mes " - Claiming reward for Hunt Tamruan -"; break;  
+				}  
+				  
+				// Give rewards using arrays  
+				erasequest .@i;
+				getexp .base_exp[.@index], .job_exp[.@index];  
+				getitem .item_reward[.@index], .item_amount[.@index];  
+				.@rewards_claimed++;  
+			}  
+		}  
+	}  
+	  
+	if (.@rewards_claimed > 0) {  
+		mes " ";  
+		mes " - Successfully claimed " + .@rewards_claimed + " reward(s)! -";  
+		mes " - Thank you for your service! -";  
+	} else {  
+		mes " - No completed missions found -";  
+		mes " - Complete your hunting objectives first. -";  
+	}  
+	close;  
+  
+L_WarpLocation:  
+	mes " - Warping to " + getarg(3) + " -";  
+	mes " - Good luck on your mission! -";  
+	close2;  
+	warp getarg(0), getarg(1), getarg(2);  
+	end;  
+  
+OnInit:  
+	// Quest rewards: base_exp, job_exp, item_id, item_amount  
+	// Index 0-16: quest IDs 10107-10123  
+	// Index 17-19: quest IDs 5055-5057  
+	setarray .base_exp[0], 15000, 15000, 15000, 20000, 20000, 20000, 20000, 30000, 30000, 30000, 30000, 25000, 25000, 25000, 30000, 30000, 30000, 30000, 30000, 30000;  
+	setarray .job_exp[0], 7500, 7500, 7500, 10000, 10000, 10000, 10000, 15000, 15000, 15000, 15000, 12500, 12500, 12500, 15000, 15000, 15000, 15000, 15000, 15000;  
+	setarray .item_reward[0], 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223;  
+	setarray .item_amount[0], 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5;  
+	end;  
+}

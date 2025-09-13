@@ -1,0 +1,278 @@
+//===== rAthena Script =======================================  
+//= Eden Group Quests - Mission [41 - 55]  
+//===== By: ==================================================  
+//= L0ne_W0lf  
+//= Louis_T_Steinhil  
+//===== Current Version: =====================================  
+//= 1.8  
+//===== Compatible With: =====================================  
+//= rAthena Project  
+//===== Description: =========================================  
+//= Repetable Quests for Players between Baselevel 41 - 55.  
+//===== Additional Comments: =================================  
+//= 1.0 First Version.  
+//= 1.1 Some little optimization here and there. [Masao]  
+//= 1.2 Optimized. [Euphy]  
+//= 1.3 Added support to Para_Team_Mark_ in Eden Group. [Ragno]  
+//= 1.4 Added use of F_HasEdenGroupMark function. [Ragno]  
+//= 1.5 Modified to match 11-25 quest structure. [LTSteinhil]  
+//= 1.6 Added quest management menu for accept/abandon all quests. [LTSteinhil] 
+//= 1.7 Added monster location/warp and rewards system. [LTSteinhil] 
+//= 1.8 Restructured to match array-based system. [LTSteinhil]  
+//============================================================  
+  
+moc_para01,40,38,3	script	Mission [41 - 55]#Tuto	4_BOARD3,{  
+	if (!callfunc("F_HasEdenGroupMark")) {  
+		mes "- You need to have an -";  
+		mes "- ^4d4dff'Eden Group Mark'^000000 -";  
+		mes "- to receive these missions. -";  
+		close;  
+	}  
+  
+	if (BaseLevel < 41) {  
+		mes " - There are no tasks - ";  
+		mes " - open for you right now. - ";  
+		close;  
+	}  
+	  
+	mes " - Mission bulletin board -";  
+	mes " - for intermediate adventurers. -";  
+	mes " ";  
+	mes " - Quest Management Menu -"; 
+	next;  
+	switch(select("^0000FFAccept All Available Quests^000000:" +  
+					"^FF0000Abandon All Active Quests^000000:" +  
+					"Claim Rewards:" +  
+					"Choose Specific Quest:" +  
+					"View Active Quests:" +  
+					"Warp Locations:" +  
+					"Cancel")) {  
+		case 1: callsub L_AcceptAll;  
+		case 2: callsub L_AbandonAll;  
+		case 3: callsub L_ClaimRewards;  
+		case 4: callsub L_ChooseQuests;  
+		case 5: callsub L_ViewQuests;  
+		case 6:  
+			mes " - Warp Location Menu -";  
+			mes " ";  
+			mes " - Select a location to warp to -";  
+			next;  
+			switch(select("Byalan Island:" +  
+						  "Comodo Beach:" +  
+						  "Glast Heim:" +  
+						  "Mjolnir Fields:" +  
+						  "Orc Dungeon:" +  
+						  "Orc Village:" +  
+						  "Payon Cave:" +  
+						  "Pyramids:" +  
+						  "Sunken Ship:" +  
+						  "Toy Factory:" +  
+						  "Underwater Tunnel:" +  
+						  "Cancel:")) {  
+				case 1: callsub L_WarpLocation,"izlude",134,90,"Byalan Island Entrance";  
+				case 2: callsub L_WarpLocation,"comodo",188,161,"Comodo Beach";  
+				case 3: callsub L_WarpLocation,"glast_01",375,304,"Glast Heim";  
+				case 4: callsub L_WarpLocation,"mjolnir_02",85,363,"Mjolnir Dead Pit";  
+				case 5: callsub L_WarpLocation,"gef_fild10",71,339,"Orc Dungeon Entrance";  
+				case 6: callsub L_WarpLocation,"gef_fild10",138,286,"Orc Village";  
+				case 7: callsub L_WarpLocation,"payon_in01",26,26,"Payon Cave Entrance";  
+				case 8: callsub L_WarpLocation,"moc_ruins",64,166,"Pyramids Entrance";  
+				case 9: callsub L_WarpLocation,"alberta",195,151,"Sunken Ship Entrance";  
+				case 10: callsub L_WarpLocation,"aldebaran",140,131,"Toy Factory Entrance";  
+				case 11: callsub L_WarpLocation,"izlude",176,182,"Underwater Tunnel";  
+				case 12: close; break;  
+			}  
+		case 7: close; break;  
+	}  
+  
+L_Quest:  
+	.@quest_status = checkquest(getarg(0)+20,PLAYTIME);  
+	if (.@quest_status == 0 || .@quest_status == 1) {  
+		mes " - Mission ^4d4dff"+ getarg(1) +"^000000 - ";  
+		mes " - is already finished for today. - ";  
+		mes " ";  
+		close;  
+	}  
+	mes " - Mission '"+ getarg(1) +"' - ";  
+	for ( .@i = 2; .@i < getargcount(); .@i++ )  
+		mes getarg(.@i);  
+	mes " ";  
+	  
+	// Display rewards using arrays  
+	.@index = getarg(0) - 12072;  
+	mes "^009500Rewards:^000000";  
+	mes "- Base Exp: " + F_InsertComma(.base_exp[.@index]);  
+	mes "- Job Exp: " + F_InsertComma(.job_exp[.@index]);  
+	mes "- " + F_InsertComma(.item_amount[.@index]) + " x ^0000FF" + mesitemicon(.item_reward[.@index]) + "  " + getitemname(.item_reward[.@index]) + "^000000";  
+	mes " ";  
+	  
+	next;  
+	if (select("I will do this mission.:Look for other missions.") == 2) {  
+		mes " - Let's search for -";  
+		mes " - other missions. - ";  
+		close;  
+	}  
+	for ( .@i = 2; .@i < getargcount(); .@i++ )  
+		mes getarg(.@i);  
+	setquest getarg(0);  
+	close;  
+  
+L_AcceptAll:  
+	.@count = 0;  
+	for (.@i = 12072; .@i <= 12087; .@i++) {  
+		if (checkquest(.@i) == -1 && checkquest(.@i+20,PLAYTIME) != 0 && checkquest(.@i+20,PLAYTIME) != 1) {  
+			setquest .@i;  
+			.@count++;  
+		}  
+	}  
+	if (.@count > 0) {  
+		mes " - Successfully accepted -";  
+		mes " - " + .@count + " missions! -";  
+	}  
+	else {  
+		mes " - No available missions to accept. -";  
+	}  
+	close;  
+  
+L_AbandonAll:  
+	.@count = 0;  
+	for (.@i = 12072; .@i <= 12087; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			erasequest .@i;  
+			.@count++;  
+		}  
+	}  
+	if (.@count > 0) {  
+		mes " - Successfully abandoned -";  
+		mes " - " + .@count + " missions. -";  
+	}  
+	else {  
+		mes " - No active missions to abandon. -";  
+	}  
+	close;  
+  
+L_ChooseQuests:  
+	mes " - Choose Specific Quest -";  
+	next;  
+	switch(select("Thara Frog Hunting:" +  
+				  "Cruiser Hunting:" +  
+				  "Kukre Hunting:" +  
+				  "Orc Baby Hunting:" +  
+				  "Orc Warrior Hunting:" +  
+				  "Vadon Hunting:" +  
+				  "Megalodon Hunting:" +  
+				  "Marse Hunting:" +  
+				  "Cornutus Hunting:" +  
+				  "Myst Hunting:" +  
+				  "Shellfish Hunting:" +  
+				  "Marine Sphere Hunting:" +  
+				  "Phen Hunting:" +  
+				  "Orc Skeleton Hunting:" +  
+				  "Zenorc Hunting:" +  
+				  "Mummy Hunting:" +  
+				  "Cancel")) {  
+		case 1: callsub L_Quest,12072,"Thara Frog Hunting"," - Hunt 20 ^4d4dff'Thara Frogs'^000000 - "," - in Sunken Ship. - ";  
+		case 2: callsub L_Quest,12073,"Cruiser Hunting"," - Hunt 15 ^4d4dff'Cruisers'^000000 - "," - in Toy Factory. - ";  
+		case 3: callsub L_Quest,12074,"Kukre Hunting"," - Hunt 30 ^4d4dff'Kukres'^000000 - "," - in Byalan Island. - ";  
+		case 4: callsub L_Quest,12075,"Orc Baby Hunting"," - Hunt 15 ^4d4dff'Orc Babies'^000000 - "," - in Orc Village. - ";  
+		case 5: callsub L_Quest,12076,"Orc Warrior Hunting"," - Hunt 20 ^4d4dff'Orc Warriors'^000000 - "," - in Orc Dungeon. - ";  
+		case 6: callsub L_Quest,12077,"Vadon Hunting"," - Hunt 15 ^4d4dff'Vadons'^000000 - "," - in Byalan Island. - ";  
+		case 7: callsub L_Quest,12078,"Megalodon Hunting"," - Hunt 30 ^4d4dff'Megalodons'^000000 - "," - in Byalan depths. - ";  
+		case 8: callsub L_Quest,12079,"Marse Hunting"," - Hunt 15 ^4d4dff'Marses'^000000 - "," - in Byalan depths. - ";  
+		case 9: callsub L_Quest,12080,"Cornutus Hunting"," - Hunt 20 ^4d4dff'Cornutus'^000000 - "," - near Comodo. - ";  
+		case 10: callsub L_Quest,12081,"Myst Hunting"," - Hunt 15 ^4d4dff'Mysts'^000000 - "," - in Pyramids. - ";  
+		case 11: callsub L_Quest,12082,"Shellfish Hunting"," - Hunt 30 ^4d4dff'Shellfish'^000000 - "," - in Hugel Field. - ";  
+		case 12: callsub L_Quest,12083,"Marine Sphere Hunting"," - Hunt 15 ^4d4dff'Marine Spheres'^000000 - "," - in Byalan depths. - ";  
+		case 13: callsub L_Quest,12084,"Phen Hunting"," - Hunt 20 ^4d4dff'Phens'^000000 - "," - underwater areas. - ";  
+		case 14: callsub L_Quest,12085,"Orc Skeleton Hunting"," - Hunt 15 ^4d4dff'Orc Skeletons'^000000 - "," - in Orc Dungeon. - ";  
+		case 15: callsub L_Quest,12086,"Zenorc Hunting"," - Hunt 30 ^4d4dff'Zenorcs'^000000 - "," - in Orc Village. - ";  
+		case 16: callsub L_Quest,12087,"Mummy Hunting"," - Hunt 15 ^4d4dff'Mummies'^000000 - "," - in Pyramids. - ";  
+		case 17:  
+			mes " - Stop reading the bulletin board. - ";  
+			close;  
+			break;  
+	}
+  
+L_ViewQuests:  
+	.@count = 0;  
+	mes " - Your Active Missions: -";  
+	mes " ";  
+	  
+	for (.@i = 12072; .@i <= 12087; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			.@count++;  
+			switch(.@i) {  
+				case 12072: mes " > Thara Frog Hunting"; break;  
+				case 12073: mes " > Cruiser Hunting"; break;  
+				case 12074: mes " > Kukre Hunting"; break;  
+				case 12075: mes " > Orc Baby Hunting"; break;  
+				case 12076: mes " > Orc Warrior Hunting"; break;  
+				case 12077: mes " > Vadon Hunting"; break;  
+				case 12078: mes " > Megalodon Hunting"; break;  
+				case 12079: mes " > Marse Hunting"; break;  
+				case 12080: mes " > Cornutus Hunting"; break;  
+				case 12081: mes " > Myst Hunting"; break;  
+				case 12082: mes " > Shellfish Hunting"; break;  
+				case 12083: mes " > Marine Sphere Hunting"; break;  
+				case 12084: mes " > Phen Hunting"; break;  
+				case 12085: mes " > Orc Skeleton Hunting"; break;  
+				case 12086: mes " > Zenorc Hunting"; break;  
+				case 12087: mes " > Mummy Hunting"; break;  
+			}  
+		}  
+	}  
+	  
+	if (.@count == 0) {  
+		mes " - No active missions. -";  
+	}  
+	else {  
+		mes " ";  
+		mes " - Total: " + .@count + " missions -";  
+	}  
+	close;  
+  
+L_ClaimRewards:  
+	.@rewards_claimed = 0;  
+	  
+	for(.@i = 12072; .@i <= 12087; .@i++) {  
+		.@j = checkquest(.@i, HUNTING);  
+		.@index = .@i - 12072; // Calculate array index  
+		  
+		if (.@j == 2) {  
+			// Display quest completion message using array  
+			mes " - Claiming reward for " + .quest_names$[.@index] + " -";  
+			  
+			// Give rewards using arrays  
+			erasequest .@i;
+			getexp .base_exp[.@index], .job_exp[.@index];  
+			getitem .item_reward[.@index], .item_amount[.@index];  
+			.@rewards_claimed++;  
+		}  
+	}  
+	  
+	if (.@rewards_claimed > 0) {  
+		mes " ";  
+		mes " - Successfully claimed " + .@rewards_claimed + " reward(s)! -";  
+		mes " - Thank you for your service! -";  
+	} else {  
+		mes " - No completed missions found -";  
+		mes " - Complete your hunting objectives first. -";  
+	}  
+	close;  
+  
+L_WarpLocation:  
+	mes " - Warping to " + getarg(3) + " -";  
+	mes " - Good luck on your mission! -";  
+	close2;  
+	warp getarg(0), getarg(1), getarg(2);  
+	end;  
+  
+OnInit:  
+	// Quest rewards: base_exp, job_exp, item_id, item_amount  
+	// Index corresponds to quest ID - 12072  
+	setarray .base_exp[0], 9600, 7200, 15750, 7875, 11100, 8550, 17100, 9000, 12300, 9900, 20250, 10350, 13800, 11025, 22500, 11250;  
+	setarray .job_exp[0], 9600, 7200, 15750, 7875, 11100, 8550, 17100, 9000, 12300, 9900, 20250, 10350, 13800, 11025, 22500, 11250;
+	setarray .item_reward[0], 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223;  
+	setarray .item_amount[0], 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3;
+	end;  
+}

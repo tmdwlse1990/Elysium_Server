@@ -1,0 +1,94 @@
+//===== rAthena Script =======================================
+//= Vending Machine NPCs for Novice.
+//===== Description: ========================================= 
+//= [Walkthrough Conversion]
+//= Exchangers NPCs for Novice.
+//===== Additional Comments: =================================
+//= 1.0 Firt version. [Aleos] [Secret]
+//= 1.1 Additionnal clean-up. [Capuche]
+//============================================================
+
+-	script	novice_vending_machine#main	-1,{
+	.@storage_ticket = 7059;	// Cargo_Free_Ticket
+	.@storage_ticket_name$ = getitemname(.@storage_ticket);
+
+	mes "Vending Machine for Novices.";
+	mes "There are many buttons.";
+	next;
+	switch( select( "Manual", "Trade " + .@storage_ticket_name$, "Trade Novice equipments" ) ) {
+	case 1:
+		mes "[Exchange " + .@storage_ticket_name$ + "]";  
+		mes "4 " + mesitemicon(7059) + .@storage_ticket_name$ + " can be exchanged into:";  
+		mes "1 " + mesitemicon(7060) + "Free Ticket for Warp";  
+		mes "1 " + mesitemicon(7311) + "Free Flying Ship Ticket";   
+		mes "1 " + mesitemicon(7061) + "Free Ticket for Cart Service";  
+		mes "1 " + mesitemicon(7310) + "Free Peco Ticket";  
+		mes "15 " + mesitemicon(12323) + "Novice Fly Wing";  
+		mes "5 " + mesitemicon(12324) + "Novice Butterfly Wing";  
+		mes "30 " + mesitemicon(569) + "Novice Potion";  
+		next;  
+		mes "[Trade Novice Gears]";  
+		mes "These Criatura Academy items can be exchanged for 4 " + mesitemicon(7059) + .@storage_ticket_name$ + ":";  
+		mes mesitemicon(2352) + "Novice Plate Armor";  
+		mes mesitemicon(2510) + "Novice Hood";   
+		mes mesitemicon(2414) + "Novice Boots";  
+		mes mesitemicon(1243) + "Novice Knife";  
+		mes mesitemicon(2112) + "Novice Guard";  
+		next;  
+		mes "[Trade Novice Gears]";  
+		mes mesitemicon(5055) + "Novice Eggshell can be exchanged into " + mesitemicon(6593) + "Criatura Hair Coupon for changing your hairstyle.";  
+		close;
+	case 2:
+		close2;
+		callshop "Novice_Vending_Machine";
+		end;
+	case 3:
+		mes "Exchange all Novice equipments into coupons.";
+		mes "Select continue to proceed.";
+		next;
+		if (select( "Continue", "Cancel." ) == 2) {
+			mes "The trade was interrupted.";
+			close;
+		}
+		mes "Exchanging all equipment into coupons.";
+		close2;
+		callshop "Novice_Equipments";
+		end;
+	}
+
+	end;
+
+OnInit:
+	barter_clear "Novice_Vending_Machine";
+	barter_add "Novice_Vending_Machine", "Warp_Free_Ticket", 0, "Cargo_Free_Ticket", 4;
+	barter_add "Novice_Vending_Machine", "Free_Flying_Ship_Ticket", 0, "Cargo_Free_Ticket", 4;
+	barter_add "Novice_Vending_Machine", "Cart_Free_Ticket", 0, "Cargo_Free_Ticket", 4;
+	barter_add "Novice_Vending_Machine", "Free_Peco_Ticket", 0, "Cargo_Free_Ticket", 4;
+	barter_add "Novice_Vending_Machine", "N_Fly_Wing", 0, "Cargo_Free_Ticket", 4;
+	barter_add "Novice_Vending_Machine", "N_Butterfly_Wing", 0, "Cargo_Free_Ticket", 4;
+	barter_add "Novice_Vending_Machine", "Novice_Potion", 0, "Cargo_Free_Ticket", 4;
+
+	barter_clear "Novice_Equipments";
+	barter_add "Novice_Equipments", "Novice_Plate", 0, "Cargo_Free_Ticket", 4;
+	barter_add "Novice_Equipments", "Novice_Hood", 0, "Cargo_Free_Ticket", 4;
+	barter_add "Novice_Equipments", "Novice_Boots", 0, "Cargo_Free_Ticket", 4;
+	barter_add "Novice_Equipments", "Novice_Knife", 0, "Cargo_Free_Ticket", 4;
+	barter_add "Novice_Equipments", "Novice_Guard", 0, "Cargo_Free_Ticket", 4;
+
+	setunitdata (getnpcid(0),UNPC_GROUP_ID,6);
+	setunittitle (getnpcid(0),"Novice");
+
+	end;
+}
+izlude_in,69,177,5	duplicate(novice_vending_machine#main)	Vending Machine#iz	2_VENDING_MACHINE1
+payon_in02,71,75,5	duplicate(novice_vending_machine#main)	Vending Machine#pay	2_VENDING_MACHINE1
+prt_church,187,27,3	duplicate(novice_vending_machine#main)	Vending Machine#prt	2_VENDING_MACHINE1
+
+// unknown facing
+alberta_in,60,52,3	duplicate(novice_vending_machine#main)	Vending Machine#alb	2_VENDING_MACHINE1
+geffen_in,158,107,3	duplicate(novice_vending_machine#main)	Vending Machine#gef	2_VENDING_MACHINE1
+moc_para01,17,37,3	duplicate(novice_vending_machine#main)	Vending Machine#para	2_VENDING_MACHINE1
+moc_prydb1,38,124,3	duplicate(novice_vending_machine#main)	Vending Machine#pryd	2_VENDING_MACHINE1
+payon_in01,59,20,3	duplicate(novice_vending_machine#main)	Vending Machine#pay2	2_VENDING_MACHINE1
+que_ng,28,73,3	duplicate(novice_vending_machine#main)	Vending Machine#que_ng1	2_VENDING_MACHINE1
+que_ng,168,39,3	duplicate(novice_vending_machine#main)	Vending Machine#que_ng2	2_VENDING_MACHINE1

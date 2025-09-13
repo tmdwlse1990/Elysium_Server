@@ -1,0 +1,283 @@
+//===== rAthena Script =======================================  
+//= Eden Group Quests - Mission [86 - 90]  
+//===== By: ==================================================  
+//= Chilly  
+//= Louis_T_Steinhil  
+//===== Current Version: =====================================  
+//= 1.8  
+//===== Compatible With: =====================================  
+//= rAthena Project  
+//===== Description: =========================================  
+//= Repetable Quests for Players between Baselevel 86 - 90.  
+//===== Additional Comments: =================================  
+//= 1.0 First Version. [Chilly]  
+//= 1.1 Some little improvements here and there. [Masao]  
+//= 1.2 Optimized. [Euphy]  
+//= 1.3 Updated to match the official script. [Euphy]  
+//= 1.4 Added support to Para_Team_Mark_ in Eden Group. [Ragno]  
+//= 1.5 Added use of F_HasEdenGroupMark function. [Ragno]  
+//= 1.6 Modified to match 11-25 quest structure. [LTSteinhil]  
+//= 1.7 Added quest management menu for accept/abandon all quests. [LTSteinhil] 
+//= 1.8 Restructured to match array-based system. [LTSteinhil] 
+//============================================================  
+  
+moc_para01,50,38,3	script	Mission [86 - 90]#Tuto	4_BOARD3,{  
+	if (!callfunc("F_HasEdenGroupMark")) {  
+		mes "- You need to have an -";  
+		mes "- ^4d4dff'Eden Group Mark'^000000 -";  
+		mes "- to receive these missions. -";  
+		close;  
+	}  
+  
+	if (BaseLevel < 86) {  
+		mes " - There are no tasks - ";  
+		mes " - open for you right now. - ";  
+		close;  
+	}  
+	  
+	mes " - Mission bulletin board -";  
+	mes " - for master adventurers. -";  
+	mes " ";  
+	mes " - Quest Management Menu -";  
+	next;  
+	switch(select("^0000FFAccept All Available Quests^000000:" +  
+					"^FF0000Abandon All Active Quests^000000:" +  
+					"Claim Rewards:" +  
+					"Choose Specific Quest:" +  
+					"View Active Quests:" +  
+					"Warp Locations:" +  
+					"Cancel")) {  
+		case 1: callsub L_AcceptAll;  
+		case 2: callsub L_AbandonAll;  
+		case 3: callsub L_ClaimRewards;  
+		case 4: callsub L_ChooseQuests;  
+		case 5: callsub L_ViewQuests;  
+		case 6:  
+			mes " - Warp Location Menu -";  
+			mes " ";  
+			mes " - Select a location to warp to -";  
+			next;  
+			switch(select("Amatsu:" +  
+						  "Clock Tower:" +  
+						  "Einbroch:" +  
+						  "Geffen:" +  
+						  "Hugel:" +  
+						  "Lighthalzen:" +  
+						  "Luoyang:" +  
+						  "Moscovia:" +  
+						  "Turtle Island:" +  
+						  "Cancel:")) {  
+				case 1: callsub L_WarpLocation,"amatsu",198,84,"Amatsu";  
+				case 2: callsub L_WarpLocation,"aldebaran",140,131,"Clock Tower";  
+				case 3: callsub L_WarpLocation,"einbroch",64,200,"Einbroch";  
+				case 4: callsub L_WarpLocation,"geffen",119,59,"Geffen";  
+				case 5: callsub L_WarpLocation,"hugel",96,145,"Hugel";  
+				case 6: callsub L_WarpLocation,"lighthalzen",158,92,"Lighthalzen";  
+				case 7: callsub L_WarpLocation,"louyang",217,100,"Luoyang";  
+				case 8: callsub L_WarpLocation,"moscovia",223,184,"Moscovia";  
+				case 9: callsub L_WarpLocation,"alberta",195,151,"Turtle Island";  
+				case 10: close; break;  
+			}  
+		case 7: close; break;  
+	}  
+  
+L_Quest:  
+	.@quest_status = checkquest(getarg(0)+31,PLAYTIME);  
+	if (.@quest_status == 0 || .@quest_status == 1) {  
+		mes " - Mission ^4d4dff"+ getarg(1) +"^000000 - ";  
+		mes " - is already finished for today. - ";  
+		mes " ";  
+		close;  
+	}  
+	mes " - Mission '"+ getarg(1) +"' - ";  
+	for ( .@i = 2; .@i < getargcount(); .@i++ )  
+		mes getarg(.@i);  
+	mes " ";  
+	  
+	// Display rewards using arrays  
+	.@index = getarg(0) - 4167;  
+	mes "^009500Rewards:^000000";  
+	mes "- Base Exp: " + F_InsertComma(.base_exp[.@index]);  
+	mes "- Job Exp: " + F_InsertComma(.job_exp[.@index]);  
+	mes "- " + F_InsertComma(.item_amount[.@index]) + "x ^0000FF" + mesitemicon(.item_reward[.@index]) + "  " + getitemname(.item_reward[.@index]) + "^000000";  
+	mes " ";  
+	  
+	next;  
+	if (select("I will do this mission.:Look for other missions.") == 2) {  
+		mes " - Let's search for -";  
+		mes " - other missions. - ";  
+		close;  
+	}  
+	for ( .@i = 2; .@i < getargcount(); .@i++ )  
+		mes getarg(.@i);  
+	setquest getarg(0);  
+	close;  
+  
+L_AcceptAll:  
+	.@count = 0;  
+	for (.@i = 4167; .@i <= 4180; .@i++) {  
+		if (checkquest(.@i) == -1 && checkquest(.@i+31,PLAYTIME) != 0 && checkquest(.@i+31,PLAYTIME) != 1) {  
+			setquest .@i;  
+			.@count++;  
+		}  
+	}  
+	if (.@count > 0) {  
+		mes " - Successfully accepted -";  
+		mes " - " + .@count + " missions! -";  
+	}  
+	else {  
+		mes " - No available missions to accept. -";  
+	}  
+	close;  
+  
+L_AbandonAll:  
+	.@count = 0;  
+	for (.@i = 4167; .@i <= 4180; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			erasequest .@i;  
+			.@count++;  
+		}  
+	}  
+	if (.@count > 0) {  
+		mes " - Successfully abandoned -";  
+		mes " - " + .@count + " missions. -";  
+	}  
+	else {  
+		mes " - No active missions to abandon. -";  
+	}  
+	close;  
+  
+L_ChooseQuests:  
+	mes " - Choose Specific Quest -";  
+	next;  
+	switch(select("Hunt Dragon Tail:" +  
+				  "Hunt Spring Rabbit:" +  
+				  "Hunt Pest:" +  
+				  "Hunt Bathory:" +  
+				  "Hunt Alarm:" +  
+				  "Hunt Baba Yaga:" +  
+				  "Hunt Yao Jun:" +  
+				  "Hunt Firelock Soldier:" +  
+				  "Hunt Zipper Bear:" +  
+				  "Hunt Ground Petite:" +  
+				  "Hunt Rafflesia:" +  
+				  "Hunt Venomous:" +  
+				  "Hunt Pitman:" +  
+				  "Hunt Yellow Novus:" +  
+				  "Cancel")) {  
+		case 1: callsub L_Quest,4167,"Hunt Dragon Tail"," - Hunt 30 ^4d4dff'Dragon Tails'^000000 - "," - on Turtle Island. - ";  
+		case 2: callsub L_Quest,4168,"Hunt Spring Rabbit"," - Hunt 30 ^4d4dff'Spring Rabbits'^000000 - "," - on Turtle Island. - ";  
+		case 3: callsub L_Quest,4169,"Hunt Pest"," - Hunt 30 ^4d4dff'Pests'^000000 - "," - on Turtle Island. - ";  
+		case 4: callsub L_Quest,4170,"Hunt Bathory"," - Hunt 30 ^4d4dff'Bathorys'^000000 - "," - in Clock Tower Dungeon. - ";  
+		case 5: callsub L_Quest,4171,"Hunt Alarm"," - Hunt 30 ^4d4dff'Alarms'^000000 - "," - in Clock Tower Dungeon. - ";  
+		case 6: callsub L_Quest,4172,"Hunt Baba Yaga"," - Hunt 30 ^4d4dff'Baba Yagas'^000000 - "," - in Moscovia outskirts. - ";  
+		case 7: callsub L_Quest,4173,"Hunt Yao Jun"," - Hunt 30 ^4d4dff'Yao Juns'^000000 - "," - in Luoyang dungeons. - ";  
+		case 8: callsub L_Quest,4174,"Hunt Firelock Soldier"," - Hunt 30 ^4d4dff'Firelock Soldiers'^000000 - "," - in Amatsu dungeons. - ";  
+		case 9: callsub L_Quest,4175,"Hunt Zipper Bear"," - Hunt 30 ^4d4dff'Zipper Bears'^000000 - "," - in Kunlun dungeons. - ";  
+		case 10: callsub L_Quest,4176,"Hunt Ground Petite"," - Hunt 30 ^4d4dff'Ground Petites'^000000 - "," - in western Geffen. - ";  
+		case 11: callsub L_Quest,4177,"Hunt Rafflesia"," - Hunt 30 ^4d4dff'Rafflesias'^000000 - "," - in Lighthalzen fields. - ";  
+		case 12: callsub L_Quest,4178,"Hunt Venomous"," - Hunt 30 ^4d4dff'Venomous'^000000 - "," - in Einbroch fields. - ";  
+		case 13: callsub L_Quest,4179,"Hunt Pitman"," - Hunt 30 ^4d4dff'Pitmans'^000000 - "," - in Einbroch fields/dungeons. - ";  
+		case 14: callsub L_Quest,4180,"Hunt Yellow Novus"," - Hunt 30 ^4d4dff'Yellow Novus'^000000 - "," - in Hugel fields. - ";  
+		case 15:  
+			mes " - Stop reading the bulletin board. - ";  
+			close;  
+			break;  
+	}  
+  
+L_ViewQuests:  
+	.@count = 0;  
+	mes " - Your Active Missions: -";  
+	mes " ";  
+	  
+	for (.@i = 4167; .@i <= 4180; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			.@count++;  
+			switch(.@i) {  
+				case 4167: mes " > Hunt Dragon Tail"; break;  
+				case 4168: mes " > Hunt Spring Rabbit"; break;  
+				case 4169: mes " > Hunt Pest"; break;  
+				case 4170: mes " > Hunt Bathory"; break;  
+				case 4171: mes " > Hunt Alarm"; break;  
+				case 4172: mes " > Hunt Baba Yaga"; break;  
+				case 4173: mes " > Hunt Yao Jun"; break;  
+				case 4174: mes " > Hunt Firelock Soldier"; break;  
+				case 4175: mes " > Hunt Zipper Bear"; break;  
+				case 4176: mes " > Hunt Ground Petite"; break;  
+				case 4177: mes " > Hunt Rafflesia"; break;  
+				case 4178: mes " > Hunt Venomous"; break;  
+				case 4179: mes " > Hunt Pitman"; break;  
+				case 4180: mes " > Hunt Yellow Novus"; break;  
+			}  
+		}  
+	}  
+	  
+	if (.@count == 0) {  
+		mes " - No active missions. -";  
+	}  
+	else {  
+		mes " ";  
+		mes " - Total: " + .@count + " missions -";  
+	}  
+	close;
+
+L_ClaimRewards:  
+	.@rewards_claimed = 0;  
+	  
+	for(.@i = 4167; .@i <= 4180; .@i++) {  
+		.@j = checkquest(.@i, HUNTING);  
+		.@index = .@i - 4167; // Calculate array index  
+		  
+		if (.@j == 2) {  
+			// Display quest completion message  
+			switch(.@i) {  
+				case 4167: mes " - Claiming reward for Hunt Dragon Tail -"; break;  
+				case 4168: mes " - Claiming reward for Hunt Spring Rabbit -"; break;  
+				case 4169: mes " - Claiming reward for Hunt Pest -"; break;  
+				case 4170: mes " - Claiming reward for Hunt Bathory -"; break;  
+				case 4171: mes " - Claiming reward for Hunt Alarm -"; break;  
+				case 4172: mes " - Claiming reward for Hunt Baba Yaga -"; break;  
+				case 4173: mes " - Claiming reward for Hunt Yao Jun -"; break;  
+				case 4174: mes " - Claiming reward for Hunt Firelock Soldier -"; break;  
+				case 4175: mes " - Claiming reward for Hunt Zipper Bear -"; break;  
+				case 4176: mes " - Claiming reward for Hunt Ground Petite -"; break;  
+				case 4177: mes " - Claiming reward for Hunt Rafflesia -"; break;  
+				case 4178: mes " - Claiming reward for Hunt Venomous -"; break;  
+				case 4179: mes " - Claiming reward for Hunt Pitman -"; break;  
+				case 4180: mes " - Claiming reward for Hunt Yellow Novus -"; break;  
+			}  
+			  
+			// Give rewards using arrays (without setquest as requested)  
+			erasequest .@i;  
+			getexp .base_exp[.@index], .job_exp[.@index];  
+			getitem .item_reward[.@index], .item_amount[.@index];  
+			.@rewards_claimed++;  
+		}  
+	}  
+	  
+	if (.@rewards_claimed > 0) {  
+		mes " ";  
+		mes " - Successfully claimed " + .@rewards_claimed + " reward(s)! -";  
+		mes " - Thank you for your service! -";  
+	} else {  
+		mes " - No completed missions found -";  
+		mes " - Complete your hunting objectives first. -";  
+	}  
+	close;  
+  
+L_WarpLocation:  
+	mes " - Warping to " + getarg(3) + " -";  
+	mes " - Good luck on your mission! -";  
+	close2;  
+	warp getarg(0), getarg(1), getarg(2);  
+	end;  
+  
+OnInit:  
+	// Quest rewards: base_exp, job_exp, item_id, item_amount  
+	// Index corresponds to quest ID - 4167  
+	setarray .base_exp[0], 76000, 82000, 82000, 72000, 76000, 72000, 78000, 82000, 80000, 72000, 72000, 72000, 86000, 80000;  
+	setarray .job_exp[0], 38000, 41000, 41000, 36000, 38000, 36000, 39000, 41000, 40000, 36000, 36000, 36000, 43000, 40000;  
+	setarray .item_reward[0], 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223;  
+	setarray .item_amount[0], 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6;  
+	end;  
+}

@@ -1,0 +1,297 @@
+//===== rAthena Script =======================================  
+//= Eden Group Quests - Mission [91 - 99]  
+//===== By: ==================================================  
+//= Chilly  
+//= Louis_T_Steinhil  
+//===== Current Version: =====================================  
+//= 1.8  
+//===== Compatible With: =====================================  
+//= rAthena Project  
+//===== Description: =========================================  
+//= Repetable Quests for Players between Baselevel 91 - 99.  
+//===== Additional Comments: =================================  
+//= 1.0 First Version. [Chilly]  
+//= 1.1 Some little improvements here and there. [Masao]  
+//= 1.2 Optimized. [Euphy]  
+//= 1.3 Updated to match the official script. [Euphy]  
+//= 1.4 Added support to Para_Team_Mark_ in Eden Group. [Ragno]  
+//= 1.5 Added use of F_HasEdenGroupMark function. [Ragno]  
+//= 1.6 Modified to match 11-25 quest structure. [LTSteinhil]
+//= 1.7 Added quest management menu for accept/abandon all quests. [LTSteinhil]  
+//= 1.8 Restructured to match array-based system. [LTSteinhil] 
+//============================================================  
+  
+moc_para01,52,38,3	script	Mission [91 - 99]#Tuto	4_BOARD3,{  
+	if (!callfunc("F_HasEdenGroupMark")) {  
+		mes "- You need to have an -";  
+		mes "- ^4d4dff'Eden Group Mark'^000000 -";  
+		mes "- to receive these missions. -";  
+		close;  
+	}  
+  
+	if (BaseLevel < 91) {  
+		mes " - There are no tasks - ";  
+		mes " - open for you right now. - ";  
+		close;  
+	}  
+	  
+	mes " - Mission bulletin board -";  
+	mes " - for elite adventurers. -";  
+	mes " ";  
+	mes " - Quest Management Menu -";
+	next;  
+	switch(select("^0000FFAccept All Available Quests^000000:" +  
+					"^FF0000Abandon All Active Quests^000000:" +  
+					"Claim Rewards:" +  
+					"Choose Specific Quest:" +  
+					"View Active Quests:" +  
+					"Warp Locations:" +  
+					"Cancel")) {  
+		case 1: callsub L_AcceptAll;  
+		case 2: callsub L_AbandonAll;  
+		case 3: callsub L_ClaimRewards;  
+		case 4: callsub L_ChooseQuests;  
+		case 5: callsub L_ViewQuests;  
+		case 6:  
+			mes " - Warp Location Menu -";  
+			mes " ";  
+			mes " - Select a location to warp to -";  
+			next;  
+			switch(select("Amatsu:" +  
+						  "Comodo:" +  
+						  "Einbech:" +  
+						  "Geffen:" +  
+						  "Glast Heim:" +  
+						  "Ice Dungeon:" +  
+						  "Kunlun:" +  
+						  "Niflheim:" +  
+						  "Nogg Road:" +  
+						  "Rachel:" +  
+						  "Turtle Island:" +  
+						  "Veins:" +  
+						  "Cancel:")) {  
+				case 1: callsub L_WarpLocation,"amatsu",198,84,"Amatsu";  
+				case 2: callsub L_WarpLocation,"comodo",188,161,"Comodo";  
+				case 3: callsub L_WarpLocation,"einbech",70,95,"Einbech";  
+				case 4: callsub L_WarpLocation,"geffen",119,59,"Geffen";  
+				case 5: callsub L_WarpLocation,"glast_01",375,304,"Glast Heim";  
+				case 6: callsub L_WarpLocation,"rachel",130,110,"Ice Dungeon";  
+				case 7: callsub L_WarpLocation,"gonryun",160,120,"Kunlun";  
+				case 8: callsub L_WarpLocation,"niflheim",202,174,"Niflheim";  
+				case 9: callsub L_WarpLocation,"hugel",96,145,"Nogg Road";  
+				case 10: callsub L_WarpLocation,"rachel",130,110,"Rachel";  
+				case 11: callsub L_WarpLocation,"alberta",195,151,"Turtle Island";  
+				case 12: callsub L_WarpLocation,"veins",216,123,"Veins";  
+				case 13: close; break;  
+			}  
+		case 7: close; break;  
+	}  
+  
+L_Quest:  
+	.@quest_status = checkquest(getarg(0)+31,PLAYTIME);  
+	if (.@quest_status == 0 || .@quest_status == 1) {  
+		mes " - Mission ^4d4dff"+ getarg(1) +"^000000 - ";  
+		mes " - is already finished for today. - ";  
+		mes " ";  
+		close;  
+	}  
+	mes " - Mission '"+ getarg(1) +"' - ";  
+	for ( .@i = 2; .@i < getargcount(); .@i++ )  
+		mes getarg(.@i);  
+	mes " ";  
+	  
+	// Display rewards using arrays  
+	.@index = getarg(0) - 4181;  
+	mes "^009500Rewards:^000000";  
+	mes "- Base Exp: " + F_InsertComma(.base_exp[.@index]);  
+	mes "- Job Exp: " + F_InsertComma(.job_exp[.@index]);  
+	mes "- " + F_InsertComma(.item_amount[.@index]) + "x ^0000FF" + mesitemicon(.item_reward[.@index]) + "  " + getitemname(.item_reward[.@index]) + "^000000";  
+	mes " ";  
+	  
+	next;  
+	if (select("I will do this mission.:Look for other missions.") == 2) {  
+		mes " - Let's search for -";  
+		mes " - other missions. - ";  
+		close;  
+	}  
+	for ( .@i = 2; .@i < getargcount(); .@i++ )  
+		mes getarg(.@i);  
+	setquest getarg(0);  
+	close;  
+  
+L_AcceptAll:  
+	.@count = 0;  
+	for (.@i = 4181; .@i <= 4196; .@i++) {  
+		if (checkquest(.@i) == -1 && checkquest(.@i+31,PLAYTIME) != 0 && checkquest(.@i+31,PLAYTIME) != 1) {  
+			setquest .@i;  
+			.@count++;  
+		}  
+	}  
+	if (.@count > 0) {  
+		mes " - Successfully accepted -";  
+		mes " - " + .@count + " missions! -";  
+	}  
+	else {  
+		mes " - No available missions to accept. -";  
+	}  
+	close;  
+  
+L_AbandonAll:  
+	.@count = 0;  
+	for (.@i = 4181; .@i <= 4196; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			erasequest .@i;  
+			.@count++;  
+		}  
+	}  
+	if (.@count > 0) {  
+		mes " - Successfully abandoned -";  
+		mes " - " + .@count + " missions. -";  
+	}  
+	else {  
+		mes " - No active missions to abandon. -";  
+	}  
+	close;  
+  
+L_ChooseQuests:  
+	mes " - Choose Specific Quest -";  
+	next;  
+	switch(select("Hunt Solider:" +  
+				  "Hunt Freezer:" +  
+				  "Hunt Heater:" +  
+				  "Hunt Injustice:" +  
+				  "Hunt Rybio:" +  
+				  "Hunt Dark Priest:" +  
+				  "Hunt Stapo:" +  
+				  "Hunt Roween:" +  
+				  "Hunt Siroma:" +  
+				  "Hunt Shinobi:" +  
+				  "Hunt Evil Nymph:" +  
+				  "Hunt Deviruchi:" +  
+				  "Hunt Mineral:" +  
+				  "Hunt Kaho:" +  
+				  "Hunt Neraid:" +  
+				  "Hunt Disguise:" +  
+				  "Cancel")) {  
+		case 1: callsub L_Quest,4181,"Hunt Solider"," - Hunt 30 ^4d4dff'Soliders'^000000 - "," - on Turtle Island. - ";  
+		case 2: callsub L_Quest,4182,"Hunt Freezer"," - Hunt 30 ^4d4dff'Freezers'^000000 - "," - on Turtle Island. - ";  
+		case 3: callsub L_Quest,4183,"Hunt Heater"," - Hunt 30 ^4d4dff'Heaters'^000000 - "," - on Turtle Island. - ";  
+		case 4: callsub L_Quest,4184,"Hunt Injustice"," - Hunt 30 ^4d4dff'Injustices'^000000 - "," - in Glast Heim Prison. - ";  
+		case 5: callsub L_Quest,4185,"Hunt Rybio"," - Hunt 30 ^4d4dff'Rybios'^000000 - "," - in Glast Heim Prison. - ";  
+		case 6: callsub L_Quest,4186,"Hunt Dark Priest"," - Hunt 30 ^4d4dff'Dark Priests'^000000 - "," - in Glast Heim Prison. - ";  
+		case 7: callsub L_Quest,4187,"Hunt Stapo"," - Hunt 30 ^4d4dff'Stapos'^000000 - "," - in Veins fields. - ";  
+		case 8: callsub L_Quest,4188,"Hunt Roween"," - Hunt 30 ^4d4dff'Roweens'^000000 - "," - in Rachel fields. - ";  
+		case 9: callsub L_Quest,4189,"Hunt Siroma"," - Hunt 30 ^4d4dff'Siromas'^000000 - "," - in Ice Dungeon. - ";  
+		case 10: callsub L_Quest,4190,"Hunt Shinobi"," - Hunt 30 ^4d4dff'Shinobis'^000000 - "," - in Amatsu Dungeon. - ";  
+		case 11: callsub L_Quest,4191,"Hunt Evil Nymph"," - Hunt 30 ^4d4dff'Evil Nymphs'^000000 - "," - in Kunlun Dungeon. - ";  
+		case 12: callsub L_Quest,4192,"Hunt Deviruchi"," - Hunt 30 ^4d4dff'Deviruchis'^000000 - "," - in Geffen Dungeon. - ";  
+		case 13: callsub L_Quest,4193,"Hunt Mineral"," - Hunt 30 ^4d4dff'Minerals'^000000 - "," - in Einbech Dungeon. - ";  
+		case 14: callsub L_Quest,4194,"Hunt Kaho"," - Hunt 30 ^4d4dff'Kahos'^000000 - "," - in Nogg Road Magma. - ";  
+		case 15: callsub L_Quest,4195,"Hunt Neraid"," - Hunt 30 ^4d4dff'Neraids'^000000 - "," - in Comodo Dungeon. - ";  
+		case 16: callsub L_Quest,4196,"Hunt Disguise"," - Hunt 30 ^4d4dff'Disguises'^000000 - "," - in Niflheim. - ";  
+		case 17:  
+			mes " - Stop reading the bulletin board. - ";  
+			close;  
+			break;  
+	}
+
+L_ViewQuests:  
+	.@count = 0;  
+	mes " - Your Active Missions: -";  
+	mes " ";  
+	  
+	for (.@i = 4181; .@i <= 4196; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			.@count++;  
+			switch(.@i) {  
+				case 4181: mes " > Hunt Solider"; break;  
+				case 4182: mes " > Hunt Freezer"; break;  
+				case 4183: mes " > Hunt Heater"; break;  
+				case 4184: mes " > Hunt Injustice"; break;  
+				case 4185: mes " > Hunt Rybio"; break;  
+				case 4186: mes " > Hunt Dark Priest"; break;  
+				case 4187: mes " > Hunt Stapo"; break;  
+				case 4188: mes " > Hunt Roween"; break;  
+				case 4189: mes " > Hunt Siroma"; break;
+				case 4190: mes " > Hunt Shinobi"; break;  
+				case 4191: mes " > Hunt Evil Nymph"; break;  
+				case 4192: mes " > Hunt Deviruchi"; break;  
+				case 4193: mes " > Hunt Mineral"; break;  
+				case 4194: mes " > Hunt Kaho"; break;  
+				case 4195: mes " > Hunt Neraid"; break;  
+				case 4196: mes " > Hunt Disguise"; break;  
+			}  
+		}  
+	}  
+	  
+	if (.@count == 0) {  
+		mes " - No active missions. -";  
+	}  
+	else {  
+		mes " ";  
+		mes " - Total: " + .@count + " missions -";  
+	}  
+	close;  
+  
+L_ClaimRewards:  
+	.@rewards_claimed = 0;  
+	  
+	for(.@i = 4181; .@i <= 4196; .@i++) {  
+		.@j = checkquest(.@i, HUNTING);  
+		.@index = .@i - 4181; // Calculate array index  
+		  
+		if (.@j == 2) {  
+			// Display quest completion message  
+			switch(.@i) {  
+				case 4181: mes " - Claiming reward for Hunt Solider -"; break;  
+				case 4182: mes " - Claiming reward for Hunt Freezer -"; break;  
+				case 4183: mes " - Claiming reward for Hunt Heater -"; break;  
+				case 4184: mes " - Claiming reward for Hunt Injustice -"; break;  
+				case 4185: mes " - Claiming reward for Hunt Rybio -"; break;  
+				case 4186: mes " - Claiming reward for Hunt Dark Priest -"; break;  
+				case 4187: mes " - Claiming reward for Hunt Stapo -"; break;  
+				case 4188: mes " - Claiming reward for Hunt Roween -"; break;  
+				case 4189: mes " - Claiming reward for Hunt Siroma -"; break;  
+				case 4190: mes " - Claiming reward for Hunt Shinobi -"; break;  
+				case 4191: mes " - Claiming reward for Hunt Evil Nymph -"; break;  
+				case 4192: mes " - Claiming reward for Hunt Deviruchi -"; break;  
+				case 4193: mes " - Claiming reward for Hunt Mineral -"; break;  
+				case 4194: mes " - Claiming reward for Hunt Kaho -"; break;  
+				case 4195: mes " - Claiming reward for Hunt Neraid -"; break;  
+				case 4196: mes " - Claiming reward for Hunt Disguise -"; break;  
+			}  
+			  
+			// Give rewards using arrays (without setquest as requested)  
+			erasequest .@i;  
+			getexp .base_exp[.@index], .job_exp[.@index];  
+			getitem .item_reward[.@index], .item_amount[.@index];  
+			.@rewards_claimed++;  
+		}  
+	}  
+	  
+	if (.@rewards_claimed > 0) {  
+		mes " ";  
+		mes " - Successfully claimed " + .@rewards_claimed + " reward(s)! -";  
+		mes " - Thank you for your service! -";  
+	} else {  
+		mes " - No completed missions found -";  
+		mes " - Complete your hunting objectives first. -";  
+	}  
+	close;  
+  
+L_WarpLocation:  
+	mes " - Warping to " + getarg(3) + " -";  
+	mes " - Good luck on your mission! -";  
+	close2;  
+	warp getarg(0), getarg(1), getarg(2);  
+	end;  
+  
+OnInit:  
+	// Quest rewards: base_exp, job_exp, item_id, item_amount  
+	// Index corresponds to quest ID - 4181  
+	setarray .base_exp[0], 90000, 94000, 114000, 96000, 96000, 146000, 96000, 102000, 110000, 102000, 108000, 110000, 138000, 118000, 96000, 134000;  
+	setarray .job_exp[0], 45000, 47000, 57000, 48000, 48000, 73000, 48000, 51000, 55000, 51000, 54000, 55000, 69000, 59000, 48000, 67000;  
+	setarray .item_reward[0], 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223;  
+	setarray .item_amount[0], 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7;  
+	end;  
+}				

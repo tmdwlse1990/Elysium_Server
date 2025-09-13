@@ -1,0 +1,327 @@
+//===== rAthena Script =======================================  
+//= Eden Group Quests - Mission [56 - 70]  
+//===== By: ==================================================  
+//= L0ne_W0lf  
+//= Louis_T_Steinhil  
+//===== Current Version: =====================================  
+//= 1.8  
+//===== Compatible With: =====================================  
+//= rAthena Project  
+//===== Description: =========================================  
+//= Repetable Quests for Players between Baselevel 56 - 70.  
+//===== Additional Comments: =================================  
+//= 1.0 First Version.  
+//= 1.1 Some little optimization here and there. [Masao]  
+//= 1.2 Added checkquest confirmation for -1. [Euphy]  
+//= 1.3 Fixed Puppet Master's Agony Quest (12217 -> 3259). [Joseph]  
+//= 1.4 Fixed invalid check (Magic Wand Quest). [Joseph]  
+//= 1.5 Modified to match 11-25 quest structure. [LTSteinhil]  
+//= 1.6 Added quest management menu for accept/abandon all quests. [LTSteinhil] 
+//= 1.7 Added monster location/warp and rewards system. [LTSteinhil] 
+//= 1.8 Restructured to match array-based system. [LTSteinhil]  
+//============================================================  
+  
+moc_para01,42,38,3	script	Mission [56 - 70]#Tuto	4_BOARD3,{  
+	if (!callfunc("F_HasEdenGroupMark")) {  
+		mes "- You need to have an -";  
+		mes "- ^4d4dff'Eden Group Mark'^000000 -";  
+		mes "- to receive these missions. -";  
+		close;  
+	}  
+  
+	if (BaseLevel < 56) {  
+		mes " - There are no tasks - ";  
+		mes " - open for you right now. - ";  
+		close;  
+	}  
+	  
+	mes " - Mission bulletin board -";  
+	mes " - for advanced adventurers. -";  
+	mes " ";  
+	mes " - Quest Management Menu -";  
+	next;  
+	switch(select("^0000FFAccept All Available Quests^000000:" +  
+					"^FF0000Abandon All Active Quests^000000:" +  
+					"Claim Rewards:" +  
+					"Choose Specific Quest:" +  
+					"View Active Quests:" +  
+					"Warp Locations:" +  
+					"Cancel")) {  
+		case 1: callsub L_AcceptAll;  
+		case 2: callsub L_AbandonAll;  
+		case 3: callsub L_ClaimRewards;  
+		case 4: callsub L_ChooseQuests;  
+		case 5: callsub L_ViewQuests;  
+		case 6:  
+			mes " - Warp Location Menu -";  
+			mes " ";  
+			mes " - Select a location to warp to -";  
+			next;  
+			switch(select("Comodo Beach:" +  
+						  "Einbroch:" +  
+						  "Hugel:" +  
+						  "Lighthalzen:" +  
+						  "Moscovia:" +  
+						  "Payon Cave:" +  
+						  "Pyramids:" +  
+						  "Rachel:" +  
+						  "Veins:" +  
+						  "Cancel:")) {  
+				case 1: callsub L_WarpLocation,"comodo",188,161,"Comodo Beach";  
+				case 2: callsub L_WarpLocation,"einbroch",64,200,"Einbroch";  
+				case 3: callsub L_WarpLocation,"hugel",96,145,"Hugel";  
+				case 4: callsub L_WarpLocation,"lighthalzen",158,92,"Lighthalzen";  
+				case 5: callsub L_WarpLocation,"moscovia",223,184,"Moscovia";  
+				case 6: callsub L_WarpLocation,"pay_dun00",21,183,"Payon Cave";  
+				case 7: callsub L_WarpLocation,"moc_pryd01",195,9,"Pyramids";  
+				case 8: callsub L_WarpLocation,"rachel",130,110,"Rachel";  
+				case 9: callsub L_WarpLocation,"veins",216,123,"Veins";  
+				case 10: close; break;  
+			}  
+		case 7: close; break;  
+	}  
+  
+L_Quest:  
+	.@quest_status = checkquest(getarg(0)+30,PLAYTIME);  
+	if (.@quest_status == 0 || .@quest_status == 1) {  
+		mes " - Mission ^4d4dff"+ getarg(1) +"^000000 - ";  
+		mes " - is already finished for today. - ";  
+		mes " ";  
+		close;  
+	}  
+	mes " - Mission '"+ getarg(1) +"' - ";  
+	for ( .@i = 2; .@i < getargcount(); .@i++ )  
+		mes getarg(.@i);  
+	mes " ";  
+	  
+	// Display rewards using arrays  
+	.@index = getarg(0) - 3250;  
+	mes "^009500Rewards:^000000";  
+	mes "- Base Exp: " + F_InsertComma(.base_exp[.@index]);  
+	mes "- Job Exp: " + F_InsertComma(.job_exp[.@index]);  
+	mes "- " + F_InsertComma(.item_amount[.@index]) + "x ^0000FF" + mesitemicon(.item_reward[.@index]) + "  " + getitemname(.item_reward[.@index]) + "^000000";  
+	mes " ";  
+	  
+	next;  
+	if (select("I will do this mission.:Look for other missions.") == 2) {  
+		mes " - Let's search for -";  
+		mes " - other missions. - ";  
+		close;  
+	}  
+	for ( .@i = 2; .@i < getargcount(); .@i++ )  
+		mes getarg(.@i);  
+	setquest getarg(0);  
+	close;  
+  
+L_AcceptAll:  
+	.@count = 0;  
+	for (.@i = 3250; .@i <= 3263; .@i++) {  
+		if (checkquest(.@i) == -1 && checkquest(.@i+30,PLAYTIME) != 0 && checkquest(.@i+30,PLAYTIME) != 1) {  
+			setquest .@i;  
+			.@count++;  
+		}  
+	}  
+	if (.@count > 0) {  
+		mes " - Successfully accepted -";  
+		mes " - " + .@count + " missions! -";  
+	}  
+	else {  
+		mes " - No available missions to accept. -";  
+	}  
+	close;  
+  
+L_AbandonAll:  
+	.@count = 0;  
+	for (.@i = 3250; .@i <= 3263; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			erasequest .@i;  
+			.@count++;  
+		}  
+	}  
+	if (.@count > 0) {  
+		mes " - Successfully abandoned -";  
+		mes " - " + .@count + " missions. -";  
+	}  
+	else {  
+		mes " - No active missions to abandon. -";  
+	}  
+	close;  
+  
+L_ChooseQuests:  
+	mes " - Choose Specific Quest -";  
+	next;  
+	switch(select("What is this Bandage?:" +  
+				  "Dangerous Alligators:" +  
+				  "That wasn't a mermaid...:" +  
+				  "My country is calling me!:" +  
+				  "Hunt Wild Boar:" +  
+				  "Preparing the Summer:" +  
+				  "A Woman's Grudge:" +  
+				  "Special ingredients:" +  
+				  "Puppet Master's Agony:" +  
+				  "Tiresome Flies:" +  
+				  "Dangerous Munak:" +  
+				  "Make the World green:" +  
+				  "Magic Wand:" +  
+				  "Cancel")) {  
+		case 1: callsub L_Quest,3250,"What is this Bandage?"," - Hunt 30 ^4d4dff'Mummies'^000000 - "," - in Pyramids. - ";  
+		case 2: callsub L_Quest,3251,"Dangerous Alligators"," - Hunt 30 ^4d4dff'Alligators'^000000 - "," - near Comodo Beach. - ";  
+		case 3: callsub L_Quest,3252,"That wasn't a mermaid..."," - Hunt 30 ^4d4dff'Mermans'^000000 - "," - underwater areas. - ";  
+		case 4: callsub L_Quest,3254,"My country is calling me!"," - Collect materials for dam - "," - 10 Fine Sand and 30 Grit. - ";  
+		case 5: callsub L_Quest,3255,"Hunt Wild Boar"," - Hunt 30 ^4d4dff'Savages'^000000 - "," - around Payon fields. - ";  
+		case 6: callsub L_Quest,3256,"Preparing the Summer"," - Collect 30 ^4d4dff'Sticky Webfoots'^000000 - "," - from Roda Frogs. - ";  
+		case 7: callsub L_Quest,3257,"A Woman's Grudge"," - Hunt 30 ^4d4dff'Sohees'^000000 - "," - in Payon Cave. - ";  
+		case 8: callsub L_Quest,3258,"Special ingredients"," - Collect 40 ^4d4dff'Huge Leafs'^000000 - "," - from Flora monsters. - ";  
+		case 9: callsub L_Quest,3259,"Puppet Master's Agony"," - Hunt 30 ^4d4dff'Marionettes'^000000 - "," - and collect 30 Golden Hair. - ";  
+		case 10: callsub L_Quest,3260,"Tiresome Flies"," - Hunt 30 ^4d4dff'Hunter Flies'^000000 - "," - in various fields. - ";  
+		case 11: callsub L_Quest,3261,"Dangerous Munak"," - Hunt 30 ^4d4dff'Munaks'^000000 - "," - in Payon Cave. - ";  
+		case 12: callsub L_Quest,3262,"Make the World green"," - Collect 40 ^4d4dff'Maneater Blossoms'^000000 - "," - from Flora monsters. - ";  
+		case 13: callsub L_Quest,3263,"Magic Wand"," - Collect 30 ^4d4dff'Dokebi Horns'^000000 - "," - and 30 ^4d4dff'Trunks'^000000. - ";  
+		case 14:  
+			mes " - Stop reading the bulletin board. - ";  
+			close;  
+			break;  
+	}  
+  
+L_ViewQuests:  
+	.@count = 0;  
+	mes " - Your Active Missions: -";  
+	mes " ";  
+	  
+	for (.@i = 3250; .@i <= 3263; .@i++) {  
+		if (checkquest(.@i) >= 0) {  
+			.@count++;  
+			switch(.@i) {  
+				case 3250: mes " > What is this Bandage?"; break;  
+				case 3251: mes " > Dangerous Alligators"; break;  
+				case 3252: mes " > That wasn't a mermaid..."; break;  
+				case 3254: mes " > My country is calling me!"; break;  
+				case 3255: mes " > Hunt Wild Boar"; break;  
+				case 3256: mes " > Preparing the Summer"; break;  
+				case 3257: mes " > A Woman's Grudge"; break;  
+				case 3258: mes " > Special ingredients"; break;  
+				case 3259: mes " > Puppet Master's Agony"; break;  
+				case 3260: mes " > Tiresome Flies"; break;  
+				case 3261: mes " > Dangerous Munak"; break;  
+				case 3262: mes " > Make the World green"; break;  
+				case 3263: mes " > Magic Wand"; break;  
+			}  
+		}  
+	}  
+	  
+	if (.@count == 0) {  
+		mes " - No active missions. -";  
+	}  
+	else {  
+		mes " ";  
+		mes " - Total: " + .@count + " missions -";  
+	}  
+	close;
+
+L_ClaimRewards:  
+	.@rewards_claimed = 0;  
+	  
+	for(.@i = 3250; .@i <= 3263; .@i++) {  
+		.@j = checkquest(.@i, HUNTING);  
+		.@index = .@i - 3250; // Calculate array index  
+		  
+		if (.@j == 2) {  
+			// Handle item requirements for collection quests  
+			switch(.@i) {  
+				case 3254: // My country is calling me!  
+					if (countitem(7043) < 10 || countitem(1056) < 30) {  
+						mes " - You need 10 Fine Sand and 30 Grit to claim this reward -";  
+						continue;  
+					}  
+					delitem 7043, 10;  
+					delitem 1056, 30;  
+					break;  
+				case 3256: // Preparing the Summer  
+					if (countitem(918) < 30) {  
+						mes " - You need 30 Sticky Webfoots to claim this reward -";  
+						continue;  
+					}  
+					delitem 918, 30;  
+					break;  
+				case 3258: // Special ingredients  
+					if (countitem(7198) < 40) {  
+						mes " - You need 40 Huge Leafs to claim this reward -";  
+						continue;  
+					}  
+					delitem 7198, 40;  
+					break;  
+				case 3259: // Puppet Master's Agony  
+					if (countitem(1060) < 30) {  
+						mes " - You need 30 Golden Hair to claim this reward -";  
+						continue;  
+					}  
+					delitem 1060, 30;  
+					break;  
+				case 3262: // Make the World green  
+					if (countitem(1032) < 40) {  
+						mes " - You need 40 Maneater Blossoms to claim this reward -";  
+						continue;  
+					}  
+					delitem 1032, 40;  
+					break;  
+				case 3263: // Magic Wand  
+					if (countitem(1021) < 30 || countitem(1019) < 30) {  
+						mes " - You need 30 Dokebi Horns and 30 Trunks to claim this reward -";  
+						continue;  
+					}  
+					delitem 1021, 30;  
+					delitem 1019, 30;  
+					break;  
+			}  
+			  
+			// Display quest completion message  
+			switch(.@i) {  
+				case 3250: mes " - Claiming reward for What is this Bandage? -"; break;  
+				case 3251: mes " - Claiming reward for Dangerous Alligators -"; break;  
+				case 3252: mes " - Claiming reward for That wasn't a mermaid... -"; break;  
+				case 3254: mes " - Claiming reward for My country is calling me! -"; break;  
+				case 3255: mes " - Claiming reward for Hunt Wild Boar -"; break;  
+				case 3256: mes " - Claiming reward for Preparing the Summer -"; break;  
+				case 3257: mes " - Claiming reward for A Woman's Grudge -"; break;  
+				case 3258: mes " - Claiming reward for Special ingredients -"; break;  
+				case 3259: mes " - Claiming reward for Puppet Master's Agony -"; break;  
+				case 3260: mes " - Claiming reward for Tiresome Flies -"; break;  
+				case 3261: mes " - Claiming reward for Dangerous Munak -"; break;  
+				case 3262: mes " - Claiming reward for Make the World green -"; break;  
+				case 3263: mes " - Claiming reward for Magic Wand -"; break;  
+			}  
+			  
+			// Give rewards using arrays  
+			erasequest .@i;
+			getexp .base_exp[.@index], .job_exp[.@index];  
+			getitem .item_reward[.@index], .item_amount[.@index];  
+			.@rewards_claimed++;  
+		}  
+	}  
+	  
+	if (.@rewards_claimed > 0) {  
+		mes " ";  
+		mes " - Successfully claimed " + .@rewards_claimed + " reward(s)! -";  
+		mes " - Thank you for your service! -";  
+	} else {  
+		mes " - No completed missions found -";  
+		mes " - Complete your hunting objectives first. -";  
+	}  
+	close;  
+  
+L_WarpLocation:  
+	mes " - Warping to " + getarg(3) + " -";  
+	mes " - Good luck on your mission! -";  
+	close2;  
+	warp getarg(0), getarg(1), getarg(2);  
+	end;  
+  
+OnInit:  
+	// Quest rewards: base_exp, job_exp, item_id, item_amount  
+	// Index corresponds to quest ID - 3250  
+	setarray .base_exp[0], 15000, 16000, 17000, 18000, 16000, 15000, 17000, 16000, 17000, 16000, 16000, 17000, 18000, 16000;  
+	setarray .job_exp[0], 5000, 6000, 8000, 8000, 7000, 5000, 8000, 7000, 7000, 6000, 6000, 7000, 8000, 6000;  
+	setarray .item_reward[0], 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223;  
+	setarray .item_amount[0], 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4;  
+	end;  
+}
