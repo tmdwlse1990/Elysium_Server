@@ -538,6 +538,7 @@
 	export_constant(MF_NOMACROCHECKER);
 	export_constant(MF_NOLOOTNORMALMOB);
 	export_constant(MF_NO_NPC_SELFDESTRUCTION_ON_ALL);
+	export_constant(MF_INVINCIBLE_TIME);
 
 	/* setcell types */
 	export_constant(CELL_WALKABLE);
