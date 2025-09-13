@@ -29665,7 +29665,7 @@ Body:
         Rate: 50
       - Item: Wing_Of_Fly
         Rate: 500
-      - Item: Orc_Baby_Card_Card
+      - Item: Orc_Baby_Card
         Rate: 1
         StealProtected: true
   - Id: 1687

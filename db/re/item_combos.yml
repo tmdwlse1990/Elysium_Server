@@ -4851,7 +4851,7 @@ Body:
       bonus3 bAutoSpell,"WZ_FROSTNOVA",.@a,(.@a*10);
   - Combos:
       - Combo:
-          - Orc_Baby_Card_Card    # 4375
+          - Orc_Baby_Card    # 4375
           - LivingDeath_Card    # 27328
     Script: |
       bonus2 bSubEle,Ele_Neutral,5;

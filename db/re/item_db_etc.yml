@@ -7977,7 +7977,7 @@ Body:
       bonus bDex,2;
       bonus2 bIgnoreMdefClassRate,Class_Boss,30;
   - Id: 4375
-    AegisName: Orc_Baby_Card_Card
+    AegisName: Orc_Baby_Card
     Name: Orc Baby Card
     Type: Card
     Buy: 20
