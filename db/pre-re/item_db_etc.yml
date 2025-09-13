@@ -17497,8 +17497,8 @@ Body:
     Name: Trash Debris
     Type: Etc
   - Id: 7635
-    AegisName: Sachet
-    Name: Sachet
+    AegisName: Perfume_Pouch
+    Name: Incense Bag
     Type: Etc
     Buy: 100
   - Id: 7701
