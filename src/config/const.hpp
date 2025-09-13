@@ -50,9 +50,12 @@
 	#define DEFTYPE_MIN SHRT_MIN
 	#define DEFTYPE_MAX SHRT_MAX
 #else
-	typedef signed char defType;
-	#define DEFTYPE_MIN CHAR_MIN
-	#define DEFTYPE_MAX CHAR_MAX
+	//typedef signed char defType;
+	//#define DEFTYPE_MIN CHAR_MIN
+	//#define DEFTYPE_MAX CHAR_MAX
+	typedef int16 defType;
+	#define DEFTYPE_MIN SHRT_MIN
+	#define DEFTYPE_MAX SHRT_MAX	
 #endif
 
 /**
