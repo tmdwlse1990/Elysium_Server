@@ -1039,7 +1039,7 @@ void pc_setinvincibletimer(map_session_data& sd) {
 	map_data* mapdata = map_getmapdata(sd.m);
 
 	// Avoid mob teleport when hit after a teleport from autocombat
-	if(sd->state.autocombat)
+	if(sd.state.autocombat)
        return;
 
 	if (mapdata != nullptr && mapdata->getMapFlag(MF_INVINCIBLE_TIME) > 0)
@@ -14937,27 +14937,27 @@ void pc_buy_emotion_expantion(map_session_data* const sd, const uint16 Id, const
 
 	if (battle_config.basic_skill_check != 0 && pc_checkskill(sd, NV_BASIC) < 2 && pc_checkskill(sd, SU_BASIC_SKILL) < 1)
 	{
-		clif_emotion2_expantion_fail(sd, Id, EMSG_EMOTION_EXPANTION_FAIL_UNKNOWN);
+		clif_emotion2_expantion_fail(sd, Id, EEmotionExpantionStatus::EMSG_EMOTION_EXPANTION_FAIL_UNKNOWN);
 		return;
 	}
 
 	std::shared_ptr<s_emotion_db> EmotionsInfo = emotion_db.find(Id);
 	if (EmotionsInfo == nullptr)
 	{
-		clif_emotion2_expantion_fail(sd, Id, EMSG_EMOTION_EXPANTION_FAIL_UNKNOWN);
+		clif_emotion2_expantion_fail(sd, Id, EEmotionExpantionStatus::EMSG_EMOTION_EXPANTION_FAIL_UNKNOWN);
 		return;
 	}
 
 	const time_t CurrentTime = time(nullptr);
 	if (EmotionsInfo->SaleEnd != 0 && EmotionsInfo->SaleEnd < CurrentTime)
 	{
-		clif_emotion2_expantion_fail(sd, Id, EMSG_EMOTION_EXPANTION_FAIL_DATE);
+		clif_emotion2_expantion_fail(sd, Id, EEmotionExpantionStatus::EMSG_EMOTION_EXPANTION_FAIL_DATE);
 		return;
 	}
 
 	if (EmotionsInfo->SaleStart != 0 && EmotionsInfo->SaleStart > CurrentTime)
 	{
-		clif_emotion2_expantion_fail(sd, Id, EMSG_NOT_YET_SALE_START_TIME);
+		clif_emotion2_expantion_fail(sd, Id, EEmotionExpantionStatus::EMSG_NOT_YET_SALE_START_TIME);
 		return;
 	}
 
@@ -14979,26 +14979,26 @@ void pc_buy_emotion_expantion(map_session_data* const sd, const uint16 Id, const
 	const bool bExpantionBought = static_cast<bool>(pc_readglobalreg(sd, add_str(Buffer)));
 	if (bExpantionBought == true)
 	{
-		clif_emotion2_expantion_fail(sd, Id, EMSG_EMOTION_EXPANTION_FAIL_ALREADY_BUY);
+		clif_emotion2_expantion_fail(sd, Id, EEmotionExpantionStatus::EMSG_EMOTION_EXPANTION_FAIL_ALREADY_BUY);
 		return;
 	}
 
 	if (ItemId != 6909)
 	{
-		clif_emotion2_expantion_fail(sd, Id, EMSG_EMOTION_EXPANTION_FAIL_UNKNOWN);
+		clif_emotion2_expantion_fail(sd, Id, EEmotionExpantionStatus::EMSG_EMOTION_EXPANTION_FAIL_UNKNOWN);
 		return;
 	}
 
 	if (EmotionsInfo->Price != Amount)
 	{
-		clif_emotion2_expantion_fail(sd, Id, EMSG_EMOTION_EXPANTION_FAIL_UNKNOWN);
+		clif_emotion2_expantion_fail(sd, Id, EEmotionExpantionStatus::EMSG_EMOTION_EXPANTION_FAIL_UNKNOWN);
 		return;
 	}
 
 	const int32 NyangvineIndex = pc_search_inventory(sd, ItemId);
 	if (NyangvineIndex < 0 || sd->inventory.u.items_inventory[NyangvineIndex].amount < Amount)
 	{
-		clif_emotion2_expantion_fail(sd, Id, EMSG_EMOTION_EXPANTION_NOT_ENOUGH_NYANGVINE);
+		clif_emotion2_expantion_fail(sd, Id, EEmotionExpantionStatus::EMSG_EMOTION_EXPANTION_NOT_ENOUGH_NYANGVINE);
 		return;
 	}
 

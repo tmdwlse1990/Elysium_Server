@@ -55,6 +55,9 @@ enum e_macro_report_status : uint8;
 enum e_hom_state2 : uint8;
 enum _sp;
 enum e_searchstore_failure : uint16;
+enum EEmotionStatus : uint8;
+enum EEmotionExpantionStatus : uint8;
+struct PACKET_ZC_EMOTION2_EXPANTION_LIST_SUB;
 enum e_runedecompo_result: uint8;
 
 #define DMGVAL_IGNORE -30000
@@ -1548,10 +1551,10 @@ void clif_specialpopup(map_session_data& sd, int32 id);
 
 void clif_parse_emotion2(const int fd, map_session_data* const sd);
 void clif_emotion2(block_list* const bl, const uint16 ExpantionId, const uint16 EmotionId);
-void clif_emotion2_fail(map_session_data* const sd, const uint16 ExpantionId, const uint16 EmotionId, enum EEmotionStatus Status);
+void clif_emotion2_fail(map_session_data* const sd, const uint16 ExpantionId, const uint16 EmotionId, const EEmotionStatus Status);
 void clif_parse_emotion2_expantion(const int fd, map_session_data* const sd);
 void clif_emotion2_expantion(map_session_data* const sd, const uint16 ExpantionId, const bool bRented, const uint32 RentEndTime);
-void clif_emotion2_expantion_fail(map_session_data* const sd, const uint16 ExpantionId, enum EEmotionExpantionStatus Status);
+void clif_emotion2_expantion_fail(map_session_data* const sd, const uint16 ExpantionId, const EEmotionExpantionStatus Status);
 void clif_emotion2_expantion_list(map_session_data* const sd, const std::vector<PACKET_ZC_EMOTION2_EXPANTION_LIST_SUB>& List);
 
 void clif_guild_alliance_message(const mmo_guild& InGuild, const char* const InMessage, const size_t InLength);
