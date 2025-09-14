@@ -3093,6 +3093,160 @@ ACMD_FUNC(mobinfo2)
 }
 
 /*==========================================
+ * Show who drops the item.   v 2.0
+ * edited by [Louis T Steinhil]
+ *------------------------------------------*/
+ACMD_FUNC(whodrops2)
+{
+	if (!message || !*message) {
+		clif_displaymessage(fd, msg_txt(sd,1284)); // Please enter item name/ID (usage: @whodrops <item name/ID>).
+		return -1;
+	}
+
+	std::map<t_itemid, std::shared_ptr<item_data>> item_array = {};
+	uint16 count = 1;
+	t_itemid itemid = strtoul(message, nullptr, 10);
+
+	if (itemid == 0) // Entered a string
+		count = itemdb_searchname_array(item_array, MAX_SEARCH, message);
+	else {
+		if ((item_array[0] = item_db.find(itemid)) == nullptr)
+			count = 0;
+	}
+
+	if (!count) {
+		clif_displaymessage(fd, msg_txt(sd,19));	// Invalid item ID or name.
+		return -1;
+	}
+
+	if (count == MAX_SEARCH) {
+		sprintf(atcmd_output, msg_txt(sd,269), MAX_SEARCH); // Displaying first %d matches
+		clif_displaymessage(fd, atcmd_output);
+	}
+	for (const auto &result : item_array) {
+		std::shared_ptr<item_data> id = result.second;
+
+		sprintf(atcmd_output, msg_txt(sd,1285), item_db.create_item_link( id ).c_str(), id->nameid); // Item: '%s' (ID:%u)
+		clif_displaymessage(fd, atcmd_output);
+
+		if (id->mob[0].chance == 0) {
+			strcpy(atcmd_output, msg_txt(sd,1286)); //  - Item is not dropped by mobs.
+			clif_displaymessage(fd, atcmd_output);
+		} else {
+			sprintf(atcmd_output, msg_txt(sd,1287), MAX_SEARCH); //  - Common mobs with highest drop chance (only max %d are listed):
+			clif_displaymessage(fd, atcmd_output);
+
+			for (uint16 j=0; j < MAX_SEARCH && id->mob[j].chance > 0; j++) {  
+				std::shared_ptr<s_mob_db> mob = mob_db.find(id->mob[j].id);  
+				if(!mob) continue;  
+		  
+				int32 drop_modifier = 100;  
+#ifdef RENEWAL_DROP  
+				if( battle_config.atcommand_mobinfo_type ){  
+					drop_modifier = pc_level_penalty_mod( sd, PENALTY_DROP, mob );  
+				}  
+#endif
+
+				for( const std::shared_ptr<s_mob_drop>& entry : mob->dropitem ){  
+					if (entry->nameid != id->nameid)  
+						continue;  
+		  
+					if (entry->rate < 1)  
+						continue;  
+		  
+					int32 droprate = mob_getdroprate( sd, mob, entry->rate, drop_modifier );  
+		  
+					if (pc_isvip(sd))
+						droprate += (droprate * battle_config.vip_drop_increase) / 100;  
+		  
+					sprintf(atcmd_output, "- %s (%d): %02.02f%%", mob->jname.c_str(), id->mob[j].id, (float)droprate / 100);  
+					clif_displaymessage(fd, atcmd_output);  
+					break;
+				}  
+			}
+		}
+		sprintf(atcmd_output, "Map drops:");
+		clif_displaymessage(fd, atcmd_output);
+
+		std::map<std::pair<uint16, double>, std::vector<std::string>> map_drop_groups;
+		bool found_map_drops = false;
+
+		for (const auto& map_entry : map_drop_db) {
+			std::shared_ptr<s_map_drops> mapdrops = map_entry.second;
+			std::string map_name = map_mapid2mapname(map_entry.first);
+			std::string display_name = map_name;
+
+			if (map_name.find("@") != std::string::npos) {
+				for (const auto& instance_entry : instance_db) {
+					std::shared_ptr<s_instance_db> instance = instance_entry.second;
+					if (strcmp(map_mapid2mapname(instance->enter.map), map_name.c_str()) == 0) {
+						display_name = instance->name;
+						break;
+					}
+					for (const auto& additional_map : instance->maplist) {
+						if (strcmp(map_mapid2mapname(additional_map), map_name.c_str()) == 0) {
+							display_name = instance->name;
+							break;
+						}
+					}
+					if (display_name != map_name) break;
+				}
+			}
+
+			for (const auto& global_drop : mapdrops->globals) {
+				if (global_drop.second->nameid == id->nameid) {
+					double rate_percent = (global_drop.second->rate * 100.0) / 100000.0;
+					std::pair<uint16, double> key = std::make_pair(0, rate_percent);
+					map_drop_groups[key].push_back(display_name);
+					found_map_drops = true;
+				}
+			}
+
+			for (const auto& specific_entry : mapdrops->specific) {
+				uint16 mob_id = specific_entry.first;
+				for (const auto& drop : specific_entry.second) {
+					if (drop.second->nameid == id->nameid) {
+						double rate_percent = (drop.second->rate * 100.0) / 100000.0;
+						std::pair<uint16, double> key = std::make_pair(mob_id, rate_percent);
+						map_drop_groups[key].push_back(display_name);
+						found_map_drops = true;
+					}
+				}
+			}
+		}
+
+		if (!found_map_drops) {
+			sprintf(atcmd_output, " - Item is not dropped by map-specific drops.");
+			clif_displaymessage(fd, atcmd_output);
+		} else {
+			for (const auto& group : map_drop_groups) {
+				uint16 mob_id = group.first.first;
+				double rate = group.first.second;
+				const std::vector<std::string>& maps = group.second;
+
+				std::string map_list = "";
+				for (size_t i = 0; i < maps.size(); ++i) {
+					if (i > 0) map_list += ", ";
+					map_list += maps[i];
+				}
+
+				if (mob_id == 0) {  
+					sprintf(atcmd_output, "- All monsters: %.2f%% - (%s)", rate, map_list.c_str());  
+					clif_displaymessage(fd, atcmd_output);  
+				} else {  
+					std::shared_ptr<s_mob_db> mob = mob_db.find(mob_id);  
+					if (mob) {  
+						sprintf(atcmd_output, "- %s (%d): %.2f%% - (%s)", mob->jname.c_str(), mob_id, rate, map_list.c_str());  
+						clif_displaymessage(fd, atcmd_output);  
+					}  
+				}
+			}  
+		}
+	}
+	return 0;
+}
+
+/*==========================================
 * @ws - Open the searchstore UI with found sold items
 *------------------------------------------*/
 ACMD_FUNC(whosell)
