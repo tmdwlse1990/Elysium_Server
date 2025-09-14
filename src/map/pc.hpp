@@ -1506,12 +1506,12 @@ enum EEmotionExpantionStatus : uint8
 
 struct s_emotion_db
 {
-	uint16 Id;
-	uint16 Price;
-	uint16 Type;
-	uint32 SaleStart;
-	uint32 SaleEnd;
-	uint16 SaleRentalPeriod;
+	uint16 Id = 0;
+	uint16 Price = 0;
+	uint16 Type = 0;
+	uint32 SaleStart = 0;
+	uint32 SaleEnd = 0;
+	uint16 SaleRentalPeriod = 0;
 	std::vector<emotion_type> Emotions;
 };
 
