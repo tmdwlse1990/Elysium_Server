@@ -1,0 +1,469 @@
+//===== rAthena Script =======================================
+//= Eden Group Quest - Quests NPCs
+//===== Description: =========================================
+//= Eden Group Headquarter NPCs.
+//===== Changelogs: ==========================================
+//= 1.0 First Version. [L0ne_W0lf]
+//= 1.1 Removed unencoded comments (Korean -> Gibberish)
+//=     Readded the GM helper NPC, commented out.
+//= 1.2 Some little optimization here and there. [Masao]
+//= 1.3 Added Instructor Ur and the new Quests which come
+//=     alongside him. Special thanks to Chilly for the base. [Masao]
+//= 1.4 Partial cleaning and bug fixing. [Euphy]
+//= 1.4a Added 'npcskill' command. [Euphy]
+//= 1.4b Added 'disable_items' command. [Euphy]
+//= 1.5 Added GM management function. [Euphy]
+//= 1.6 Kagerou/Oboro support (Class -> BaseClass) [Euphy]
+//= 2.0 Updated Instructor Ur's quests. [Capuche]
+//= 2.1 Updated Blacksmith Thorn and Weapons Expert NPC. [Capuche]
+//= 2.2 Added support to Para_Team_Mark_ in Eden Group. [Ragno]
+//= 2.3 Added use of F_HasEdenGroupMark function. [Ragno]
+//= 2.4 Adds quest management, progression, and warp points to 
+//=		support multi-step training quests for players.. [Louis T Steinhil]
+//============================================================
+prt_sewb1,131,262,3	script	Timid Cat#para04	4_M_BABYCAT,{  
+	// Check Eden Group membership  
+	if (!callfunc("F_HasEdenGroupMark")) {  
+		mes "[Timid Cat]";  
+		mes "Meow...";  
+		mes "Who are you meow?";  
+		mes "Why are you here meow?";  
+		close;  
+	}  
+	  
+	// Quest state management  
+	switch(para_suv01) {  
+	case 0: case 1: case 2: case 3: case 4: case 5:  
+		mes "[Timid Cat]";  
+		mes "Meow...";  
+		mes "Who are you meow?";  
+		mes "Why are you here meow?";  
+		next;  
+		switch(select("Quest Management:Just saying hello:Leave")) {  
+			case 1: callsub S_QuestManagement; break;  
+			case 2:  
+				mes "[Timid Cat]";  
+				mes "Take care and good luck with your adventures meow!";  
+				break;  
+			case 3: break;  
+		}  
+		close;  
+		  
+	case 6:  
+		callsub S_InitialDialog;  
+		break;  
+		  
+	case 7:  
+		callsub S_ThiefBugHunt;  
+		break;  
+		  
+	case 8:  
+		callsub S_TarouHunt;  
+		break;  
+		  
+	case 9:  
+		callsub S_FamiliarHunt;  
+		break;  
+		  
+	default:  
+		if (para_suv01 >= 10) {  
+			callsub S_QuestComplete;  
+		} else {  
+			callsub S_DefaultDialog;  
+		}  
+		break;  
+	}  
+	end;  
+  
+// Initial quest dialog and fish selection  
+S_InitialDialog:  
+	mes "[Timid Cat]";  
+	mes "Come on meow...";  
+	mes "I may be standing here and talking to you like this meow but I am a still a cat meow...";  
+	next;  
+	mes "[Timid Cat]";  
+	mes "Dear human you are";  
+	mes "a member of my group?";  
+	mes "Re... really...!";  
+	mes "Dear Boya's help is like a giant and...";  
+	next;  
+	  
+	switch (select("Beautiful Saury:Fresh Mackerel:Beautiful Tuna:Quest Help")) {  
+	case 1:  
+		mes "[Timid Cat]";  
+		mes "Big and beautiful Saury...";  
+		mes "I am shy.";  
+		close;  
+		  
+	case 2:  
+		mes "[Timid Cat]";  
+		mes "I want to eat mackerel.";  
+		mes "Where are the big and fresh mackerel meow?";  
+		close;  
+		  
+	case 3:  
+		mes "[Timid Cat]";  
+		mes "Do you know the big and beautiful tuna?";  
+		mes "Dear Boya sent you here for sure.";  
+		mes "How do I explain this...?";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "Did something pass under my feet just now meow?";  
+		mes "Do you want to kill a cat.";  
+		mes "The environment here is terrible.";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "Anyway I'm doing what I was assigned to do.";  
+		mes "So hi, hello and welcome.";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "Did you come here to have a battle?";  
+		mes "Hunt those Thief Bugs, hurry up!";  
+		mes "Hunt at least 10!";  
+		mes "Meooow!";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "I really don't like those nasty crawlers...";  
+		mes "Meow~!";  
+		next;  
+		mes "^4d4dffThe cat was surprised by";  
+		mes "a thief bug and froze in";  
+		mes "place. Hunt those";  
+		mes "Thief Bugs around here.^000000";  
+		para_suv01 = 7;  
+		changequest 7133,7134;  
+		close;  
+		  
+	case 4:  
+		callsub S_QuestManagement;  
+		break;  
+	}  
+	return;  
+  
+// Thief Bug hunting phase  
+S_ThiefBugHunt:  
+	if (checkquest(7134,HUNTING) == 2) {  
+		mes "[Timid Cat]";  
+		mes "Now do you understand the dirty and humid underground sewers?";  
+		mes "Eeeh look what's next meow.";  
+		mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
+		mes "Job Experience: "+ F_Insertcomma(.job_exp[0]) +".";  
+		mes "Item: "+ F_Insertcomma(.item_amount[0]) +"x "+ mesitemicon(.item_reward[0]) +".";  	
+		next;  
+		// Claim reward
+		getexp .base_exp[0], .job_exp[0];  
+		getitem .item_reward[0], .item_amount[0];
+		mes "[Timid Cat]";  
+		mes "It's a symbol of dirt next to those Thief Bugs.";  
+		mes "Hunt some Tarou to make the sewers cleaner.";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "For our members joining this mission.";  
+		mes "Hunt 10 Tarou.";  
+		mes "Easy, ain't it?";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "Why didn't I ask you at once? kkk..??";  
+		mes "Umm........";  
+		mes "Because it's just a training mission.";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "Training missions are hard and annoying.";  
+		mes "So go hurry and hunt 10 Tarou.";  
+		para_suv01 = 8;  
+		changequest 7134,7135;  
+		close;  
+	}  
+	  
+	mes "[Timid Cat]";  
+	mes "Clean the sewers. Now the first step is hunting Thief Bugs.";  
+	mes "Isn't that simple, meow?";  
+	next;  
+	mes "[Timid Cat]";  
+	mes "Take care to check your map so you don't get lost.";  
+	mes "It's a service meeow.";  
+	next;  
+	switch(select("Get healed:Quest Management:Continue hunting")) {  
+		case 1: callsub S_HealPlayer; break;  
+		case 2: callsub S_QuestManagement; break;  
+		case 3: break;  
+	}  
+	return;  
+  
+// Tarou hunting phase  
+S_TarouHunt:  
+	if (checkquest(7135,HUNTING) == 2) {  
+		mes "[Timid Cat]";  
+		mes "Great job~!";  
+		mes "How'd you get rid of those dirty bugs and Tarou. You are brave.";  
+		mes "Base Experience: "+ F_Insertcomma(.base_exp[1]) +".";  
+		mes "Job Experience: "+ F_Insertcomma(.job_exp[1]) +".";  
+		mes "Item: "+ F_Insertcomma(.item_amount[1]) +"x "+ mesitemicon(.item_reward[1]) +".";  	
+		next;  
+		// Claim reward
+		getexp .base_exp[1], .job_exp[1];  
+		getitem .item_reward[22], .item_amount[1];
+		mes "[Timid Cat]";  
+		mes "Now have courage because I'm sending you to a stronger opponent.";  
+		mes "But first in order to test your courage, hunt Familiars.";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "Familiars will bite you so be careful.";  
+		mes "They are mean.";  
+		mes "They scare me so just hunt 5 and that should be enough.";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "That will show me that you are brave.";  
+		mes "Meow~!";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "I don't have anything...";  
+		mes "......";  
+		mes "What do you want meow? Familiars are waiting to fight with you, hurry up, move~!";  
+		para_suv01 = 9;  
+		changequest 7135,7136;  
+		close;  
+	}  
+	  
+	mes "[Timid Cat]";  
+	mes "If you can't kill the Tarou you might get all kinds of dirty diseases.";  
+	mes "So be proud of yourself and do your best to kill them.";  
+	next;  
+	mes "[Timid Cat]";  
+	mes "I will help you a little.";  
+	mes "Here, I have recovered your strength meow..";  
+	next;  
+	switch(select("Get healed:Quest Management:Continue hunting")) {  
+		case 1: callsub S_HealPlayer; break;  
+		case 2: callsub S_QuestManagement; break;  
+		case 3: break;  
+	}  
+	return;  
+  
+// Familiar hunting phase  
+S_FamiliarHunt:  
+	if (checkquest(7136,HUNTING) == 2) {  
+		mes "[Timid Cat]";  
+		mes "You are great meow~";  
+		mes "You killed them so quickly!";  
+		mes "Meow...";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "Now you are not scared of bugs and tarou at all.";  
+		mes "Thanks for participating in the Conquer the Culvert training mission.";  
+		mes "Base Experience: "+ F_Insertcomma(.base_exp[2]) +".";  
+		mes "Job Experience: "+ F_Insertcomma(.job_exp[2]) +".";  
+		mes "Item: "+ F_Insertcomma(.item_amount[2]) +"x "+ mesitemicon(.item_reward[2]) +".";  	
+		next;  
+		// Claim reward
+		getexp .base_exp[2], .job_exp[2];  
+		getitem .item_reward[22], .item_amount[2];
+		mes "[Timid Cat]";  
+		mes "Now go back to the headquarters and ask Instructor Boya to make sure he has the beautiful tuna...";  
+		mes "I will be waiting here.";  
+		next;  
+		mes "[Timid Cat]";  
+		mes "Do you know how to get to the Eden Group Headquarters?";  
+		mes "Prontera is the closest city from here.";  
+		mes "Go to Prontera and find an Eden Group Teleporter.";  
+		para_suv01 = 10;  
+		changequest 7136,7137;  
+		close;  
+	}  
+	  
+	mes "[Timid Cat]";  
+	mes "Familiars are really scary.";  
+	mes "They're always flying.";  
+	next;  
+	mes "[Timid Cat]";  
+	mes "It's the last course so cheer up.";  
+	mes "I will help you a little.";  
+	mes "Here, I have recovered your strength meow..";  
+	next;  
+	switch(select("Get healed:Quest Management:Continue hunting")) {  
+		case 1: callsub S_HealPlayer; break;  
+		case 2: callsub S_QuestManagement; break;  
+		case 3: break;  
+	}  
+	return;  
+  
+// Quest completion state  
+S_QuestComplete:  
+	mes "[Timid Cat]";  
+	mes "You've completed 'Conquer the Culvert'.";  
+	mes "Go back to the Eden Group headquarters to report to Boya.";  
+	next;  
+	mes "[Timid Cat]";  
+	mes "Boya might eat my tuna while he is waiting for you.";  
+	next;  
+	switch(select("Quest Management:Just chatting:Leave")) {  
+		case 1: callsub S_QuestManagement; break;  
+		case 2:  
+			mes "[Timid Cat]";  
+			mes "Take care and good luck with your adventures meow!";  
+			break;  
+		case 3: break;  
+	}  
+	close;  
+  
+// Default dialog for other states  
+S_DefaultDialog:  
+	mes "[Timid Cat]";  
+	mes "How are you meeow?";  
+	mes "Did you volunteer to conquer the Culvert?";  
+	mes "You are a member of the Eden Group for sure.";  
+	mes "You are helping to make the world a better place.";  
+	next;  
+	switch(select("Quest Management:Just chatting:Leave")) {  
+		case 1: callsub S_QuestManagement; break;  
+		case 2:  
+			mes "[Timid Cat]";  
+			mes "Take care and good luck with your adventures meow!";  
+			break;  
+		case 3: break;  
+	}  
+	close;  
+  
+// Helper function for healing  
+S_HealPlayer:  
+	mes "-When the cat purred, your HP and SP recovered meow.-";  
+	npcskill "AL_HEAL",11,99,60;  
+	percentheal 100,100;  
+	return;  
+  
+// Quest Management Functions (adapted from Talking Dog)  
+S_QuestManagement:  
+	mes "[Timid Cat]";  
+	mes "Meow! What do you need help with regarding your culvert training?";  
+	next;  
+	switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
+		case 1: callsub S_ViewCurrentQuest; break;  
+		case 2: callsub S_AbandonQuest; break;  
+		case 3: callsub S_QuestStatus; break;  
+		case 4: mes "Meow meow! Come back if you need help!"; break;  
+	}  
+	return;  
+  
+S_ViewCurrentQuest:  
+	mes "[Timid Cat]";  
+	mes "Your current culvert training progress:";  
+	mes " ";  
+	  
+	switch(para_suv01) {  
+		case 6:  
+			mes "^0000FFPassword Verification^000000";  
+			mes "  Status: Tell me the correct fish from Boya meow";  
+			break;  
+		case 7:  
+			mes "^00FF00Thief Bug Hunt: In Progress^000000";  
+			mes "  Status: Hunt 10 Thief Bugs in the sewers";  
+			break;  
+		case 8:  
+			mes "^00FF00Tarou Hunt: In Progress^000000";  
+			mes "  Status: Hunt 10 Tarou to clean the sewers";  
+			break;  
+		case 9:  
+			mes "^00FF00Familiar Hunt: In Progress^000000";  
+			mes "  Status: Hunt 5 Familiars (Final step!)";  
+			break;  
+		case 10:  
+			mes "^0000FFCulvert Training Complete^000000";  
+			mes "  Status: Return to Boya at Eden Group HQ";  
+			break;  
+		default:  
+			mes "^FF0000No active culvert training quest.^000000";  
+			mes "^FF0000You might need to talk to Instructor Boya first meow.^000000";  
+			break;  
+	}  
+	return;  
+  
+S_AbandonQuest:  
+	if (para_suv01 < 6 || para_suv01 > 9) {  
+		mes "[Timid Cat]";  
+		mes "Meow! You don't have any active culvert training to abandon.";  
+		return;  
+	}  
+	  
+	mes "[Timid Cat]";  
+	mes "^FF0000Warning:^000000 Abandoning will only clear your current hunting progress!";  
+	mes "Are you sure you want to give up? The sewers need your help meow!";  
+	next;  
+	  
+	if (select("Yes, abandon current hunt:No, continue training") == 2) {  
+		mes "[Timid Cat]";  
+		mes "Good choice meow! The sewer creatures won't defeat themselves!";  
+		return;  
+	}  
+	  
+	// Only erase current hunting quest, keep main quest  
+	switch(para_suv01) {  
+		case 7:  
+			if (checkquest(7134) >= 0) erasequest 7134;  
+			para_suv01 = 6;  // Back to password verification  
+			break;  
+		case 8:  
+			if (checkquest(7135) >= 0) erasequest 7135;  
+			para_suv01 = 7;  // Back to Thief Bug hunt  
+			break;  
+		case 9:  
+			if (checkquest(7136) >= 0) erasequest 7136;  
+			para_suv01 = 8;  // Back to Tarou hunt  
+			break;  
+	}  
+	  
+	mes "[Timid Cat]";  
+	mes "Meow... Current hunt abandoned. You can restart this step anytime.";  
+	return;  
+  
+S_QuestStatus:  
+	mes "[Timid Cat]";  
+	mes "Let me check your hunting progress meow...";  
+	mes " ";  
+	  
+	switch(para_suv01) {  
+		case 7:  
+			.@progress = checkquest(7134,HUNTING);  
+			if (.@progress == 2) {  
+				mes "^00FF00Thief Bug Hunt: COMPLETE!^000000";  
+				mes "Come talk to me to proceed to the next step meow.";  
+			} else {  
+				mes "^FFFFFFThief Bug Hunt: In Progress^000000";  
+				mes "Keep hunting those nasty crawlers in the sewers meow.";  
+			}  
+			break;  
+		case 8:  
+			.@progress = checkquest(7135,HUNTING);  
+			if (.@progress == 2) {  
+				mes "^00FF00Tarou Hunt: COMPLETE!^000000";  
+				mes "Come talk to me to proceed to the next step meow.";  
+			} else {  
+				mes "^FFFFFFTarou Hunt: In Progress^000000";  
+				mes "Keep hunting those dirty rats meow.";  
+			}  
+			break;  
+		case 9:  
+			.@progress = checkquest(7136,HUNTING);  
+			if (.@progress == 2) {  
+				mes "^00FF00Familiar Hunt: COMPLETE!^000000";  
+				mes "Come talk to me to finish your culvert training meow!";  
+			} else {  
+				mes "^FFFFFFFamiliar Hunt: In Progress^000000";  
+				mes "Just 5 more familiars to secure the sewers meow!";  
+			}  
+			break;  
+		default:  
+			mes "^FF0000No active hunting quests to check meow.^000000";  
+			break;  
+	}  
+	return;
+
+OnInit:  
+    setunitdata( getnpcid(0), UNPC_GROUP_ID, 6);  
+    //setunittitle( getnpcid(0), "Timid Cat" );  
+    setarray .base_exp[0], 900, 1800, 1400;  
+    setarray .job_exp[0], 900, 1800, 1400;
+    setarray .item_reward[0], 25223, 25223, 25223;  
+    setarray .item_amount[0], 1, 1, 1;
+    end;
+}
+

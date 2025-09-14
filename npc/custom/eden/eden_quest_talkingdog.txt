@@ -23,9 +23,6 @@
 //============================================================
 
 moc_fild11,180,253,5	script	Talking Dog#para03	4_RUS_DWOLF,{
-    mes "[Talking Dog]";  
-
-    // Route to appropriate quest state handler  
     switch(para_suv01) {  
         case 1: callsub S_InitialPasswordCheck; break;  
         case 2: callsub S_CondorHuntProgress; break;  
@@ -39,7 +36,8 @@ moc_fild11,180,253,5	script	Talking Dog#para03	4_RUS_DWOLF,{
     close;  
 
 // Enhanced password check with quest management  
-S_InitialPasswordCheck:  
+S_InitialPasswordCheck:
+	mes "[Talking Dog]";
     mes "kkkkuuuuahhh.";  
     mes "rrrrrruuuuhh.";  
     mes "bowwow..";  
@@ -60,6 +58,7 @@ S_InitialPasswordCheck:
     return;
 
 S_WrongPassword:  
+	mes "[Talking Dog]";
     mes "[Talking Dog]";  
     mes "Uhh...";  
     mes "What are you saying.";  
@@ -108,9 +107,15 @@ S_CondorHuntComplete:
     mes "Woooohh...";  
     mes "Great!";  
     mes "I can feel my youth from you.";  
+    mes "Let me reward you.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[0]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[0]) +"x "+ mesitemicon(.item_reward[0]) +".";  	
     next;  
+	// Claim reward
+	getexp .base_exp[0], .job_exp[0];  
+	getitem .item_reward[0], .item_amount[0];
     mes "[Talking Dog]";  
-    mes "Nevermind.";  
     mes "Let's find the next target kk!";  
     mes "Ok. Let's drive the Desert Wolves out of here.";  
     next;  
@@ -133,7 +138,7 @@ S_CondorHuntComplete:
     mes "[Talking Dog]";  
     mes "You must hunt at least 10!";  
     mes "Exactly 10!";  
-    mes "Go go go!";  
+    mes "Go go go!";  	
     para_suv01 = 3;  
     changequest 7129,7130;  
     return;  
@@ -162,8 +167,15 @@ S_WolfHuntProgress:
   
 S_WolfHuntComplete:  
     mes "[Talking Dog]";  
-    mes "You are so perfect.";  
+    mes "You are so perfect.";
+    mes "Let me reward you.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[1]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[1]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[1]) +"x "+ mesitemicon(.item_reward[1]) +".";  	
     next;  
+	// Claim reward
+	getexp .base_exp[1], .job_exp[1];  
+	getitem .item_reward[1], .item_amount[1];	
     mes "[Talking Dog]";  
     mes "Or not. Hehe, anyway thanks for your help.";  
     mes "The oasis has almost been secured now.";  
@@ -212,7 +224,14 @@ S_ScorpionHuntComplete:
     mes "[Talking Dog]";  
     mes "Um. Excellent.";  
     mes "You are awesome!";  
+    mes "Let me reward you.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[2]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[2]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[2]) +"x "+ mesitemicon(.item_reward[2]) +".";  	
     next;  
+	// Claim reward
+	getexp .base_exp[2], .job_exp[2];  
+	getitem .item_reward[2], .item_amount[2];	
     mes "[Talking Dog]";  
     mes "Thanks to your effort the oasis is secure.";  
     mes "Don't look around!";  
@@ -300,6 +319,7 @@ S_PostTrainingChat:
     return;   
   
 S_HealPlayer:  
+	mes "[Talking Dog]";
     mes "-When the dog barked, your HP and SP recovered.-";  
     npcskill "AL_HEAL",11,99,60;  
     percentheal 100,100;  
@@ -351,53 +371,47 @@ S_ViewCurrentQuest:
     }  
     return;  
   
-S_AbandonQuest:  
-    if (para_suv01 < 1 || para_suv01 > 4) {  
-        mes "[Talking Dog]";  
-        mes "Woof! You don't have any active desert training to abandon.";  
-        return;  
-    }  
-      
-    mes "[Talking Dog]";  
-    mes "^FF0000Warning:^000000 Abandoning your desert training will reset all progress!";  
-    mes "Are you sure you want to give up? The oasis needs your help!";  
-    next;  
-      
-    if (select("Yes, abandon training:No, continue training") == 2) {  
-        mes "[Talking Dog]";  
-        mes "Good choice! The desert creatures won't defeat themselves!";  
-        return;  
-    }  
-      
-    // Handle quest abandonment  
-    switch(para_suv01) {  
-        case 1:  
-            para_suv01 = 0;  
-            erasequest 7128;  
-            break;  
-        case 2:  
-            para_suv01 = 0;  
-            erasequest 7128;  
+S_AbandonQuest:    
+    if (para_suv01 < 1 || para_suv01 > 4) {    
+        mes "[Talking Dog]";    
+        mes "Woof! You don't have any active desert training to abandon.";    
+        return;    
+    }    
+        
+    mes "[Talking Dog]";    
+    mes "^FF0000Warning:^000000 Abandoning will only clear your current hunting progress!";    
+    mes "Are you sure you want to give up? The oasis needs your help!";    
+    next;    
+        
+    if (select("Yes, abandon current hunt:No, continue training") == 2) {    
+        mes "[Talking Dog]";    
+        mes "Good choice! The desert creatures won't defeat themselves!";    
+        return;    
+    }    
+        
+    // Only erase current hunting quest, keep main quest progression  
+    switch(para_suv01) {    
+        case 1:    
+            // Already at introduction, can't step back further  
+            mes "[Talking Dog]";    
+            mes "Woof! You're already at the beginning of desert training.";    
+            return;  
+        case 2:    
             if (checkquest(7129) >= 0) erasequest 7129;  
-            break;  
-        case 3:  
-            para_suv01 = 0;  
-            erasequest 7128;  
-            if (checkquest(7129) >= 0) erasequest 7129;  
+            para_suv01 = 1;  // Back to introduction  
+            break;    
+        case 3:    
             if (checkquest(7130) >= 0) erasequest 7130;  
-            break;  
-        case 4:  
-            para_suv01 = 0;  
-            erasequest 7128;  
-            if (checkquest(7129) >= 0) erasequest 7129;  
-            if (checkquest(7130) >= 0) erasequest 7130;  
+            para_suv01 = 2;  // Back to previous hunt  
+            break;    
+        case 4:    
             if (checkquest(7131) >= 0) erasequest 7131;  
-            break;  
-    }  
-      
-    mes "[Talking Dog]";  
-    mes "Woof... Desert training abandoned.";  
-    mes "The oasis will miss your help, but you can always restart with Boya.";  
+            para_suv01 = 3;  // Back to previous hunt  
+            break;    
+    }    
+        
+    mes "[Talking Dog]";    
+    mes "Woof... Current hunt abandoned. You can restart this step anytime.";    
     return;  
   
 S_QuestStatus:  
@@ -444,6 +458,7 @@ S_QuestStatus:
   
 // Enhanced greeting with quest management option  
 S_DefaultGreeting:  
+	mes "[Talking Dog]";
     mes "Hey look.";  
     mes "I'm a talking dog.";  
     mes "Not a wolf.";  
@@ -472,6 +487,10 @@ S_DefaultGreeting:
 
 OnInit:  
     setunitdata( getnpcid(0), UNPC_GROUP_ID, 6);  
-    //setunittitle( getnpcid(0), "Talking Dog" );  
+    //setunittitle( getnpcid(0), "Talking Dog" );
+    setarray .base_exp[0], 900, 1800, 1400;  
+    setarray .job_exp[0], 900, 1800, 1400;
+    setarray .item_reward[0], 25223, 25223, 25223;  
+    setarray .item_amount[0], 1, 1, 1;	
     end;	
 }

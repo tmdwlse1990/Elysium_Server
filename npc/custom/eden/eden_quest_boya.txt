@@ -252,72 +252,123 @@ S_AbandonQuest:
         return;  
     }  
       
-    // Handle quest abandonment based on current progress  
-    switch(para_suv01) {  
-        case 1: case 2: case 3: case 4:  
-            erasequest 7128;  
-            if (checkquest(7129) >= 0) erasequest 7129;  
-            para_suv01 = 0;  
-            mes "[Boya]";  
-            mes "Desert training abandoned. You can restart anytime.";  
-            break;  
-        case 6: case 7: case 8: case 9:  
-            erasequest 7133;  
-            if (checkquest(7134) >= 0) erasequest 7134;  
-            if (checkquest(7135) >= 0) erasequest 7135;  
-            if (checkquest(7136) >= 0) erasequest 7136;  
-            para_suv01 = 0;  
-            mes "[Boya]";  
-            mes "Culvert training abandoned. You can restart anytime.";  
-            break;  
-        case 13: case 14: case 15:  
-            erasequest 7138;  
-            if (checkquest(7139) >= 0) erasequest 7139;  
-            if (checkquest(7140) >= 0) erasequest 7140;  
-            para_suv01 = 12;  
-            mes "[Boya]";  
-            mes "Ghost Cave training abandoned.";  
-            break;  
-        case 17: case 18: case 19: case 20:  
-            erasequest 7142;  
-            if (checkquest(7143) >= 0) erasequest 7143;  
-            if (checkquest(7144) >= 0) erasequest 7144;  
-            if (checkquest(7145) >= 0) erasequest 7145;  
-            para_suv01 = 12;  
-            mes "[Boya]";  
-            mes "Anthell training abandoned.";  
-            break;  
-        case 24: case 25: case 26: case 27:  
-            erasequest 7147;  
-            if (checkquest(7148) >= 0) erasequest 7148;  
-            if (checkquest(7149) >= 0) erasequest 7149;  
-            if (checkquest(7150) >= 0) erasequest 7150;  
-            para_suv01 = 23;  
-            mes "[Boya]";  
-            mes "Orc Village training abandoned.";  
-            break;  
-        case 29: case 30: case 31:  
-            erasequest 7152;  
-            if (checkquest(7153) >= 0) erasequest 7153;  
-            if (checkquest(7154) >= 0) erasequest 7154;  
-            para_suv01 = 23;  
-            mes "[Boya]";  
-            mes "Orc Dungeon training abandoned.";  
-            break;  
-        case 33: case 34: case 35:  
-            erasequest 7156;  
-            if (checkquest(7157) >= 0) erasequest 7157;  
-            if (checkquest(7158) >= 0) erasequest 7158;  
-            para_suv01 = 23;  
-            mes "[Boya]";  
-            mes "Ocean City training abandoned.";  
-            break;  
-        default:  
-            mes "[Boya]";  
-            mes "You don't have any active training to abandon.";  
-            break;  
-    }  
-    return;
+	// Handle quest abandonment based on current progress    
+	switch(para_suv01) {    
+		case 1: case 2: case 3: case 4:    
+			// Only erase current hunting quest, keep main quest  
+			if (checkquest(7129) >= 0) erasequest 7129;  
+			para_suv01 = 1;  // Back to desert introduction  
+			mes "[Boya]";    
+			mes "Current desert hunt abandoned. You can restart this step anytime.";    
+			break;    
+		case 6: case 7: case 8: case 9:    
+			// Only erase current hunting quest  
+			switch(para_suv01) {  
+				case 7:  
+					if (checkquest(7134) >= 0) erasequest 7134;  
+					para_suv01 = 6;  // Back to password verification  
+					break;  
+				case 8:  
+					if (checkquest(7135) >= 0) erasequest 7135;  
+					para_suv01 = 7;  // Back to Thief Bug hunt  
+					break;  
+				case 9:  
+					if (checkquest(7136) >= 0) erasequest 7136;  
+					para_suv01 = 8;  // Back to Tarou hunt  
+					break;  
+			}  
+			mes "[Boya]";    
+			mes "Current culvert hunt abandoned. You can restart this step anytime.";    
+			break;    
+		case 13: case 14: case 15:    
+			// Only erase current hunting quest  
+			switch(para_suv01) {  
+				case 14:  
+					if (checkquest(7139) >= 0) erasequest 7139;  
+					para_suv01 = 13;  // Back to introduction  
+					break;  
+				case 15:  
+					if (checkquest(7140) >= 0) erasequest 7140;  
+					para_suv01 = 14;  // Back to Skeleton hunt  
+					break;  
+			}  
+			mes "[Boya]";    
+			mes "Current ghost cave hunt abandoned. You can restart this step anytime.";    
+			break;    
+		case 17: case 18: case 19: case 20:    
+			// Only erase current hunting quest  
+			switch(para_suv01) {  
+				case 18:  
+					if (checkquest(7143) >= 0) erasequest 7143;  
+					para_suv01 = 17;  // Back to introduction  
+					break;  
+				case 19:  
+					if (checkquest(7144) >= 0) erasequest 7144;  
+					para_suv01 = 18;  // Back to Pierre hunt  
+					break;  
+				case 20:  
+					if (checkquest(7145) >= 0) erasequest 7145;  
+					para_suv01 = 19;  // Back to Andre hunt  
+					break;  
+			}  
+			mes "[Boya]";    
+			mes "Current anthell hunt abandoned. You can restart this step anytime.";    
+			break;    
+		case 24: case 25: case 26: case 27:    
+			// Only erase current hunting quest  
+			switch(para_suv01) {  
+				case 25:  
+					if (checkquest(7148) >= 0) erasequest 7148;  
+					para_suv01 = 24;  // Back to introduction  
+					break;  
+				case 26:  
+					if (checkquest(7149) >= 0) erasequest 7149;  
+					para_suv01 = 25;  // Back to Orc Baby hunt  
+					break;  
+				case 27:  
+					if (checkquest(7150) >= 0) erasequest 7150;  
+					para_suv01 = 26;  // Back to Orc Warrior hunt  
+					break;  
+			}  
+			mes "[Boya]";    
+			mes "Current orc village hunt abandoned. You can restart this step anytime.";    
+			break;    
+		case 29: case 30: case 31:    
+			// Only erase current hunting quest  
+			switch(para_suv01) {  
+				case 30:  
+					if (checkquest(7153) >= 0) erasequest 7153;  
+					para_suv01 = 29;  // Back to dungeon introduction  
+					break;  
+				case 31:  
+					if (checkquest(7154) >= 0) erasequest 7154;  
+					para_suv01 = 30;  // Back to Orc Zombie hunt  
+					break;  
+			}  
+			mes "[Boya]";    
+			mes "Current orc dungeon hunt abandoned. You can restart this step anytime.";    
+			break;    
+		case 33: case 34: case 35:    
+			// Only erase current hunting quest  
+			switch(para_suv01) {  
+				case 34:  
+					if (checkquest(7157) >= 0) erasequest 7157;  
+					para_suv01 = 33;  // Back to introduction  
+					break;  
+				case 35:  
+					if (checkquest(7158) >= 0) erasequest 7158;  
+					para_suv01 = 34;  // Back to Merman hunt  
+					break;  
+			}  
+			mes "[Boya]";    
+			mes "Current ocean city hunt abandoned. You can restart this step anytime.";    
+			break;    
+		default:    
+			mes "[Boya]";    
+			mes "You don't have any active training to abandon.";    
+			break;    
+	}    
+	return;
 
 S_StartTraining:  
     callsub S_AssignQuest;  
