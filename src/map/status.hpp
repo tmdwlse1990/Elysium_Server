@@ -1457,6 +1457,9 @@ enum sc_type : int16 {
 	SC_INSTANCE_EXP_BONUS,
 	SC_INSTANCE_DROP_BONUS,
 
+	// Level 275 New Skills
+	SC_CHASING,
+
 	SC_MAX, //Automatically updated max, used in for's to check we are within bounds.
 };
 

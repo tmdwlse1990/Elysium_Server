@@ -2017,6 +2017,7 @@
 	export_constant(SC_INSTANCE_RESIST_PENALTY);
 	export_constant(SC_INSTANCE_EXP_BONUS);
 	export_constant(SC_INSTANCE_DROP_BONUS);
+	export_constant(SC_CHASING);
 
 /// Do not modify code below this, until the end of the API hook, since it will be automatically generated again
 /// @APIHOOK_START(EFST_CONST)
