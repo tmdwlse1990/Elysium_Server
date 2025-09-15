@@ -61,4 +61,4 @@ Footer:
   - Path: db/re/pet_db.yml
     Mode: Renewal
   - Path: db/import/pet_db.yml
-    Mode: Renewal
+
