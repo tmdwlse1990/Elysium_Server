@@ -2622,23 +2622,31 @@ void status_calc_misc(struct block_list *bl, struct status_data *status, int32 l
 		// Mdef
 		stat = (int32)(((float)status_get_homvit(bl) + level) / 4 + (float)status_get_homint(bl) / 2);
 		status->mdef = cap_value(stat, 0, SHRT_MAX);
+#ifdef RENEWAL_HIT
 		// Hit
 		stat = level + status->dex + 150;
 		status->hit = cap_value(stat, 1, SHRT_MAX);
+#endif
+#ifdef RENEWAL_FLEE
 		// Flee
 		stat = level + status_get_homagi(bl);
 		status->flee = cap_value(stat, 1, SHRT_MAX);
+#endif
 	} else {
+#ifdef RENEWAL_HIT
 		// Hit
 		stat = status->hit;
 		stat += level + status->dex + (bl->type == BL_PC ? status->luk / 3 + 175 : 150); //base level + ( every 1 dex = +1 hit ) + (every 3 luk = +1 hit) + 175
 		stat += 2 * status->con;
 		status->hit = cap_value(stat, 1, SHRT_MAX);
+#endif
+#ifdef RENEWAL_FLEE
 		// Flee
 		stat = status->flee;
 		stat += level + status->agi + (bl->type == BL_MER ? 0 : bl->type == BL_PC ? status->luk / 5 : 0) + 100; //base level + ( every 1 agi = +1 flee ) + (every 5 luk = +1 flee) + 100
 		stat += 2 * status->con;
 		status->flee = cap_value(stat, 1, SHRT_MAX);
+#endif
 		// Def2
 		if (bl->type == BL_MER)
 			stat = (int32)(status->vit + ((float)level / 10) + ((float)status->vit / 5));
@@ -2694,14 +2702,18 @@ void status_calc_misc(struct block_list *bl, struct status_data *status, int32 l
 	// Matk
 	status->matk_min = status_base_matk_min(status);
 	status->matk_max = status_base_matk_max(status);
+#ifndef RENEWAL_HIT
 	// Hit
 	stat = status->hit;
 	stat += level + status->dex;
 	status->hit = cap_value(stat, 1, SHRT_MAX);
+#endif
+#ifndef RENEWAL_FLEE
 	// Flee
 	stat = status->flee;
 	stat += level + status->agi;
 	status->flee = cap_value(stat, 1, SHRT_MAX);
+#endif
 	// Def2
 	stat = status->def2;
 	stat += status->vit;
@@ -6085,6 +6097,7 @@ void status_calc_bl_main(struct block_list& bl, std::bitset<SCB_MAX> flag)
 #endif
 	}
 
+#ifdef RENEWAL_HIT
 	if(flag[SCB_HIT]) {
 		if (status->dex == b_status->dex
 #ifdef RENEWAL
@@ -6099,7 +6112,9 @@ void status_calc_bl_main(struct block_list& bl, std::bitset<SCB_MAX> flag)
 #endif
 			 );
 	}
+#endif
 
+#ifdef RENEWAL_FLEE
 	if(flag[SCB_FLEE]) {
 		if (status->agi == b_status->agi
 #ifdef RENEWAL
@@ -6114,6 +6129,7 @@ void status_calc_bl_main(struct block_list& bl, std::bitset<SCB_MAX> flag)
 #endif
 			);
 	}
+#endif
 
 	if(flag[SCB_DEF]) {
 		status->def = status_calc_def(&bl, sc, b_status->def);

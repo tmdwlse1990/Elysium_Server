@@ -23,6 +23,22 @@
 /// Leave this line to enable renewal specific support such as renewal formulas
 #define RENEWAL
 
+/// Renewal hit calculations  
+/// (disable by commenting the line)  
+///  
+/// Leave this line to enable renewal hit calculation algorithms  
+/// - Changes how HIT is calculated from stats  
+/// - Affects accuracy formulas in battle calculations  
+//#define RENEWAL_HIT  
+  
+/// Renewal flee calculations    
+/// (disable by commenting the line)  
+///  
+/// Leave this line to enable renewal flee calculation algorithms  
+/// - Changes how FLEE is calculated from stats  
+/// - Affects evasion formulas in battle calculations  
+//#define RENEWAL_FLEE
+
 /// Renewal cast time
 /// (disable by commenting the line)
 ///

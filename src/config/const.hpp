@@ -82,12 +82,20 @@ const t_exp MAX_LEVEL_JOB_EXP = 999999999;
 #endif
 
 /* ATCMD_FUNC(mobinfo) HIT and FLEE calculations */
-#ifdef RENEWAL
-	#define MOB_FLEE(mob) ( mob->lv + mob->status.agi + 100 )
-	#define MOB_HIT(mob)  ( mob->lv + mob->status.dex + 175 )
-#else
-	#define MOB_FLEE(mob) ( mob->lv + mob->status.agi )
-	#define MOB_HIT(mob)  ( mob->lv + mob->status.dex )
+#ifdef RENEWAL  
+    #ifdef RENEWAL_HIT  
+        #define MOB_HIT(mob)  ( mob->lv + mob->status.dex + 175 )  
+    #else  
+        #define MOB_HIT(mob)  ( mob->lv + mob->status.dex )  
+    #endif  
+    #ifdef RENEWAL_FLEE  
+        #define MOB_FLEE(mob) ( mob->lv + mob->status.agi + 100 )  
+    #else  
+        #define MOB_FLEE(mob) ( mob->lv + mob->status.agi )  
+    #endif  
+#else  
+    #define MOB_FLEE(mob) ( mob->lv + mob->status.agi )  
+    #define MOB_HIT(mob)  ( mob->lv + mob->status.dex )  
 #endif
 
 /* Renewal's dmg level modifier, used as a macro for a easy way to turn off. */

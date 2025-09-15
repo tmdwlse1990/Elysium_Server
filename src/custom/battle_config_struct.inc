@@ -43,8 +43,37 @@ int32 autocombat_duration_type;
 int32 autocombat_timer;
 int32 autocombat_iplimit;
 int32 autocombat_gepardlimit;
-
-// renewal to pre-renewal calc  
+// The stat of renewal MVPs (ID 2083-31999)  
+int32 mvp_str_rate;  
+int32 mvp_agi_rate;  
+int32 mvp_vit_rate;  
+int32 mvp_int_rate;  
+int32 mvp_dex_rate;  
+int32 mvp_luk_rate;  
+int32 mvp_atk_rate;  
+int32 mvp_matk_rate;  
+int32 mvp_def_rate;  
+int32 mvp_mdef_rate;  
+int32 mvp_hit_rate;  
+int32 mvp_flee_rate;  
+int32 mvp_crit_rate;  
+int32 mvp_aspd_rate;
+// The stat of renewal normal monsters (ID 2083-31999) 
+int32 monster_str_rate;  
+int32 monster_agi_rate;  
+int32 monster_vit_rate;  
+int32 monster_int_rate;  
+int32 monster_dex_rate;  
+int32 monster_luk_rate;  
+int32 monster_atk_rate;  
+int32 monster_matk_rate;  
+int32 monster_def_rate;  
+int32 monster_mdef_rate;  
+int32 monster_hit_rate;  
+int32 monster_flee_rate;  
+int32 monster_crit_rate;  
+int32 monster_aspd_rate;
+// The stat of renewal MVPs (ID 2083-31999)  
 int32 mvp_hp_rate2;  
 int32 mvp_str_rate2;  
 int32 mvp_agi_rate2;  
@@ -59,7 +88,8 @@ int32 mvp_mdef_rate2;
 int32 mvp_hit_rate2;  
 int32 mvp_flee_rate2;  
 int32 mvp_crit_rate2;  
-int32 mvp_aspd_rate2;  
+int32 mvp_aspd_rate2;
+// The stat of renewal normal monsters (ID 2083-31999)  
 int32 monster_hp_rate2;  
 int32 monster_str_rate2;  
 int32 monster_agi_rate2;  

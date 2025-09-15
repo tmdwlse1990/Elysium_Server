@@ -5583,11 +5583,14 @@ void MobDatabase::loadingFinished() {
 		// Now that we know if it is a MVP or not, apply battle_config modifiers [Skotlex]
 		double maxhp = (double)mob->status.max_hp;
 
-        // Check if this is a renewal monster (ID range 20020-31999)  
+		// Check if this is a classic monster (ID range 1000-2082)  
+		bool is_classic_monster = (mob->id >= MIN_MOB_DB && mob->id <= 2082);
+
+        // Check if this is a renewal monster (ID range 2083-31999)  
         bool is_renewal_monster = (mob->id >= 2083 && mob->id <= MAX_MOB_DB2);
 
 		if (mob->get_bosstype() == BOSSTYPE_MVP) { // MVP  
-#ifndef RENEWAL
+
 			if (is_renewal_monster) {    
 				// HP scaling  
 				if (battle_config.mvp_hp_rate2 != 100)    
@@ -5629,14 +5632,48 @@ void MobDatabase::loadingFinished() {
 					mob->status.adelay = cap_value(mob->status.adelay * 100 / battle_config.mvp_aspd_rate2, 100, USHRT_MAX);  
 				}  
 			} else {
-#endif				
+				// HP scaling
 				if (battle_config.mvp_hp_rate != 100)  
-					maxhp = maxhp * (double)battle_config.mvp_hp_rate / 100.;  
-#ifndef RENEWAL				
-			}
-#endif			
+					maxhp = maxhp * (double)battle_config.mvp_hp_rate / 100.;
+				// Base stats scaling
+				if (battle_config.mvp_str_rate != 100)  
+					mob->status.str = cap_value(mob->status.str * battle_config.mvp_str_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.mvp_agi_rate != 100)  
+					mob->status.agi = cap_value(mob->status.agi * battle_config.mvp_agi_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.mvp_vit_rate != 100)  
+					mob->status.vit = cap_value(mob->status.vit * battle_config.mvp_vit_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.mvp_int_rate != 100)  
+					mob->status.int_ = cap_value(mob->status.int_ * battle_config.mvp_int_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.mvp_dex_rate != 100)  
+					mob->status.dex = cap_value(mob->status.dex * battle_config.mvp_dex_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.mvp_luk_rate != 100)  
+					mob->status.luk = cap_value(mob->status.luk * battle_config.mvp_luk_rate / 100, 1, USHRT_MAX);  
+				  
+				// Combat stats scaling  
+				if (battle_config.mvp_atk_rate != 100)  
+					mob->status.rhw.atk = cap_value(mob->status.rhw.atk * battle_config.mvp_atk_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.mvp_matk_rate != 100)  
+					mob->status.rhw.atk2 = cap_value(mob->status.rhw.atk2 * battle_config.mvp_matk_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.mvp_def_rate != 100)  
+					mob->status.def = cap_value(mob->status.def * battle_config.mvp_def_rate / 100, 0, SHRT_MAX);  
+				if (battle_config.mvp_mdef_rate != 100)  
+					mob->status.mdef = cap_value(mob->status.mdef * battle_config.mvp_mdef_rate / 100, 0, SHRT_MAX);  
+				if (battle_config.mvp_hit_rate != 100)  
+					mob->status.hit = cap_value(mob->status.hit * battle_config.mvp_hit_rate / 100, 1, SHRT_MAX);  
+				if (battle_config.mvp_flee_rate != 100)  
+					mob->status.flee = cap_value(mob->status.flee * battle_config.mvp_flee_rate / 100, 1, SHRT_MAX);  
+				if (battle_config.mvp_crit_rate != 100)  
+					mob->status.cri = cap_value(mob->status.cri * battle_config.mvp_crit_rate / 100, 1, SHRT_MAX);  
+				  
+				// Speed scaling (lower is faster)  
+				if (battle_config.mvp_aspd_rate != 100) {  
+					mob->status.amotion = cap_value(mob->status.amotion * 100 / battle_config.mvp_aspd_rate, 100, USHRT_MAX);  
+					mob->status.adelay = cap_value(mob->status.adelay * 100 / battle_config.mvp_aspd_rate, 100, USHRT_MAX);  
+				}
+		
+			}			
 		} else { // Normal mob
-#ifndef RENEWAL		
+		
 			if (is_renewal_monster) {    
 				// HP scaling  
 				if (battle_config.monster_hp_rate2 != 100)    
@@ -5678,12 +5715,46 @@ void MobDatabase::loadingFinished() {
 					mob->status.adelay = cap_value(mob->status.adelay * 100 / battle_config.monster_aspd_rate2, 100, USHRT_MAX);  
 				}  
 			} else {
-#endif				
+				// HP scaling
 				if (battle_config.monster_hp_rate != 100)  
-					maxhp = maxhp * (double)battle_config.monster_hp_rate / 100.;  
-#ifndef RENEWAL
-			}
-#endif			
+					maxhp = maxhp * (double)battle_config.monster_hp_rate / 100.; 
+				  
+				// Base stats scaling  
+				if (battle_config.monster_str_rate != 100)  
+					mob->status.str = cap_value(mob->status.str * battle_config.monster_str_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.monster_agi_rate != 100)  
+					mob->status.agi = cap_value(mob->status.agi * battle_config.monster_agi_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.monster_vit_rate != 100)  
+					mob->status.vit = cap_value(mob->status.vit * battle_config.monster_vit_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.monster_int_rate != 100)  
+					mob->status.int_ = cap_value(mob->status.int_ * battle_config.monster_int_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.monster_dex_rate != 100)  
+					mob->status.dex = cap_value(mob->status.dex * battle_config.monster_dex_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.monster_luk_rate != 100)  
+					mob->status.luk = cap_value(mob->status.luk * battle_config.monster_luk_rate / 100, 1, USHRT_MAX);  
+				  
+				// Combat stats scaling  
+				if (battle_config.monster_atk_rate != 100)  
+					mob->status.rhw.atk = cap_value(mob->status.rhw.atk * battle_config.monster_atk_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.monster_matk_rate != 100)  
+					mob->status.rhw.atk2 = cap_value(mob->status.rhw.atk2 * battle_config.monster_matk_rate / 100, 1, USHRT_MAX);  
+				if (battle_config.monster_def_rate != 100)  
+					mob->status.def = cap_value(mob->status.def * battle_config.monster_def_rate / 100, 0, SHRT_MAX);  
+				if (battle_config.monster_mdef_rate != 100)  
+					mob->status.mdef = cap_value(mob->status.mdef * battle_config.monster_mdef_rate / 100, 0, SHRT_MAX);  
+				if (battle_config.monster_hit_rate != 100)  
+					mob->status.hit = cap_value(mob->status.hit * battle_config.monster_hit_rate / 100, 1, SHRT_MAX);  
+				if (battle_config.monster_flee_rate != 100)  
+					mob->status.flee = cap_value(mob->status.flee * battle_config.monster_flee_rate / 100, 1, SHRT_MAX);  
+				if (battle_config.monster_crit_rate != 100)  
+					mob->status.cri = cap_value(mob->status.cri * battle_config.monster_crit_rate / 100, 1, SHRT_MAX);  
+				  
+				// Speed scaling (lower is faster)  
+				if (battle_config.monster_aspd_rate != 100) {  
+					mob->status.amotion = cap_value(mob->status.amotion * 100 / battle_config.monster_aspd_rate, 100, USHRT_MAX);  
+					mob->status.adelay = cap_value(mob->status.adelay * 100 / battle_config.monster_aspd_rate, 100, USHRT_MAX);  
+				}				
+			}			
 		}
 
 		mob->status.max_hp = cap_value(static_cast<uint32>(maxhp), 1, UINT32_MAX);
