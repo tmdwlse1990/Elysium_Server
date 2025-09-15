@@ -6910,7 +6910,7 @@ Body:
             Item: Chung_E_Card
             Rate: 1
           - Index: 315
-            Item: Orc_Baby_Card_Card
+            Item: Orc_Baby_Card
             Rate: 1
           - Index: 316
             Item: Green_Iguana_Card
@@ -9037,7 +9037,7 @@ Body:
             Item: Chung_E_Card
             Rate: 1
           - Index: 25
-            Item: Orc_Baby_Card_Card
+            Item: Orc_Baby_Card
             Rate: 1
           - Index: 26
             Item: Aliot_Card
