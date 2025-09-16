@@ -2585,143 +2585,156 @@ uint16 status_base_matk_max(block_list *bl, const struct status_data* status, in
 }
 #endif
 
-/**
- * Fills in the misc data that can be calculated from the other status info (except for level)
- * @param bl: Object to calculate status on [PC|MOB|PET|HOM|MERC|ELEM]
- * @param status: Player status
- */
-void status_calc_misc(block_list *bl, struct status_data *status, int32 level)
-{
-	int32 stat;
-
-	// Non players get the value set, players need to stack with previous bonuses.
-	if( bl->type != BL_PC ){
-		status->batk =
-		status->hit = status->flee =
-		status->def2 = status->mdef2 =
-		status->cri = status->flee2 =
-		status->patk = status->smatk =
-		status->hplus = status->crate = 0;
-		
-		if (bl->type != BL_MOB)	// BL_MOB has values set when loading mob_db
-			status->res = status->mres = 0;
-	}
-
-#ifdef RENEWAL // Renewal formulas
-	if (bl->type == BL_HOM) {
-		// Def2
-		stat = status_get_homvit(bl) + status_get_homagi(bl) / 2;
-		status->def2 = cap_value(stat, 0, SHRT_MAX);
-		// Mdef2
-		stat = (status_get_homvit(bl) + status_get_homint(bl)) / 2;
-		status->mdef2 = cap_value(stat, 0, SHRT_MAX);
-		// Def
-		stat = status->def;
-		stat += status_get_homvit(bl) + level / 2;
-		status->def = cap_value(stat, 0, SHRT_MAX);
-		// Mdef
-		stat = (int32)(((float)status_get_homvit(bl) + level) / 4 + (float)status_get_homint(bl) / 2);
-		status->mdef = cap_value(stat, 0, SHRT_MAX);
-#ifdef RENEWAL_HIT
-		// Hit
-		stat = level + status->dex + 150;
-		status->hit = cap_value(stat, 1, SHRT_MAX);
-#endif
-#ifdef RENEWAL_FLEE
-		// Flee
-		stat = level + status_get_homagi(bl);
-		status->flee = cap_value(stat, 1, SHRT_MAX);
-#endif
-	} else {
-#ifdef RENEWAL_HIT
-		// Hit
-		stat = status->hit;
-		stat += level + status->dex + (bl->type == BL_PC ? status->luk / 3 + 175 : 150); //base level + ( every 1 dex = +1 hit ) + (every 3 luk = +1 hit) + 175
-		stat += 2 * status->con;
-		status->hit = cap_value(stat, 1, SHRT_MAX);
-#endif
-#ifdef RENEWAL_FLEE
-		// Flee
-		stat = status->flee;
-		stat += level + status->agi + (bl->type == BL_MER ? 0 : bl->type == BL_PC ? status->luk / 5 : 0) + 100; //base level + ( every 1 agi = +1 flee ) + (every 5 luk = +1 flee) + 100
-		stat += 2 * status->con;
-		status->flee = cap_value(stat, 1, SHRT_MAX);
-#endif
-		// Def2
-		if (bl->type == BL_MER)
-			stat = (int32)(status->vit + ((float)level / 10) + ((float)status->vit / 5));
-		else {
-			stat = status->def2;
-			stat += (int32)(((float)level + status->vit) / 2 + (bl->type == BL_PC ? ((float)status->agi / 5) : 0)); //base level + (every 2 vit = +1 def) + (every 5 agi = +1 def)
-		}
-		status->def2 = cap_value(stat, 0, SHRT_MAX);
-		// Mdef2
-		if (bl->type == BL_MER)
-			stat = (int32)(((float)level / 10) + ((float)status->int_ / 5));
-		else {
-			stat = status->mdef2;
-			stat += (int32)(bl->type == BL_PC ? (status->int_ + ((float)level / 4) + ((float)(status->dex + status->vit) / 5)) : ((float)(status->int_ + level) / 4)); //(every 4 base level = +1 mdef) + (every 1 int32 = +1 mdef) + (every 5 dex = +1 mdef) + (every 5 vit = +1 mdef)
-		}
-		status->mdef2 = cap_value(stat, 0, SHRT_MAX);
-		// PAtk
-		stat = status->patk;
-		stat += status->pow / 3 + status->con / 5;
-		status->patk = cap_value(stat, 0, SHRT_MAX);
-		// SMatk
-		stat = status->smatk;
-		stat += status->spl / 3 + status->con / 5;
-		status->smatk = cap_value(stat, 0, SHRT_MAX);
-		// Res
-		stat = status->res;
-		stat += status->sta + status->sta / 3 * 5;
-		status->res = cap_value(stat, 0, SHRT_MAX);
-		// Mres
-		stat = status->mres;
-		stat += status->wis + status->wis / 3 * 5;
-		status->mres = cap_value(stat, 0, SHRT_MAX);
-		// HPlus
-		stat = status->hplus;
-		stat += status->crt;
-		status->hplus = cap_value(stat, 0, SHRT_MAX);
-		// CRate
-		stat = status->crate;
-		stat += status->crt / 3;
-		status->crate = cap_value(stat, 0, SHRT_MAX);
-	}
-
-	// ATK
-	if (bl->type != BL_PC) {
-		status->rhw.atk2 = status_base_atk_max(bl, status, level);
-		status->rhw.atk = status_base_atk_min(bl, status, level);
-	}
-
-	// MAtk
-	status->matk_min = status_base_matk_min(bl, status, level);
-	status->matk_max = status_base_matk_max(bl, status, level);
-#else
-	// Matk
-	status->matk_min = status_base_matk_min(status);
-	status->matk_max = status_base_matk_max(status);
-#ifndef RENEWAL_HIT
-	// Hit
-	stat = status->hit;
-	stat += level + status->dex;
-	status->hit = cap_value(stat, 1, SHRT_MAX);
-#endif
-#ifndef RENEWAL_FLEE
-	// Flee
-	stat = status->flee;
-	stat += level + status->agi;
-	status->flee = cap_value(stat, 1, SHRT_MAX);
-#endif
-	// Def2
-	stat = status->def2;
-	stat += status->vit;
-	status->def2 = cap_value(stat, 0, SHRT_MAX);
-	// Mdef2
-	stat = status->mdef2;
-	stat += status->int_ + (status->vit / 2);
-	status->mdef2 = cap_value(stat, 0, SHRT_MAX);
+/**  
+ * Fills in the misc data that can be calculated from the other status info (except for level)  
+ * @param bl: Object to calculate status on [PC|MOB|PET|HOM|MERC|ELEM]  
+ * @param status: Player status  
+ */  
+void status_calc_misc(block_list *bl, struct status_data *status, int32 level)  
+{  
+    int32 stat;  
+  
+    // Non players get the value set, players need to stack with previous bonuses.  
+    if( bl->type != BL_PC ){  
+        status->batk =  
+        status->hit = status->flee =  
+        status->def2 = status->mdef2 =  
+        status->cri = status->flee2 =  
+        status->patk = status->smatk =  
+        status->hplus = status->crate = 0;  
+          
+        if (bl->type != BL_MOB) // BL_MOB has values set when loading mob_db  
+            status->res = status->mres = 0;  
+    }  
+  
+#ifdef RENEWAL // Renewal formulas  
+    if (bl->type == BL_HOM) {  
+        // Def2  
+        stat = status_get_homvit(bl) + status_get_homagi(bl) / 2;  
+        status->def2 = cap_value(stat, 0, SHRT_MAX);  
+        // Mdef2  
+        stat = (status_get_homvit(bl) + status_get_homint(bl)) / 2;  
+        status->mdef2 = cap_value(stat, 0, SHRT_MAX);  
+        // Def  
+        stat = status->def;  
+        stat += status_get_homvit(bl) + level / 2;  
+        status->def = cap_value(stat, 0, SHRT_MAX);  
+        // Mdef  
+        stat = (int32)(((float)status_get_homvit(bl) + level) / 4 + (float)status_get_homint(bl) / 2);  
+        status->mdef = cap_value(stat, 0, SHRT_MAX);  
+          
+        // Hit - Always calculate, choose formula based on flags  
+        stat = status->hit;  
+#ifdef RENEWAL_HIT  
+        stat += level + status->dex + 150;  
+#else  
+        stat += level + status->dex;  
+#endif  
+        status->hit = cap_value(stat, 1, SHRT_MAX);  
+          
+        // Flee - Always calculate, choose formula based on flags  
+        stat = status->flee;  
+#ifdef RENEWAL_FLEE  
+        stat += level + status_get_homagi(bl);  
+#else  
+        stat += level + status_get_homagi(bl);  
+#endif  
+        status->flee = cap_value(stat, 1, SHRT_MAX);  
+    } else {  
+        // Hit - Always calculate, choose formula based on flags  
+        stat = status->hit;  
+#ifdef RENEWAL_HIT  
+        stat += level + status->dex + (bl->type == BL_PC ? status->luk / 3 + 175 : 150); //base level + ( every 1 dex = +1 hit ) + (every 3 luk = +1 hit) + 175  
+        stat += 2 * status->con;  
+#else  
+        stat += level + status->dex; // Pre-renewal formula  
+#endif  
+        status->hit = cap_value(stat, 1, SHRT_MAX);  
+          
+        // Flee - Always calculate, choose formula based on flags  
+        stat = status->flee;  
+#ifdef RENEWAL_FLEE  
+        stat += level + status->agi + (bl->type == BL_MER ? 0 : bl->type == BL_PC ? status->luk / 5 : 0) + 100; //base level + ( every 1 agi = +1 flee ) + (every 5 luk = +1 flee) + 100  
+        stat += 2 * status->con;  
+#else  
+        stat += level + status->agi; // Pre-renewal formula  
+#endif  
+        status->flee = cap_value(stat, 1, SHRT_MAX);  
+          
+        // Def2  
+        if (bl->type == BL_MER)  
+            stat = (int32)(status->vit + ((float)level / 10) + ((float)status->vit / 5));  
+        else {  
+            stat = status->def2;  
+            stat += (int32)(((float)level + status->vit) / 2 + (bl->type == BL_PC ? ((float)status->agi / 5) : 0)); //base level + (every 2 vit = +1 def) + (every 5 agi = +1 def)  
+        }  
+        status->def2 = cap_value(stat, 0, SHRT_MAX);  
+        // Mdef2  
+        if (bl->type == BL_MER)  
+            stat = (int32)(((float)level / 10) + ((float)status->int_ / 5));  
+        else {  
+            stat = status->mdef2;  
+            stat += (int32)(bl->type == BL_PC ? (status->int_ + ((float)level / 4) + ((float)(status->dex + status->vit) / 5)) : ((float)(status->int_ + level) / 4)); //(every 4 base level = +1 mdef) + (every 1 int32 = +1 mdef) + (every 5 dex = +1 mdef) + (every 5 vit = +1 mdef)  
+        }  
+        status->mdef2 = cap_value(stat, 0, SHRT_MAX);  
+        // PAtk  
+        stat = status->patk;  
+        stat += status->pow / 3 + status->con / 5;  
+        status->patk = cap_value(stat, 0, SHRT_MAX);  
+        // SMatk  
+        stat = status->smatk;  
+        stat += status->spl / 3 + status->con / 5;  
+        status->smatk = cap_value(stat, 0, SHRT_MAX);  
+        // Res  
+        stat = status->res;  
+        stat += status->sta + status->sta / 3 * 5;  
+        status->res = cap_value(stat, 0, SHRT_MAX);  
+        // Mres  
+        stat = status->mres;  
+        stat += status->wis + status->wis / 3 * 5;  
+        status->mres = cap_value(stat, 0, SHRT_MAX);  
+        // HPlus  
+        stat = status->hplus;  
+        stat += status->crt;  
+        status->hplus = cap_value(stat, 0, SHRT_MAX);  
+        // CRate  
+        stat = status->crate;  
+        stat += status->crt / 3;  
+        status->crate = cap_value(stat, 0, SHRT_MAX);  
+    }  
+  
+    // ATK  
+    if (bl->type != BL_PC) {  
+        status->rhw.atk2 = status_base_atk_max(bl, status, level);  
+        status->rhw.atk = status_base_atk_min(bl, status, level);  
+    }  
+  
+    // MAtk  
+    status->matk_min = status_base_matk_min(bl, status, level);  
+    status->matk_max = status_base_matk_max(bl, status, level);  
+#else  
+    // Matk  
+    status->matk_min = status_base_matk_min(status);  
+    status->matk_max = status_base_matk_max(status);  
+  
+    // Hit - Always calculate using pre-renewal formula  
+    stat = status->hit;  
+    stat += level + status->dex;  
+    status->hit = cap_value(stat, 1, SHRT_MAX);  
+  
+    // Flee - Always calculate using pre-renewal formula  
+    stat = status->flee;  
+    stat += level + status->agi;  
+    status->flee = cap_value(stat, 1, SHRT_MAX);  
+  
+    // Def2  
+    stat = status->def2;  
+    stat += status->vit;  
+    status->def2 = cap_value(stat, 0, SHRT_MAX);  
+    // Mdef2  
+    stat = status->mdef2;  
+    stat += status->int_ + (status->vit / 2);  
+    status->mdef2 = cap_value(stat, 0, SHRT_MAX);  
 #endif
 
 	//Critical
