@@ -525,7 +525,7 @@ void collection_save(map_session_data* sd, bool calc)
 
 void collection_load_combo_states(map_session_data* sd) {    
     if (!sd) {  
-        ShowError("collection_load_combo_states: Invalid session data\\n");  
+        ShowError("collection_load_combo_states: Invalid session data.\n");  
         return;  
     }  
       
@@ -535,7 +535,7 @@ void collection_load_combo_states(map_session_data* sd) {
         sd->status.account_id, sd->status.char_id)) {    
           
         Sql_ShowDebug(mmysql_handle);    
-        ShowError("collection_load_combo_states: Failed to load combo states for account %d, char %d\\n",   
+        ShowError("collection_load_combo_states: Failed to load combo states for account '" CL_WHITE "%d" CL_RESET "', char '" CL_WHITE "%d" CL_RESET "'.\n",   
                   sd->status.account_id, sd->status.char_id);  
         return;    
     }    
@@ -546,19 +546,19 @@ void collection_load_combo_states(map_session_data* sd) {
         int stor_id, combo_index, is_active;    
             
         if (SQL_SUCCESS != Sql_GetData(mmysql_handle, 0, &data, NULL)) {  
-            ShowError("collection_load_combo_states: Failed to get stor_id data\\n");  
+            ShowError("collection_load_combo_states: Failed to get stor_id data.\n");  
             continue;  
         }  
         stor_id = atoi(data);  
           
         if (SQL_SUCCESS != Sql_GetData(mmysql_handle, 1, &data, NULL)) {  
-            ShowError("collection_load_combo_states: Failed to get combo_index data\\n");  
+            ShowError("collection_load_combo_states: Failed to get combo_index data.\n");  
             continue;  
         }  
         combo_index = atoi(data);  
           
         if (SQL_SUCCESS != Sql_GetData(mmysql_handle, 2, &data, NULL)) {  
-            ShowError("collection_load_combo_states: Failed to get is_active data\\n");  
+            ShowError("collection_load_combo_states: Failed to get is_active data.\n");  
             continue;  
         }  
         is_active = atoi(data);  
@@ -569,16 +569,16 @@ void collection_load_combo_states(map_session_data* sd) {
                 collection->active_combos[combo_index] = (is_active == 1);  
                 loaded_count++;  
             } else {  
-                ShowWarning("collection_load_combo_states: Invalid combo_index %d for stor_id %d\\n",   
+                ShowWarning("collection_load_combo_states: Invalid combo_index %d for stor_id '" CL_WHITE "%d" CL_RESET "'.\n",   
                            combo_index, stor_id);  
             }  
         } else {  
-            ShowWarning("collection_load_combo_states: Collection stor_id %d not found\\n", stor_id);  
+            ShowWarning("collection_load_combo_states: Collection stor_id '" CL_WHITE "%d" CL_RESET "' not found.\n", stor_id);  
         }  
     }    
       
     Sql_FreeResult(mmysql_handle);  
-    ShowInfo("collection_load_combo_states: Loaded %d combo states for account %d, char %d\\n",   
+    ShowInfo("collection_load_combo_states: Loaded '" CL_WHITE "%d" CL_RESET "' combo states for account '" CL_WHITE "%d" CL_RESET "', char '" CL_WHITE "%d" CL_RESET "'.\n",   
              loaded_count, sd->status.account_id, sd->status.char_id);  
 }
 
