@@ -32,272 +32,533 @@ using namespace rathena;
 
 std::vector<t_itemid> AC_ITEMIDS = { 50501 }; // Important here, define the item on which you can start autocombat from rental item
 
-void ac_save(map_session_data* sd){
-	int i;
-
-	//ac_common_config
-	if( SQL_ERROR == Sql_Query( mmysql_handle, "INSERT INTO `ac_common_config` (`char_id`,`stopmelee`,`pickup_item_config`,`prio_item_config`,`aggressive_behavior`,`autositregen_conf`,`autositregen_maxhp`,`autositregen_minhp`,`autositregen_maxsp`,`autositregen_minsp`,`tp_use_teleport`,`tp_use_flywing`,`tp_min_hp`,`tp_delay_nomobmeet`,`tp_mvp`,`tp_miniboss`,`accept_party_request`,`token_siegfried`,`return_to_savepoint`,`map_mob_selection`,`action_on_end`,`monster_surround`) VALUES (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) ON DUPLICATE KEY UPDATE `stopmelee` = %d, `pickup_item_config` = %d, `prio_item_config` = %d, `aggressive_behavior` = %d, `autositregen_conf` = %d, `autositregen_maxhp` = %d, `autositregen_minhp` = %d, `autositregen_maxsp` = %d, `autositregen_minsp` = %d, `tp_use_teleport` = %d, `tp_use_flywing` = %d, `tp_min_hp` = %d, `tp_delay_nomobmeet` = %d, `tp_mvp` = %d, `tp_miniboss` = %d, `accept_party_request` = %d, `token_siegfried` = %d, `return_to_savepoint` = %d, `map_mob_selection` = %d, `action_on_end` = %d, `monster_surround` = %d ", sd->status.char_id, sd->ac.stopmelee, sd->ac.pickup_item_config, sd->ac.prio_item_config, sd->ac.mobs.aggressive_behavior, sd->ac.autositregen.is_active, sd->ac.autositregen.max_hp, sd->ac.autositregen.min_hp, sd->ac.autositregen.max_sp, sd->ac.autositregen.min_sp, sd->ac.teleport.use_teleport, sd->ac.teleport.use_flywing, sd->ac.teleport.min_hp, sd->ac.teleport.delay_nomobmeet, sd->ac.teleport.tp_mvp, sd->ac.teleport.tp_miniboss, sd->ac.accept_party_request, sd->ac.token_siegfried, sd->ac.return_to_savepoint, sd->ac.mobs.map, sd->ac.action_on_end, sd->ac.monster_surround, sd->ac.stopmelee, sd->ac.pickup_item_config, sd->ac.prio_item_config, sd->ac.mobs.aggressive_behavior, sd->ac.autositregen.is_active, sd->ac.autositregen.max_hp, sd->ac.autositregen.min_hp, sd->ac.autositregen.max_sp, sd->ac.autositregen.min_sp, sd->ac.teleport.use_teleport, sd->ac.teleport.use_flywing, sd->ac.teleport.min_hp, sd->ac.teleport.delay_nomobmeet, sd->ac.teleport.tp_mvp, sd->ac.teleport.tp_miniboss, sd->ac.accept_party_request, sd->ac.token_siegfried, sd->ac.return_to_savepoint, sd->ac.mobs.map, sd->ac.action_on_end, sd->ac.monster_surround) ){
-		Sql_ShowDebug(mmysql_handle);
-	}
-
-	//clean ac_items
-	if( SQL_ERROR == Sql_Query( mmysql_handle, "DELETE FROM `ac_items` WHERE `char_id` = %d", sd->status.char_id ) ){
-		Sql_ShowDebug(mmysql_handle);
-	}
-	//insert ac_items - 0 - autobuffitems
-	if(!sd->ac.autobuffitems.empty()){
-		for(auto &itAutobuffitem : sd->ac.autobuffitems){
-			if( SQL_ERROR == Sql_Query( mmysql_handle, "INSERT INTO `ac_items` (`char_id`,`type`,`item_id`,`status`) VALUES (%d, 0, %d, %d)", sd->status.char_id, itAutobuffitem.item_id, itAutobuffitem.status) ){
-				Sql_ShowDebug(mmysql_handle);
-			}
-		}
-	}
-	//insert ac_items - 1 - autopotion
-	if(!sd->ac.autopotion.empty()){
-		for(auto &itAutopotion : sd->ac.autopotion){
-			if( SQL_ERROR == Sql_Query( mmysql_handle, "INSERT INTO `ac_items` (`char_id`,`type`,`item_id`,`min_hp`,`min_sp`) VALUES (%d, 1, %d, %d, %d)", sd->status.char_id, itAutopotion.item_id, itAutopotion.min_hp, itAutopotion.min_sp ) ){
-				Sql_ShowDebug(mmysql_handle);
-			}
-		}
-	}
-	//insert ac_items - 2 - pickup_item_id
-	if(!sd->ac.pickup_item_id.empty()){
-		for (i=0; i<sd->ac.pickup_item_id.size(); i++){
-			if( SQL_ERROR == Sql_Query( mmysql_handle, "INSERT INTO `ac_items` (`char_id`,`type`,`item_id`) VALUES (%d, 2, %d)", sd->status.char_id, sd->ac.pickup_item_id.at(i) ) ){
-				Sql_ShowDebug(mmysql_handle);
-			}
-		}
-	}
-
-	//clean ac_mobs
-	if( SQL_ERROR == Sql_Query( mmysql_handle, "DELETE FROM `ac_mobs` WHERE `char_id` = %d", sd->status.char_id ) ){
-		Sql_ShowDebug(mmysql_handle);
-	}
-	//insert ac_mobs
-	if(!sd->ac.mobs.id.empty()){
-		for (i=0; i<sd->ac.mobs.id.size(); i++){
-			if( SQL_ERROR == Sql_Query( mmysql_handle, "INSERT INTO `ac_mobs` (`char_id`,`mob_id`) VALUES (%d, %d)", sd->status.char_id, sd->ac.mobs.id.at(i) ) ){
-				Sql_ShowDebug(mmysql_handle);
-			}
-		}
-	}
-
-	//clean ac_skills
-	if( SQL_ERROR == Sql_Query( mmysql_handle, "DELETE FROM `ac_skills` WHERE `char_id` = %d", sd->status.char_id ) ){
-		Sql_ShowDebug(mmysql_handle);
-	}
-	//insert ac_skills - 0 - autoheal
-	if(!sd->ac.autoheal.empty()){
-		for(auto &itAutoheal : sd->ac.autoheal){
-			if( SQL_ERROR == Sql_Query( mmysql_handle, "INSERT INTO `ac_skills` (`char_id`,`type`,`skill_id`,`skill_lv`,`min_hp`) VALUES (%d, 0, %d, %d, %d)", sd->status.char_id, itAutoheal.skill_id, itAutoheal.skill_lv, itAutoheal.min_hp ) ){
-				Sql_ShowDebug(mmysql_handle);
-			}
-		}
-	}
-	//insert ac_skills - 1 - autobuffskills
-	if(!sd->ac.autobuffskills.empty()){
-		for(auto &itAutobuffskills : sd->ac.autobuffskills){
-			if( SQL_ERROR == Sql_Query( mmysql_handle, "INSERT INTO `ac_skills` (`char_id`,`type`,`skill_id`,`skill_lv`) VALUES (%d, 1, %d, %d)", sd->status.char_id, itAutobuffskills.skill_id, itAutobuffskills.skill_lv ) ){
-				Sql_ShowDebug(mmysql_handle);
-			}
-		}
-	}
-	//insert ac_skills - 2 - autocombatskills
-	if(!sd->ac.autocombatskills.empty()){
-		for(auto &itautocombatskills : sd->ac.autocombatskills){
-			if( SQL_ERROR == Sql_Query( mmysql_handle, "INSERT INTO `ac_skills` (`char_id`,`type`,`skill_id`,`skill_lv`) VALUES (%d, 2, %d, %d)", sd->status.char_id, itautocombatskills.skill_id, itautocombatskills.skill_lv ) ){
-				Sql_ShowDebug(mmysql_handle);
-			}
-		}
-	}
+void ac_save(map_session_data* sd) {  
+    if (!sd) {  
+        ShowError("ac_save: Invalid session data\\n");  
+        return;  
+    }  
+  
+    // Start transaction for data consistency  
+    if (SQL_ERROR == Sql_Query(mmysql_handle, "START TRANSACTION")) {  
+        Sql_ShowDebug(mmysql_handle);  
+        ShowError("ac_save: Failed to start transaction for char_id %d\\n", sd->status.char_id);  
+        return;  
+    }  
+  
+    bool transaction_success = true;  
+  
+    // Save ac_common_config with proper error handling  
+    if (SQL_ERROR == Sql_Query(mmysql_handle,   
+        "INSERT INTO `ac_common_config` (`char_id`,`stopmelee`,`pickup_item_config`,`prio_item_config`,`aggressive_behavior`,`autositregen_conf`,`autositregen_maxhp`,`autositregen_minhp`,`autositregen_maxsp`,`autositregen_minsp`,`tp_use_teleport`,`tp_use_flywing`,`tp_min_hp`,`tp_delay_nomobmeet`,`tp_mvp`,`tp_miniboss`,`accept_party_request`,`token_siegfried`,`return_to_savepoint`,`map_mob_selection`,`action_on_end`,`monster_surround`) "  
+        "VALUES (%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d) "  
+        "ON DUPLICATE KEY UPDATE `stopmelee` = %d, `pickup_item_config` = %d, `prio_item_config` = %d, `aggressive_behavior` = %d, `autositregen_conf` = %d, `autositregen_maxhp` = %d, `autositregen_minhp` = %d, `autositregen_maxsp` = %d, `autositregen_minsp` = %d, `tp_use_teleport` = %d, `tp_use_flywing` = %d, `tp_min_hp` = %d, `tp_delay_nomobmeet` = %d, `tp_mvp` = %d, `tp_miniboss` = %d, `accept_party_request` = %d, `token_siegfried` = %d, `return_to_savepoint` = %d, `map_mob_selection` = %d, `action_on_end` = %d, `monster_surround` = %d",  
+        sd->status.char_id, sd->ac.stopmelee, sd->ac.pickup_item_config, sd->ac.prio_item_config,   
+        sd->ac.mobs.aggressive_behavior, sd->ac.autositregen.is_active, sd->ac.autositregen.max_hp,   
+        sd->ac.autositregen.min_hp, sd->ac.autositregen.max_sp, sd->ac.autositregen.min_sp,   
+        sd->ac.teleport.use_teleport, sd->ac.teleport.use_flywing, sd->ac.teleport.min_hp,   
+        sd->ac.teleport.delay_nomobmeet, sd->ac.teleport.tp_mvp, sd->ac.teleport.tp_miniboss,   
+        sd->ac.accept_party_request, sd->ac.token_siegfried, sd->ac.return_to_savepoint,   
+        sd->ac.mobs.map, sd->ac.action_on_end, sd->ac.monster_surround,  
+        // ON DUPLICATE KEY UPDATE values  
+        sd->ac.stopmelee, sd->ac.pickup_item_config, sd->ac.prio_item_config,   
+        sd->ac.mobs.aggressive_behavior, sd->ac.autositregen.is_active, sd->ac.autositregen.max_hp,   
+        sd->ac.autositregen.min_hp, sd->ac.autositregen.max_sp, sd->ac.autositregen.min_sp,   
+        sd->ac.teleport.use_teleport, sd->ac.teleport.use_flywing, sd->ac.teleport.min_hp,   
+        sd->ac.teleport.delay_nomobmeet, sd->ac.teleport.tp_mvp, sd->ac.teleport.tp_miniboss,   
+        sd->ac.accept_party_request, sd->ac.token_siegfried, sd->ac.return_to_savepoint,   
+        sd->ac.mobs.map, sd->ac.action_on_end, sd->ac.monster_surround)) {  
+          
+        Sql_ShowDebug(mmysql_handle);  
+        ShowError("ac_save: Failed to save common config for char_id %d\\n", sd->status.char_id);  
+        transaction_success = false;  
+        goto cleanup;  
+    }  
+  
+    // Clean and save ac_items with error checking  
+    if (SQL_ERROR == Sql_Query(mmysql_handle, "DELETE FROM `ac_items` WHERE `char_id` = %d", sd->status.char_id)) {  
+        Sql_ShowDebug(mmysql_handle);  
+        ShowError("ac_save: Failed to clean ac_items for char_id %d\\n", sd->status.char_id);  
+        transaction_success = false;  
+        goto cleanup;  
+    }  
+  
+    // Save autobuffitems  
+    if (!sd->ac.autobuffitems.empty()) {  
+        for (const auto& item : sd->ac.autobuffitems) {  
+            if (SQL_ERROR == Sql_Query(mmysql_handle,   
+                "INSERT INTO `ac_items` (`char_id`,`type`,`item_id`,`status`) VALUES (%d, 0, %d, %d)",   
+                sd->status.char_id, item.item_id, item.status)) {  
+                  
+                Sql_ShowDebug(mmysql_handle);  
+                ShowError("ac_save: Failed to save autobuffitem %d for char_id %d\\n", item.item_id, sd->status.char_id);  
+                transaction_success = false;  
+                goto cleanup;  
+            }  
+        }  
+    }  
+  
+    // Save autopotions  
+    if (!sd->ac.autopotion.empty()) {  
+        for (const auto& potion : sd->ac.autopotion) {  
+            if (SQL_ERROR == Sql_Query(mmysql_handle,   
+                "INSERT INTO `ac_items` (`char_id`,`type`,`item_id`,`min_hp`,`min_sp`) VALUES (%d, 1, %d, %d, %d)",   
+                sd->status.char_id, potion.item_id, potion.min_hp, potion.min_sp)) {  
+                  
+                Sql_ShowDebug(mmysql_handle);  
+                ShowError("ac_save: Failed to save autopotion %d for char_id %d\\n", potion.item_id, sd->status.char_id);  
+                transaction_success = false;  
+                goto cleanup;  
+            }  
+        }  
+    }  
+  
+    // Save pickup items  
+    if (!sd->ac.pickup_item_id.empty()) {  
+        for (size_t i = 0; i < sd->ac.pickup_item_id.size(); i++) {  
+            if (SQL_ERROR == Sql_Query(mmysql_handle,   
+                "INSERT INTO `ac_items` (`char_id`,`type`,`item_id`) VALUES (%d, 2, %d)",   
+                sd->status.char_id, sd->ac.pickup_item_id[i])) {  
+                  
+                Sql_ShowDebug(mmysql_handle);  
+                ShowError("ac_save: Failed to save pickup item %d for char_id %d\\n", sd->ac.pickup_item_id[i], sd->status.char_id);  
+                transaction_success = false;  
+                goto cleanup;  
+            }  
+        }  
+    }  
+  
+    // Clean and save ac_mobs  
+    if (SQL_ERROR == Sql_Query(mmysql_handle, "DELETE FROM `ac_mobs` WHERE `char_id` = %d", sd->status.char_id)) {  
+        Sql_ShowDebug(mmysql_handle);  
+        ShowError("ac_save: Failed to clean ac_mobs for char_id %d\\n", sd->status.char_id);  
+        transaction_success = false;  
+        goto cleanup;  
+    }  
+  
+    if (!sd->ac.mobs.id.empty()) {  
+        for (size_t i = 0; i < sd->ac.mobs.id.size(); i++) {  
+            if (SQL_ERROR == Sql_Query(mmysql_handle,   
+                "INSERT INTO `ac_mobs` (`char_id`,`mob_id`) VALUES (%d, %d)",   
+                sd->status.char_id, sd->ac.mobs.id[i])) {  
+                  
+                Sql_ShowDebug(mmysql_handle);  
+                ShowError("ac_save: Failed to save mob %d for char_id %d\\n", sd->ac.mobs.id[i], sd->status.char_id);  
+                transaction_success = false;  
+                goto cleanup;  
+            }  
+        }  
+    }  
+  
+    // Clean and save ac_skills  
+    if (SQL_ERROR == Sql_Query(mmysql_handle, "DELETE FROM `ac_skills` WHERE `char_id` = %d", sd->status.char_id)) {  
+        Sql_ShowDebug(mmysql_handle);  
+        ShowError("ac_save: Failed to clean ac_skills for char_id %d\\n", sd->status.char_id);  
+        transaction_success = false;  
+        goto cleanup;  
+    }  
+  
+    // Save autoheal skills  
+    if (!sd->ac.autoheal.empty()) {  
+        for (const auto& heal : sd->ac.autoheal) {  
+            if (SQL_ERROR == Sql_Query(mmysql_handle,   
+                "INSERT INTO `ac_skills` (`char_id`,`type`,`skill_id`,`skill_lv`,`min_hp`) VALUES (%d, 0, %d, %d, %d)",   
+                sd->status.char_id, heal.skill_id, heal.skill_lv, heal.min_hp)) {  
+                  
+                Sql_ShowDebug(mmysql_handle);  
+                ShowError("ac_save: Failed to save autoheal skill %d for char_id %d\\n", heal.skill_id, sd->status.char_id);  
+                transaction_success = false;  
+                goto cleanup;  
+            }  
+        }  
+    }  
+  
+    // Save autobuff skills  
+    if (!sd->ac.autobuffskills.empty()) {  
+        for (const auto& buff : sd->ac.autobuffskills) {  
+            if (SQL_ERROR == Sql_Query(mmysql_handle,   
+                "INSERT INTO `ac_skills` (`char_id`,`type`,`skill_id`,`skill_lv`) VALUES (%d, 1, %d, %d)",   
+                sd->status.char_id, buff.skill_id, buff.skill_lv)) {  
+                  
+                Sql_ShowDebug(mmysql_handle);  
+                ShowError("ac_save: Failed to save autobuff skill %d for char_id %d\\n", buff.skill_id, sd->status.char_id);  
+                transaction_success = false;  
+                goto cleanup;  
+            }  
+        }  
+    }  
+  
+    // Save autocombat skills  
+    if (!sd->ac.autocombatskills.empty()) {  
+        for (const auto& combat : sd->ac.autocombatskills) {  
+            if (SQL_ERROR == Sql_Query(mmysql_handle,   
+                "INSERT INTO `ac_skills` (`char_id`,`type`,`skill_id`,`skill_lv`) VALUES (%d, 2, %d, %d)",   
+                sd->status.char_id, combat.skill_id, combat.skill_lv)) {  
+                  
+                Sql_ShowDebug(mmysql_handle);  
+                ShowError("ac_save: Failed to save autocombat skill %d for char_id %d\\n", combat.skill_id, sd->status.char_id);  
+                transaction_success = false;  
+                goto cleanup;  
+            }  
+        }  
+    }  
+  
+cleanup:  
+    // Commit or rollback transaction based on success  
+    if (transaction_success) {  
+        if (SQL_ERROR == Sql_Query(mmysql_handle, "COMMIT")) {  
+            Sql_ShowDebug(mmysql_handle);  
+            ShowError("ac_save: Failed to commit transaction for char_id %d\\n", sd->status.char_id);  
+        }  
+    } else {  
+        if (SQL_ERROR == Sql_Query(mmysql_handle, "ROLLBACK")) {  
+            Sql_ShowDebug(mmysql_handle);  
+            ShowError("ac_save: Failed to rollback transaction for char_id %d\\n", sd->status.char_id);  
+        }  
+    }  
 }
 
-void ac_load(map_session_data* sd) {
-	int type;
-	t_tick tick = gettick();
+void ac_load(map_session_data* sd) {  
+    if (!sd) {  
+        ShowError("ac_load: Invalid session data\\n");  
+        return;  
+    }  
+  
+    int type;  
+    t_tick tick = gettick();  
+  
+    // Pre-allocate vectors with reasonable capacity for better performance  
+    sd->ac.autobuffitems.reserve(10);      // Typical number of buff items  
+    sd->ac.autopotion.reserve(5);          // Typical number of potions    
+    sd->ac.pickup_item_id.reserve(20);     // Typical number of pickup items  
+    sd->ac.mobs.id.reserve(15);            // Typical number of target mobs  
+    sd->ac.autoheal.reserve(8);            // Typical number of heal skills  
+    sd->ac.autobuffskills.reserve(12);     // Typical number of buff skills  
+    sd->ac.autocombatskills.reserve(10);   // Typical number of combat skills  
+  
+    // Load ac_common_config with proper error handling  
+    if (SQL_ERROR == Sql_Query(mmysql_handle,  
+        "SELECT `stopmelee`,`pickup_item_config`,`prio_item_config`,`aggressive_behavior`,`autositregen_conf`,`autositregen_maxhp`,`autositregen_minhp`,`autositregen_maxsp`,`autositregen_minsp`,`tp_use_teleport`,`tp_use_flywing`,`tp_min_hp`,`tp_delay_nomobmeet`,`tp_mvp`,`tp_miniboss`,`accept_party_request`,`token_siegfried`,`return_to_savepoint`,`map_mob_selection`,`action_on_end`,`monster_surround` "  
+        "FROM `ac_common_config` "  
+        "WHERE `char_id` = %d",  
+        sd->status.char_id)) {  
+          
+        Sql_ShowDebug(mmysql_handle);  
+        ShowError("ac_load: Failed to load common config for char_id %d\\n", sd->status.char_id);  
+        goto load_defaults;  
+    }  
+  
+    if (Sql_NumRows(mmysql_handle) > 0) {  
+        if (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {  
+            char* data;  
+            // Load all common config data with null checks  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 0, &data, NULL) && data)   
+                sd->ac.stopmelee = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 1, &data, NULL) && data)   
+                sd->ac.pickup_item_config = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 2, &data, NULL) && data)   
+                sd->ac.prio_item_config = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 3, &data, NULL) && data)   
+                sd->ac.mobs.aggressive_behavior = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 4, &data, NULL) && data)   
+                sd->ac.autositregen.is_active = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 5, &data, NULL) && data)   
+                sd->ac.autositregen.max_hp = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 6, &data, NULL) && data)   
+                sd->ac.autositregen.min_hp = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 7, &data, NULL) && data)   
+                sd->ac.autositregen.max_sp = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 8, &data, NULL) && data)   
+                sd->ac.autositregen.min_sp = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 9, &data, NULL) && data)   
+                sd->ac.teleport.use_teleport = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 10, &data, NULL) && data)   
+                sd->ac.teleport.use_flywing = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 11, &data, NULL) && data)   
+                sd->ac.teleport.min_hp = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 12, &data, NULL) && data)   
+                sd->ac.teleport.delay_nomobmeet = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 13, &data, NULL) && data)   
+                sd->ac.teleport.tp_mvp = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 14, &data, NULL) && data)   
+                sd->ac.teleport.tp_miniboss = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 15, &data, NULL) && data)   
+                sd->ac.accept_party_request = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 16, &data, NULL) && data)   
+                sd->ac.token_siegfried = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 17, &data, NULL) && data)   
+                sd->ac.return_to_savepoint = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 18, &data, NULL) && data)   
+                sd->ac.mobs.map = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 19, &data, NULL) && data)   
+                sd->ac.action_on_end = atoi(data);  
+            if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 20, &data, NULL) && data)   
+                sd->ac.monster_surround = atoi(data);  
+        }  
+        Sql_FreeResult(mmysql_handle);  
+    } else {  
+        Sql_FreeResult(mmysql_handle);  
+        goto load_defaults;  
+    }  
+  
+    // Load ac_items with proper error handling  
+    if (SQL_ERROR == Sql_Query(mmysql_handle,  
+        "SELECT `type`,`item_id`,`min_hp`,`min_sp`,`status` "  
+        "FROM `ac_items` "  
+        "WHERE `char_id` = %d",  
+        sd->status.char_id)) {  
+          
+        Sql_ShowDebug(mmysql_handle);  
+        ShowError("ac_load: Failed to load items for char_id %d\\n", sd->status.char_id);  
+        goto load_mobs;  
+    }  
+  
+    if (Sql_NumRows(mmysql_handle) > 0) {  
+        while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {  
+            char* data;  
+            if (SQL_SUCCESS != Sql_GetData(mmysql_handle, 0, &data, NULL) || !data) {  
+                ShowError("ac_load: Failed to get item type for char_id %d\\n", sd->status.char_id);  
+                continue;  
+            }  
+            type = atoi(data);  
+              
+            switch (type) {  
+            case 0: // autobuffitems  
+                {  
+                    struct s_autobuffitems autobuffitems;  
+                    autobuffitems.is_active = 1;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 1, &data, NULL) && data)   
+                        autobuffitems.item_id = atoi(data);  
+                    else continue;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 4, &data, NULL) && data)   
+                        autobuffitems.status = atoi(data);  
+                    else autobuffitems.status = 0;  
+                      
+                    sd->ac.autobuffitems.push_back(autobuffitems);  
+                }  
+                break;  
+            case 1: // autopotion  
+                {  
+                    struct s_autopotion autopotion;  
+                    autopotion.is_active = 1;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 1, &data, NULL) && data)   
+                        autopotion.item_id = atoi(data);  
+                    else continue;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 2, &data, NULL) && data)   
+                        autopotion.min_hp = atoi(data);  
+                    else autopotion.min_hp = 0;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 3, &data, NULL) && data)   
+                        autopotion.min_sp = atoi(data);  
+                    else autopotion.min_sp = 0;  
+                      
+                    sd->ac.autopotion.push_back(autopotion);  
+                }  
+                break;  
+            case 2: // pickup_item_id  
+                {  
+                    t_itemid nameid;  
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 1, &data, NULL) && data) {  
+                        nameid = atoi(data);  
+                        sd->ac.pickup_item_id.push_back(nameid);  
+                    }  
+                }  
+                break;  
+            default:  
+                ShowWarning("ac_load: Unknown item type '" CL_WHITE "%d" CL_RESET "' for char_id '" CL_WHITE "%d" CL_RESET "'.\n", type, sd->status.char_id);  
+                break;  
+            }  
+        }  
+    }  
+    Sql_FreeResult(mmysql_handle);  
+  
+load_mobs:  
+    // Load ac_mobs with proper error handling  
+    if (sd->ac.mobs.map == sd->mapindex) {  
+        if (SQL_ERROR == Sql_Query(mmysql_handle,  
+            "SELECT `mob_id` "  
+            "FROM `ac_mobs` "  
+            "WHERE `char_id` = %d",  
+            sd->status.char_id)) {  
+              
+            Sql_ShowDebug(mmysql_handle);  
+            ShowError("ac_load: Failed to load mobs for char_id %d\\n", sd->status.char_id);  
+            goto load_skills;  
+        }  
+  
+        if (Sql_NumRows(mmysql_handle) > 0) {  
+            while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {  
+                char* data;  
+                uint32 mob_id;  
+                if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 0, &data, NULL) && data) {  
+                    mob_id = atoi(data);  
+                    sd->ac.mobs.id.push_back(mob_id);  
+                }  
+            }  
+        }  
+        Sql_FreeResult(mmysql_handle);  
+    } else {  
+        sd->ac.mobs.map = sd->mapindex;  
+    }  
+  
+load_skills:  
+    // Load ac_skills with proper error handling  
+    sd->ac.skill_range = -1;  
+    if (SQL_ERROR == Sql_Query(mmysql_handle,  
+        "SELECT `type`,`skill_id`,`skill_lv`,`min_hp` "  
+        "FROM `ac_skills` "  
+        "WHERE `char_id` = %d",  
+        sd->status.char_id)) {  
+          
+        Sql_ShowDebug(mmysql_handle);  
+        ShowError("ac_load: Failed to load skills for char_id %d\\n", sd->status.char_id);  
+        goto finalize;  
+    }  
+  
+    if (Sql_NumRows(mmysql_handle) > 0) {  
+        while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {  
+            char* data;  
+            if (SQL_SUCCESS != Sql_GetData(mmysql_handle, 0, &data, NULL) || !data) {  
+                ShowError("ac_load: Failed to get skill type for char_id %d\\n", sd->status.char_id);  
+                continue;  
+            }  
+            type = atoi(data);  
+              
+            switch (type) {  
+            case 0: // autoheal  
+                {  
+                    struct s_autoheal autoheal;  
+                    autoheal.is_active = 1;  
+                    autoheal.last_use = 1;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 1, &data, NULL) && data)   
+                        autoheal.skill_id = atoi(data);  
+                    else continue;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 2, &data, NULL) && data)   
+                        autoheal.skill_lv = atoi(data);  
+                    else autoheal.skill_lv = 1;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 3, &data, NULL) && data)   
+                        autoheal.min_hp = atoi(data);  
+                    else autoheal.min_hp = 0;  
+                      
+                    sd->ac.autoheal.push_back(autoheal);  
+                }  
+                break;  
+            case 1: // autobuffskills  
+                {  
+                    struct s_autobuffskills autobuffskills;  
+                    autobuffskills.is_active = 1;  
+                    autobuffskills.last_use = 1;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 1, &data, NULL) && data)   
+                        autobuffskills.skill_id = atoi(data);  
+                    else continue;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 2, &data, NULL) && data)   
+                        autobuffskills.skill_lv = atoi(data);  
+                    else autobuffskills.skill_lv = 1;  
+                      
+                    sd->ac.autobuffskills.push_back(autobuffskills);  
+                }  
+                break;  
+            case 2: // autocombatskills  
+                {  
+                    struct s_autocombatskills autocombatskills;  
+                    autocombatskills.is_active = 1;  
+                    autocombatskills.last_use = 1;  
+                      
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 1, &data, NULL) && data)   
+                        autocombatskills.skill_id = atoi(data);  
+                    else continue;
+                    if (SQL_SUCCESS == Sql_GetData(mmysql_handle, 2, &data, NULL) && data)   
+                        autocombatskills.skill_lv = atoi(data);  
+                    else autocombatskills.skill_lv = 1;  
+                      
+                    // Calculate skill range for autocombat skills  
+                    if (sd->ac.skill_range < 0)  
+                        sd->ac.skill_range = skill_get_range2(sd, autocombatskills.skill_id, autocombatskills.skill_lv, true);  
+                    else  
+                        sd->ac.skill_range = max(skill_get_range2(sd, autocombatskills.skill_id, autocombatskills.skill_lv, true), sd->ac.skill_range);  
+                      
+                    sd->ac.autocombatskills.push_back(autocombatskills);  
+                }  
+                break;  
+            default:  
+                ShowWarning("ac_load: Unknown skill type %d for char_id '" CL_WHITE "%d" CL_RESET "'.\n", type, sd->status.char_id);  
+                break;  
+            }  
+        }  
+    }  
+    Sql_FreeResult(mmysql_handle);  
+  
+finalize:  
+    // After loading all data, optimize vector capacity to reduce memory footprint  
+    sd->ac.autobuffitems.shrink_to_fit();  
+    sd->ac.autopotion.shrink_to_fit();  
+    sd->ac.pickup_item_id.shrink_to_fit();  
+    sd->ac.mobs.id.shrink_to_fit();  
+    sd->ac.autoheal.shrink_to_fit();  
+    sd->ac.autobuffskills.shrink_to_fit();  
+    sd->ac.autocombatskills.shrink_to_fit();  
+      
+    // Initialize detection cache capacity  
+    if (sd->ac.detection_cache.cached_monsters.empty()) {  
+        sd->ac.detection_cache.cached_monsters.reserve(50);  
+    }  
+    if (sd->ac.detection_cache.cached_items.empty()) {  
+        sd->ac.detection_cache.cached_items.reserve(30);  
+    }  
+      
+    goto load_defaults;  
+  
+load_defaults:  
+    // Initialize default values if no configuration was found  
+    if (sd->ac.stopmelee == 0 && sd->ac.pickup_item_config == 0) {  
+        sd->ac.stopmelee = 0;  
+        sd->ac.pickup_item_config = 0;  
+        sd->ac.prio_item_config = 0;  
+        sd->ac.mobs.aggressive_behavior = 0;  
+        sd->ac.autositregen.is_active = 0;  
+        sd->ac.autositregen.max_hp = 0;  
+        sd->ac.autositregen.min_hp = 0;  
+        sd->ac.autositregen.max_sp = 0;  
+        sd->ac.autositregen.min_sp = 0;  
+        sd->ac.teleport.use_teleport = 0;  
+        sd->ac.teleport.use_flywing = 0;  
+        sd->ac.teleport.min_hp = 0;  
+        sd->ac.teleport.delay_nomobmeet = 0;  
+        sd->ac.teleport.tp_mvp = 0;  
+        sd->ac.teleport.tp_miniboss = 0;  
+        sd->ac.accept_party_request = 1;  
+        sd->ac.token_siegfried = 1;  
+        sd->ac.return_to_savepoint = 1;  
+        sd->ac.mobs.map = sd->mapindex;  
+        sd->ac.action_on_end = 0;  
+        sd->ac.monster_surround = 0;  
+        sd->ac.duration_ = 0;  
+    }  
+  
+    // Initialize autocombat state  
+    ac_changestate_autocombat(sd, 0);  
+}
 
-	// ac_common_config
-	if (Sql_Query(mmysql_handle,
-		"SELECT `stopmelee`,`pickup_item_config`,`prio_item_config`,`aggressive_behavior`,`autositregen_conf`,`autositregen_maxhp`,`autositregen_minhp`,`autositregen_maxsp`,`autositregen_minsp`,`tp_use_teleport`,`tp_use_flywing`,`tp_min_hp`,`tp_delay_nomobmeet`,`tp_mvp`,`tp_miniboss`,`accept_party_request`,`token_siegfried`,`return_to_savepoint`,`map_mob_selection`,`action_on_end`,`monster_surround` "
-		"FROM `ac_common_config` "
-		"WHERE `char_id` = %d ",
-		sd->status.char_id) != SQL_SUCCESS)
-	{
-		Sql_ShowDebug(mmysql_handle);
-		return;
-	}
-
-	if (Sql_NumRows(mmysql_handle) > 0) {
-		while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {
-			char* data;
-			Sql_GetData(mmysql_handle, 0, &data, NULL); sd->ac.stopmelee = atoi(data);
-			Sql_GetData(mmysql_handle, 1, &data, NULL); sd->ac.pickup_item_config = atoi(data);
-			Sql_GetData(mmysql_handle, 2, &data, NULL); sd->ac.prio_item_config = atoi(data);
-			Sql_GetData(mmysql_handle, 3, &data, NULL); sd->ac.mobs.aggressive_behavior = atoi(data);
-			Sql_GetData(mmysql_handle, 4, &data, NULL); sd->ac.autositregen.is_active = atoi(data);
-			Sql_GetData(mmysql_handle, 5, &data, NULL); sd->ac.autositregen.max_hp = atoi(data);
-			Sql_GetData(mmysql_handle, 6, &data, NULL); sd->ac.autositregen.min_hp = atoi(data);
-			Sql_GetData(mmysql_handle, 7, &data, NULL); sd->ac.autositregen.max_sp = atoi(data);
-			Sql_GetData(mmysql_handle, 8, &data, NULL); sd->ac.autositregen.min_sp = atoi(data);
-			Sql_GetData(mmysql_handle, 9, &data, NULL); sd->ac.teleport.use_teleport = atoi(data);
-			Sql_GetData(mmysql_handle, 10, &data, NULL); sd->ac.teleport.use_flywing = atoi(data);
-			Sql_GetData(mmysql_handle, 11, &data, NULL); sd->ac.teleport.min_hp = atoi(data);
-			Sql_GetData(mmysql_handle, 12, &data, NULL); sd->ac.teleport.delay_nomobmeet = atoi(data);
-			Sql_GetData(mmysql_handle, 13, &data, NULL); sd->ac.teleport.tp_mvp = atoi(data);
-			Sql_GetData(mmysql_handle, 14, &data, NULL); sd->ac.teleport.tp_miniboss = atoi(data);
-			Sql_GetData(mmysql_handle, 15, &data, NULL); sd->ac.accept_party_request = atoi(data);
-			Sql_GetData(mmysql_handle, 16, &data, NULL); sd->ac.token_siegfried = atoi(data);
-			Sql_GetData(mmysql_handle, 17, &data, NULL); sd->ac.return_to_savepoint = atoi(data);
-			Sql_GetData(mmysql_handle, 18, &data, NULL); sd->ac.mobs.map = atoi(data);
-			Sql_GetData(mmysql_handle, 19, &data, NULL); sd->ac.action_on_end = atoi(data);
-			Sql_GetData(mmysql_handle, 20, &data, NULL); sd->ac.monster_surround = atoi(data);
-		}
-	}
-	else {
-		sd->ac.stopmelee = 0;
-		sd->ac.pickup_item_config = 0;
-		sd->ac.prio_item_config = 0;
-		sd->ac.mobs.aggressive_behavior = 0;
-		sd->ac.autositregen.is_active = 0;
-		sd->ac.autositregen.max_hp = 0;
-		sd->ac.autositregen.min_hp = 0;
-		sd->ac.autositregen.max_sp = 0;
-		sd->ac.autositregen.min_sp = 0;
-		sd->ac.teleport.use_teleport = 0;
-		sd->ac.teleport.use_flywing = 0;
-		sd->ac.teleport.min_hp = 0;
-		sd->ac.teleport.delay_nomobmeet = 0;
-		sd->ac.teleport.tp_mvp = 0;
-		sd->ac.teleport.tp_miniboss = 0;
-		sd->ac.accept_party_request = 1;
-		sd->ac.token_siegfried = 1;
-		sd->ac.return_to_savepoint = 1;
-		sd->ac.mobs.map = 0;
-		sd->ac.action_on_end = 0;
-		sd->ac.monster_surround = 0;
-		sd->ac.duration_ = 0;
-	}
-
-	Sql_FreeResult(mmysql_handle);
-
-	// ac_items
-	if (Sql_Query(mmysql_handle,
-		"SELECT `type`,`item_id`,`min_hp`,`min_sp`,`status` "
-		"FROM `ac_items` "
-		"WHERE `char_id` = %d ",
-		sd->status.char_id) != SQL_SUCCESS)
-	{
-		Sql_ShowDebug(mmysql_handle);
-		return;
-	}
-
-	if (Sql_NumRows(mmysql_handle) > 0) {
-		while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {
-			char* data;
-			Sql_GetData(mmysql_handle, 0, &data, NULL); type = atoi(data);
-			switch (type) {
-			case 0:
-				struct s_autobuffitems autobuffitems;
-				autobuffitems.is_active = 1;
-				Sql_GetData(mmysql_handle, 1, &data, NULL); autobuffitems.item_id = atoi(data);
-				Sql_GetData(mmysql_handle, 4, &data, NULL); autobuffitems.status = atoi(data);
-				sd->ac.autobuffitems.push_back(autobuffitems);
-				break;
-			case 1:
-				struct s_autopotion autopotion;
-				autopotion.is_active = 1;
-				Sql_GetData(mmysql_handle, 1, &data, NULL); autopotion.item_id = atoi(data);
-				Sql_GetData(mmysql_handle, 2, &data, NULL); autopotion.min_hp = atoi(data);
-				Sql_GetData(mmysql_handle, 3, &data, NULL); autopotion.min_sp = atoi(data);
-				sd->ac.autopotion.push_back(autopotion);
-				break;
-			case 2:
-				t_itemid nameid;
-				Sql_GetData(mmysql_handle, 1, &data, NULL); nameid = atoi(data);
-				sd->ac.pickup_item_id.push_back(nameid);
-				break;
-			}
-		}
-	}
-	Sql_FreeResult(mmysql_handle);
-
-	// ac_mobs
-	if (sd->ac.mobs.map == sd->mapindex) {
-		if (Sql_Query(mmysql_handle,
-			"SELECT `mob_id` "
-			"FROM `ac_mobs` "
-			"WHERE `char_id` = %d ",
-			sd->status.char_id) != SQL_SUCCESS)
-		{
-			Sql_ShowDebug(mmysql_handle);
-			return;
-		}
-
-		if (Sql_NumRows(mmysql_handle) > 0) {
-			while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {
-				char* data;
-				uint32 mob_id;
-				Sql_GetData(mmysql_handle, 0, &data, NULL); mob_id = atoi(data);
-				sd->ac.mobs.id.push_back(mob_id);
-			}
-		}
-		Sql_FreeResult(mmysql_handle);
-	}
-	else
-		sd->ac.mobs.map = sd->mapindex;
-
-	// ac_skills
-	sd->ac.skill_range = -1;
-	if (Sql_Query(mmysql_handle,
-		"SELECT `type`,`skill_id`,`skill_lv`,`min_hp`"
-		"FROM `ac_skills` "
-		"WHERE `char_id` = %d ",
-		sd->status.char_id ) != SQL_SUCCESS )
-	{
-		Sql_ShowDebug(mmysql_handle);
-		return;
-	}
-
-	if( Sql_NumRows(mmysql_handle) > 0 ){
-		while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {
-			char* data;
-			Sql_GetData(mmysql_handle, 0, &data, NULL); type = atoi(data);
-			switch(type){
-				case 0:
-					struct s_autoheal autoheal;
-					autoheal.is_active = 1;
-					Sql_GetData(mmysql_handle, 1, &data, NULL); autoheal.skill_id = atoi(data);
-					Sql_GetData(mmysql_handle, 2, &data, NULL); autoheal.skill_lv = atoi(data);
-					Sql_GetData(mmysql_handle, 3, &data, NULL); autoheal.min_hp = atoi(data);
-					autoheal.last_use = 1;
-					sd->ac.autoheal.push_back(autoheal);
-					break;
-				case 1:
-					struct s_autobuffskills autobuffskills;
-					autobuffskills.is_active = 1;
-					Sql_GetData(mmysql_handle, 1, &data, NULL); autobuffskills.skill_id = atoi(data);
-					Sql_GetData(mmysql_handle, 2, &data, NULL); autobuffskills.skill_lv = atoi(data);
-					autobuffskills.last_use = 1;
-					sd->ac.autobuffskills.push_back(autobuffskills);
-					break;
-				case 2:
-					struct s_autocombatskills autocombatskills;
-					autocombatskills.is_active = 1;
-					Sql_GetData(mmysql_handle, 1, &data, NULL); autocombatskills.skill_id = atoi(data);
-					Sql_GetData(mmysql_handle, 2, &data, NULL); autocombatskills.skill_lv = atoi(data);
-					autocombatskills.last_use = 1;
-					if (sd->ac.skill_range < 0)
-						sd->ac.skill_range = skill_get_range2(sd, autocombatskills.skill_id, autocombatskills.skill_lv, true);
-					else
-						sd->ac.skill_range = max(skill_get_range2(sd, autocombatskills.skill_id, autocombatskills.skill_lv, true), sd->ac.skill_range);
-					sd->ac.autocombatskills.push_back(autocombatskills);
-					break;
-			}
-		}
-	}
-	Sql_FreeResult(mmysql_handle);
-
-	ac_changestate_autocombat(sd, 0);
+void ac_invalidate_cache_on_move(map_session_data* sd) {  
+    // Invalidate cache if player moved more than 3 cells  
+    if (sd->ac.detection_cache.last_x != -1 && sd->ac.detection_cache.last_y != -1) {  
+        int distance = max(abs(sd->x - sd->ac.detection_cache.last_x),   
+                          abs(sd->y - sd->ac.detection_cache.last_y));  
+          
+        if (distance > 3) {  
+            sd->ac.detection_cache.cached_monsters.clear();  
+            sd->ac.detection_cache.cached_items.clear();  
+            sd->ac.detection_cache.last_update = 0;  
+        }  
+    }  
 }
 
 void ac_skill_range_calc(map_session_data* sd) {
@@ -315,6 +576,51 @@ void ac_skill_range_calc(map_session_data* sd) {
 		});
 
 	sd->ac.skill_range = skill_get_range2(sd, best_skill->skill_id, best_skill->skill_lv, true);
+}
+
+// Optimize autobuffitems vector operations  
+void ac_optimize_autobuffitems(map_session_data* sd) {  
+    // Reserve capacity based on typical usage patterns  
+    if (sd->ac.autobuffitems.empty()) {  
+        sd->ac.autobuffitems.reserve(10); // Typical number of buff items  
+    }  
+}  
+  
+// Optimize autopotion vector operations    
+void ac_optimize_autopotion(map_session_data* sd) {  
+    if (sd->ac.autopotion.empty()) {  
+        sd->ac.autopotion.reserve(5); // Typical number of potions  
+    }  
+}  
+  
+// Optimize pickup_item_id vector operations  
+void ac_optimize_pickup_items(map_session_data* sd) {  
+    if (sd->ac.pickup_item_id.empty()) {  
+        sd->ac.pickup_item_id.reserve(20); // Typical number of pickup items  
+    }  
+}  
+  
+// Optimize mob targeting vector operations  
+void ac_optimize_mob_targeting(map_session_data* sd) {  
+    if (sd->ac.mobs.id.empty()) {  
+        sd->ac.mobs.id.reserve(15); // Typical number of target mobs  
+    }  
+}
+
+// Enhanced detection cache with optimized vector operations  
+void ac_optimize_detection_cache(map_session_data* sd) {  
+    // Reserve capacity for cached results  
+    sd->ac.detection_cache.cached_monsters.reserve(50);  
+    sd->ac.detection_cache.cached_items.reserve(30);  
+}  
+  
+// Batch clear cache operations  
+void ac_clear_detection_cache(map_session_data* sd) {  
+    // Clear and shrink vectors in one operation  
+    sd->ac.detection_cache.cached_monsters.clear();  
+    sd->ac.detection_cache.cached_items.clear();  
+    sd->ac.detection_cache.cached_monsters.shrink_to_fit();  
+    sd->ac.detection_cache.cached_items.shrink_to_fit();  
 }
 
 void ac_mob_ai_search_mvpcheck(struct block_list* bl, struct mob_data* md){
@@ -538,6 +844,28 @@ int buildin_autopick_sub(struct block_list *bl, va_list ap) {
     return 1;
 }
 
+int buildin_autopick_sub_cached(struct block_list *bl, va_list ap) {  
+    // Extract arguments from va_list  
+    std::vector<unsigned int>* found_items = va_arg(ap, std::vector<unsigned int>*);  
+    int src_id = va_arg(ap, int);  
+  
+    if (!bl || bl->type != BL_ITEM)  
+        return 0;  
+  
+    // Retrieve sd from player  
+    map_session_data* sd = map_id2sd(src_id);  
+    if (!sd || !bl) // Validate both source and target block lists  
+        return 0;  
+  
+    // Check item pickup conditions  
+    if (!ac_check_item_pickup(sd, bl))  
+        return 0;  
+  
+    // Add to found items list for caching  
+    found_items->push_back(bl->id);  
+    return 1;  
+}
+
 //Check if an item can be pick up around
 bool ac_check_item_pickup(map_session_data *sd, struct block_list *bl) {
     struct flooritem_data* fitem = (struct flooritem_data*)bl;
@@ -604,38 +932,70 @@ bool ac_check_item_pickup(map_session_data *sd, struct block_list *bl) {
 	return false;
 }
 
-unsigned int ac_check_item_pickup_onfloor(map_session_data* sd) {
-	// Retrieve the block list associated with the current item pick ID
-	struct block_list* bl = map_id2bl(sd->ac.itempick_id);
-
-	// Check if the current item can be picked up
-	if (!bl || bl->type != BL_ITEM || !ac_check_item_pickup(sd, bl)) {
-		sd->ac.itempick_id = 0; // Reset the item pick ID
-		int itempick_id_ = 0;
-
-		// Iterate through the detection radius to find a suitable item
-		for (int radius = 0; radius < battle_config.autocombat_pdetection; ++radius) {
-			map_foreachinarea(
-				buildin_autopick_sub,
-				sd->m,
-				sd->x - radius,
-				sd->y - radius,
-				sd->x + radius,
-				sd->y + radius,
-				BL_ITEM,
-				&itempick_id_,
-				sd->id
-			);
-
-			// If an item is found, set the item pick ID and break
-			if (itempick_id_) {
-				sd->ac.itempick_id = itempick_id_;
-				break;
-			}
-		}
-	}
-
-	return sd->ac.itempick_id;
+unsigned int ac_check_item_pickup_onfloor(map_session_data* sd) {  
+    // Retrieve the block list associated with the current item pick ID  
+    struct block_list* bl = map_id2bl(sd->ac.itempick_id);  
+  
+    // Check if the current item can be picked up  
+    if (!bl || bl->type != BL_ITEM || !ac_check_item_pickup(sd, bl)) {  
+        sd->ac.itempick_id = 0; // Reset the item pick ID  
+  
+        // Check if we can use cached results  
+        t_tick current_tick = gettick();  
+        bool can_use_cache = (  
+            sd->ac.detection_cache.last_update > 0 &&  
+            DIFF_TICK(current_tick, sd->ac.detection_cache.last_update) < 500 && // 0.5 second cache for items  
+            sd->ac.detection_cache.last_x == sd->x &&  
+            sd->ac.detection_cache.last_y == sd->y &&  
+            sd->ac.detection_cache.cache_radius >= battle_config.autocombat_pdetection  
+        );  
+  
+        if (can_use_cache && !sd->ac.detection_cache.cached_items.empty()) {  
+            // Use cached results - validate each cached item  
+            for (unsigned int cached_id : sd->ac.detection_cache.cached_items) {  
+                struct block_list* cached_bl = map_id2bl(cached_id);  
+                if (cached_bl && cached_bl->type == BL_ITEM && ac_check_item_pickup(sd, cached_bl)) {  
+                    sd->ac.itempick_id = cached_id;  
+                    return sd->ac.itempick_id;  
+                }  
+            }  
+            // All cached items are invalid, clear cache  
+            sd->ac.detection_cache.cached_items.clear();  
+        }  
+  
+        // Perform fresh search and cache results  
+        std::vector<unsigned int> found_items;  
+  
+        // Iterate through the detection radius to find suitable items  
+        for (int radius = 0; radius < battle_config.autocombat_pdetection; ++radius) {  
+            map_foreachinarea(  
+                buildin_autopick_sub_cached,  
+                sd->m,  
+                sd->x - radius,  
+                sd->y - radius,  
+                sd->x + radius,  
+                sd->y + radius,  
+                BL_ITEM,  
+                &found_items,  
+                sd->id  
+            );  
+  
+            // If an item is found, set the item pick ID and break  
+            if (!found_items.empty()) {  
+                sd->ac.itempick_id = found_items[0]; // Use first valid item  
+                break;  
+            }  
+        }  
+  
+        // Update cache with results  
+        sd->ac.detection_cache.cached_items = std::move(found_items);  
+        sd->ac.detection_cache.last_update = current_tick;  
+        sd->ac.detection_cache.last_x = sd->x;  
+        sd->ac.detection_cache.last_y = sd->y;  
+        sd->ac.detection_cache.cache_radius = battle_config.autocombat_pdetection;  
+    }  
+  
+    return sd->ac.itempick_id;  
 }
 
 bool ac_check_target(map_session_data* sd, unsigned int id) {
@@ -733,6 +1093,31 @@ int buildin_autocombat_sub(struct block_list* bl, va_list ap) {
 	return 1;
 }
 
+int buildin_autocombat_sub_cached(struct block_list* bl, va_list ap) {  
+    // Retrieve arguments passed via the va_list  
+    std::vector<unsigned int>* found_monsters = va_arg(ap, std::vector<unsigned int>*);  
+    int src_id = va_arg(ap, int);  
+  
+    if (!bl || bl->type != BL_MOB)  
+        return 0;  
+  
+    // Retrieve sd  
+    map_session_data* sd = map_id2sd(src_id);  
+  
+    // Validate source and target blocks  
+    if (!sd)  
+        return 0;  
+  
+    // Verify target eligibility  
+    if (!ac_check_target(sd, bl->id)) {  
+        return 0;  
+    }  
+  
+    // Add to found monsters list for caching  
+    found_monsters->push_back(bl->id);  
+    return 1;  
+}
+
 int buildin_autocombat_monsters_sub(struct block_list* bl, va_list ap) {
 	// Retrieve arguments passed via the va_list
 	std::unordered_set<int>* counted_monsters = va_arg(ap, std::unordered_set<int>*);
@@ -762,32 +1147,68 @@ unsigned int ac_check_target_alive(map_session_data* sd) {
 		if (sd->ac.mobs.map != sd->mapindex) {
 			sd->ac.mobs.map = sd->mapindex;
 			sd->ac.mobs.id.clear();
+			// Clear cache when changing maps
+            sd->ac.detection_cache.cached_monsters.clear();  
+            sd->ac.detection_cache.last_update = 0;
 		}
 
 		int target_id_ = 0;
 		ac_target_change(sd, 0);
 
+        // Check if we can use cached results  
+        t_tick current_tick = gettick();  
+        bool can_use_cache = (  
+            sd->ac.detection_cache.last_update > 0 &&  
+            DIFF_TICK(current_tick, sd->ac.detection_cache.last_update) < 1000 && // 1 second cache  
+            sd->ac.detection_cache.last_x == sd->x &&  
+            sd->ac.detection_cache.last_y == sd->y &&  
+            sd->ac.detection_cache.cache_radius >= battle_config.autocombat_mdetection  
+        );  
+  
+        if (can_use_cache && !sd->ac.detection_cache.cached_monsters.empty()) {  
+            // Use cached results - validate each cached monster  
+            for (unsigned int cached_id : sd->ac.detection_cache.cached_monsters) {  
+                if (ac_check_target(sd, cached_id)) {  
+                    ac_target_change(sd, cached_id);  
+                    return sd->ac.target_id;  
+                }  
+            }  
+            // All cached monsters are invalid, clear cache  
+            sd->ac.detection_cache.cached_monsters.clear();  
+        }  
+  
+        // Perform fresh search and cache results  
+        std::vector<unsigned int> found_monsters;
+
 		// Search for a new target within detection radius
 		for (int radius = 0; radius < battle_config.autocombat_mdetection; ++radius) {
 			map_foreachinarea(
-				buildin_autocombat_sub,
+				buildin_autocombat_sub_cached,
 				sd->m,
 				sd->x - radius,
 				sd->y - radius,
 				sd->x + radius,
 				sd->y + radius,
 				BL_MOB,
-				&target_id_,
+				&found_monsters,
 				sd->id
 			);
 
-			// If a target is found, set the target ID and break
-			if (target_id_) {
-				ac_target_change(sd, target_id_);
-				break;
-			}
-		}
-	}
+            // If a target is found, set the target ID and break  
+            if (!found_monsters.empty()) {  
+                target_id_ = found_monsters[0]; // Use first valid target  
+                ac_target_change(sd, target_id_);  
+                break;  
+            }  
+        }  
+  
+        // Update cache with results  
+        sd->ac.detection_cache.cached_monsters = std::move(found_monsters);  
+        sd->ac.detection_cache.last_update = current_tick;  
+        sd->ac.detection_cache.last_x = sd->x;  
+        sd->ac.detection_cache.last_y = sd->y;  
+        sd->ac.detection_cache.cache_radius = battle_config.autocombat_mdetection;  
+    }
 
 	return sd->ac.target_id;
 }
@@ -827,7 +1248,7 @@ bool ac_teleport(map_session_data* sd) {
 	bool flywing_used = false;
 
 	// Check if teleport skill can be used
-	if (!sd->ac.teleport.use_teleport && sd->status.sp > 20 && !mapdata->getMapFlag(MF_NOSKILL)) {
+	if (sd->ac.teleport.use_teleport && sd->status.sp > 20 && !mapdata->getMapFlag(MF_NOSKILL)) {
 		if (pc_checkskill(sd, AL_TELEPORT) > 0) {
 			skill_consume_requirement(sd, AL_TELEPORT, 1, 2);
 			pc_randomwarp(sd, CLR_TELEPORT);
@@ -837,7 +1258,7 @@ bool ac_teleport(map_session_data* sd) {
 	}
 
 	// Check for Fly Wing usage if teleport was not used
-	if (!flywing_used && !sd->ac.teleport.use_flywing) {
+	if (!flywing_used && sd->ac.teleport.use_flywing) {
 		static const int flywing_item_ids[] = { 12887, 12323, 601 }; // Prioritized Fly Wing item IDs
 		int inventory_index = -1;
 		bool requires_consumption = false;
@@ -1120,6 +1541,8 @@ bool ac_elemallowed(struct mob_data* md, int ele) {
 int ac_status(map_session_data* sd) {
 	if (!sd) return -1;
 
+	ac_invalidate_cache_on_move(sd);
+
 	if(sd->state.storage_flag){
 		std::string msg = "Automessage - Storage open, close it first!";
 		ac_message(sd, "Storage", msg.data(), 300, nullptr);
@@ -1175,10 +1598,6 @@ int ac_status(map_session_data* sd) {
 	// Priority 5 - Buffs
 	if (ac_status_buffs(sd, last_tick)) return 5;
 
-	// Intermediate priority
-	ac_status_checkteleport_delay (sd, last_tick);
-	ac_status_check_reset(sd, last_tick);
-
 	// Check targets
 	if (sd->ac.target_id && !ac_check_target(sd, sd->ac.target_id))
 		ac_target_change(sd, 0);
@@ -1192,6 +1611,10 @@ int ac_status(map_session_data* sd) {
 
 	if(!sd->ac.target_id) // no item to pick up so lf for a target to attack
 		ac_check_target_alive(sd);
+
+	// Intermediate priority
+	ac_status_checkteleport_delay (sd, last_tick);
+	ac_status_check_reset(sd, last_tick);
 
 	// Priority 7 - Attack skill and melee
 	if (sd->ac.target_id) {
@@ -1228,7 +1651,7 @@ bool ac_status_checkteleport_delay(map_session_data* sd, t_tick last_tick) {
 	if (sd->ac.target_id || sd->ac.itempick_id)
 		return false;
 
-	if (sd->ac.teleport.use_teleport && sd->ac.teleport.use_flywing)
+	if (!sd->ac.teleport.use_teleport && !sd->ac.teleport.use_flywing)
 		return false;
 
 	if (pick_ < 2000 || attack_ < 2000)
@@ -2205,6 +2628,39 @@ bool ac_changestate_autocombat(map_session_data* sd, int flag) {
 		}
 
 		sd->state.autocombat = true;
+		
+        if (battle_config.autocombat_hateffect) {  
+            struct unit_data* ud = unit_bl2ud(sd);  
+              
+            // Reserve capacity for better performance  
+            std::vector<int> effects_to_add;  
+            effects_to_add.reserve(AC_HATEFFECTS.size());  
+              
+            // Batch collect effects that need to be added  
+            for (const auto& effectID : AC_HATEFFECTS) {  
+                if (effectID <= HAT_EF_MIN || effectID >= HAT_EF_MAX)  
+                    continue;  
+                  
+                auto it = util::vector_get(ud->hatEffects, effectID);  
+                if (it == ud->hatEffects.end()) {  
+                    effects_to_add.push_back(effectID);  
+                }  
+            }  
+              
+            // Batch add all effects at once  
+            if (!effects_to_add.empty()) {  
+                // Reserve additional capacity in the target vector  
+                ud->hatEffects.reserve(ud->hatEffects.size() + effects_to_add.size());  
+                  
+                // Add all effects in one operation  
+                for (int effectID : effects_to_add) {  
+                    ud->hatEffects.push_back(effectID);  
+                    if (!sd->state.connect_new)  
+                        clif_hat_effect_single(*sd, effectID, true);  
+                }  
+            }  
+        }
+
 	case 0:
 		sd->ac.lastposition.map = sd->mapindex;
 		sd->ac.lastposition.x = sd->x;
@@ -2271,6 +2727,37 @@ bool ac_changestate_autocombat(map_session_data* sd, int flag) {
 			}
 		}
 		sd->state.autocombat = false;
+		
+        if (battle_config.autocombat_hateffect) {  
+            struct unit_data* ud = unit_bl2ud(sd);  
+              
+            // Batch collect effects that need to be removed  
+            std::vector<int> effects_to_remove;  
+            effects_to_remove.reserve(AC_HATEFFECTS.size());  
+              
+            for (const auto& effectID : AC_HATEFFECTS) {  
+                if (effectID <= HAT_EF_MIN || effectID >= HAT_EF_MAX)  
+                    continue;  
+                  
+                auto it = util::vector_get(ud->hatEffects, effectID);  
+                if (it != ud->hatEffects.end()) {  
+                    effects_to_remove.push_back(effectID);  
+                }  
+            }  
+              
+            // Batch remove all effects  
+            for (int effectID : effects_to_remove) {  
+                util::vector_erase_if_exists(ud->hatEffects, effectID);  
+                if (!sd->state.connect_new)  
+                    clif_hat_effect_single(*sd, effectID, false);  
+            }  
+              
+            // Shrink vector if many elements were removed  
+            if (effects_to_remove.size() > ud->hatEffects.size() / 2) {  
+                ud->hatEffects.shrink_to_fit();  
+            }  
+        }
+
 		break;
 	}
 

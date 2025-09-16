@@ -24,56 +24,60 @@
 //============================================================
 -	script	bot_at	-1,{
 
-	function calculate_remaining_time;
-	function reset;
-
-OnInit:  
-    .duration = 3600000 * 4; // 4 hour in milliseconds  
-    .remaining_time = .duration;  
-    .start_time = gettimetick(2);  
+function calculate_remaining_time;  
+function reset;  
+  
+OnInit:    
+    .duration = 3600000 * 4; // 4 hours in milliseconds    
+    end;    
+    
+OnHour00: // 12am server time will reset duration    
+    .@n = getunits(BL_PC, .@aid);    
+    for (.@i = 0; .@i < .@n; .@i++) {    
+        attachrid(.@aid[.@i]);    
+        reset();    
+        detachrid;    
+    }    
     end;  
   
-OnHour00: // 12am server time will reset duration  
-    .@n = getunits(BL_PC, .@aid);  
-    for (.@i = 0; .@i < .@n; .@i++) {  
-        attachrid(.@aid[.@i]);  
-        reset();  
-        detachrid;  
-    }  
-    end;
-
-function calculate_remaining_time {
-    if (.start_time == 0) {  
-        .@remaining_time = .remaining_time;  
-    } else {  
-        .@elapsed_time = (gettimetick(2) - .start_time) * 1000;  
-        .@remaining_time = .remaining_time - .@elapsed_time;  
-        if (.@remaining_time < 0) .@remaining_time = 0;  
-    }  
-    .@hours = .@remaining_time / 3600000;  
-    .@minutes = (.@remaining_time % 3600000) / 60000;  
-    .@seconds = (.@remaining_time % 60000) / 1000;  
-    return .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds.";  
-}
-
-function	reset	{
-    // Reset remaining time to full duration  
-    .remaining_time = .duration;  
+function calculate_remaining_time {  
+    .@player_remaining = getd("autocombat_remaining_" + getcharid(0));  
+    .@player_start_time = getd("autocombat_start_" + getcharid(0));  
       
-    // Clear any saved player-specific remaining time  
-    setd(".remaining_time_" + getcharid(0), .duration);  
+    // If no saved data, use full duration  
+    if (.@player_remaining == 0) .@player_remaining = .duration;  
+    if (.@player_start_time == 0) .@player_start_time = gettimetick(2);  
+      
+    // Calculate elapsed time since last save  
+    .@elapsed_time = (gettimetick(2) - .@player_start_time) * 1000;  
+    .@remaining_time = .@player_remaining - .@elapsed_time;  
+      
+    // Prevent negative time  
+    if (.@remaining_time < 0) .@remaining_time = 0;  
+      
+    // Convert to hours, minutes, seconds  
+    .@hours = .@remaining_time / 3600000;    
+    .@minutes = (.@remaining_time % 3600000) / 60000;    
+    .@seconds = (.@remaining_time % 60000) / 1000;    
+      
+    return .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds.";    
+}  
+  
+function reset {  
+    // Reset player's autocombat timer data using per-player variables  
+    setd("autocombat_remaining_" + getcharid(0), .duration);  
+    setd("autocombat_start_" + getcharid(0), gettimetick(2));  
       
     // If player has active autocombat, restart it with full duration  
     if (ac_getstate()) {  
         sc_end SC_AUTOCOMBAT;  
         sc_start4 SC_AUTOCOMBAT, .duration, 1, 0, 0, 0;  
-        .start_time = gettimetick(2);  
-    }
-	
-	dispbottom "[Autocombat System]: Your autocombat has been refreshed for today.";
-	dispbottom "Current remainting time : " + calculate_remaining_time() + ".";
-
-	return;
+    }  
+      
+    dispbottom "[Autocombat System]: Your autocombat has been refreshed for today.";  
+    dispbottom "Current remaining time: " + calculate_remaining_time() + ".";  
+      
+    return;  
 }
     
 goto(OnMainMenu);
@@ -93,33 +97,40 @@ OnMainMenu:
 	next;
 	.@OnMainMenu = select(ac_getstate()?"[Stop]":"[Start]","[Configuration]","[Cancel]");
 	switch(.@OnMainMenu){
-		case 1:
-			if (ac_getstate()) {
-				goto OnStop;
-			} else {
-				//autocombat_fromitem(50501);
-				// Start autocombat
-				.@saved_remaining = getd("autocombat_remaining_" + getcharid(0));
-				.@saved_start    = getd("autocombat_start_" + getcharid(0));
-
-				// If no record, default to full duration
-				if (.@saved_remaining == 0) .@saved_remaining = .duration;
-				if (.@saved_start == 0) .@saved_start = gettimetick(2);
-
-				// Calculate elapsed
-				.@elapsed = (gettimetick(2) - .@saved_start) * 1000;
-				.@remaining = .@saved_remaining - .@elapsed;
-
-				// Prevent negative
-				if (.@remaining <= 0) .@remaining = 0;
-
-				// Save new values
-				setd("autocombat_remaining_" + getcharid(0), .@remaining);
-				setd("autocombat_start_" + getcharid(0), gettimetick(2));
-
-				// Start SC with remaining time
-				sc_start4 SC_AUTOCOMBAT, .@remaining, 1, 0, 0, 0;
-				message strcharinfo(0), "Autocombat started. Timer left: " + (.@remaining / 60000) + " minutes.";
+		case 1:  
+			if (ac_getstate()) {  
+				goto OnStop;  
+			} else {  
+				//autocombat_fromitem(50501);  
+				// Start autocombat  
+				.@saved_remaining = getd("autocombat_remaining_" + getcharid(0));  
+				.@saved_start    = getd("autocombat_start_" + getcharid(0));  
+		  
+				// If no record, default to full duration  
+				if (.@saved_remaining == 0) .@saved_remaining = .duration;  
+				if (.@saved_start == 0) .@saved_start = gettimetick(2);  
+		  
+				// Calculate elapsed  
+				.@elapsed = (gettimetick(2) - .@saved_start) * 1000;  
+				.@remaining = .@saved_remaining - .@elapsed;  
+		  
+				// Prevent negative  
+				if (.@remaining <= 0) .@remaining = 0;  
+		  
+				// Save new values  
+				setd("autocombat_remaining_" + getcharid(0), .@remaining);  
+				setd("autocombat_start_" + getcharid(0), gettimetick(2));  
+		  
+				// Start SC with remaining time  
+				sc_start4 SC_AUTOCOMBAT, .@remaining, 1, 0, 0, 0;  
+				  
+				// Enhanced time display (simplified version)  
+				.@total_seconds = .@remaining / 1000;  
+				.@hours = .@total_seconds / 3600;  
+				.@minutes = (.@total_seconds % 3600) / 60;  
+				.@seconds = .@total_seconds % 60;  
+		  
+				message strcharinfo(0), "Autocombat started. Timer left: " + .@hours + " hours " + .@minutes + " minutes " + .@seconds + " seconds.";  
 			}
 			break;
 		case 2:

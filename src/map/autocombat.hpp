@@ -25,7 +25,6 @@ extern std::vector<t_itemid> AC_ITEMIDS;
 class map_session_data;
 struct block_list;
 
-// Translates dx,dy into walking direction
 static enum directions walk_choices[3][3] =
 {
 	{DIR_NORTHWEST,DIR_NORTH,DIR_NORTHEAST},
@@ -33,12 +32,10 @@ static enum directions walk_choices[3][3] =
 	{DIR_SOUTHWEST,DIR_SOUTH,DIR_SOUTHEAST},
 };
 
-// Structure pour representer une cellule
 struct Cell {
 	int x, y;
 	float cost;
 
-	// Comparateur pour la file de priorite (min-heap)
 	bool operator>(const Cell& other) const {
 		return cost > other.cost;
 	}
@@ -46,7 +43,6 @@ struct Cell {
 
 float heuristic(int x1, int y1, int x2, int y2);
 
-// Functor de hachage pour std::tuple<int, int>
 struct TupleHash {
 	std::size_t operator()(const std::tuple<int, int>& key) const {
 		auto [x, y] = key;
@@ -108,7 +104,7 @@ struct s_autobuffitems {
 };
 
 struct s_lastposition {
-	int map; // Previous map on Map Change
+	int map;
 	short x,y;
 	short dx,dy;
 };
@@ -132,6 +128,16 @@ struct s_mobs {
 	int map;
 	std::vector<uint32> id;
 	bool aggressive_behavior; //0 attack - 1 ignore
+};
+ 
+struct s_detection_cache {  
+    t_tick last_update;  
+    int last_x, last_y;  
+    std::vector<unsigned int> cached_monsters;  
+    std::vector<unsigned int> cached_items;  
+    int cache_radius;  
+      
+    s_detection_cache() : last_update(0), last_x(-1), last_y(-1), cache_radius(0) {}  
 };
 
 struct s_autocombat {
@@ -169,8 +175,9 @@ struct s_autocombat {
 	int monster_surround;
 	t_tick duration_;
 	unsigned int unique_id;
-	uint32 client_addr; // remote client address
+	uint32 client_addr;
 	int skill_range;
+	s_detection_cache detection_cache;
 };
 
 void ac_save(map_session_data* sd);
