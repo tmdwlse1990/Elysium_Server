@@ -242,7 +242,7 @@ S_ViewActiveQuests:
   
 S_AbandonQuest:  
     mes "[Boya]";  
-    mes "^FF0000Warning:^000000 Abandoning your current training will reset your progress!";  
+    mes "^FF0000Warning:^000000 Abandoning will only clear your current mission progress!";  
     mes "Are you sure you want to abandon your current quest?";  
     next;  
       
