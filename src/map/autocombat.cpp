@@ -34,14 +34,14 @@ std::vector<t_itemid> AC_ITEMIDS = { 50501 }; // Important here, define the item
 
 void ac_save(map_session_data* sd) {  
     if (!sd) {  
-        ShowError("ac_save: Invalid session data\\n");  
+        ShowError("ac_save: Invalid session data.\n");  
         return;  
     }  
   
     // Start transaction for data consistency  
     if (SQL_ERROR == Sql_Query(mmysql_handle, "START TRANSACTION")) {  
         Sql_ShowDebug(mmysql_handle);  
-        ShowError("ac_save: Failed to start transaction for char_id %d\\n", sd->status.char_id);  
+        ShowError("ac_save: Failed to start transaction for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
         return;  
     }  
   
@@ -69,7 +69,7 @@ void ac_save(map_session_data* sd) {
         sd->ac.mobs.map, sd->ac.action_on_end, sd->ac.monster_surround)) {  
           
         Sql_ShowDebug(mmysql_handle);  
-        ShowError("ac_save: Failed to save common config for char_id %d\\n", sd->status.char_id);  
+        ShowError("ac_save: Failed to save common config for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
         transaction_success = false;  
         goto cleanup;  
     }  
@@ -77,7 +77,7 @@ void ac_save(map_session_data* sd) {
     // Clean and save ac_items with error checking  
     if (SQL_ERROR == Sql_Query(mmysql_handle, "DELETE FROM `ac_items` WHERE `char_id` = %d", sd->status.char_id)) {  
         Sql_ShowDebug(mmysql_handle);  
-        ShowError("ac_save: Failed to clean ac_items for char_id %d\\n", sd->status.char_id);  
+        ShowError("ac_save: Failed to clean ac_items for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
         transaction_success = false;  
         goto cleanup;  
     }  
@@ -90,7 +90,7 @@ void ac_save(map_session_data* sd) {
                 sd->status.char_id, item.item_id, item.status)) {  
                   
                 Sql_ShowDebug(mmysql_handle);  
-                ShowError("ac_save: Failed to save autobuffitem %d for char_id %d\\n", item.item_id, sd->status.char_id);  
+                ShowError("ac_save: Failed to save autobuffitem '" CL_WHITE "%d" CL_RESET "' for char_id '" CL_WHITE "%d" CL_RESET "'.\n", item.item_id, sd->status.char_id);  
                 transaction_success = false;  
                 goto cleanup;  
             }  
@@ -105,7 +105,7 @@ void ac_save(map_session_data* sd) {
                 sd->status.char_id, potion.item_id, potion.min_hp, potion.min_sp)) {  
                   
                 Sql_ShowDebug(mmysql_handle);  
-                ShowError("ac_save: Failed to save autopotion %d for char_id %d\\n", potion.item_id, sd->status.char_id);  
+                ShowError("ac_save: Failed to save autopotion '" CL_WHITE "%d" CL_RESET "' for char_id '" CL_WHITE "%d" CL_RESET "'.\n", potion.item_id, sd->status.char_id);  
                 transaction_success = false;  
                 goto cleanup;  
             }  
@@ -120,7 +120,7 @@ void ac_save(map_session_data* sd) {
                 sd->status.char_id, sd->ac.pickup_item_id[i])) {  
                   
                 Sql_ShowDebug(mmysql_handle);  
-                ShowError("ac_save: Failed to save pickup item %d for char_id %d\\n", sd->ac.pickup_item_id[i], sd->status.char_id);  
+                ShowError("ac_save: Failed to save pickup item '" CL_WHITE "%d" CL_RESET "' for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->ac.pickup_item_id[i], sd->status.char_id);  
                 transaction_success = false;  
                 goto cleanup;  
             }  
@@ -130,7 +130,7 @@ void ac_save(map_session_data* sd) {
     // Clean and save ac_mobs  
     if (SQL_ERROR == Sql_Query(mmysql_handle, "DELETE FROM `ac_mobs` WHERE `char_id` = %d", sd->status.char_id)) {  
         Sql_ShowDebug(mmysql_handle);  
-        ShowError("ac_save: Failed to clean ac_mobs for char_id %d\\n", sd->status.char_id);  
+        ShowError("ac_save: Failed to clean ac_mobs for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
         transaction_success = false;  
         goto cleanup;  
     }  
@@ -142,7 +142,7 @@ void ac_save(map_session_data* sd) {
                 sd->status.char_id, sd->ac.mobs.id[i])) {  
                   
                 Sql_ShowDebug(mmysql_handle);  
-                ShowError("ac_save: Failed to save mob %d for char_id %d\\n", sd->ac.mobs.id[i], sd->status.char_id);  
+                ShowError("ac_save: Failed to save mob '" CL_WHITE "%d" CL_RESET "' for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->ac.mobs.id[i], sd->status.char_id);  
                 transaction_success = false;  
                 goto cleanup;  
             }  
@@ -152,7 +152,7 @@ void ac_save(map_session_data* sd) {
     // Clean and save ac_skills  
     if (SQL_ERROR == Sql_Query(mmysql_handle, "DELETE FROM `ac_skills` WHERE `char_id` = %d", sd->status.char_id)) {  
         Sql_ShowDebug(mmysql_handle);  
-        ShowError("ac_save: Failed to clean ac_skills for char_id %d\\n", sd->status.char_id);  
+        ShowError("ac_save: Failed to clean ac_skills for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
         transaction_success = false;  
         goto cleanup;  
     }  
@@ -165,7 +165,7 @@ void ac_save(map_session_data* sd) {
                 sd->status.char_id, heal.skill_id, heal.skill_lv, heal.min_hp)) {  
                   
                 Sql_ShowDebug(mmysql_handle);  
-                ShowError("ac_save: Failed to save autoheal skill %d for char_id %d\\n", heal.skill_id, sd->status.char_id);  
+                ShowError("ac_save: Failed to save autoheal skill '" CL_WHITE "%d" CL_RESET "' for char_id '" CL_WHITE "%d" CL_RESET "'.\n", heal.skill_id, sd->status.char_id);  
                 transaction_success = false;  
                 goto cleanup;  
             }  
@@ -180,7 +180,7 @@ void ac_save(map_session_data* sd) {
                 sd->status.char_id, buff.skill_id, buff.skill_lv)) {  
                   
                 Sql_ShowDebug(mmysql_handle);  
-                ShowError("ac_save: Failed to save autobuff skill %d for char_id %d\\n", buff.skill_id, sd->status.char_id);  
+                ShowError("ac_save: Failed to save autobuff skill '" CL_WHITE "%d" CL_RESET "' for char_id '" CL_WHITE "%d" CL_RESET "'.\n", buff.skill_id, sd->status.char_id);  
                 transaction_success = false;  
                 goto cleanup;  
             }  
@@ -195,7 +195,7 @@ void ac_save(map_session_data* sd) {
                 sd->status.char_id, combat.skill_id, combat.skill_lv)) {  
                   
                 Sql_ShowDebug(mmysql_handle);  
-                ShowError("ac_save: Failed to save autocombat skill %d for char_id %d\\n", combat.skill_id, sd->status.char_id);  
+                ShowError("ac_save: Failed to save autocombat skill '" CL_WHITE "%d" CL_RESET "' for char_id '" CL_WHITE "%d" CL_RESET "'.\n", combat.skill_id, sd->status.char_id);  
                 transaction_success = false;  
                 goto cleanup;  
             }  
@@ -207,25 +207,26 @@ cleanup:
     if (transaction_success) {  
         if (SQL_ERROR == Sql_Query(mmysql_handle, "COMMIT")) {  
             Sql_ShowDebug(mmysql_handle);  
-            ShowError("ac_save: Failed to commit transaction for char_id %d\\n", sd->status.char_id);  
+            ShowError("ac_save: Failed to commit transaction for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
         }  
     } else {  
         if (SQL_ERROR == Sql_Query(mmysql_handle, "ROLLBACK")) {  
             Sql_ShowDebug(mmysql_handle);  
-            ShowError("ac_save: Failed to rollback transaction for char_id %d\\n", sd->status.char_id);  
+            ShowError("ac_save: Failed to rollback transaction for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
         }  
     }  
 }
 
 void ac_load(map_session_data* sd) {  
     if (!sd) {  
-        ShowError("ac_load: Invalid session data\\n");  
+        ShowError("ac_load: Invalid session data.\n");  
         return;  
     }  
   
     int type;  
     t_tick tick = gettick();  
-  
+	bool data_loaded = false;
+
     // Pre-allocate vectors with reasonable capacity for better performance  
     sd->ac.autobuffitems.reserve(10);      // Typical number of buff items  
     sd->ac.autopotion.reserve(5);          // Typical number of potions    
@@ -243,11 +244,12 @@ void ac_load(map_session_data* sd) {
         sd->status.char_id)) {  
           
         Sql_ShowDebug(mmysql_handle);  
-        ShowError("ac_load: Failed to load common config for char_id %d\\n", sd->status.char_id);  
+        ShowError("ac_load: Failed to load common config for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
         goto load_defaults;  
     }  
   
     if (Sql_NumRows(mmysql_handle) > 0) {  
+		data_loaded = true;
         if (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {  
             char* data;  
             // Load all common config data with null checks  
@@ -308,7 +310,7 @@ void ac_load(map_session_data* sd) {
         sd->status.char_id)) {  
           
         Sql_ShowDebug(mmysql_handle);  
-        ShowError("ac_load: Failed to load items for char_id %d\\n", sd->status.char_id);  
+        ShowError("ac_load: Failed to load items for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
         goto load_mobs;  
     }  
   
@@ -316,7 +318,7 @@ void ac_load(map_session_data* sd) {
         while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {  
             char* data;  
             if (SQL_SUCCESS != Sql_GetData(mmysql_handle, 0, &data, NULL) || !data) {  
-                ShowError("ac_load: Failed to get item type for char_id %d\\n", sd->status.char_id);  
+                ShowError("ac_load: Failed to get item type for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
                 continue;  
             }  
             type = atoi(data);  
@@ -385,7 +387,7 @@ load_mobs:
             sd->status.char_id)) {  
               
             Sql_ShowDebug(mmysql_handle);  
-            ShowError("ac_load: Failed to load mobs for char_id %d\\n", sd->status.char_id);  
+            ShowError("ac_load: Failed to load mobs for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
             goto load_skills;  
         }  
   
@@ -414,7 +416,7 @@ load_skills:
         sd->status.char_id)) {  
           
         Sql_ShowDebug(mmysql_handle);  
-        ShowError("ac_load: Failed to load skills for char_id %d\\n", sd->status.char_id);  
+        ShowError("ac_load: Failed to load skills for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
         goto finalize;  
     }  
   
@@ -422,7 +424,7 @@ load_skills:
         while (SQL_SUCCESS == Sql_NextRow(mmysql_handle)) {  
             char* data;  
             if (SQL_SUCCESS != Sql_GetData(mmysql_handle, 0, &data, NULL) || !data) {  
-                ShowError("ac_load: Failed to get skill type for char_id %d\\n", sd->status.char_id);  
+                ShowError("ac_load: Failed to get skill type for char_id '" CL_WHITE "%d" CL_RESET "'.\n", sd->status.char_id);  
                 continue;  
             }  
             type = atoi(data);  
@@ -518,7 +520,7 @@ finalize:
   
 load_defaults:  
     // Initialize default values if no configuration was found  
-    if (sd->ac.stopmelee == 0 && sd->ac.pickup_item_config == 0) {  
+    if (!data_loaded) {  
         sd->ac.stopmelee = 0;  
         sd->ac.pickup_item_config = 0;  
         sd->ac.prio_item_config = 0;  
