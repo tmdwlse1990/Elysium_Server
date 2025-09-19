@@ -2384,7 +2384,7 @@ struct s_elemental_data* map_id2ed(int32 id) {
 	return BL_CAST(BL_ELEM, bl);
 }
 
-struct chat_data* map_id2cd(int32 id){
+chat_data* map_id2cd(int32 id){
 	block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_CHAT, bl);
 }
