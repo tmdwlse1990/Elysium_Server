@@ -1,0 +1,614 @@
+//===== rAthena Script =======================================
+//= Eden Group Quest - Quests NPCs
+//===== Description: =========================================
+//= Eden Group Headquarter NPCs.
+//===== Changelogs: ==========================================
+//= 1.0 First Version. [L0ne_W0lf]
+//= 1.1 Removed unencoded comments (Korean -> Gibberish)
+//=     Readded the GM helper NPC, commented out.
+//= 1.2 Some little optimization here and there. [Masao]
+//= 1.3 Added Instructor Ur and the new Quests which come
+//=     alongside him. Special thanks to Chilly for the base. [Masao]
+//= 1.4 Partial cleaning and bug fixing. [Euphy]
+//= 1.4a Added 'npcskill' command. [Euphy]
+//= 1.4b Added 'disable_items' command. [Euphy]
+//= 1.5 Added GM management function. [Euphy]
+//= 1.6 Kagerou/Oboro support (Class -> BaseClass) [Euphy]
+//= 2.0 Updated Instructor Ur's quests. [Capuche]
+//= 2.1 Updated Blacksmith Thorn and Weapons Expert NPC. [Capuche]
+//= 2.2 Added support to Para_Team_Mark_ in Eden Group. [Ragno]
+//= 2.3 Added use of F_HasEdenGroupMark function. [Ragno]
+//= 2.4 Adds quest management, progression, and warp points to 
+//=		support multi-step training quests for players.. [Louis T Steinhil]
+//============================================================
+comodo,173,354,5	script	Dispatched Instructor#02	1_M_JOBTESTER,{  
+    switch(para_2nd01) {    
+        case 1: callsub S_InitialQuestStart; break;    
+        case 2: callsub S_GolemHuntProgress; break;    
+        case 3: callsub S_AdvGolemHuntProg; break;    
+        case 4: callsub S_TrainingComplete; break;    
+        default:    
+            if (para_2nd01 > 4) callsub S_PostTrainingChat;    
+            else callsub S_DefaultGreeting;    
+    }    
+    close;    
+  
+S_InitialQuestStart:  
+    mes "[Romeo]";  
+    mes "How are you?";  
+    mes "You were sent here by Instructor Ur right?";  
+    mes "Did you come here for a quest?";  
+    next;  
+    mes "[Romeo]";  
+    mes "I don't know if this will fit you well";  
+    mes "Why don't you just try it.";  
+    next;  
+    mes "[Romeo]";  
+    mes "The thing about this cave is that, many monsters are created from stones.";  
+    mes "If you stay cautious, they shouldn't be too threatening...";  
+    next;  
+    mes "[Romeo]";  
+    mes "But most of them have range attacks..";  
+    mes "And sometimes a really strong one roams around.";  
+    next;  
+    mes "[Romeo]";  
+    mes "Well... this is the reason why you train right?";  
+    mes "Let's try taking on one of the big monsters";  
+    next;  
+    mes "[Romeo]";  
+    mes "They are called 'Stalactic Golem'.";  
+    mes "Try defeating some of them.";  
+    mes "Not too difficult, right?";  
+    para_2nd01 = 2;  
+    erasequest 7214;  
+    setquest 7215;  
+    return;  
+  
+S_GolemHuntProgress:  
+    if (checkquest(7215,HUNTING) == 2) {  
+        callsub S_GolemHuntComplete;  
+    } else {  
+        callsub S_GolemHuntReminder;  
+    }  
+    return;  
+  
+S_GolemHuntComplete:  
+    mes "[Romeo]";  
+    mes "So, how good of an explorer are you now?";  
+    mes "You've fought these before, so clearing this cave should be possible.";  
+    mes "Let me reward you.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[0]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[0]) +"x "+ mesitemicon(.item_reward[0]) +".";  
+    next;  
+    // Claim reward  
+    getexp .base_exp[0], .job_exp[0];  
+    getitem .item_reward[0], .item_amount[0];  
+    mes "[Romeo]";  
+    mes "As I said before, since Comodo is a city inside a cave..";  
+    mes "Access to the outside world is mostly done through the east entrance, but...";  
+    next;  
+    mes "[Romeo]";  
+    mes "Let's try going out through the north.";  
+    mes "There should be things you can hunt out there.";  
+    next;  
+    mes "[Romeo]";  
+    mes "And instead of just walking out,";  
+    mes "Let's kill about 10 Stalactic Golems on the way out.";  
+    next;  
+    mes "[Romeo]";  
+    mes "So that, travelers coming from the north can safely walk through.";  
+    mes "Remember, 10 Stalactic Golems. Then come to the other side of northern part of the cave";  
+    next;  
+    mes "[Romeo]";  
+    mes "I'll be waiting outside.";  
+    para_2nd01 = 3;  
+    erasequest 7215;  
+    setquest 7216;  
+    return;  
+  
+S_GolemHuntReminder:  
+    mes "[Romeo]";  
+    mes "As a test of the difficulty of this cave";  
+    mes "Go defeat 3 Stalactic Golems.";  
+    mes "Watch out for other monsters as well.";  
+    next;  
+    switch(select("Get healed:Quest Management:Continue hunting")) {  
+        case 1: callsub S_HealPlayer; break;  
+        case 2: callsub S_QuestManagement; break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_AdvGolemHuntProg:  
+    if (checkquest(7216,HUNTING) == 2) {  
+        callsub S_AdvGolemHuntCom;  
+    } else {  
+        callsub S_AdvGolemHuntRem;  
+    }  
+    return;  
+  
+S_AdvGolemHuntCom:  
+    mes "[Romeo]";  
+    mes "Excellent work clearing the northern passage!";  
+    mes "Let me reward you for your efforts.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[1]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[1]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[1]) +"x "+ mesitemicon(.item_reward[1]) +".";  
+    next;  
+    // Claim reward  
+    getexp .base_exp[1], .job_exp[1];  
+    getitem .item_reward[1], .item_amount[1];  
+    mes "[Romeo]";  
+    mes "You've successfully completed the cave training.";  
+    mes "Return to Instructor Ur to report your progress.";  
+    mes "The path through Comodo's caves is now safer thanks to you!";  
+    para_2nd01 = 4;  
+    erasequest 7216;  
+    setquest 7217;  
+    return;  
+  
+S_AdvGolemHuntRem:  
+    mes "[Romeo]";  
+    mes "You must go through this cave to the outside.";  
+    mes "Don't forget to defeat the Stalactic Golems you run into on the way.";  
+    next;  
+    switch(select("Get healed:Quest Management:Continue hunting")) {  
+        case 1: callsub S_HealPlayer; break;  
+        case 2: callsub S_QuestManagement; break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_TrainingComplete:  
+    mes "[Romeo]";  
+    mes "You've completed your training here.";  
+    mes "The caves of Comodo are much safer now.";  
+    mes "Don't forget to report back to Instructor Ur!";  
+    return;  
+  
+S_PostTrainingChat:  
+    mes "[Romeo]";  
+    mes "How are your adventures going?";  
+    mes "Comodo still has the best weather in the whole world.";  
+    next;  
+    switch(select("Quest Management:Just chatting:Leave")) {  
+        case 1: callsub S_QuestManagement; break;  
+        case 2:  
+            mes "[Romeo]";  
+            mes "Take care and enjoy the perfect weather here!";  
+            break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_DefaultGreeting:  
+    mes "[Romeo]";  
+    mes "How are you?";  
+    mes "Comodo has the best weather in the whole world.";  
+    mes "Even during the winter, Comodo has great weather.";  
+    next;  
+    mes "[Romeo]";  
+    mes "Do you know why?";  
+    mes "Comodo is surrounded by the ocean and caves.";  
+    mes "Seasonal changes don't make any difference in the temperature here.";  
+    next;  
+    mes "[Romeo]";  
+    mes "Take it easy here.";  
+    mes "This area is a place for relaxation.";  
+    return;  
+  
+S_HealPlayer:  
+    mes "[Romeo]";  
+    mes "-Romeo's encouraging words restore your strength.-";  
+    npcskill "AL_HEAL",10,99,60;  
+    percentheal 100,100;  
+    return;  
+  
+// Quest Management Functions  
+S_QuestManagement:  
+    mes "[Romeo]";  
+    mes "What do you need help with regarding your cave training?";  
+    next;  
+    switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
+        case 1: callsub S_ViewCurrentQuest; break;  
+        case 2: callsub S_AbandonQuest; break;  
+        case 3: callsub S_QuestStatus; break;  
+        case 4: mes "Come back if you need help!"; break;  
+    }  
+    return;  
+  
+S_ViewCurrentQuest:  
+    mes "[Romeo]";  
+    mes "Your current cave training progress:";  
+    mes " ";  
+      
+    switch(para_2nd01) {  
+        case 1:  
+            mes "^0000FFCave Training Introduction^000000";  
+            mes "  Status: Ready to begin Stalactic Golem hunting";  
+            break;  
+        case 2:  
+            mes "^00FF00Initial Golem Hunt - In Progress^000000";  
+            mes "  Status: Hunt 3 Stalactic Golems in the cave";  
+            break;  
+        case 3:  
+            mes "^00FF00Advanced Golem Hunt - In Progress^000000";  
+            mes "  Status: Hunt 10 Stalactic Golems on the northern path";  
+            break;  
+        case 4:  
+            mes "^0000FFCave Training Complete^000000";  
+            mes "  Status: Return to Instructor Ur at Eden Group HQ";  
+            break;  
+        default:  
+            mes "^FF0000No active cave training quest.^000000";  
+            mes "^FF0000You might need to talk to Instructor Ur first.^000000";  
+            break;  
+    }  
+    return;  
+  
+S_AbandonQuest:  
+    if (para_2nd01 < 1 || para_2nd01 > 3) {  
+        mes "[Romeo]";  
+        mes "You don't have any active cave training to abandon.";  
+        return;  
+    }  
+      
+    mes "[Romeo]";  
+    mes "^FF0000Warning:^000000 Abandoning will reset your current progress!";  
+    mes "Are you sure you want to give up? The caves need to be secured!";  
+    next;  
+      
+    if (select("Yes, abandon current training:No, continue training") == 2) {  
+        mes "[Romeo]";  
+        mes "Good choice! The Stalactic Golems won't defeat themselves!";  
+        return;  
+    }  
+      
+    // Reset quest progression  
+    switch(para_2nd01) {  
+        case 1:  
+            mes "[Romeo]";  
+            mes "You're already at the beginning of cave training.";  
+            return;  
+        case 2:  
+            if (checkquest(7215) >= 0) erasequest 7215;  
+            para_2nd01 = 1;  
+            break;  
+        case 3:  
+            if (checkquest(7216) >= 0) erasequest 7216;  
+            para_2nd01 = 2;  
+            break;  
+    }  
+      
+    mes "[Romeo]";  
+    mes "Cave training progress reset. You can restart anytime.";  
+    return;  
+  
+S_QuestStatus:  
+    mes "[Romeo]";  
+    mes "Let me check your hunting progress...";  
+    mes " ";  
+      
+    switch(para_2nd01) {  
+        case 2:  
+            .@progress = checkquest(7215,HUNTING);  
+            if (.@progress == 2) {  
+                mes "^00FF00Initial Golem Hunt: COMPLETE!^000000";  
+                mes "Come talk to me to proceed to the advanced training.";  
+            } else {  
+                mes "^FFFFFFInitial Golem Hunt: In Progress^000000";  
+                mes "Keep hunting those stone creatures in the cave.";  
+            }  
+            break;  
+        case 3:  
+            .@progress = checkquest(7216,HUNTING);  
+            if (.@progress == 2) {  
+                mes "^00FF00Advanced Golem Hunt: COMPLETE!^000000";  
+                mes "Come talk to me to finish your cave training!";  
+            } else {  
+                mes "^FFFFFFAdvanced Golem Hunt: In Progress^000000";  
+                mes "Clear the northern passage of 10 Stalactic Golems.";  
+            }  
+            break;  
+        default:  
+            mes "^FF0000No active hunting quests to check.^000000";  
+            break;  
+    }  
+    return;  
+  
+OnInit:  
+    setunitdata( getnpcid(0), UNPC_GROUP_ID, 6);  
+	setunittitle( getnpcid(0), "Romeo" );
+    setarray .base_exp[0], 8000, 12000;  
+    setarray .job_exp[0], 8000, 12000;  
+    setarray .item_reward[0], 25223, 25223;  
+    setarray .item_amount[0], 1, 2;  
+    end;  
+}
+
+um_fild01,34,280,5	script	Dispatched Instructor#2nd02	1_M_JOBTESTER,{  
+    switch(para_2nd01) {  
+        case 3: callsub S_GolemHuntCheck; break;  
+        case 4: callsub S_ItemCollectionProgress; break;  
+        case 5: callsub S_TrainingComplete; break;  
+        default:  
+            if (para_2nd01 > 5) callsub S_PostTrainingChat;  
+            else callsub S_WrongLocation;  
+    }  
+    close;  
+  
+S_WrongLocation:  
+    mes "[Romeo]";  
+    if (para_2nd01 < 2) {  
+        mes "If you were sent from the Eden Group for training, wait for me at the town.";  
+        mes "I'm waiting for a different trainee right now.";  
+    }  
+    else if (para_2nd01 == 2) {  
+        mes "No no.. Not here.";  
+        mes "I'm waiting for a different trainee right now.";  
+        mes "Go back.";  
+    }  
+    else {  
+        mes "You shouldn't be here at this stage of training.";  
+        mes "Please check with Instructor Ur about your current assignment.";  
+        next;  
+        switch(select("Quest Management:Go back:Leave")) {  
+            case 1: callsub S_QuestManagement; break;  
+            case 2:  
+                mes "[Romeo]";  
+                mes "Head back to the cave entrance in Comodo.";  
+                break;  
+            case 3: break;  
+        }  
+    }  
+    return;  
+  
+S_GolemHuntCheck:  
+    if (checkquest(7216,HUNTING) == 2) {  
+        callsub S_GolemHuntComplete;  
+    } else {  
+        callsub S_GolemHuntIncomplete;  
+    }  
+    return;  
+  
+S_GolemHuntComplete:  
+    mes "[Romeo]";  
+    mes "Ah, I see you didn't get lost.";  
+    mes "Your skills at defeating those Stalactic Golems were better than I expected.";  
+    mes "Just means you've improved that much.";  
+    mes "Let me reward you for clearing the northern passage.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[0]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[0]) +"x "+ mesitemicon(.item_reward[0]) +".";  
+    next;  
+    // Claim reward  
+    getexp .base_exp[0], .job_exp[0];  
+    getitem .item_reward[0], .item_amount[0];  
+    mes "[Romeo]";  
+    mes "Now look around here";  
+    mes "We're in a dense forest now.";  
+    mes "There are Dryads and Wootans here...";  
+    next;  
+    mes "[Romeo]";  
+    mes "Next task is to clearing this area of monsters.";  
+    mes "Bring me the following from the monsters.";  
+    next;  
+    mes "[Romeo]";  
+    mes "5 Wootan Fighter's Shoulderguard";  
+    mes "7 Dryad's Sharp Leaf";  
+    next;  
+    mes "[Romeo]";  
+    mes "This is the last test.";  
+    mes "Good luck.";  
+    para_2nd01 = 4;  
+    erasequest 7216;  
+    setquest 7217;  
+    return;  
+  
+S_GolemHuntIncomplete:  
+    mes "[Romeo]";  
+    mes "I see you didn't get lost.";  
+    mes "But you didn't defeat enough Stalactic Golems..";  
+    mes "Go back and defeat them.";  
+    next;  
+    switch(select("Get healed:Quest Management:Go back")) {  
+        case 1: callsub S_HealPlayer; break;  
+        case 2: callsub S_QuestManagement; break;  
+        case 3:  
+            mes "[Romeo]";  
+            mes "Return to the cave and complete your golem hunting.";  
+            break;  
+    }  
+    return;  
+  
+S_ItemCollectionProgress:  
+    if (countitem(7196) > 4 && countitem(7100) > 6) {  
+        callsub S_ItemCollectionComplete;  
+    } else {  
+        callsub S_ItemCollectionReminder;  
+    }  
+    return;  
+  
+S_ItemCollectionComplete:  
+    mes "[Romeo]";  
+    mes "You really got these by defeating the monsters?";  
+    mes "I believe you. I want to get out of here anyways.";  
+    mes "Let me reward you for completing the forest training.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[1]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[1]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[1]) +"x "+ mesitemicon(.item_reward[1]) +".";  
+    next;  
+    // Claim reward and remove items  
+    getexp .base_exp[1], .job_exp[1];  
+    getitem .item_reward[1], .item_amount[1];  
+    delitem 7196,5;  
+    delitem 7100,7;  
+    mes "[Romeo]";  
+    mes "There are no more training tasks here.";  
+    mes "Go back and report to Ur.";  
+    mes "You've successfully completed the Comodo advanced training!";  
+    para_2nd01 = 5;  
+    erasequest 7217;  
+    setquest 7218;  
+    return;  
+  
+S_ItemCollectionReminder:  
+    mes "[Romeo]";  
+    mes "Didn't I already tell you the last task?";  
+    mes "Defeat the monsters in this forest, and bring me the items I asked for.";  
+    next;  
+    mes "[Romeo]";  
+    mes "5 Wootan Fighter's Shoulderguard";  
+    mes "7 Dryad's Sharp Leaf";  
+    mes "You must bring me those to pass this test.";  
+    next;  
+    mes "[Romeo]";  
+    mes "Current items: "+ countitem(7196) +"/5 Shoulderguards, "+ countitem(7100) +"/7 Sharp Leaves";  
+    next;  
+    switch(select("Get healed:Quest Management:Continue hunting")) {  
+        case 1: callsub S_HealPlayer; break;  
+        case 2: callsub S_QuestManagement; break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_TrainingComplete:  
+    mes "[Romeo]";  
+    mes "You've completed your forest training.";  
+    mes "Don't forget to report back to Instructor Ur!";  
+    mes "The forest is much safer now thanks to your efforts.";  
+    return;  
+  
+S_PostTrainingChat:  
+    mes "[Romeo]";  
+    mes "How are your adventures going?";  
+    mes "This forest can be quite challenging, but you handled it well.";  
+    next;  
+    switch(select("Quest Management:Just chatting:Leave")) {  
+        case 1: callsub S_QuestManagement; break;  
+        case 2:  
+            mes "[Romeo]";  
+            mes "Take care in your future adventures!";  
+            break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_HealPlayer:  
+    mes "[Romeo]";  
+    mes "-Romeo's field experience helps restore your strength.-";  
+    npcskill "AL_HEAL",10,99,60;  
+    percentheal 100,100;  
+    return;  
+  
+// Quest Management Functions  
+S_QuestManagement:  
+    mes "[Romeo]";  
+    mes "What do you need help with regarding your forest training?";  
+    next;  
+    switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
+        case 1: callsub S_ViewCurrentQuest; break;  
+        case 2: callsub S_AbandonQuest; break;  
+        case 3: callsub S_QuestStatus; break;  
+        case 4: mes "Come back if you need help!"; break;  
+    }  
+    return;  
+  
+S_ViewCurrentQuest:  
+    mes "[Romeo]";  
+    mes "Your current forest training progress:";  
+    mes " ";  
+      
+    switch(para_2nd01) {  
+        case 3:  
+            mes "^00FF00Golem Hunt Verification^000000 - In Progress";  
+            mes "  Status: Complete 10 Stalactic Golems in the northern cave passage";  
+            break;  
+        case 4:  
+            mes "^00FF00Item Collection^000000 - In Progress";  
+            mes "  Status: Collect 5 Shoulderguards and 7 Sharp Leaves";  
+            break;  
+        case 5:  
+            mes "^0000FFForest Training Complete^000000";  
+            mes "  Status: Return to Instructor Ur at Eden Group HQ";  
+            break;  
+        default:  
+            mes "^FF0000No active forest training quest.^000000";  
+            mes "^FF0000You might be at the wrong training stage.^000000";  
+            break;  
+    }  
+    return;  
+  
+S_AbandonQuest:  
+    if (para_2nd01 < 3 || para_2nd01 > 4) {  
+        mes "[Romeo]";  
+        mes "You don't have any active forest training to abandon.";  
+        return;  
+    }  
+      
+    mes "[Romeo]";  
+    mes "^FF0000Warning:^000000 Abandoning will reset your current progress!";  
+    mes "Are you sure you want to give up? The forest needs to be cleared!";  
+    next;  
+      
+    if (select("Yes, abandon current training:No, continue training") == 2) {  
+        mes "[Romeo]";  
+        mes "Good choice! The monsters won't defeat themselves!";  
+        return;  
+    }  
+      
+    // Reset quest progression  
+    switch(para_2nd01) {  
+        case 3:  
+            if (checkquest(7216) >= 0) erasequest 7216;  
+            para_2nd01 = 2;  
+            break;  
+        case 4:  
+            if (checkquest(7217) >= 0) erasequest 7217;  
+            para_2nd01 = 3;  
+            break;  
+    }  
+      
+    mes "[Romeo]";  
+    mes "Forest training progress reset. You can restart anytime.";  
+    return;  
+  
+S_QuestStatus:  
+    mes "[Romeo]";  
+    mes "Let me check your progress...";  
+    mes " ";  
+      
+    switch(para_2nd01) {  
+        case 3:  
+            .@progress = checkquest(7216,HUNTING);  
+            if (.@progress == 2) {  
+                mes "^00FF00Golem Hunt: COMPLETE!^000000";  
+                mes "Come talk to me to proceed to item collection.";  
+            } else {  
+                mes "^FFFFFFGolem Hunt: In Progress^000000";  
+                mes "Return to the cave and complete your golem hunting.";  
+            }  
+            break;  
+        case 4:  
+            mes "^FFFFFFItem Collection: In Progress^000000";  
+            mes "Current items: "+ countitem(7196) +"/5 Shoulderguards, "+ countitem(7100) +"/7 Sharp Leaves";  
+            if (countitem(7196) > 4 && countitem(7100) > 6) {  
+                mes "^00FF00All items collected! Come talk to me to finish!^000000";  
+            }  
+            break;  
+        default:  
+            mes "^FF0000No active forest training quests to check.^000000";  
+            break;  
+    }  
+    return;  
+  
+OnInit:  
+    setunitdata( getnpcid(0), UNPC_GROUP_ID, 6);  
+	setunittitle( getnpcid(0), "Romeo" );
+    setarray .base_exp[0], 10000, 15000;  
+    setarray .job_exp[0], 10000, 15000;  
+    setarray .item_reward[0], 25223, 25223;  
+    setarray .item_amount[0], 2, 3;  
+    end;  
+}

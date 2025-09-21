@@ -1,0 +1,285 @@
+//===== rAthena Script =======================================
+//= Eden Group Quest - Quests NPCs
+//===== Description: =========================================
+//= Eden Group Headquarter NPCs.
+//===== Changelogs: ==========================================
+//= 1.0 First Version. [L0ne_W0lf]
+//= 1.1 Removed unencoded comments (Korean -> Gibberish)
+//=     Readded the GM helper NPC, commented out.
+//= 1.2 Some little optimization here and there. [Masao]
+//= 1.3 Added Instructor Ur and the new Quests which come
+//=     alongside him. Special thanks to Chilly for the base. [Masao]
+//= 1.4 Partial cleaning and bug fixing. [Euphy]
+//= 1.4a Added 'npcskill' command. [Euphy]
+//= 1.4b Added 'disable_items' command. [Euphy]
+//= 1.5 Added GM management function. [Euphy]
+//= 1.6 Kagerou/Oboro support (Class -> BaseClass) [Euphy]
+//= 2.0 Updated Instructor Ur's quests. [Capuche]
+//= 2.1 Updated Blacksmith Thorn and Weapons Expert NPC. [Capuche]
+//= 2.2 Added support to Para_Team_Mark_ in Eden Group. [Ragno]
+//= 2.3 Added use of F_HasEdenGroupMark function. [Ragno]
+//= 2.4 Adds quest management, progression, and warp points to 
+//=		support multi-step training quests for players.. [Louis T Steinhil]
+//============================================================
+man_fild01,43,234,3	script	Dispatched Instructor#07	4_DST_SOLDIER,{  
+    switch(para_2nd01) {  
+        case 23: callsub S_InitialQuestStart; break;  
+        case 24: callsub S_NepenthesHuntProgress; break;  
+        case 25: callsub S_TrainingComplete; break;  
+        default:  
+            if (para_2nd01 > 25) callsub S_PostTrainingChat;  
+            else callsub S_DefaultGreeting;  
+    }  
+    close;  
+  
+S_InitialQuestStart:  
+    mes "[Meeru]";  
+    mes "You think I'll lose!";  
+    mes "...?";  
+    mes "All of them... Who're you?!";  
+    mes "Mine is a stooge?";  
+    mes "He sent you to watch me!?";  
+    next;  
+    mes "[Meeru]";  
+    mes "What? Isn't that it?";  
+    mes "... ...";  
+    mes "Mine didn't send you did he?";  
+    mes "So why are you here?";  
+    next;  
+    select("Margaret sent me");  
+    mes "[Meeru]";  
+    mes "Ah, Margaret!";  
+    mes "Mine and Margaret are always trying to mess with me because of my win-!";  
+    mes "Gosh...";  
+    next;  
+    select("What happened?", "What do you win?");  
+    mes "[Meeru]";  
+    mes "It all started with them bickering.";  
+    mes "Margaret was asked to scout for both of us. It's like what you're doing now.";  
+    next;  
+    mes "[Meeru]";  
+    mes "Mine said that he was strong enough to defeat any monster.";  
+    mes "So I insisted that he go to either East or West of the camp and show me.";  
+    next;  
+    mes "[Meeru]";  
+    mes "Mine made an idle threat and huffed and puffed but didn't do anything.";  
+    next;  
+    mes "[Meeru]";  
+    mes "Basically, Margaret didn't believe him and challenged him to kill 1 Nepenthes.";  
+    next;  
+    mes "[Meeru]";  
+    mes "So anyways now I'm charged with asking people to go and hunt 1 Nepenthes because of that bickering incident.";  
+    next;  
+    mes "[Meeru]";  
+    mes "It's really not that difficult to hunt 1 so just go to the field East of here and kill one of them.";  
+    para_2nd01 = 24;  
+    setquest 7235;  
+    return;  
+  
+S_NepenthesHuntProgress:  
+    if (checkquest(7235,HUNTING) == 2) {  
+        callsub S_NepenthesHuntComplete;  
+    } else {  
+        callsub S_NepenthesHuntReminder;  
+    }  
+    return;  
+  
+S_NepenthesHuntComplete:  
+    mes "[Meeru]";  
+    mes "Hmm yes I saw.";  
+    mes "I knew I should've asked you to hunt more than 1.";  
+    next;  
+    mes "[Meeru]";  
+    mes "Anyways you've proven that you're stronger than Mine ever made himself out to be.";  
+    mes "Let me reward you for settling this argument.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[0]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[0]) +"x "+ mesitemicon(.item_reward[0]) +".";  
+    next;  
+    // Claim reward  
+    getexp .base_exp[0], .job_exp[0];  
+    getitem .item_reward[0], .item_amount[0];  
+    mes "[Meeru]";  
+    mes "Well anyways here's a small reward.";  
+    next;  
+    mes "[Meeru]";  
+    mes "I'll just be here making sure other people hunt the Nepenthes. I might ask them to hunt more than 1 who knows.";  
+    mes "The brothers' dispute is settled for now!";  
+    para_2nd01 = 25;  
+    erasequest 7235;  
+    return;  
+  
+S_NepenthesHuntReminder:  
+    mes "[Meeru]";  
+    mes "Is hunting the Nepenthes too much for you?";  
+    mes "You seem a bit flushed.";  
+    mes "Fine I'll heal you!";  
+    next;  
+    switch(select("Get healed:Quest Management:Continue hunting")) {  
+        case 1: callsub S_HealPlayer; break;  
+        case 2: callsub S_QuestManagement; break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_TrainingComplete:  
+    mes "[Meeru]";  
+    mes "I'll just be here making sure other people hunt the Nepenthes. I might ask them to hunt more than 1 who knows.";  
+    return;  
+  
+S_PostTrainingChat:  
+    mes "[Meeru]";  
+    mes "How are your adventures going?";  
+    mes "The Nepenthes situation is under control now.";  
+    next;  
+    switch(select("Quest Management:Just chatting:Leave")) {  
+        case 1: callsub S_QuestManagement; break;  
+        case 2:  
+            mes "[Meeru]";  
+            mes "Take care in your future adventures!";  
+            break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_DefaultGreeting:  
+    mes "[Meeru]";  
+    if (para_2nd01 < 23) {  
+        mes "You think I'll lose!";  
+        mes "...?";  
+        mes "All of them... Who're you?!";  
+        mes "Mine is a stooge?";  
+        mes "He sent you to watch me!?";  
+        next;  
+        mes "[Meeru]";  
+        mes "What? Isn't that it?";  
+        mes "... ...";  
+        mes "Mine didn't send you did he?";  
+    }  
+    else {  
+        mes "Something wrong?";  
+        mes "Did you have trouble with that Nepenthes...";  
+        mes ".........hyuk huk.";  
+        next;  
+        switch(select("Quest Management:Just visiting:Leave")) {  
+            case 1: callsub S_QuestManagement; break;  
+            case 2:  
+                mes "[Meeru]";  
+                mes "Thanks for stopping by!";  
+                break;  
+            case 3: break;  
+        }  
+    }  
+    return;  
+  
+S_HealPlayer:  
+    mes "[Meeru]";  
+    mes "-Meeru's competitive spirit restores your strength.-";  
+    npcskill "AL_HEAL",10,99,60;  
+    percentheal 100,100;  
+    return;  
+  
+// Quest Management Functions  
+S_QuestManagement:  
+    mes "[Meeru]";  
+    mes "What do you need help with regarding your Nepenthes hunting?";  
+    next;  
+    switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
+        case 1: callsub S_ViewCurrentQuest; break;  
+        case 2: callsub S_AbandonQuest; break;  
+        case 3: callsub S_QuestStatus; break;  
+        case 4: mes "Come back if you need help!"; break;  
+    }  
+    return;  
+  
+S_ViewCurrentQuest:  
+    mes "[Meeru]";  
+    mes "Your current brother investigation progress:";  
+    mes " ";  
+      
+    switch(para_2nd01) {  
+        case 23:  
+            mes "^0000FFBrother Investigation Introduction^000000";  
+            mes "  Status: Ready to begin Nepenthes hunting";  
+            break;  
+        case 24:  
+            mes "^00FF00Nepenthes Hunt^000000 - In Progress";  
+            mes "  Status: Hunt 1 Nepenthes to settle the argument";  
+            break;  
+        case 25:  
+            mes "^0000FFNepenthes Hunt Complete^000000";  
+            mes "  Status: Investigation continues with Mine";  
+            break;  
+        default:  
+            mes "^FF0000No active Nepenthes hunting quest.^000000";  
+            mes "^FF0000You might need to talk to Margaret first.^000000";  
+            break;  
+    }  
+    return;  
+  
+S_AbandonQuest:  
+    if (para_2nd01 < 23 || para_2nd01 > 24) {  
+        mes "[Meeru]";  
+        mes "You don't have any active Nepenthes hunting to abandon.";  
+        return;  
+    }  
+      
+    mes "[Meeru]";  
+    mes "^FF0000Warning:^000000 Abandoning will reset your current progress!";  
+    mes "Are you sure you want to give up? We need to settle this argument!";  
+    next;  
+      
+    if (select("Yes, abandon current hunt:No, continue hunting") == 2) {  
+        mes "[Meeru]";  
+        mes "Good choice! That Nepenthes won't defeat itself!";  
+        return;  
+    }  
+      
+    // Reset quest progression  
+    switch(para_2nd01) {  
+        case 23:  
+            mes "[Meeru]";  
+            mes "You're already at the beginning of the investigation.";  
+            return;  
+        case 24:  
+            if (checkquest(7235) >= 0) erasequest 7235;  
+            para_2nd01 = 23;  
+            break;  
+    }  
+      
+    mes "[Meeru]";  
+    mes "Nepenthes hunting progress reset. You can restart anytime.";  
+    return;  
+  
+S_QuestStatus:  
+    mes "[Meeru]";  
+    mes "Let me check your hunting progress...";  
+    mes " ";  
+      
+    switch(para_2nd01) {  
+        case 24:  
+            .@progress = checkquest(7235,HUNTING);  
+            if (.@progress == 2) {  
+                mes "^00FF00Nepenthes Hunt: COMPLETE!^000000";  
+                mes "Come talk to me to finish this part of the investigation.";  
+            } else {  
+                mes "^FFFFFFNepenthes Hunt: In Progress^000000";  
+                mes "Hunt 1 Nepenthes in the eastern field to prove your strength.";  
+            }  
+            break;  
+        default:  
+            mes "^FF0000No active hunting quests to check.^000000";  
+            break;  
+    }  
+    return;  
+  
+OnInit:  
+    setunitdata( getnpcid(0), UNPC_GROUP_ID, 6);  
+    setunittitle( getnpcid(0), "Meeru" );  
+    setarray .base_exp[0], 45000;  
+    setarray .job_exp[0], 45000;  
+    setarray .item_reward[0], 25223;  
+    setarray .item_amount[0], 6;  
+    end;  
+}
+

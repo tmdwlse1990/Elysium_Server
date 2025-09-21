@@ -1,0 +1,359 @@
+//===== rAthena Script =======================================
+//= Eden Group Quest - Quests NPCs
+//===== Description: =========================================
+//= Eden Group Headquarter NPCs.
+//===== Changelogs: ==========================================
+//= 1.0 First Version. [L0ne_W0lf]
+//= 1.1 Removed unencoded comments (Korean -> Gibberish)
+//=     Readded the GM helper NPC, commented out.
+//= 1.2 Some little optimization here and there. [Masao]
+//= 1.3 Added Instructor Ur and the new Quests which come
+//=     alongside him. Special thanks to Chilly for the base. [Masao]
+//= 1.4 Partial cleaning and bug fixing. [Euphy]
+//= 1.4a Added 'npcskill' command. [Euphy]
+//= 1.4b Added 'disable_items' command. [Euphy]
+//= 1.5 Added GM management function. [Euphy]
+//= 1.6 Kagerou/Oboro support (Class -> BaseClass) [Euphy]
+//= 2.0 Updated Instructor Ur's quests. [Capuche]
+//= 2.1 Updated Blacksmith Thorn and Weapons Expert NPC. [Capuche]
+//= 2.2 Added support to Para_Team_Mark_ in Eden Group. [Ragno]
+//= 2.3 Added use of F_HasEdenGroupMark function. [Ragno]
+//= 2.4 Adds quest management, progression, and warp points to 
+//=		support multi-step training quests for players.. [Louis T Steinhil]
+//============================================================
+glast_01,195,131,5	script	Dispatched Instructor#03	4_F_SISTER,{  
+    switch(para_2nd01) {  
+        case 7: callsub S_InitialQuestStart; break;  
+        case 8: callsub S_WraithHuntProgress; break;  
+        case 9: callsub S_EvilDruidHuntProgress; break;  
+        case 10: callsub S_TrainingComplete; break;  
+        default:  
+            if (para_2nd01 > 10) callsub S_PostTrainingChat;  
+            else callsub S_DefaultGreeting;  
+    }  
+    close;  
+  
+S_InitialQuestStart:  
+    mes "[Johan]";  
+    mes "Oh oh!!";  
+    mes "You're finally here!";  
+    mes "I asked Ur to send someone to help me here!";  
+    next;  
+    select("What? I came for training..");  
+    mes "[Johan]";  
+    mes "No no, that's the same thing!";  
+    mes "Your training mission is to help me clear out this Abbey!";  
+    next;  
+    mes "[Johan]";  
+    mes "Phew... It's been so tough.";  
+    mes "I can't run in by myself, but then Gargoyles attack me out here..";  
+    mes "Hahaha...";  
+    next;  
+    mes "[Johan]";  
+    mes "This abbey is our responsibility.";  
+    mes "Just like other monasteries, this one has an underground graveyard as well, but..";  
+    next;  
+    mes "[Johan]";  
+    mes "As you well know, this castle... is not at a normal state.";  
+    mes "I think that's causing these souls from being able to rest in peace.";  
+    next;  
+    mes "[Johan]";  
+    mes "Let's defeat the ones around here first, since going underground may be too much for just us.";  
+    mes "I'll be testing how skilled you are as well...";  
+    next;  
+    mes "[Johan]";  
+    mes "First target are the Wraiths.";  
+    mes "You can tell them apart by their strange laugh.";  
+    mes "They look like demons, but we can't tell for sure...";  
+    next;  
+    mes "[Johan]";  
+    mes "Defeat 20 Wraiths.";  
+    mes "I'll assist you from here!";  
+    para_2nd01 = 8;  
+    erasequest 7219;  
+    setquest 7220;  
+    return;  
+  
+S_WraithHuntProgress:  
+    if (checkquest(7220,HUNTING) == 2) {  
+        callsub S_WraithHuntComplete;  
+    } else {  
+        callsub S_WraithHuntReminder;  
+    }  
+    return;  
+  
+S_WraithHuntComplete:  
+    mes "[Johan]";  
+    mes "Oh~ You are pretty strong!";  
+    mes "I'm so glad that someone strong like you came.";  
+    mes "I wouldn't have lasted long here by myself.";  
+    mes "Let me reward you for your exorcism work.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[0]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[0]) +"x "+ mesitemicon(.item_reward[0]) +".";  
+    next;  
+    // Claim reward  
+    getexp .base_exp[0], .job_exp[0];  
+    getitem .item_reward[0], .item_amount[0];  
+    mes "[Johan]";  
+    mes "By the way, did you see those other monsters besides the Wraiths?";  
+    mes "They are the corrupted souls of priests.";  
+    mes "They are called 'Evil Druid' as well.";  
+    next;  
+    mes "[Johan]";  
+    mes "Let's take care of these Evil Druids this time.";  
+    mes "10 of them.";  
+    mes "You can do it right?";  
+    mes "I believe in you!";  
+    para_2nd01 = 9;  
+    erasequest 7220;  
+    setquest 7221;  
+    return;  
+  
+S_WraithHuntReminder:  
+    mes "[Johan]";  
+    mes "20 Wraiths!";  
+    mes "I'll watch your back!";  
+    mes "... Of.. Course.. I'll fight too!";  
+    next;  
+    switch(select("Get healed:Quest Management:Continue hunting")) {  
+        case 1: callsub S_HealPlayer; break;  
+        case 2: callsub S_QuestManagement; break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_EvilDruidHuntProgress:  
+    if (checkquest(7221,HUNTING) == 2) {  
+        callsub S_EvilDruidHuntComplete;  
+    } else {  
+        callsub S_EvilDruidHuntReminder;  
+    }  
+    return;  
+  
+S_EvilDruidHuntComplete:  
+    mes "[Johan]";  
+    mes "...Oh you're back!";  
+    mes "(Johan Opens the door and checks)";  
+    mes "....!";  
+    mes "Okay!!";  
+    next;  
+    mes "[Johan]";  
+    mes "Thank you! I really appreciate it!";  
+    mes "I think I can enter without any worries now!";  
+    mes "I hope those evil souls left it alone..";  
+    mes "Let me reward you for completing the abbey cleansing.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[1]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[1]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[1]) +"x "+ mesitemicon(.item_reward[1]) +".";  
+    next;  
+    // Claim reward  
+    getexp .base_exp[1], .job_exp[1];  
+    getitem .item_reward[1], .item_amount[1];  
+    mes "[Johan]";  
+    mes "Hehe, I'll put in a good word to Ur!";  
+    mes "You're a valiant and skilled exorcist!";  
+    next;  
+    mes "[Johan]";  
+    mes "You can go back to Eden now";  
+    mes "I'll stay and clean up the rest, hehe";  
+    mes "The abbey is much safer thanks to your efforts!";  
+    para_2nd01 = 10;  
+    erasequest 7221;  
+    setquest 7222;  
+    return;  
+  
+S_EvilDruidHuntReminder:  
+    mes "[Johan]";  
+    mes "10 Evil Druids!";  
+    mes "I'll watch your back, like last time.";  
+    mes "... Of... Course... I'll fight them too!";  
+    next;  
+    switch(select("Get healed:Quest Management:Continue hunting")) {  
+        case 1: callsub S_HealPlayer; break;  
+        case 2: callsub S_QuestManagement; break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_TrainingComplete:  
+    mes "[Johan]";  
+    mes "Go back and report to Ur.";  
+    mes "That Glast Heim Abbey is clear now.";  
+    mes "I need to stay and look for something... Good bye.";  
+    return;  
+  
+S_PostTrainingChat:  
+    mes "[Johan]";  
+    mes "How are your adventures going?";  
+    mes "The abbey is much quieter now, thanks to your help.";  
+    next;  
+    switch(select("Quest Management:Just chatting:Leave")) {  
+        case 1: callsub S_QuestManagement; break;  
+        case 2:  
+            mes "[Johan]";  
+            mes "Take care in your future adventures!";  
+            break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_DefaultGreeting:  
+    mes "[Johan]";  
+    if (para_2nd01 < 7) {  
+        mes "Ah~ So bored.";  
+        mes "You're not the one Ur sent, are you?";  
+        mes "Oh~ That's okay.";  
+        next;  
+        mes "[Johan]";  
+        mes "This is Glast Heim Abbey.";  
+        mes "Be careful, there are a lot of lost souls around here.";  
+    }  
+    else {  
+        mes "Ugh, I still haven't found the thing I lost.";  
+        mes "Hmm... I may need to wait for the next trainee before I can start looking again... Eep!";  
+        next;  
+        mes "[Johan]";  
+        mes "Uh... You didn't hear that did you?";  
+        mes "Hahahahahahaha!!!";  
+        mes "Hahahahaha!!";  
+        next;  
+        switch(select("Quest Management:Just visiting:Leave")) {  
+            case 1: callsub S_QuestManagement; break;  
+            case 2:  
+                mes "[Johan]";  
+                mes "Thanks for stopping by!";  
+                break;  
+            case 3: break;  
+        }  
+    }  
+    return;  
+  
+S_HealPlayer:  
+    mes "[Johan]";  
+    mes "-Johan's holy blessing restores your strength.-";  
+    npcskill "AL_HEAL",10,99,60;  
+    percentheal 100,100;  
+    return;  
+  
+// Quest Management Functions  
+S_QuestManagement:  
+    mes "[Johan]";  
+    mes "What do you need help with regarding your abbey training?";  
+    next;  
+    switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
+        case 1: callsub S_ViewCurrentQuest; break;  
+        case 2: callsub S_AbandonQuest; break;  
+        case 3: callsub S_QuestStatus; break;  
+        case 4: mes "Come back if you need help!"; break;  
+    }  
+    return;  
+  
+S_ViewCurrentQuest:  
+    mes "[Johan]";  
+    mes "Your current abbey training progress:";  
+    mes " ";  
+      
+    switch(para_2nd01) {  
+        case 7:  
+            mes "^0000FFAbbey Training Introduction^000000";  
+            mes "  Status: Ready to begin Wraith hunting";  
+            break;  
+        case 8:  
+            mes "^00FF00Wraith Hunt - In Progress^000000";  
+            mes "  Status: Hunt 20 Wraiths in the abbey";  
+            break;  
+        case 9:  
+            mes "^00FF00Evil Druid Hunt - In Progress^000000";  
+            mes "  Status: Hunt 10 Evil Druids in the abbey";  
+            break;  
+        case 10:  
+            mes "^0000FFAbbey Training Complete^000000";  
+            mes "  Status: Return to Instructor Ur at Eden Group HQ";  
+            break;  
+        default:  
+            mes "^FF0000No active abbey training quest.^000000";  
+            mes "^FF0000You might need to talk to Instructor Ur first.^000000";  
+            break;  
+    }  
+    return;  
+  
+S_AbandonQuest:  
+    if (para_2nd01 < 7 || para_2nd01 > 9) {  
+        mes "[Johan]";  
+        mes "You don't have any active abbey training to abandon.";  
+        return;  
+    }  
+      
+    mes "[Johan]";  
+    mes "^FF0000Warning:^000000 Abandoning will reset your current progress!";  
+    mes "Are you sure you want to give up? The abbey needs to be cleansed!";  
+    next;  
+      
+    if (select("Yes, abandon current training:No, continue training") == 2) {  
+        mes "[Johan]";  
+        mes "Good choice! These evil spirits won't banish themselves!";  
+        return;  
+    }  
+      
+    // Reset quest progression  
+    switch(para_2nd01) {  
+        case 7:  
+            mes "[Johan]";  
+            mes "You're already at the beginning of abbey training.";  
+            return;  
+        case 8:  
+            if (checkquest(7220) >= 0) erasequest 7220;  
+            para_2nd01 = 7;  
+            break;  
+        case 9:  
+            if (checkquest(7221) >= 0) erasequest 7221;  
+            para_2nd01 = 8;  
+            break;  
+    }  
+      
+    mes "[Johan]";  
+    mes "Abbey training progress reset. You can restart anytime.";  
+    return;  
+  
+S_QuestStatus:  
+    mes "[Johan]";  
+    mes "Let me check your hunting progress...";  
+    mes " ";  
+      
+    switch(para_2nd01) {  
+        case 8:  
+            .@progress = checkquest(7220,HUNTING);  
+            if (.@progress == 2) {  
+                mes "^00FF00Wraith Hunt: COMPLETE!^000000";  
+                mes "Come talk to me to proceed to Evil Druid hunting.";  
+            } else {  
+                mes "^FFFFFFWraith Hunt: In Progress^000000";  
+                mes "Keep hunting those laughing spirits in the abbey.";  
+            }  
+            break;  
+        case 9:  
+            .@progress = checkquest(7221,HUNTING);  
+            if (.@progress == 2) {  
+                mes "^00FF00Evil Druid Hunt: COMPLETE!^000000";  
+                mes "Come talk to me to finish your abbey training!";  
+            } else {  
+                mes "^FFFFFFEvil Druid Hunt: In Progress^000000";  
+                mes "Cleanse the abbey of 10 corrupted priest souls.";  
+            }  
+            break;  
+        default:  
+            mes "^FF0000No active hunting quests to check.^000000";  
+            break;  
+    }  
+    return;  
+  
+OnInit:  
+    setunitdata( getnpcid(0), UNPC_GROUP_ID, 6);  
+    setunittitle( getnpcid(0), "Johan" );  
+    setarray .base_exp[0], 18000, 22000;  
+    setarray .job_exp[0], 18000, 22000;  
+    setarray .item_reward[0], 25223, 25223;  
+    setarray .item_amount[0], 3, 4;  
+    end;  
+}

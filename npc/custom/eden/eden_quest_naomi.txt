@@ -1,0 +1,379 @@
+//===== rAthena Script =======================================
+//= Eden Group Quest - Quests NPCs
+//===== Description: =========================================
+//= Eden Group Headquarter NPCs.
+//===== Changelogs: ==========================================
+//= 1.0 First Version. [L0ne_W0lf]
+//= 1.1 Removed unencoded comments (Korean -> Gibberish)
+//=     Readded the GM helper NPC, commented out.
+//= 1.2 Some little optimization here and there. [Masao]
+//= 1.3 Added Instructor Ur and the new Quests which come
+//=     alongside him. Special thanks to Chilly for the base. [Masao]
+//= 1.4 Partial cleaning and bug fixing. [Euphy]
+//= 1.4a Added 'npcskill' command. [Euphy]
+//= 1.4b Added 'disable_items' command. [Euphy]
+//= 1.5 Added GM management function. [Euphy]
+//= 1.6 Kagerou/Oboro support (Class -> BaseClass) [Euphy]
+//= 2.0 Updated Instructor Ur's quests. [Capuche]
+//= 2.1 Updated Blacksmith Thorn and Weapons Expert NPC. [Capuche]
+//= 2.2 Added support to Para_Team_Mark_ in Eden Group. [Ragno]
+//= 2.3 Added use of F_HasEdenGroupMark function. [Ragno]
+//= 2.4 Adds quest management, progression, and warp points to 
+//=		support multi-step training quests for players.. [Louis T Steinhil]
+//============================================================
+ice_dun01,154,13,5	script	Dispatched Instructor#05	4_F_JOB_BLACKSMITH,{  
+    switch(para_2nd01) {  
+        case 17: callsub S_InitialQuestStart; break;  
+        case 18: callsub S_SiromaHuntProgress; break;  
+        case 19: callsub S_ItemCollectionProgress; break;  
+        case 20: callsub S_TrainingComplete; break;  
+        default:  
+            if (para_2nd01 > 20) callsub S_PostTrainingChat;  
+            else callsub S_DefaultGreeting;  
+    }  
+    close;  
+  
+S_InitialQuestStart:  
+    mes "[Naomi]";  
+    mes "It's more than that~";  
+    mes "Now where did the time go~";  
+    mes "I thought you said you sent me~!";  
+    next;  
+    mes "[Naomi]";  
+    mes "And you are?";  
+    mes "Oh, you were sent here by Ur?";  
+    mes "I don't know how long I've been waiting here in the snow.";  
+    next;  
+    mes "[Naomi]";  
+    mes "This is the ice dungeon of the northern plains.";  
+    mes "Nothing like a cave that's cold the entire year.";  
+    next;  
+    mes "[Naomi]";  
+    mes "So this is where the people of Rachel go for their ice supply.";  
+    mes "But, this area is crawling with dangerous monsters.";  
+    next;  
+    mes "[Naomi]";  
+    mes "One of those monsters is known as a Siroma.";  
+    mes "They should be a good challenge for you.";  
+    next;  
+    mes "[Naomi]";  
+    mes "Okay, then go in the cave and find those Siroma.";  
+    mes "It's cold in there but this job has to be done.";  
+    next;  
+    mes "[Naomi]";  
+    mes "OH, sometimes";  
+    mes "You be careful in there.";  
+    mes "Well, good luck~!";  
+    para_2nd01 = 18;  
+    erasequest 7229;  
+    setquest 7230;  
+    return;  
+  
+S_SiromaHuntProgress:  
+    if (checkquest(7230,HUNTING) == 2) {  
+        callsub S_SiromaHuntComplete;  
+    } else {  
+        callsub S_SiromaHuntReminder;  
+    }  
+    return;  
+  
+S_SiromaHuntComplete:  
+    mes "[Naomi]";  
+    mes "Ah... It's over...";  
+    mes "Good!";  
+    mes "Your skills have been verified.";  
+    mes "Let me reward you for surviving the ice dungeon.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[0]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[0]) +"x "+ mesitemicon(.item_reward[0]) +".";  
+    next;  
+    // Claim reward  
+    getexp .base_exp[0], .job_exp[0];  
+    getitem .item_reward[0], .item_amount[0];  
+    mes "[Naomi]";  
+    mes "Now, what have I happened to do next.";  
+    mes "Those Siromas seem to be growing at a faster rate.";  
+    mes "As before go and hunt 30 more Siromas and bring me some materials.";  
+    next;  
+    mes "[Naomi]";  
+    mes "And get this... Well...";  
+    mes "Please listen carefully";  
+    mes "30 Ice Cubic";  
+    mes "1 Sweet Sauce";  
+    mes "1 Milk";  
+    next;  
+    mes "[Naomi]";  
+    mes "I'm not just doing this for myself you know.";  
+    mes "I'm doing this for everyone.";  
+    next;  
+    mes "[Naomi]";  
+    mes "That's the last of it anyways.";  
+    mes "So hunt those Siromas and get the materials.";  
+    mes "We understand each other?";  
+    next;  
+    select("What about you?");  
+    mes "[Naomi]";  
+    mes "Me? Well of course... I'm going to stand guard here.";  
+    mes "I... I'm a busy person!";  
+    mes "Besides this is training so who are you to ask me what about me?";  
+    next;  
+    mes "[Naomi]";  
+    mes "Go now!";  
+    mes "Those Siromas are going to just get rowdier by the minute.";  
+    para_2nd01 = 19;  
+    erasequest 7230;  
+    setquest 7231;  
+    return;  
+  
+S_SiromaHuntReminder:  
+    mes "[Naomi]";  
+    mes "The biggest stumbling block is dealing with the Siromas.";  
+    mes "Have you hunted 30 yet?";  
+    next;  
+    mes "[Naomi]";  
+    mes "Oh, you want help recovering your HP/SP huh?";  
+    mes "You'll get nothing from me~!";  
+    mes "What challenge would that be if I did that?";  
+    next;  
+    switch(select("Quest Management:Continue hunting:Leave")) {  
+        case 1: callsub S_QuestManagement; break;  
+        case 2: break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_ItemCollectionProgress:  
+    if (checkquest(7231,HUNTING) == 2 && countitem(7066) > 29 && countitem(7453) > 0 && countitem(519) > 0) {  
+        callsub S_ItemCollectionComplete;  
+    } else {  
+        callsub S_ItemCollectionReminder;  
+    }  
+    return;  
+  
+S_ItemCollectionComplete:  
+    mes "[Naomi]";  
+    mes "Ohh!";  
+    mes "You've brought everything.";  
+    mes "Okay, so just one last thing...!";  
+    next;  
+    select("...... Look");  
+    mes "[Naomi]";  
+    mes "Yes, yes? Why not?";  
+    mes "...";  
+    mes "Oh, that's right! I'm supposed to give you something.";  
+    mes "You've done enough, I know.";  
+    mes "Let me reward you for completing the ice dungeon training.";  
+    mes "Base Experience: "+ F_Insertcomma(.base_exp[1]) +".";  
+    mes "Job Experience: "+ F_Insertcomma(.job_exp[1]) +".";  
+    mes "Item: "+ F_Insertcomma(.item_amount[1]) +"x "+ mesitemicon(.item_reward[1]) +".";  
+    next;  
+    // Claim reward and remove items  
+    getexp .base_exp[1], .job_exp[1];  
+    getitem .item_reward[1], .item_amount[1];  
+    delitem 7066,30;  
+    delitem 7453,1;  
+    delitem 519,1;  
+    mes "[Naomi]";  
+    mes "I'll inform Instructor Ur.";  
+    mes "A few more stages left to go so don't worry!";  
+    next;  
+    mes "[Naomi]";  
+    mes "Oh and congratulations!";  
+    mes "This is the last training stage prepared!";  
+    next;  
+    mes "[Naomi]";  
+    mes "I guess I should do some of this myself~";  
+    mes "Muahaha~";  
+    mes "The ice dungeon is much safer now thanks to your efforts!";  
+    para_2nd01 = 20;  
+    erasequest 7231;  
+    setquest 7232;  
+    return;  
+  
+S_ItemCollectionReminder:  
+    mes "[Naomi]";  
+    mes "Have you finished hunting the 30 Siroma yet?";  
+    mes "You've already done it once so this shouldn't be difficult...";  
+    next;  
+    mes "[Naomi]";  
+    mes "And don't forget the 30 Ice Cubic, 1 Sweet Sauce, and 1 Milk.";  
+    mes "Current items: "+ countitem(7066) +"/30 Ice Cubic, "+ countitem(7453) +"/1 Sweet Sauce, "+ countitem(519) +"/1 Milk";  
+    next;  
+    switch(select("Quest Management:Continue collecting:Leave")) {  
+        case 1: callsub S_QuestManagement; break;  
+        case 2: break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_TrainingComplete:  
+    mes "[Naomi]";  
+    mes "Were you there yet?";  
+    mes "Other people have come and go since you've been here last.";  
+    mes "Now I don't have to get the materials myself.";  
+    next;  
+    mes "[Naomi]";  
+    mes "Report back to Instructor Ur and report that the job is done.";  
+    mes "Don't procrastinate.";  
+    return;  
+  
+S_PostTrainingChat:  
+    mes "[Naomi]";  
+    mes "How are your adventures going?";  
+    mes "The ice dungeon is much quieter now.";  
+    next;  
+    switch(select("Quest Management:Just chatting:Leave")) {  
+        case 1: callsub S_QuestManagement; break;  
+        case 2:  
+            mes "[Naomi]";  
+            mes "Stay warm out there!";  
+            break;  
+        case 3: break;  
+    }  
+    return;  
+  
+S_DefaultGreeting:  
+    mes "[Naomi]";  
+    if (para_2nd01 < 17) {  
+        mes "It's more than that~";  
+        mes "Now where did the time go~";  
+        mes "I thought you said you sent me~!";  
+        next;  
+        mes "[Naomi]";  
+        mes "What is it? You'll help me. Is that right?";  
+        mes "No, you don't have to do that.";  
+        mes "I'm waiting for someone scheduled to help me.";  
+    }  
+    else {  
+        mes "Alas, is there anywhere where the buildup of ice caps is more than here?";  
+        next;  
+        switch(select("Quest Management:Just visiting:Leave")) {  
+            case 1: callsub S_QuestManagement; break;  
+            case 2:  
+                mes "[Naomi]";  
+                mes "Bundle up! It's freezing here!";  
+                break;  
+            case 3: break;  
+        }  
+    }  
+    return;  
+  
+// Quest Management Functions  
+S_QuestManagement:  
+    mes "[Naomi]";  
+    mes "What do you need help with regarding your ice dungeon training?";  
+    next;  
+    switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
+        case 1: callsub S_ViewCurrentQuest; break;  
+        case 2: callsub S_AbandonQuest; break;  
+        case 3: callsub S_QuestStatus; break;  
+        case 4: mes "Come back if you need help!"; break;  
+    }  
+    return;  
+  
+S_ViewCurrentQuest:  
+    mes "[Naomi]";  
+    mes "Your current ice dungeon training progress:";  
+    mes " ";  
+      
+    switch(para_2nd01) {  
+        case 17:  
+            mes "^0000FFIce Dungeon Training Introduction^000000";  
+            mes "  Status: Ready to begin Siroma hunting";  
+            break;  
+        case 18:  
+            mes "^00FF00Initial Siroma Hunt^000000 - In Progress";  
+            mes "  Status: Hunt 30 Siromas in the ice dungeon";  
+            break;  
+        case 19:  
+            mes "^00FF00Advanced Siroma Hunt & Collection^000000 - In Progress";  
+            mes "  Status: Hunt 30 more Siromas and collect materials";  
+            break;  
+        case 20:  
+            mes "^0000FFIce Dungeon Training Complete^000000";  
+            mes "  Status: Return to Instructor Ur at Eden Group HQ";  
+            break;  
+        default:  
+            mes "^FF0000No active ice dungeon training quest.^000000";  
+            mes "^FF0000You might need to talk to Instructor Ur first.^000000";  
+            break;  
+    }  
+    return;  
+  
+S_AbandonQuest:  
+    if (para_2nd01 < 17 || para_2nd01 > 19) {  
+        mes "[Naomi]";  
+        mes "You don't have any active ice dungeon training to abandon.";  
+        return;  
+    }  
+      
+    mes "[Naomi]";  
+    mes "^FF0000Warning:^000000 Abandoning will reset your current progress!";  
+    mes "Are you sure you want to give up? The ice dungeon needs to be cleared!";  
+    next;  
+      
+    if (select("Yes, abandon current training:No, continue training") == 2) {  
+        mes "[Naomi]";  
+        mes "Good choice! Those Siromas won't defeat themselves!";  
+        return;  
+    }  
+      
+    // Reset quest progression  
+    switch(para_2nd01) {  
+        case 17:  
+            mes "[Naomi]";  
+            mes "You're already at the beginning of ice dungeon training.";  
+            return;  
+        case 18:  
+            if (checkquest(7230) >= 0) erasequest 7230;  
+            para_2nd01 = 17;  
+            break;  
+        case 19:  
+            if (checkquest(7231) >= 0) erasequest 7231;  
+            para_2nd01 = 18;  
+            break;  
+    }  
+      
+    mes "[Naomi]";  
+    mes "Ice dungeon training progress reset. You can restart anytime.";  
+    return;  
+  
+S_QuestStatus:  
+    mes "[Naomi]";  
+    mes "Let me check your progress...";  
+    mes " ";  
+      
+    switch(para_2nd01) {  
+        case 18:  
+            .@progress = checkquest(7230,HUNTING);  
+            if (.@progress == 2) {  
+                mes "^00FF00Initial Siroma Hunt: COMPLETE!^000000";  
+                mes "Come talk to me to proceed to the advanced training.";  
+            } else {  
+                mes "^FFFFFFInitial Siroma Hunt: In Progress^000000";  
+                mes "Keep hunting those ice creatures in the dungeon.";  
+            }  
+            break;  
+        case 19:  
+            .@progress = checkquest(7231,HUNTING);  
+            mes "^FFFFFFAdvanced Siroma Hunt & Collection: In Progress^000000";  
+            mes "Current items: "+ countitem(7066) +"/30 Ice Cubic, "+ countitem(7453) +"/1 Sweet Sauce, "+ countitem(519) +"/1 Milk";  
+            if (.@progress == 2 && countitem(7066) > 29 && countitem(7453) > 0 && countitem(519) > 0) {  
+                mes "^00FF00All requirements met! Come talk to me to finish!^000000";  
+            }  
+            break;  
+        default:  
+            mes "^FF0000No active ice dungeon training quests to check.^000000";  
+            break;  
+    }  
+    return;
+	
+OnInit:  
+    setunitdata( getnpcid(0), UNPC_GROUP_ID, 6);  
+    setunittitle( getnpcid(0), "Naomi" );  
+    setarray .base_exp[0], 35000, 45000;  
+    setarray .job_exp[0], 35000, 45000;  
+    setarray .item_reward[0], 25223, 25223;  
+    setarray .item_amount[0], 5, 6;  
+    end;  
+}	
