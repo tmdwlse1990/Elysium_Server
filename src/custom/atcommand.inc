@@ -653,10 +653,10 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
 	// bCRate 
 	if (status->crate != 0) {  
 		if (status->crate < 0) {  
-			sprintf(output, "   -> Critical Damage (C.Rate): %s", rathena::util::insert_comma(status->crate).c_str());  
+			sprintf(output, "   -> Flat Critical Damage (C.Rate): %s", rathena::util::insert_comma(status->crate).c_str());  
 			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
 		} else {    
-            sprintf(output, "   -> Critical Damage (C.Rate): +%s", rathena::util::insert_comma(status->crate).c_str());  
+            sprintf(output, "   -> Flat Critical Damage (C.Rate): +%s", rathena::util::insert_comma(status->crate).c_str());  
             clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);    
         }    
         additional_stats_found = true;  
@@ -933,10 +933,10 @@ void atcommand_extendedbonuses_sub(int fd, class map_session_data *sd) {
 	// bCritAtkRate
 	if (sd->bonus.crit_atk_rate != 0) {  
 		if (sd->bonus.crit_atk_rate < 0) {  
-			sprintf(output, "   -> Critical Attack Rate: %s%%", rathena::util::insert_comma(sd->bonus.crit_atk_rate).c_str());  
+			sprintf(output, "   -> Critical Damage: %s%%", rathena::util::insert_comma(sd->bonus.crit_atk_rate).c_str());  
 			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);  
 		} else {  
-			sprintf(output, "   -> Critical Attack Rate: +%s%%", rathena::util::insert_comma(sd->bonus.crit_atk_rate).c_str());  
+			sprintf(output, "   -> Critical Damage: +%s%%", rathena::util::insert_comma(sd->bonus.crit_atk_rate).c_str());  
 			clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);  
 		}  
 		extended_atkdef_found = true;  
