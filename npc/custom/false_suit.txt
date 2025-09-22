@@ -1,0 +1,126 @@
+// callfunc "F_JobSuit",<Job ID>;	//Change to specific sprite
+// callfunc "F_JobSuit",-1;			//Change to 2nd job
+// callfunc "F_JobSuit",-2;			//Change to transcendent 2nd job
+// callfunc "F_JobSuit",-3;			//Change to 3rd job
+// callfunc "F_JobSuit",-4;			//Change to 4th job
+// callfunc "F_JobSuit",-5;			//Change to alternative third class costume
+// callfunc "F_JobSuit";			//Return to default sprite
+//    EquipScript: |
+//      callfunc "F_JobSuit",-1;
+//    UnEquipScript: |
+//      callfunc "F_JobSuit";
+
+function	script	F_JobSuit	{
+	.@block_expanded_jobs = false; //Disable changing for expanded job player (true/false)
+
+	if (getargcount() == 0) {
+		if (PACKETVER >= 20231220)
+			setlook LOOK_BODY2,Class;
+		else if (JobSuit_id > 4331 && JobSuit_id < 4345)
+			setlook LOOK_BODY2,0;
+		else
+			changebase Class;
+		JobSuit_active = false;
+		JobSuit_id = 0;
+		end;
+	}
+
+	if (getarg(0) > -1) {
+		if (jobname(getarg(0)) == "Unknown Job") {
+			dispbottom "Unknown Job";
+			end;
+		}
+		callsub S_OK,getarg(0),1;
+	}
+	if (.@block_expanded_jobs && (BaseClass == Job_Novice || BaseClass == Job_Summoner || BaseClass == Job_Gunslinger || BaseClass == Job_Ninja || BaseClass == Job_Taekwon))
+		end;
+	if (BaseClass == Job_Summoner) {
+		if (Upper) callsub S_OK,Job_Summoner;
+		else callsub S_OK,Job_Spirit_Handler;
+	}
+	else if (BaseClass == Job_Gunslinger) {
+		switch(getarg(0)) {
+			case -1: callsub S_OK,Job_Gunslinger;
+			case -2:
+			case -3: callsub S_OK,Job_Rebellion;
+			case -4:
+			case -5:
+			default: callsub S_OK,Job_Night_Watch;
+		}
+	}
+	else if (BaseClass == Job_Ninja) {
+		switch(getarg(0)) {
+			case -1: callsub S_OK,Job_Ninja;
+			case -2:
+			case -3: callsub S_OK,(Sex ? Job_Kagerou : Job_Oboro);
+			case -4:
+			case -5:
+			default: callsub S_OK,(Sex ? Job_Shinkiro : Job_Shiranui);
+		}
+	}
+	else if (BaseClass == Job_Novice) {
+		switch(getarg(0)) {
+			case -1: callsub S_OK,Job_Novice,1;
+			case -2:
+			case -3: callsub S_OK,Job_Super_Novice;
+			case -4:
+			case -5:
+			default: callsub S_OK,Job_Hyper_Novice;
+		}
+	}
+	else if (BaseJob == Job_Soul_Linker) {
+		switch(getarg(0)) {
+			case -1:
+			case -2: callsub S_OK,Job_Soul_Linker;
+			case -3: callsub S_OK,Job_Soul_Reaper;
+			case -4:
+			case -5:
+			default: callsub S_OK,Job_Soul_Ascetic;
+		}
+	}
+	else if (BaseJob == Job_Star_Gladiator) {
+		switch(getarg(0)) {
+			case -1: callsub S_OK,Job_Taekwon;
+			case -2: callsub S_OK,Job_Star_Gladiator;
+			case -3: callsub S_OK,Job_Star_Emperor;
+			case -4:
+			case -5:
+			default: callsub S_OK,Job_Sky_Emperor;
+		}
+	}
+
+	switch(getarg(0)) {
+	case -1:
+		callsub S_OK,roclass(eaclass()&EAJ_UPPERMASK);
+	case -2:
+		callsub S_OK,roclass(eaclass()&EAJ_UPPERMASK|EAJL_UPPER);
+	case -3:
+		callsub S_OK,roclass(eaclass()&EAJ_THIRDMASK|EAJL_THIRD);
+	case -4:
+		.@job = roclass(eaclass()&EAJ_THIRDMASK|EAJL_THIRD);
+		callsub S_OK,roclass(eaclass(.@job)|EAJL_FOURTH|EAJL_UPPER);
+	case -5:
+		.@job = roclass(eaclass()&EAJ_THIRDMASK|EAJL_THIRD);
+		if (.@job > 0)
+			callsub S_OK,roclass(eaclass(.@job)|EAJL_FOURTH|EAJL_UPPER)+80;
+	}
+
+S_OK:
+	.@c = getarg(0);
+	if (.@c < 1 && getarg(1,0) == 0) end;
+	if (PACKETVER >= 20231220)
+		setlook LOOK_BODY2,.@c;
+	else if (.@c > 4331 && .@c < 4345)
+		setlook LOOK_BODY2,1;
+	else
+		changebase .@c;
+	JobSuit_active = true;
+	JobSuit_id = .@c;
+	end;
+}
+
+function    script  JS_OnPCLoginEvent   {  
+    if (JobSuit_active)  
+        F_JobSuit(JobSuit_id);  
+    return;  
+}
