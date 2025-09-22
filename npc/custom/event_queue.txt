@@ -14,41 +14,18 @@
 //= 1.0 First version. [Louis T Steinhil]
 //= 1.1 Moved player event queque from poring war to event queue
 //============================================================
-
+-	script	#EventQueue	-1,{
 OnPCLoginEvent:		//	When player logs in
-
+    // false_suit.txt
+    callfunc "JS_OnPCLoginEvent";
 	end;
 
 OnPCLogoutEvent:	//	When player logs out
 	// poring_war.txt
-    getmapxy(.@current_map$, .@x, .@y, BL_PC);  
-    if (.@current_map$ == "poring_w02") {  
-		if (WoP_SaveMap$ != "") {
-			savepoint WoP_SaveMap$,WoP_SaveMap_X,WoP_SaveMap_Y,1,1;
-			set WoP_SaveMap$,"";
-			set WoP_SaveMap_X,0;
-			set WoP_SaveMap_Y,0;
-		}
-		delitem 7773,countitem(7773);
-		set wop_team,0; 
-    } 
+	callfunc "PW_OnPCLogoutEvent"; 
 
-	// autocombat
-    .@player_remaining = getd("autocombat_remaining_" + getcharid(0));  
-    .@player_start_time = getd("autocombat_start_" + getcharid(0));  
-      
-    if(ac_getstate()) {  
-        // Calculate elapsed time  
-        .@elapsed_time = (gettimetick(2) - .@player_start_time) * 1000;  
-        .@player_remaining -= .@elapsed_time;  
-          
-        if (.@player_remaining < 0) {  
-            .@player_remaining = 0;  
-        }  
-          
-        sc_end SC_AUTOCOMBAT;  
-        setd("autocombat_remaining_" + getcharid(0), .@player_remaining);  
-    }
+	// autocombat.txt
+	callfunc "AC_OnPCLogoutEvent";
 
 	end;
 
@@ -62,29 +39,11 @@ OnPCJobLvUpEvent:	//	When player gains job level
 
 OnPCDieEvent:		//	When player dies
 	// poring_war.txt
-	getmapxy(.@current_map$, .@x, .@y, BL_PC);
-	if (.@current_map$ == "poring_w02" && wop_team) {
-		if (getsavepoint(0) != "poring_w02" && WoP_SaveMap$ == "") {
-			set WoP_SaveMap$,getsavepoint(0);
-			set WoP_SaveMap_X,getsavepoint(1);
-			set WoP_SaveMap_Y,getsavepoint(2);
-		}
-		if (wop_team == 1) {
-			savepoint "poring_w02",rand(44,51),rand(76,87);
-		}
-		if (wop_team == 2) {
-			savepoint "poring_w02",rand(146,153),rand(76,87);
-		}
-	}
-	end;
+	callfunc "PW_OnPCDieEvent";
 
 OnPCKillEvent:		//	When player kills another player
 	// poring_war.txt
-	getmapxy(.@current_map$, .@x, .@y, BL_PC);
-	if (.@current_map$ == "poring_w02" && wop_team) {
-		getnameditem 7773,rid2name(killedrid);
-	}
-	end;
+	callfunc "PW_OnPCKillEvent";
 
 OnNPCKillEvent:		//	When player kills a monster
 
@@ -97,3 +56,4 @@ OnPCLoadMapEvent:	//	When player steps in a map
 OnPCIdentifyEvent:	//	When player identifies an item
 
 	end;
+}
