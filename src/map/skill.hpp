@@ -2875,4 +2875,28 @@ int32 skill_get_time3(struct map_data *mapdata, uint16 skill_id, uint16 skill_lv
 #define SKILL_CHK_ABR(skill_id)   ( (skill_id) >= ABR_SKILLBASE && (skill_id) < ABR_SKILLBASE+MAX_ABRSKILL )
 #define SKILL_CHK_GUILD(skill_id) ( (skill_id) >= GD_SKILLBASE && (skill_id) < GD_SKILLBASE+MAX_GUILDSKILL )
 
+int skill_calc_dir_counter_clockwise(int dir);
+
+struct s_animation_data {
+	int skill_id;
+	int start;
+	int interval;
+	int motion_speed;
+	int motion_count;
+	bool spin;
+};
+
+struct s_environment_data {
+	int skill_id;
+	int target_id;
+	int8 dir;
+};
+
+extern std::vector<s_animation_data> animation_lists;
+
+struct s_animation_data skill_animation_info(int skill_id);
+TIMER_FUNC(skill_play_animation);
+void skill_clear_animation(struct block_list* bl);
+
+
 #endif /* SKILL_HPP */

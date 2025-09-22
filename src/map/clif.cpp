@@ -2175,6 +2175,11 @@ void clif_quitsave(int32 fd,map_session_data *sd) {
 	}
 }
 
+static void clif_changemap_hook(map_session_data& sd)
+{
+	skill_clear_animation(&sd);
+}
+
 /// Notifies the client of a position change to coordinates on given map (ZC_NPCACK_MAPMOVE).
 /// 0091 <map name>.16B <x>.W <y>.W
 void clif_changemap( map_session_data& sd, int16 m, uint16 x, uint16 y ){
@@ -2184,6 +2189,8 @@ void clif_changemap( map_session_data& sd, int16 m, uint16 x, uint16 y ){
 	mapindex_getmapname_ext(map_mapid2mapname(m), packet.mapName);
 	packet.xPos = x;
 	packet.yPos = y;
+	
+	clif_changemap_hook(sd); //Sonic Blow
 
 	clif_send( &packet, sizeof( packet ), &sd, SELF );
 }
@@ -6055,6 +6062,35 @@ void clif_skill_cooldown( map_session_data &sd, uint16 skill_id, t_tick tick ){
 #endif
 }
 
+static int clif_skill_damage_hook(struct block_list* src, struct block_list* dst, t_tick tick, int32 sdelay, int32 ddelay, int64 sdamage, int16 div, uint16 skill_id, uint16 skill_lv, enum e_damage_type type)  
+{  
+    struct s_animation_data animation = skill_animation_info(skill_id);  
+  
+    if (animation.skill_id == 0)  
+        return 0;  
+  
+    int32 start_time = animation.start == -1 ? sdelay : animation.start;  
+    int32 target_id = dst->id;  
+    int8 dir = sdamage != 0 ? unit_getdir(dst) : -1;  
+  
+    struct s_environment_data *skill_env = nullptr;  
+    CREATE(skill_env, struct s_environment_data, 1);  
+    skill_env->skill_id = skill_id;  
+    skill_env->target_id = target_id;  
+    if (animation.spin && dir != -1)  
+        dir = skill_calc_dir_counter_clockwise(dir);  
+    skill_env->dir = dir;  
+  
+    if(src->type == BL_PC){  
+        BL_CAST(BL_PC,src)->skill_animation.tid = add_timer(tick + start_time + animation.interval, skill_play_animation, src->id, (intptr_t)skill_env);  
+        BL_CAST(BL_PC,src)->skill_animation.step = 1;  
+    }else  
+        add_timer(tick + start_time + animation.interval, skill_play_animation, src->id, (intptr_t)skill_env);  
+  
+    aFree(skill_env);  
+    return 0;  
+}
+
 /// Skill attack effect and damage.
 /// 0114 <skill id>.W <src id>.L <dst id>.L <tick>.L <src delay>.L <dst delay>.L <damage>.W <level>.W <div>.W <type>.B (ZC_NOTIFY_SKILL)
 /// 01de <skill id>.W <src id>.L <dst id>.L <tick>.L <src delay>.L <dst delay>.L <damage>.L <level>.W <div>.W <type>.B (ZC_NOTIFY_SKILL2)
@@ -6110,6 +6146,8 @@ void clif_skill_damage( block_list& src, block_list& dst, t_tick tick, int32 sde
 		}
 		clif_send( &packet, sizeof( packet ), &src, SELF );
 	}
+	
+	clif_skill_damage_hook(&src, &dst, tick, sdelay, ddelay, sdamage, div, skill_id, skill_lv, type);
 }
 
 
@@ -26543,6 +26581,31 @@ void clif_runedecompowindow_result (map_session_data* sd, enum e_runedecompo_res
 
 	clif_send( &p, sizeof( p ), sd, SELF );
 #endif
+}
+
+void clif_send_animation_motion(struct block_list* bl, int target_id, int motion_speed) {
+    // Add logging for debugging
+    printf("Sending animation motion: bl_id=%d, target_id=%d, motion_speed=%d\n", bl->id, target_id, motion_speed);
+
+    unsigned char buf[32];
+    nullpo_retv(bl);
+    WBUFW(buf, 0) = 0x8a;
+    WBUFL(buf, 2) = bl->id;
+    WBUFL(buf, 14) = motion_speed;
+    WBUFB(buf, 26) = 10;
+    clif_send(buf, packet_len(0x8a), bl, AREA);
+}
+
+void clif_send_animation_dir(struct block_list* src, int target_id, int dir) {
+    // Add logging for debugging
+    printf("Sending animation direction: src_id=%d, target_id=%d, dir=%d\n", src->id, target_id, dir);
+
+    unsigned char buf[64];
+    WBUFW(buf, 0) = 0x9c;
+    WBUFL(buf, 2) = target_id;
+    WBUFW(buf, 6) = 0;
+    WBUFB(buf, 8) = dir;
+    clif_send(buf, packet_len(0x9c), src, AREA);
 }
 
 /*==========================================

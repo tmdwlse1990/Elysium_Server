@@ -1,0 +1,7 @@
+// Skill Animation
+//
+// Structure of Database:
+// SkillName <Aegis>, Start <Number>, Interval <Number>, Speed <Number>, Count <Number>, Spin <true/false>
+
+AS_SONICBLOW, -1, 180, 180, 8, true
+CG_ARROWVULCAN, -1, 200, 100, 9, false
