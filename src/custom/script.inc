@@ -1074,3 +1074,554 @@ BUILDIN_FUNC(barter_add)
 
 	return SCRIPT_CMD_SUCCESS;
 }
+
+/*==========================================    
+* Get base items for a reform entry    
+* getreformbaseitems("reform_item_name")    
+* Returns array of base item names (alphabetically sorted)  
+*------------------------------------------*/    
+static std::unordered_map<std::string, std::vector<std::string>> reform_base_items_cache;  
+static std::unordered_map<std::string, int> reform_cache_counts; 
+BUILDIN_FUNC(getreformbaseitems)    
+{    
+    const char* reform_item = script_getstr(st, 2);    
+    map_session_data* sd;    
+        
+    if (!script_rid2sd(sd))    
+        return SCRIPT_CMD_FAILURE;    
+        
+    // Check cache first    
+    auto cache_it = reform_base_items_cache.find(reform_item);    
+    if (cache_it != reform_base_items_cache.end()) {    
+        // Populate script arrays from cache    
+        int count = 0;    
+        for (const auto& item_name : cache_it->second) {    
+            setd_sub_str(st, nullptr, ".@base_items$", count, item_name.c_str(), nullptr);    
+            count++;    
+        }    
+        script_pushint(st, count);    
+        return SCRIPT_CMD_SUCCESS;    
+    }    
+        
+    // Cache miss - perform database lookup and cache result    
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);    
+    if (!reform_data) {    
+        script_pushint(st, 0);    
+        return SCRIPT_CMD_SUCCESS;    
+    }    
+        
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);    
+    if (!reform_entry) {    
+        script_pushint(st, 0);    
+        return SCRIPT_CMD_SUCCESS;    
+    }    
+        
+    // Collect and sort items (as before)    
+    std::vector<std::string> item_names;    
+    for (const auto& base_pair : reform_entry->base_items) {    
+        std::shared_ptr<item_data> item_data = item_db.find(base_pair.first);    
+        if (item_data) {    
+            item_names.push_back(item_data->name);    
+        }    
+    }    
+    std::sort(item_names.begin(), item_names.end());    
+        
+    // Cache the results    
+    reform_base_items_cache[reform_item] = item_names;    
+    reform_cache_counts[reform_item] = static_cast<int>(item_names.size());
+        
+    // Populate script arrays    
+    int count = 0;    
+    for (const auto& item_name : item_names) {    
+        setd_sub_str(st, nullptr, ".@base_items$", count, item_name.c_str(), nullptr);    
+        count++;    
+    }    
+        
+    script_pushint(st, count);    
+    return SCRIPT_CMD_SUCCESS;    
+}  
+  
+BUILDIN_FUNC(clearreformcache)    
+{    
+    // Now clears the shared global cache  
+    reform_base_items_cache.clear();    
+    reform_cache_counts.clear();  
+    script_pushint(st, 1);    
+    return SCRIPT_CMD_SUCCESS;    
+}
+
+
+/*==========================================  
+* Get minimum refine requirement  
+* getreformminrefine("reform_item_name", "base_item_name")  
+* Returns minimum refine level  
+*------------------------------------------*/  
+BUILDIN_FUNC(getreformminrefine)  
+{  
+    const char* reform_item = script_getstr(st, 2);  
+    const char* base_item = script_getstr(st, 3);  
+    map_session_data* sd;  
+      
+    if (!script_rid2sd(sd))  
+        return SCRIPT_CMD_FAILURE;  
+      
+    // Convert reform item name to ID  
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);  
+    if (!reform_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the reform entry using item ID as key  
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);  
+    if (!reform_entry) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the specific base item  
+    std::shared_ptr<item_data> base_data = item_db.searchname(base_item);  
+    if (!base_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    auto base_it = reform_entry->base_items.find(base_data->nameid);  
+    if (base_it != reform_entry->base_items.end()) {  
+        // Use correct field name: minimumRefine  
+        script_pushint(st, base_it->second->minimumRefine);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    script_pushint(st, 0);  
+    return SCRIPT_CMD_SUCCESS;  
+}
+
+/*==========================================  
+* Get maximum refine requirement for a base item reform  
+* getreformmaxrefine("reform_item_name", "base_item_name")  
+* Returns maximum refine level  
+*------------------------------------------*/  
+BUILDIN_FUNC(getreformmaxrefine)  
+{  
+    const char* reform_item = script_getstr(st, 2);  
+    const char* base_item = script_getstr(st, 3);  
+    map_session_data* sd;  
+      
+    if (!script_rid2sd(sd))  
+        return SCRIPT_CMD_FAILURE;  
+      
+    // Convert reform item name to ID  
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);  
+    if (!reform_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the reform entry using item ID as key  
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);  
+    if (!reform_entry) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the specific base item  
+    std::shared_ptr<item_data> base_data = item_db.searchname(base_item);  
+    if (!base_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    auto base_it = reform_entry->base_items.find(base_data->nameid);  
+    if (base_it != reform_entry->base_items.end()) {  
+        // Use correct field name: maximumRefine  
+        script_pushint(st, base_it->second->maximumRefine);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    script_pushint(st, 0);  
+    return SCRIPT_CMD_SUCCESS;  
+}
+
+/*==========================================  
+* Get required random options for a base item reform  
+* getreformrequiredrandomoptions("reform_item_name", "base_item_name")  
+* Returns number of required random options  
+*------------------------------------------*/  
+BUILDIN_FUNC(getreformrequiredrandomoptions)  
+{  
+    const char* reform_item = script_getstr(st, 2);  
+    const char* base_item = script_getstr(st, 3);  
+    map_session_data* sd;  
+      
+    if (!script_rid2sd(sd))  
+        return SCRIPT_CMD_FAILURE;  
+      
+    // Convert reform item name to ID  
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);  
+    if (!reform_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the reform entry using item ID as key  
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);  
+    if (!reform_entry) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the specific base item  
+    std::shared_ptr<item_data> base_data = item_db.searchname(base_item);  
+    if (!base_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    auto base_it = reform_entry->base_items.find(base_data->nameid);  
+    if (base_it != reform_entry->base_items.end()) {  
+        // Use correct field name: requiredRandomOptions  
+        script_pushint(st, base_it->second->requiredRandomOptions);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    script_pushint(st, 0);  
+    return SCRIPT_CMD_SUCCESS;  
+}  
+  
+/*==========================================  
+* Get cards allowed setting for a base item reform  
+* getreformcardsallowed("reform_item_name", "base_item_name")  
+* Returns 1 if cards are allowed, 0 if not  
+*------------------------------------------*/  
+BUILDIN_FUNC(getreformcardsallowed)  
+{  
+    const char* reform_item = script_getstr(st, 2);  
+    const char* base_item = script_getstr(st, 3);  
+    map_session_data* sd;  
+      
+    if (!script_rid2sd(sd))  
+        return SCRIPT_CMD_FAILURE;  
+      
+    // Convert reform item name to ID  
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);  
+    if (!reform_data) {  
+        script_pushint(st, 1);  // Default: cards allowed  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the reform entry using item ID as key  
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);  
+    if (!reform_entry) {  
+        script_pushint(st, 1);  // Default: cards allowed  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the specific base item  
+    std::shared_ptr<item_data> base_data = item_db.searchname(base_item);  
+    if (!base_data) {  
+        script_pushint(st, 1);  // Default: cards allowed  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    auto base_it = reform_entry->base_items.find(base_data->nameid);  
+    if (base_it != reform_entry->base_items.end()) {  
+        // Use correct field name: cardsAllowed  
+        script_pushint(st, base_it->second->cardsAllowed ? 1 : 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    script_pushint(st, 1);  // Default: cards allowed  
+    return SCRIPT_CMD_SUCCESS;  
+}
+
+/*==========================================  
+* Get materials for a specific base item in reform  
+* getreformmaterials("reform_item_name", "base_item_name")  
+* Returns array of material info: "item_name:amount"  
+*------------------------------------------*/  
+BUILDIN_FUNC(getreformmaterials)  
+{  
+    const char* reform_item = script_getstr(st, 2);  
+    const char* base_item = script_getstr(st, 3);  
+    map_session_data* sd;  
+      
+    if (!script_rid2sd(sd))  
+        return SCRIPT_CMD_FAILURE;  
+      
+    // Convert reform item name to ID  
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);  
+    if (!reform_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the reform entry using item ID as key  
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);  
+    if (!reform_entry) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the specific base item  
+    std::shared_ptr<item_data> base_data = item_db.searchname(base_item);  
+    if (!base_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    int count = 0;  
+    auto base_it = reform_entry->base_items.find(base_data->nameid);  
+    if (base_it != reform_entry->base_items.end()) {  
+        // Materials are stored as std::unordered_map<t_itemid, uint16>  
+        for (const auto& material_pair : base_it->second->materials) {  
+            std::shared_ptr<item_data> mat_data = item_db.find(material_pair.first);  
+            if (mat_data) {  
+                char material_info[256];  
+                snprintf(material_info, sizeof(material_info), "%s:%d",   
+                        mat_data->name.c_str(), material_pair.second);  
+                setd_sub_str(st, nullptr, ".@materials$", count, material_info, nullptr);  
+                count++;  
+            }  
+        }  
+    }  
+      
+    script_pushint(st, count);  
+    return SCRIPT_CMD_SUCCESS;  
+}  
+  
+/*==========================================  
+* Get result item for a base item reform  
+* getreformresult("reform_item_name", "base_item_name")  
+* Returns result item name  
+*------------------------------------------*/  
+BUILDIN_FUNC(getreformresult)  
+{  
+    const char* reform_item = script_getstr(st, 2);  
+    const char* base_item = script_getstr(st, 3);  
+    map_session_data* sd;  
+      
+    if (!script_rid2sd(sd))  
+        return SCRIPT_CMD_FAILURE;  
+      
+    // Convert reform item name to ID  
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);  
+    if (!reform_data) {  
+        script_pushstrcopy(st, "");  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the reform entry using item ID as key  
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);  
+    if (!reform_entry) {  
+        script_pushstrcopy(st, "");  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the specific base item  
+    std::shared_ptr<item_data> base_data = item_db.searchname(base_item);  
+    if (!base_data) {  
+        script_pushstrcopy(st, "");  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    auto base_it = reform_entry->base_items.find(base_data->nameid);  
+    if (base_it != reform_entry->base_items.end()) {  
+        // Use correct field name: resultItemId  
+        std::shared_ptr<item_data> result_data = item_db.find(base_it->second->resultItemId);  
+        if (result_data) {  
+            script_pushstrcopy(st, result_data->name.c_str());  
+            return SCRIPT_CMD_SUCCESS;  
+        }  
+    }  
+      
+    script_pushstrcopy(st, "");  
+    return SCRIPT_CMD_SUCCESS;  
+}  
+  
+/*==========================================  
+* Get refine change for a base item reform  
+* getreformrefinechange("reform_item_name", "base_item_name")  
+* Returns refine change value  
+*------------------------------------------*/  
+BUILDIN_FUNC(getreformrefinechange)  
+{  
+    const char* reform_item = script_getstr(st, 2);  
+    const char* base_item = script_getstr(st, 3);  
+    map_session_data* sd;  
+      
+    if (!script_rid2sd(sd))  
+        return SCRIPT_CMD_FAILURE;  
+      
+    // Convert reform item name to ID  
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);  
+    if (!reform_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the reform entry using item ID as key  
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);  
+    if (!reform_entry) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the specific base item  
+    std::shared_ptr<item_data> base_data = item_db.searchname(base_item);  
+    if (!base_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    auto base_it = reform_entry->base_items.find(base_data->nameid);  
+    if (base_it != reform_entry->base_items.end()) {  
+        // Use correct field name: refineChange  
+        script_pushint(st, base_it->second->refineChange);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    script_pushint(st, 0);  
+    return SCRIPT_CMD_SUCCESS;  
+}  
+
+/*==========================================  
+* Get random option group for a base item reform  
+* getreformrandomoptiongroup("reform_item_name", "base_item_name")  
+* Returns random option group name or empty string  
+*------------------------------------------*/  
+BUILDIN_FUNC(getreformrandomoptiongroup)  
+{  
+    const char* reform_item = script_getstr(st, 2);  
+    const char* base_item = script_getstr(st, 3);  
+    map_session_data* sd;  
+      
+    if (!script_rid2sd(sd))  
+        return SCRIPT_CMD_FAILURE;  
+      
+    // Convert reform item name to ID  
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);  
+    if (!reform_data) {  
+        script_pushstrcopy(st, "");  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the reform entry using item ID as key  
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);  
+    if (!reform_entry) {  
+        script_pushstrcopy(st, "");  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the specific base item  
+    std::shared_ptr<item_data> base_data = item_db.searchname(base_item);  
+    if (!base_data) {  
+        script_pushstrcopy(st, "");  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    auto base_it = reform_entry->base_items.find(base_data->nameid);  
+    if (base_it != reform_entry->base_items.end()) {  
+        // Access randomOptionGroup field  
+        if (base_it->second->randomOptionGroup) {  
+            // Assuming the random option group has a name field  
+            script_pushstrcopy(st, base_it->second->randomOptionGroup->name.c_str());  
+        } else {  
+            script_pushstrcopy(st, "");  
+        }  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    script_pushstrcopy(st, "");  
+    return SCRIPT_CMD_SUCCESS;  
+}
+
+/*==========================================  
+* Get clear slots setting for a base item reform  
+* getreformclearslots("reform_item_name", "base_item_name")  
+* Returns 1 if slots will be cleared, 0 if not  
+*------------------------------------------*/  
+BUILDIN_FUNC(getreformclearslots)  
+{  
+    const char* reform_item = script_getstr(st, 2);  
+    const char* base_item = script_getstr(st, 3);  
+    map_session_data* sd;  
+      
+    if (!script_rid2sd(sd))  
+        return SCRIPT_CMD_FAILURE;  
+      
+    // Convert reform item name to ID  
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);  
+    if (!reform_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the reform entry using item ID as key  
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);  
+    if (!reform_entry) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the specific base item  
+    std::shared_ptr<item_data> base_data = item_db.searchname(base_item);  
+    if (!base_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    auto base_it = reform_entry->base_items.find(base_data->nameid);  
+    if (base_it != reform_entry->base_items.end()) {  
+        script_pushint(st, base_it->second->clearSlots ? 1 : 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    script_pushint(st, 0);  
+    return SCRIPT_CMD_SUCCESS;  
+}  
+  
+/*==========================================  
+* Get remove enchantgrade setting for a base item reform  
+* getreformremoveenchantgrade("reform_item_name", "base_item_name")  
+* Returns 1 if enchantgrade will be removed, 0 if not  
+*------------------------------------------*/  
+BUILDIN_FUNC(getreformremoveenchantgrade)  
+{  
+    const char* reform_item = script_getstr(st, 2);  
+    const char* base_item = script_getstr(st, 3);  
+    map_session_data* sd;  
+      
+    if (!script_rid2sd(sd))  
+        return SCRIPT_CMD_FAILURE;  
+      
+    // Convert reform item name to ID  
+    std::shared_ptr<item_data> reform_data = item_db.searchname(reform_item);  
+    if (!reform_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the reform entry using item ID as key  
+    std::shared_ptr<s_item_reform> reform_entry = item_reform_db.find(reform_data->nameid);  
+    if (!reform_entry) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Find the specific base item  
+    std::shared_ptr<item_data> base_data = item_db.searchname(base_item);  
+    if (!base_data) {  
+        script_pushint(st, 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    auto base_it = reform_entry->base_items.find(base_data->nameid);  
+    if (base_it != reform_entry->base_items.end()) {  
+        script_pushint(st, base_it->second->removeEnchantgrade ? 1 : 0);  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    script_pushint(st, 0);  
+    return SCRIPT_CMD_SUCCESS;  
+}

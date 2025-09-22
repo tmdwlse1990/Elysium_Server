@@ -42,3 +42,188 @@
 Header:
   Type: ITEM_REFORM_DB
   Version: 1
+
+Body:
+  - Item: Upg_Armors
+    BaseItems:
+      - BaseItem: Adventurere's_Suit_
+        MinimumRefine: 4
+        Materials:
+          - Material: Phracon
+            Amount: 100
+          - Material: Animal's_Skin
+            Amount: 100
+        ResultItem: Upg_Adv_Suit
+        ChangeRefine: -4
+      - BaseItem: Boots_  
+        MinimumRefine: 4
+        Materials:
+          - Material: Short_Leg
+            Amount: 100
+          - Material: Zargon
+            Amount: 100
+          - Material: Elunium_Stone
+            Amount: 100
+          - Material: Violet_Jewel
+            Amount: 100            
+        ResultItem: Upg_Boots
+        ChangeRefine: -4
+      - BaseItem: Buckler_  
+        MinimumRefine: 4
+        Materials:
+          - Material: Iron
+            Amount: 100
+          - Material: Scell
+            Amount: 100            
+        ResultItem: Upg_Buckler
+        ChangeRefine: -4      
+      - BaseItem: Clip  
+        Materials:
+          - Material: Needle_Of_Alarm
+            Amount: 100
+          - Material: Skull
+            Amount: 100
+          - Material: Oridecon
+            Amount: 100
+          - Material: Zargon
+            Amount: 100            
+        ResultItem: Upg_Clip        
+      - BaseItem: Coat_
+        MinimumRefine: 4
+        Materials:
+          - Material: Porcupine_Spike
+            Amount: 100
+          - Material: Animal's_Skin
+            Amount: 100
+        ResultItem: Upg_Coat
+        ChangeRefine: -4        
+      - BaseItem: Formal_Suit
+        MinimumRefine: 4
+        Materials:
+          - Material: Manacles
+            Amount: 100
+          - Material: Spoon_Stub
+            Amount: 100
+          - Material: Rotten_Bandage
+            Amount: 100
+          - Material: Mementos
+            Amount: 100
+        ResultItem: Upg_Formal_Dress
+        ChangeRefine: -4
+      - BaseItem: Grave_
+        MinimumRefine: 4
+        Materials:
+          - Material: Elunium
+            Amount: 100
+          - Material: Steel
+            Amount: 100
+        ResultItem: Upg_Greave
+        ChangeRefine: -4        
+      - BaseItem: Guard_
+        MinimumRefine: 4
+        Materials:
+          - Material: Phracon
+            Amount: 100
+          - Material: Chrysalis
+            Amount: 100
+          - Material: Sticky_Mucus
+            Amount: 100
+          - Material: Shell
+            Amount: 100
+          - Material: Iron_Ore
+            Amount: 100
+        ResultItem: Upg_Guard
+        ChangeRefine: -4
+      - BaseItem: Hood_
+        MinimumRefine: 4
+        Materials:
+          - Material: Well_Baked_Cookie
+            Amount: 100
+          - Material: Scarlet_Jewel
+            Amount: 100          
+          - Material: Zargon
+            Amount: 100            
+        ResultItem: Upg_Hood
+        ChangeRefine: -4        
+      - BaseItem: Chain_Mail_
+        MinimumRefine: 4
+        Materials:
+          - Material: Skel_Bone
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 100            
+        ResultItem: Upg_Mail
+        ChangeRefine: -4
+      - BaseItem: Manteau_
+        MinimumRefine: 4
+        Materials:
+          - Material: Transparent_Cloth
+            Amount: 100
+          - Material: Crystal_Jewel_
+            Amount: 100            
+        ResultItem: Upg_Manteau
+        ChangeRefine: -4
+      - BaseItem: Muffler_
+        MinimumRefine: 4
+        Materials:
+          - Material: Long_Hair
+            Amount: 100
+          - Material: Skirt_Of_Virgin
+            Amount: 100            
+        ResultItem: Upg_Muffler
+        ChangeRefine: -4         
+      - BaseItem: Saint_Robe_
+        MinimumRefine: 4
+        Materials:
+          - Material: Mistic_Frozen
+            Amount: 100
+          - Material: Heart_Of_Mermaid
+            Amount: 100
+          - Material: Skyblue_Jewel
+            Amount: 100
+          - Material: Fin
+            Amount: 100            
+        ResultItem: Upg_Saint_Robe
+        ChangeRefine: -4
+      - BaseItem: Shield_ 
+        MinimumRefine: 4
+        Materials:
+          - Material: Crystal_Blue
+            Amount: 100
+          - Material: Conch
+            Amount: 100
+          - Material: Scell
+            Amount: 100
+          - Material: Elunium_Stone
+            Amount: 100
+          - Material: Solid_Shell
+            Amount: 100             
+        ResultItem: Upg_Shield
+        ChangeRefine: -4        
+      - BaseItem: Tights_ 
+        MinimumRefine: 4
+        Materials:
+          - Material: Armlet_Of_Prisoner
+            Amount: 100
+          - Material: Lab_Staff_Record
+            Amount: 100           
+        ResultItem: Upg_Tights
+        ChangeRefine: -4
+      - BaseItem: Shoes_ 
+        MinimumRefine: 4
+        Materials:
+          - Material: Danggie
+            Amount: 100
+          - Material: Amulet
+            Amount: 100           
+        ResultItem: Upg_Shoes
+        ChangeRefine: -4        
+      - BaseItem: Thief_Clothes 
+        MinimumRefine: 4
+        Materials:
+          - Material: Cyfar
+            Amount: 100
+          - Material: Witherless_Rose
+            Amount: 100           
+        ResultItem: Upg_Thief_Cloth
+        ChangeRefine: -4
