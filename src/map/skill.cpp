@@ -26499,6 +26499,7 @@ TIMER_FUNC(skill_play_animation) {
     } else {
         // Clear the animation after completing all steps
         skill_clear_animation(bl);
+		aFree(skill_env);
     }
 
     return 0;
