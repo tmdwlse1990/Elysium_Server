@@ -1769,3 +1769,44 @@ OnTouch:
 	mes "- Marins are cheerfully shouting for the victory. -";
 	close;
 }
+
+function	script	PW_OnPCLogoutEvent	{   
+    getmapxy(.@current_map$, .@x, .@y, BL_PC);    
+    if (.@current_map$ == "poring_w02") {    
+        if (WoP_SaveMap$ != "") {  
+            savepoint WoP_SaveMap$,WoP_SaveMap_X,WoP_SaveMap_Y,1,1;  
+            set WoP_SaveMap$,"";  
+            set WoP_SaveMap_X,0;  
+            set WoP_SaveMap_Y,0;  
+        }  
+        delitem 7773,countitem(7773);  
+        set wop_team,0;   
+    }  
+    return;  
+}
+
+function	script	PW_OnPCDieEvent	{  
+    getmapxy(.@current_map$, .@x, .@y, BL_PC);  
+    if (.@current_map$ == "poring_w02" && wop_team) {  
+        if (getsavepoint(0) != "poring_w02" && WoP_SaveMap$ == "") {  
+            set WoP_SaveMap$,getsavepoint(0);  
+            set WoP_SaveMap_X,getsavepoint(1);  
+            set WoP_SaveMap_Y,getsavepoint(2);  
+        }  
+        if (wop_team == 1) {  
+            savepoint "poring_w02",rand(44,51),rand(76,87);  
+        }  
+        if (wop_team == 2) {  
+            savepoint "poring_w02",rand(146,153),rand(76,87);  
+        }  
+    }  
+    return;  
+}
+
+function	script	PW_OnPCKillEvent	{   
+    getmapxy(.@current_map$, .@x, .@y, BL_PC);  
+    if (.@current_map$ == "poring_w02" && wop_team) {  
+        getnameditem 7773,rid2name(killedrid);  
+    }  
+    return;  
+}
