@@ -1030,3 +1030,22 @@ OnStop:
     end;	
 }
 
+function	script	AC_OnPCLogoutEvent	{  
+    // autocombat  
+    .@player_remaining = getd("autocombat_remaining_" + getcharid(0));    
+    .@player_start_time = getd("autocombat_start_" + getcharid(0));    
+        
+    if(ac_getstate()) {    
+        // Calculate elapsed time    
+        .@elapsed_time = (gettimetick(2) - .@player_start_time) * 1000;    
+        .@player_remaining -= .@elapsed_time;    
+            
+        if (.@player_remaining < 0) {    
+            .@player_remaining = 0;    
+        }    
+            
+        sc_end SC_AUTOCOMBAT;    
+        setd("autocombat_remaining_" + getcharid(0), .@player_remaining);    
+    }  
+    return;  
+}
