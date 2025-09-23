@@ -6087,7 +6087,7 @@ static int clif_skill_damage_hook(struct block_list* src, struct block_list* dst
     }else  
         add_timer(tick + start_time + animation.interval, skill_play_animation, src->id, (intptr_t)skill_env);  
   
-    //aFree(skill_env);  
+    aFree(skill_env);  
     return 0;  
 }
 
@@ -26585,7 +26585,7 @@ void clif_runedecompowindow_result (map_session_data* sd, enum e_runedecompo_res
 
 void clif_send_animation_motion(struct block_list* bl, int target_id, int motion_speed) {
     // Add logging for debugging
-    //printf("Sending animation motion: bl_id=%d, target_id=%d, motion_speed=%d\n", bl->id, target_id, motion_speed);
+    printf("Sending animation motion: bl_id=%d, target_id=%d, motion_speed=%d\n", bl->id, target_id, motion_speed);
 
     unsigned char buf[32];
     nullpo_retv(bl);
@@ -26598,7 +26598,7 @@ void clif_send_animation_motion(struct block_list* bl, int target_id, int motion
 
 void clif_send_animation_dir(struct block_list* src, int target_id, int dir) {
     // Add logging for debugging
-    //printf("Sending animation direction: src_id=%d, target_id=%d, dir=%d\n", src->id, target_id, dir);
+    printf("Sending animation direction: src_id=%d, target_id=%d, dir=%d\n", src->id, target_id, dir);
 
     unsigned char buf[64];
     WBUFW(buf, 0) = 0x9c;
