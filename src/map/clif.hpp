@@ -1586,7 +1586,4 @@ void clif_parse_askreward_rune(int32 fd, map_session_data* sd);
 void clif_resultreward_rune(map_session_data* sd, e_runereward_result result, uint8 reward, uint16 tagID, uint32 runesetid);
 void clif_onlogreward_rune(map_session_data* sd, uint16 tagID);
 
-void clif_send_animation_motion(struct block_list* bl, int target_id, int motion_speed);
-void clif_send_animation_dir(struct block_list* src, int target_id, int dir);
-
 #endif /* CLIF_HPP */

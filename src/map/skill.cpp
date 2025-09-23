@@ -26385,142 +26385,6 @@ static bool skill_parse_row_skilldamage( char* split[], size_t columns, size_t c
 	return true;
 }
 
-std::vector<s_animation_data> animation_lists;
-
-int skill_calc_dir_counter_clockwise(int dir)
-{
-	dir += 2;
-	if (dir >= DIR_MAX)
-		dir = dir - DIR_MAX;
-	return dir;
-}
-
-
-static bool skill_parse_skill_animation( char* split[], size_t columns, size_t current ){
-
-	std::string skill_name = split[0];
-	int start = atoi(split[1]);
-	int interval = atoi(split[2]);
-	int speed = atoi(split[3]);
-	int count = atoi(split[4]);
-	std::string spin = split[5];
-
-	util::tolower(spin);
-
-	uint16 skill_id = skill_name2id(skill_name.c_str());
-
-	if(!skill_id){
-		ShowWarning("skill_parse_skill_animation: skill \"%s\" is invalid\n", skill_name.c_str());
-		return false;
-	}
-
-	if(strncmp(spin.c_str(), "true", 4) == 0 || strncmp(spin.c_str(), "false", 5) == 0){
-		ShowWarning("skill_parse_skill_animation: skill \"%s\" , spin setting is in valid\n", skill_name.c_str());
-		return false;
-	}
-
-	bool is_spin = false;
-
-	if(strncmp(spin.c_str(), "true", 4) == 0)
-		is_spin = true;
-
-	struct s_animation_data entry = {};
-	entry.skill_id = skill_id;
-	entry.start = start;
-	entry.interval = interval;
-	entry.motion_speed = speed;
-	entry.motion_count = count;
-	entry.spin = is_spin;
-
-	animation_lists.push_back(entry);
-	return true;
-}
-
-struct s_animation_data skill_animation_info(int skill_id) {
-    for (const auto &it : animation_lists) {
-        if (it.skill_id == skill_id) {
-            return it;
-        }
-    }
-    // Return a default animation structure if none found
-    return {};
-}
-
-// Directions for animation steps; assuming 0 = right, 3 = down, 6 = left, and 9 = up
-int get_direction_for_step(int step) {
-    // Adjust according to your coordinate system
-    switch (step) {
-        case 1: return 0;  // Right
-        case 2: return 3;  // Down
-        case 3: return 6;  // Left
-        case 4: return 9;  // Up
-        case 5: return 12;  // Right
-        case 6: return 3;  // Down
-        case 7: return 6;  // Left
-        case 8: return 9;  // Up
-        default: return 0; // Default direction if step is invalid
-    }
-}
-
-TIMER_FUNC(skill_play_animation) {
-    struct block_list* bl = map_id2bl(id);
-
-    if (bl == NULL || bl->type != BL_PC) {
-        return 0;
-    }
-
-    struct s_environment_data* skill_env = (struct s_environment_data*)data;
-
-    if (skill_env == NULL) {
-        return 0;
-    }
-
-    struct s_animation_data animation = skill_animation_info(skill_env->skill_id);
-
-    if (animation.skill_id == 0) {
-        return 0;
-    }
-
-    map_session_data* sd = BL_CAST(BL_PC, bl);
-
-    if (sd->skill_animation.step < animation.motion_count) {
-        clif_send_animation_motion(bl, skill_env->target_id, animation.motion_speed);
-
-        // Get direction based on current step
-        int direction = get_direction_for_step(sd->skill_animation.step);
-        if (direction != -1) {
-            clif_send_animation_dir(bl, skill_env->target_id, direction);
-        }
-
-        sd->skill_animation.step++;
-
-        // Set the next timer
-        sd->skill_animation.tid = add_timer(tick + animation.start + animation.interval, skill_play_animation, bl->id, (intptr_t)skill_env);
-    } else {
-        // Clear the animation after completing all steps
-        skill_clear_animation(bl);
-    }
-
-    return 0;
-}
-
-
-
-
-void skill_clear_animation(struct block_list* bl) {
-    if (bl == NULL || bl->type != BL_PC) {
-        return;
-    }
-
-    map_session_data* sd = BL_CAST(BL_PC, bl);
-
-    if (sd->skill_animation.tid != INVALID_TIMER) {
-        delete_timer(sd->skill_animation.tid, skill_play_animation);
-        sd->skill_animation.tid = INVALID_TIMER;
-        sd->skill_animation.step = 0;
-    }
-}
-
 /** Reads skill database files */
 static void skill_readdb(void) {
 	int32 i;
@@ -26555,7 +26419,6 @@ static void skill_readdb(void) {
 		sv_readdb(dbsubpath2, "produce_db.txt"        , ',',   5,  5+2*MAX_PRODUCE_RESOURCE, MAX_SKILL_PRODUCE_DB, skill_parse_row_producedb, i > 0);
 		sv_readdb(dbsubpath1, "skill_changematerial_db.txt" , ',',   5,  5+2*MAX_SKILL_CHANGEMATERIAL_SET, MAX_SKILL_CHANGEMATERIAL_DB, skill_parse_row_changematerialdb, i > 0);
 		sv_readdb(dbsubpath1, "skill_damage_db.txt"         , ',',   4,  3+SKILLDMG_MAX, -1, skill_parse_row_skilldamage, i > 0);
-		sv_readdb(dbsubpath1, "skill_animation.txt"         , ',',   6,  6, -1, skill_parse_skill_animation, i > 0);
 
 		aFree(dbsubpath1);
 		aFree(dbsubpath2);
@@ -26576,7 +26439,6 @@ void skill_reload (void) {
 	magic_mushroom_db.clear();
 	reading_spellbook_db.clear();
 	skill_arrow_db.clear();
-	animation_lists.clear();
 
 	skill_readdb();
 
@@ -26621,8 +26483,7 @@ void do_final_skill(void)
 	magic_mushroom_db.clear();
 	reading_spellbook_db.clear();
 	skill_arrow_db.clear();
-	
-	animation_lists.clear();
+
 	db_destroy(skillunit_db);
 	db_destroy(skillusave_db);
 	db_destroy(bowling_db);
