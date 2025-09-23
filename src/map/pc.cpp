@@ -2348,6 +2348,9 @@ bool pc_authok(map_session_data *sd, uint32 login_id2, time_t expiration_time, i
 	sd->skill_keep_using.level = 0;
 	sd->skill_keep_using.target = 0;
 
+	sd->skill_animation.tid = INVALID_TIMER;
+	sd->skill_animation.step = 0;
+
 #ifdef SECURE_NPCTIMEOUT
 	// Initialize to defaults/expected
 	sd->npc_idle_timer = INVALID_TIMER;

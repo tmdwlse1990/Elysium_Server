@@ -45,6 +45,7 @@
 #include "script.hpp"
 #include "status.hpp"
 #include "unit.hpp"
+#include "./skills/skill_animation.hpp"
 #include "./skills/skill_factory.hpp"
 
 using namespace rathena;
@@ -26439,6 +26440,7 @@ void skill_reload (void) {
 	magic_mushroom_db.clear();
 	reading_spellbook_db.clear();
 	skill_arrow_db.clear();
+	skill_animation_db.clear();
 
 	skill_readdb();
 
@@ -26483,6 +26485,7 @@ void do_final_skill(void)
 	magic_mushroom_db.clear();
 	reading_spellbook_db.clear();
 	skill_arrow_db.clear();
+	skill_animation_db.clear();
 
 	db_destroy(skillunit_db);
 	db_destroy(skillusave_db);

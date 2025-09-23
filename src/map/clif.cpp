@@ -61,6 +61,7 @@
 #include "title.hpp"
 #include "unit.hpp"
 #include "vending.hpp"
+#include "./skills/skill_animation.hpp"
 
 using namespace rathena;
 
@@ -2175,6 +2176,11 @@ void clif_quitsave(int32 fd,map_session_data *sd) {
 	}
 }
 
+static void clif_changemap_hook(map_session_data& sd)
+{
+	skill_animation_clear(&sd);
+}
+
 /// Notifies the client of a position change to coordinates on given map (ZC_NPCACK_MAPMOVE).
 /// 0091 <map name>.16B <x>.W <y>.W
 void clif_changemap( map_session_data& sd, int16 m, uint16 x, uint16 y ){
@@ -2184,6 +2190,8 @@ void clif_changemap( map_session_data& sd, int16 m, uint16 x, uint16 y ){
 	mapindex_getmapname_ext(map_mapid2mapname(m), packet.mapName);
 	packet.xPos = x;
 	packet.yPos = y;
+
+	clif_changemap_hook(sd);
 
 	clif_send( &packet, sizeof( packet ), &sd, SELF );
 }
@@ -6110,6 +6118,8 @@ void clif_skill_damage( block_list& src, block_list& dst, t_tick tick, int32 sde
 		}
 		clif_send( &packet, sizeof( packet ), &src, SELF );
 	}
+	
+	clif_skill_damage_hook(&src, &dst, tick, sdelay, ddelay, sdamage, div, skill_id, skill_lv, type);
 }
 
 
@@ -6466,6 +6476,79 @@ void clif_cooking_list( map_session_data& sd, int32 trigger, uint16 skill_id, in
 #endif
 }
 
+static int clif_skill_damage_hook(struct block_list* src, struct block_list* dst, t_tick tick, int32 sdelay, int32 ddelay, int64 sdamage, int16 div, uint16 skill_id, uint16 skill_lv, enum e_damage_type type)    
+{    
+    s_animation_data animation = skill_animation_get_info(skill_id);    
+    
+    if (animation.skill_id == 0)    
+        return 0;    
+    
+    // Always show animation, but modify behavior based on hit/miss  
+    int32 start_time = animation.start == -1 ? sdelay : animation.start;    
+    int32 target_id = dst->id;    
+    int8 dir = unit_getdir(dst);    
+    
+    struct s_environment_data *skill_env = nullptr;    
+    CREATE(skill_env, struct s_environment_data, 1);    
+    skill_env->skill_id = skill_id;    
+    skill_env->target_id = target_id;    
+    skill_env->hit_success = (sdamage > 0); // Track if it's a hit or miss  
+      
+    if (animation.spin && dir != -1)    
+        dir = skill_calc_dir_counter_clockwise(dir);    
+    skill_env->dir = dir;    
+    
+    if(src->type == BL_PC){    
+        BL_CAST(BL_PC,src)->skill_animation.tid = add_timer(tick + start_time + animation.interval, skill_animation_timer, src->id, (intptr_t)skill_env);    
+        BL_CAST(BL_PC,src)->skill_animation.step = 1;    
+    } else {  
+        add_timer(tick + start_time + animation.interval, skill_animation_timer, src->id, (intptr_t)skill_env);    
+    }  
+    
+    return 0;    
+}
+
+void clif_send_miss_motion(struct block_list* bl, int target_id) {    
+    nullpo_retv(bl);    
+        
+    unsigned char buf[32];    
+    WBUFW(buf, 0) = 0x8a;    
+    WBUFL(buf, 2) = bl->id;    
+    WBUFL(buf, 6) = target_id;    
+    WBUFL(buf, 10) = 0; // server tick    
+    WBUFL(buf, 14) = 0; // src speed    
+    WBUFL(buf, 18) = 0; // target speed    
+    WBUFW(buf, 22) = 0; // damage = 0 (causes miss display)    
+    WBUFW(buf, 24) = 1; // div    
+    WBUFB(buf, 26) = 0; // type = 0 (normal damage type)    
+    WBUFW(buf, 27) = 0; // damage2    
+        
+    clif_send(buf, packet_len(0x8a), bl, AREA);    
+}
+
+void clif_send_animation_motion(struct block_list* bl, int target_id, int motion_speed) {  
+    nullpo_retv(bl);  
+      
+    unsigned char buf[32];  
+    WBUFW(buf, 0) = 0x8a;  
+    WBUFL(buf, 2) = bl->id;  
+    WBUFL(buf, 14) = motion_speed; // src speed 
+    WBUFB(buf, 26) = 10; // Critical hit type - avoids miss logic  
+      
+    clif_send(buf, packet_len(0x8a), bl, AREA);
+}  
+  
+void clif_send_animation_dir(struct block_list* bl, int target_id, int dir) {  
+    nullpo_retv(bl);  
+      
+    unsigned char buf[9];  
+    WBUFW(buf, 0) = 0x9c;  
+    WBUFL(buf, 2) = target_id;  
+    WBUFW(buf, 6) = 0; // head direction  
+    WBUFB(buf, 8) = dir;  
+      
+    clif_send(buf, 9, bl, AREA);  
+}
 
 /// Notifies clients of a status change.
 /// 0196 <index>.W <id>.L <state>.B (ZC_MSG_STATE_CHANGE) [used for ending status changes and starting them on non-pc units (when needed)]

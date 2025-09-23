@@ -1033,6 +1033,11 @@ void clif_skill_teleportmessage( map_session_data& sd, e_notify_mapinfo_result r
 void clif_skill_produce_mix_list( map_session_data& sd, int32 skill_id, int32 trigger );
 void clif_cooking_list( map_session_data& sd, int32 trigger, uint16 skill_id, int32 qty, int32 list_type );
 
+void clif_send_animation_motion(struct block_list* bl, int target_id, int motion_speed);
+void clif_send_animation_dir(struct block_list* src, int target_id, int dir);
+static int clif_skill_damage_hook(struct block_list* src, struct block_list* dst, t_tick tick, int32 sdelay, int32 ddelay, int64 sdamage, int16 div, uint16 skill_id, uint16 skill_lv, enum e_damage_type type);  
+void clif_send_miss_motion(struct block_list* bl, int target_id);
+
 void clif_produceeffect(map_session_data* sd,int32 flag, t_itemid nameid);
 
 void clif_getareachar_skillunit(block_list *bl, skill_unit *unit, enum send_target target, bool visible);

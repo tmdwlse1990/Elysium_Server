@@ -1937,6 +1937,11 @@
 	parseable_packet( HEADER_CZ_CLOSE_MSGBOX_EXTEND_BODYITEM_SIZE, sizeof( struct PACKET_CZ_CLOSE_MSGBOX_EXTEND_BODYITEM_SIZE ), clif_parse_inventory_expansion_reject, 0 );
 #endif
 
+#if PACKETVER_MAIN_NUM >= 20181219 || PACKETVER_RE_NUM >= 20181219 || PACKETVER_ZERO_NUM >= 20181212
+	packet(0x008a,29);  // For animation motion packet  
+	packet(0x009c,9);   // For animation direction packet
+#endif
+
 #if PACKETVER_MAIN_NUM >= 20190116 || PACKETVER_RE_NUM >= 20190116 || PACKETVER_ZERO_NUM >= 20181226
 	parseable_packet( HEADER_CZ_NPC_BARTER_MARKET_PURCHASE, -1, clif_parse_barter_buy, 0 );
 	parseable_packet( HEADER_CZ_NPC_BARTER_MARKET_CLOSE, sizeof( struct PACKET_CZ_NPC_BARTER_MARKET_CLOSE ), clif_parse_barter_close, 0 );

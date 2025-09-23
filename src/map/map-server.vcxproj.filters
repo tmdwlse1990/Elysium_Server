@@ -495,6 +495,9 @@
     <ClInclude Include="skills/npc/skill_factory_npc.hpp">
       <Filter>Header Files\Skills\Npc</Filter>
     </ClInclude>
+    <ClInclude Include="skills/skill_animation.hpp">
+      <Filter>Header Files\Skills</Filter>
+    </ClInclude>
     <ClInclude Include="skills/skill_factory.hpp">
       <Filter>Header Files\Skills</Filter>
     </ClInclude>
@@ -655,6 +658,9 @@
     </ClCompile>
     <ClCompile Include="skills/npc/skill_factory_npc.cpp">
       <Filter>Source Files\Skills\Npc</Filter>
+    </ClCompile>
+    <ClCompile Include="skills/skill_animation.cpp">
+      <Filter>Source Files\Skills</Filter>
     </ClCompile>
     <ClCompile Include="skills/skill_factory.cpp">
       <Filter>Source Files\Skills</Filter>
