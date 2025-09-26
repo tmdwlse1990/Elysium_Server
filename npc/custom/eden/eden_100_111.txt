@@ -1,9 +1,9 @@
 //===== rAthena Script =======================================
 //= Eden Group Quests - Mission [100-111]
 //===== By: ==================================================
-//= Capuche
+//= Capuche, Updated by LTSteinhil
 //===== Current Version: =====================================
-//= 1.2
+//= 1.4
 //===== Compatible With: =====================================
 //= rAthena Project
 //===== Description: =========================================
@@ -16,7 +16,10 @@
 //= 1.3 Added quest management menu for accept/abandon all quests. [LTSteinhil]  
 //= 1.4 Restructured to match array-based system. [LTSteinhil]
 //============================================================
-moc_para01,37,95,5	script	Mission [100 - 111]#1	4_F_GELKA,{  
+moc_para01,37,95,5	script	Mission [100 - 111]#1	4_F_GELKA,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);  
     cutin "gelca01",2;  
     if (checkweight(1201,1) == 0) {  
         mes "^FF0000-Warning Message-";  
@@ -30,7 +33,7 @@ moc_para01,37,95,5	script	Mission [100 - 111]#1	4_F_GELKA,{
         end;  
     }  
       
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     if (!callfunc("F_HasEdenGroupMark")) {  
         mes "Show me proof that you're part of the Eden Group or I have no business with you.";  
         mes "I'm giving requests to base level ^FF0000100 - 110^000000 adventurers.";  
@@ -46,22 +49,21 @@ moc_para01,37,95,5	script	Mission [100 - 111]#1	4_F_GELKA,{
         end;  
     }  
       
-    mes "Welcome to the Eden Group Level 100-111 Quest Management System!";  
+	mes "Welcome " + strcharinfo(0) + " to the Eden Group Level 100-111 Quests!";  
     mes "What would you like to do today?";  
     next;  
       
-    switch(select("Quest Management:Warp Locations:Individual Quests:Information")) {  
+    switch(select("Quest Management:Individual Quests:Information")) {  
     case 1: callsub L_QuestManagement; break;  
-    case 2: callsub L_WarpLocations; break;  
-    case 3: callsub L_IndividualQuests; break;  
-    case 4: callsub L_Information; break;  
+    case 2: callsub L_IndividualQuests; break;  
+    case 3: callsub L_Information; break;  
     }  
     close2;  
     cutin "",255;  
     end;  
   
 L_QuestManagement:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Quest Management Options:";  
     next;  
     switch(select("^0000FFAccept All Available Quests^000000:^FF0000Abandon All Active Quests^000000:Claim All Rewards:Quest Status:Back")) {  
@@ -74,7 +76,7 @@ L_QuestManagement:
     return;  
   
 L_AcceptAll:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Accepting all available quests for your level...";  
     next;  
       
@@ -91,18 +93,18 @@ L_AcceptAll:
         .@accepted++;  
     }  
       
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Accepted " + .@accepted + " new quests!";  
     mes "Check your quest log for details.";  
     return;  
   
 L_AbandonAll:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Are you sure you want to abandon ALL active quests?";  
     mes "^FF0000This cannot be undone!^000000";  
     next;  
     if (select("Yes, abandon all:No, keep them") == 2) {  
-        mes "[Gelkah]";  
+        mes "<B>[ Gelkah ]</B>";  
         mes "Wise choice. Your quests remain active.";  
         return;  
     }  
@@ -118,12 +120,12 @@ L_AbandonAll:
         }  
     }  
       
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Abandoned " + .@abandoned + " quests.";  
     return;  
   
 L_ClaimRewards:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Checking for completed quests...";  
     next;  
       
@@ -135,7 +137,7 @@ L_ClaimRewards:
     .@claimed = 0;  
     for (.@i = 0; .@i < getarraysize(.@hunt_quests); .@i++) {  
         if (checkquest(.@hunt_quests[.@i], HUNTING) == 2) {  
-            mes "[Gelkah]";  
+            mes "<B>[ Gelkah ]</B>";  
             mes "Completed: " + .@hunt_names$[.@i] + " Hunting";  
             mes "Base Experience: "+ F_Insertcomma(.base_exp[.@i]) +".";  
             mes "Job Experience: "+ F_Insertcomma(.job_exp[.@i]) +".";  
@@ -155,16 +157,16 @@ L_ClaimRewards:
     }  
       
     if (.@claimed == 0) {  
-        mes "[Gelkah]";  
+        mes "<B>[ Gelkah ]</B>";  
         mes "No completed quests found.";  
     } else {  
-        mes "[Gelkah]";  
+        mes "<B>[ Gelkah ]</B>";  
         mes "Claimed rewards for " + .@claimed + " completed quests!";  
     }  
     return;  
   
 L_QuestStatus:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Current Quest Status:";  
     mes " ";  
       
@@ -189,26 +191,10 @@ L_QuestStatus:
       
     mes " ";  
     mes "Total completed quests: " + para_100lv02;  
-    return;  
-  
-L_WarpLocations:  
-    mes "[Gelkah]";  
-    mes "Where would you like to go?";  
-    next;  
-      
-    switch(select("Glastheim:Rachel (Ice Dungeon):Comodo (Magma Dungeon):Ash Vacuum:Niflheim:Morocc (Sphinx):Back")) {  
-    case 1: warp "glast_01", 370, 304; break;  
-    case 2: warp "rachel", 130, 110; break;  
-    case 3: warp "comodo", 209, 143; break;  
-    case 4: warp "mid_camp", 210, 288; break;  
-    case 5: warp "niflheim", 202, 174; break;  
-    case 6: warp "morocc", 156, 93; break;  
-    case 7: return;  
-    }  
-    close;  
+    return;    
   
 L_IndividualQuests:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Choose a quest area:";  
     next;  
       
@@ -223,7 +209,7 @@ L_IndividualQuests:
     return;  
   
 L_GlastheimQuests:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Glastheim Area Quests:";  
     next;  
       
@@ -239,7 +225,7 @@ L_GlastheimQuests:
     return;  
   
 L_AshVacuumQuests:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Ash Vacuum Area Quests:";  
     next;  
       
@@ -251,7 +237,7 @@ L_AshVacuumQuests:
     }  
     return;  
 L_IceDungeonQuests:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Ice Dungeon Area Quests:";  
     next;  
       
@@ -265,7 +251,7 @@ L_IceDungeonQuests:
     return;  
   
 L_MagmaDungeonQuests:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Magma Dungeon Area Quests:";  
     next;  
       
@@ -278,7 +264,7 @@ L_MagmaDungeonQuests:
     return;  
   
 L_OtherQuests:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Other Location Quests:";  
     next;  
       
@@ -297,7 +283,7 @@ L_HandleQuest:
     .@count = getarg(3);  
     .@location$ = getarg(4);  
       
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
       
     if (checkquest(.@cooldown_id, PLAYTIME) == 0) {  
         mes "You just finished this request. Please take a rest before attempting it again.";  
@@ -342,19 +328,19 @@ L_HandleQuest:
         next;  
           
         if (select("Accept Quest:Decline") == 2) {  
-            mes "[Gelkah]";  
+            mes "<B>[ Gelkah ]</B>";  
             mes "Come back when you're ready for adventure!";  
             return;  
         }  
           
-        mes "[Gelkah]";  
+        mes "<B>[ Gelkah ]</B>";  
         mes "Quest accepted! Hunt " + .@count + " " + .@monster_name$ + " and return to me.";  
         setquest .@quest_id;  
         return;  
     }  
   
 L_Information:  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Eden Group Level 100-111 Quest Information:";  
     mes " ";  
     mes "^0000FFGlastheim Quests^000000: Hunt monsters in the haunted castle";  
@@ -363,7 +349,7 @@ L_Information:
     mes "^0000FFMagma Dungeon Quests^000000: Brave the heat of Comodo's depths";  
     mes "^0000FFOther Quests^000000: Various locations across Midgard";  
     next;  
-    mes "[Gelkah]";  
+    mes "<B>[ Gelkah ]</B>";  
     mes "Each completed quest grants experience and item(s).";  
     mes "Use the Quest Management menu for efficient quest handling!";  
 	mes "Base Experience: "+ F_Insertcomma(.base_exp[.@quest_index]) +".";  
@@ -376,6 +362,7 @@ OnInit:
     // Updated reward arrays matching original script values  
     setunitdata( getnpcid(0), UNPC_GROUP_ID, 6);  
     setunittitle( getnpcid(0), "Gelkah" ); 	
+	questinfo( QTYPE_QUEST, QMARK_YELLOW, "BaseLevel >= 100 && BaseLevel <= 111" );
     setarray .base_exp[0], 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000, 550000;    
     setarray .job_exp[0], 148000, 148000, 186500, 186500, 252000, 148000, 186500, 148000, 148000, 186500, 148000, 148000, 186500, 148000, 186500;    
     setarray .item_reward[0], 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223;    
@@ -384,7 +371,10 @@ OnInit:
 }  
   
 moc_para01,41,95,5	script	Mission [100 - 111]#12	4_M_ROTERT,{
-    mes "[Rohtert]";  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+    mes "<B>[ Rohtert ]</B>";  
     if (!callfunc("F_HasEdenGroupMark")) {  
         cutin "rote01",2;  
         mes "You are not even a member of Eden Group. What are you doing here?";  
@@ -394,7 +384,7 @@ moc_para01,41,95,5	script	Mission [100 - 111]#12	4_M_ROTERT,{
         cutin "rote03",2;  
         mes "......";  
         next;  
-        mes "[Rohtert]";  
+        mes "<B>[ Rohtert ]</B>";  
         if (BaseLevel < 100)  
             mes "Such a novice... go and train yourself more. What? Don't like the way I talk? Then get stronger.";  
         else if (BaseLevel > 110) {  
@@ -411,66 +401,66 @@ moc_para01,41,95,5	script	Mission [100 - 111]#12	4_M_ROTERT,{
         else if (para_100lv01 < 2) {  
             mes "Yeah waddya want from me kid? You think I'm just gonna say ok I'll be your master and teach you everything I know?";  
             next;  
-            mes "[Rohtert]";  
+            mes "<B>[ Rohtert ]</B>";  
             mes "I'm not a charity so get lost.";  
         }  
         else if (para_100lv01 == 2) {  
             mes "You a new adventurer?";  
             next;  
-            mes "[Rohtert]";  
+            mes "<B>[ Rohtert ]</B>";  
             mes "There are so much things to do and you're wasting your time with me. Talk to Gelkah she's more chatty than I'll ever be to you.";  
             next;  
-            mes "[Rohtert]";  
+            mes "<B>[ Rohtert ]</B>";  
             mes "You seem brave enough to be a good adventurer but you're nothing but a Novice in my eyes.";  
             para_100lv01 = 3;  
         }  
         else if (para_100lv01 == 3) {  
             mes "I used to an adventurer for the Eden Group just like you but of course I was the best.";  
             next;  
-            mes "[Rohtert]";  
+            mes "<B>[ Rohtert ]</B>";  
             mes "I guess I'm retired now because my adventuring skills are just too good to compete with all you kids.";  
         }  
         else if (para_100lv01 == 4) {  
             mes "Anyway, I'm doing this a favor to the Eden Group.";  
             next;  
-            mes "[Rohtert]";  
+            mes "<B>[ Rohtert ]</B>";  
             mes "I am looking for someone who regards friendship or loyalty like a Spoon Stub.";  
             next;  
             if (select( "A Spoon what?", "You're a bad person." ) == 1) {  
                 cutin "rote03",2;  
-                mes "[Rohtert]";  
+                mes "<B>[ Rohtert ]</B>";  
                 mes "You know? A Spoon Stub. Zombie Prisoners drop them and they seem like they're usefull but really they're kinda worthless.";  
                 next;  
-                mes "[Rohtert]";  
+                mes "<B>[ Rohtert ]</B>";  
                 mes "Anyway, I guess you seem like the loyal type... sort of...";  
             }  
             else {  
-                mes "[Rohtert]";  
+                mes "<B>[ Rohtert ]</B>";  
                 mes "That makes me feel weird. That is not bad but I guess I'm bad and I don't care.";  
             }  
             next;  
             cutin "rote04",2;  
-            mes "[Rohtert]";  
+            mes "<B>[ Rohtert ]</B>";  
             mes "Remember to stay brave you silly adventurer.";  
         }  
         else if (para_100lv01 == 5) {  
             cutin "rote03",2;  
             mes "Okay ! You are doing the best that you can do.";  
             next;  
-            mes "[Rohtert]";  
+            mes "<B>[ Rohtert ]</B>";  
             mes "I am afraid if you are becoming like Gelkah. She's like a lost puppy. Don't be like her. Okay?";  
         }  
         else if (para_100lv01 == 6) {  
             cutin "rote03",2;  
             mes "You busy looking all around.";  
             next;  
-            mes "[Rohtert]";  
+            mes "<B>[ Rohtert ]</B>";  
             if (checkquest(13046) == 2) {  
                 if (checkquest(13047,PLAYTIME) == 0) {  
                     mes "I am done with my business.";  
                     mes "I am responsible for clearing documents. I hate doing this stuff.";  
                     next;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "I guess I should talk to him one more time... Come back tomorrow!";  
                 }  
                 else if (checkquest(13047,PLAYTIME) == 2) {  
@@ -498,15 +488,15 @@ moc_para01,41,95,5	script	Mission [100 - 111]#12	4_M_ROTERT,{
                     mes "Tens Drillion I think we should teach it more lessons to show it who's boss!";  
                     next;  
                     if (select( "Lets give a good lesson for sure.", "I think once is enough." ) == 2) {  
-                        mes "[Rohtert]";  
+                        mes "<B>[ Rohtert ]</B>";  
                         mes "It is fine there are still many adventurers that can do this.";  
                     }  
                     else {  
                         cutin "rote04",2;  
-                        mes "[Rohtert]";  
+                        mes "<B>[ Rohtert ]</B>";  
                         mes "It is not because I am coward.";  
                         next;  
-                        mes "[Rohtert]";  
+                        mes "<B>[ Rohtert ]</B>";  
                         mes "Good luck. Make sure you finish it off this time. Hah hah!";  
                         if (checkquest(13049,PLAYTIME) == 2)  
                             erasequest 13049;  
@@ -533,19 +523,19 @@ moc_para01,41,95,5	script	Mission [100 - 111]#12	4_M_ROTERT,{
                 mes "Do you mind doing a simple errand?";  
                 next;  
                 if (select( "No I don't mind!", "Simple errands are for simpletons." ) == 2) {  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "You are a strange adventurer...";  
                 }  
                 else {  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "One fine windy day, I was collecting flowers in west south of the Midgard Allied Forces Post to fulfill an Eden Group request.";  
                     next;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "Then that one suddenly showed up.";  
                     next;  
                     select("One what?");  
                     cutin "rote02",2;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "It was a ^FF0000Tens Drillion.^000000";  
                     next;  
                     cutin "gelca03",2;  
@@ -553,7 +543,7 @@ moc_para01,41,95,5	script	Mission [100 - 111]#12	4_M_ROTERT,{
                     mes "Oops! Its actually ^FF0000Tendrilion^000000!! Master!";  
                     next;  
                     cutin "rote04",2;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "Yeah yeah potato po-tah-toh!";  
                     emotion ET_HNG;  
                     next;  
@@ -562,35 +552,35 @@ moc_para01,41,95,5	script	Mission [100 - 111]#12	4_M_ROTERT,{
                     mes "......";  
                     next;  
                     cutin "rote04",2;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "We realized when we faced the eyes of the beast that it looked like a lion but it isn't any normal animal.";  
                     emotion ET_HNG;  
                     next;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "^8008F8I knew that it was kill or be killed.^000000";  
                     next;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "Of course I beat that beast easily! It was easier than taking candy from a Poring.";  
                     next;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "But to my surprise, the beast got back up. I was forced to beat it down 12 more times before it stayed down. This was not a normal Tens Drillion.";  
                     next;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "I heard it is still wandering place to palce but I am kind of busy now.";  
                     next;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "I want you to take care of it. For me it was fine to be there alone. But for you.. I recommend you to bring more adventurers.";  
                     next;  
                     select("You sure you did this yourself?");  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "The fact that I am strong is more important than the number. Just go there and take the beast out.";  
                     next;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "You'll find it west of the Midgard Allied Forces Post at the Ash Vacuum.";  
                     next;  
                     select("I guess I have no choice.");  
                     cutin "rote03",2;  
-                    mes "[Rohtert]";  
+                    mes "<B>[ Rohtert ]</B>";  
                     mes "You still there novice? If you can not handle by yourself then ask to your friends because it is not easy one.";  
                     next;  
                     cutin "gelca02",2;  
@@ -624,6 +614,7 @@ moc_para01,41,95,5	script	Mission [100 - 111]#12	4_M_ROTERT,{
 OnInit:  
     setunitdata( getnpcid(0), UNPC_GROUP_ID, 6);  
     setunittitle( getnpcid(0), "Rohtert" ); 
+	questinfo( QTYPE_QUEST, QMARK_YELLOW, "BaseLevel >= 100 && BaseLevel <= 111" );
 	end;
 }
 

@@ -22,6 +22,9 @@
 //============================================================  
   
 moc_para01,42,38,3	script	Mission [56 - 70]#Tuto	4_BOARD3,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
 	if (!callfunc("F_HasEdenGroupMark")) {  
 		mes "- You need to have an -";  
 		mes "- ^4d4dff'Eden Group Mark'^000000 -";  
@@ -319,6 +322,8 @@ L_WarpLocation:
 OnInit:  
 	// Quest rewards: base_exp, job_exp, item_id, item_amount  
 	// Index corresponds to quest ID - 3250  
+	setunitdata(getnpcid(0), UNPC_GROUP_ID, 6);  
+	questinfo( QTYPE_QUEST, QMARK_YELLOW, "BaseLevel >= 56 && BaseLevel <= 70" );	
 	setarray .base_exp[0], 15000, 16000, 17000, 18000, 16000, 15000, 17000, 16000, 17000, 16000, 16000, 17000, 18000, 16000;  
 	setarray .job_exp[0], 5000, 6000, 8000, 8000, 7000, 5000, 8000, 7000, 7000, 6000, 6000, 7000, 8000, 6000;  
 	setarray .item_reward[0], 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223;  

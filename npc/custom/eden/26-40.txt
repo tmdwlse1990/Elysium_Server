@@ -21,6 +21,9 @@
 //============================================================  
   
 moc_para01,38,38,3	script	Mission [26 - 40]#Tuto	4_BOARD3,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
 	if (!callfunc("F_HasEdenGroupMark")) {  
 		mes "- You need to have an -";  
 		mes "- ^4d4dff'Eden Group Mark'^000000 -";  
@@ -384,6 +387,8 @@ L_ClaimRewards:
 OnInit:  
     // Quest rewards: base_exp, job_exp, item_id, item_amount  
     // Index corresponds to quest ID - 8266  
+	setunitdata(getnpcid(0), UNPC_GROUP_ID, 6);  
+	questinfo( QTYPE_QUEST, QMARK_YELLOW, "BaseLevel >= 26 && BaseLevel <= 40" );	
     setarray .base_exp[0], 2000, 2200, 2400, 2600, 2800, 1800, 1900, 2000, 2100, 2300, 2500, 2700, 2900, 3100;  
     setarray .job_exp[0], 2000, 2200, 2400, 2600, 2800, 1800, 1900, 2000, 2100, 2300, 2500, 2700, 2900, 3100;
     setarray .item_reward[0], 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223, 25223;  
