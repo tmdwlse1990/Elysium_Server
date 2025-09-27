@@ -1,0 +1,50 @@
+-	script	aura	-1,{  
+end;  
+	  
+OnAura:  
+	// Check if player has GM level 99 OR group ID 99  
+	if (getgmlevel() < 99 && getgroupid() != 99) {  
+		dispbottom "Access denied. This command requires GM level 99 or Admin group.";  
+		end;  
+	}  
+	  
+	input .@number1, "Enter hat effect number:";   
+	  
+	if (.@number1 <= 0 ) {  
+		dispbottom "Invalid effect numbers. Please enter positive numbers.";  
+		end;  
+	}  
+	  
+	.aura_effect1 = .@number1;   
+	  
+	hateffect .@number1, true;  
+	  
+	dispbottom "Hat effects " + .@number1 + " activated.";  
+	end;  
+	  
+OnOffAura:  
+	// Same permission check  
+	if (getgmlevel() < 99 && getgroupid() != 99) {  
+		dispbottom "Access denied. This command requires GM level 99 or Admin group.";  
+		end;  
+	}  
+	  
+	if (.aura_effect1 == 0 && .aura_effect2 == 0) {  
+		dispbottom "No aura effects are currently active.";  
+		end;  
+	}  
+	  
+	if (.aura_effect1 > 0) {  
+		hateffect .aura_effect1, false;  
+	}  
+
+	dispbottom "Hat effects " + .aura_effect1 + " deactivated.";  
+	  
+	.aura_effect1 = 0;  
+	end;  
+	  
+OnInit:  
+	bindatcmd "auraon", strnpcinfo(3) + "::OnAura";  
+	bindatcmd "auraoff", strnpcinfo(3) + "::OnOffAura";  
+	end;  
+}  
