@@ -1,0 +1,69 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 2.5
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//= 2.5 Separated and improved Cool Event Corp [Louis T Steinhil]
+//============================================================
+-	script	Cool Event Corp. Staff::NvCool	HIDDEN_NPC,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q < 9) {
+		mes "<B>[ Cool Event Corp. Staff ]</B>";
+		mes "This is not my turn.";
+		mes "have you finished talking to the Kafra Employee yet?";
+		close;
+	} else if (job_novice_q == 9) {
+		mes "<B>[ Cool Event Corp. Staff ]</B>";
+		mes "Hello.";
+		mes "We are working hard to provide events on Midgard similar to the Kafra services.";
+		next;
+		mes "<B>[ Cool Event Corp. Staff ]</B>";
+		mes "Our staff is here to support you with [storage], [save] and [teleport service].";
+		next;
+		mes "<B>[ Cool Event Corp. Staff ]</B>";
+		mes "If there's no Kafra around you, we're around to help you.";
+		next;
+		mes "<B>[ Cool Event Corp. Staff ]</B>";
+		mes "We are working hard on a network of Events to make your life better.";
+		mes "I hope that you can meet our staff in Alberta.";
+		next;
+		mes "<B>[ Cool Event Corp. Staff ]</B>";
+		mes "Who knows, we might meet outside of this academy.";
+		next;
+		mes "<B>[ Cool Event Corp. Staff ]</B>";
+		mes "Mostly all of us wear red coats in the places that the Kafra Employee's don't work in.";
+		set job_novice_q,10;
+		close;
+	} else {
+		mes "<B>[ Cool Event Corp. Staff ]</B>";
+		mes "Most of our services are similar to those of the Kafra Corporation.";
+		close;
+	}
+}
+tg_1-1,156,238,4	duplicate(NvCool)	Cool Event Corp. Staff::NvCool1	4_M_ZONDAMAN
+tg_1-2,156,238,4	duplicate(NvCool)	Cool Event Corp. Staff::NvCool2	4_M_ZONDAMAN
+tg_1-3,156,238,4	duplicate(NvCool)	Cool Event Corp. Staff::NvCool3	4_M_ZONDAMAN
+tg_1-4,156,238,4	duplicate(NvCool)	Cool Event Corp. Staff::NvCool4	4_M_ZONDAMAN

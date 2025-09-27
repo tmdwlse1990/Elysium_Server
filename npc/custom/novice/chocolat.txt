@@ -1,0 +1,243 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 2.5
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//= 2.5 Separated and improved Chocolat [Louis T Steinhil]
+//============================================================
+-	script	Chocolat#newbe06::NvChocolat	HIDDEN_NPC,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q < 7) {
+		mes "<B>[ Chocolat ]</B>";
+		mes "Hmm? Strange.";
+		mes "Let me see that Trainee ID for a sec.";
+		next;
+		if (job_novice_q < 2) {
+			mes "<B>[ Chocolat ]</B>";
+			mes "Oh, really...";
+			mes "You have participated on the previous Training Grounds.";
+			mes "The Training Grounds have now come under new management.";
+			next;
+			mes "<B>[ Chocolat ]</B>";
+			mes "If you want to do the basic course,";
+			mes "you should go back to Instructor Brade.";
+			next;
+			mes "<B>[ Chocolat ]</B>";
+			mes "Or you can go ahead and start with theory training.";
+			mes "What would you like to do?";
+			next;
+			switch(select("Send me to Basic Training.:Start Theory Training.")) {
+			case 1:
+				mes "<B>[ Chocolat ]</B>";
+				mes "Sure.";
+				mes "I will send you to Instructor Brade.";
+				mes "Instructor Brade will start your basic training.";
+				close2;
+				warp strnpcinfo(4),146,180;
+				end;
+			case 2:
+				mes "<B>[ Chocolat ]</B>";
+				mes "I will tell you about the people you will be seeing in Town.";
+				mes "There are many kinds of people in town and some of them will be helpful to know.";
+				next;
+				mes "<B>[ Chocolat ]</B>";
+				mes "There are a lot of people in town, but among them, these people are the most important to know.";
+				next;
+				mes "<B>[ Chocolat ]</B>";
+				mes "They are [Kafra] Employee's standing right behind me and their rival company the [Cool Event Corp].";
+				mes "When you visit a town for the first time, you should talk to the Information [Guide]";
+				next;
+				mes "<B>[ Chocolat ]</B>";
+				mes "Well then, let's hear from each of them.";
+				mes "Start by talking to the [Kafra] Employee.";
+				set job_novice_q,8;
+				if (checkquest(7121) == -1) {  
+					setquest 7121;  
+				}				
+				next;
+				mes "^4d4dff- You've received a quest from Chocolat.";
+				mes "Please check the quest information window. -^000000";
+				close;
+			}
+		} else {
+			mes "<B>[ Chocolat ]</B>";
+			mes "You were still on the basic course.";
+			mes "You should go back to Instructor Brade or Jinha.";
+			next;
+			mes "<B>[ Chocolat ]</B>";
+			mes "If you don't know how to find them, I can send you to Instructor Brade, How about it?";
+			next;
+			switch(select("I will go myself.:Will you do that for me?")) {
+			case 1:
+				mes "<B>[ Chocolat ]</B>";
+				mes "Sure. Go out to the door to the right.";
+				close;
+			case 2:
+				mes "<B>[ Chocolat ]</B>";
+				mes "Sure.";
+				mes "I will see you later.";
+				close2;
+				warp strnpcinfo(4),146,180;
+				end;
+			}
+		}
+	} else if (job_novice_q == 7) {
+		mes "<B>[ Chocolat ]</B>";
+		mes "I will tell you about the people you will be seeing in Town.";
+		mes "There are many kinds of people in town and some of them will be helpful to know.";
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "There are a lot of people in town, but among them, these people are the most important to know.";
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "They are [Kafra] Employee's standing right behind me and their rival company the [Cool Event Corp].";
+		mes "When you visit a town for the first time, you should talk to Information [Guide]";
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "Well then, let's hear from each of them.";
+		mes "Start by talking to the [Kafra] Employee.";
+		set job_novice_q,8;
+		if (checkquest(7121) == -1) {  
+			setquest 7121;  
+		}		
+		close;
+	} else if (job_novice_q == 8) {
+		mes "<B>[ Chocolat ]</B>";
+		mes "Here, talk to these guys standing behind me.";
+		mes "Start with the [Kafra] Employee behind me.";
+		close;
+	} else if (job_novice_q == 9) {
+		mes "<B>[ Chocolat ]</B>";
+		mes "You've learned a lot about Kafra service huh?";
+		mes "From now on, you can use the Kafra Service.";
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "During the Training Process, if you want to go straight to the town, you can use the Kafra Service to go there.";
+		mes "But, once you leave the Training Center, you can never come back here.";
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "Next is the Kafra's rival, [Cool Event Corp.] Staff!";
+		mes "[Cool Event Corp.] Staff specialize in events.";
+		mes "Well, why don't you talk to him yourself?";
+		close;
+	} else if (job_novice_q == 10) {
+		mes "<B>[ Chocolat ]</B>";
+		mes "After [Kafra] and [Cool Event Corp.], are the Information [Guide]'s.";
+		mes "They can seem insignificant but they can help you greatly when the time comes.";
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "I've brought the Information Guide from the City of Prontera.";
+		mes "Ask him what he actually does in town.";
+		close;
+	} else if (job_novice_q == 11) {
+		mes "<B>[ Chocolat ]</B>";
+		mes "How was the explanation of the Information [Guide]?";
+		mes "Last is about using [Inn]s.";
+		mes "There's an Inn located in each town.";
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "You can rest at Inns or Hotels for a small fee.";
+		mes "Your HP and SP will be recovered completely by resting there.";
+		mes "Can't hurt to use one, eh?";
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "Besides these guys, there's many merchants selling various kind of items, so go check them out.";
+		set job_novice_q,12;
+		completequest 7121;
+		getexp 1800,20;
+		getitem 7059,20; //Cargo_Free_Ticket
+		getitem 7060,30; //Warp_Free_Ticket
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "You've completed all the quests I gave you.";
+		mes "As the reward, I will give you Free Tickets for Kafra Storage and Teleport Service.";
+		mes "They will come in handy.";
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "That's all for me.";
+		mes "Now, it's time for real combat!";
+		next;
+		mes "<B>[ Chocolat ]</B>";
+		mes "Real Combat Training will be given by Instructor Brade. You met him earlier.";
+		mes "I will send you to the Real Combat Training Field.";
+		close2;
+		setarray .@maps$[0], "tg_1-1", "tg_1-2", "tg_1-3", "tg_1-4";  
+		setarray .@x[0], 144, 149, 303, 304;
+		setarray .@y[0], 131, 333, 302, 82;
+		//debugmes "Array size: " + getarraysize(.@maps$);
+		if (getarraysize(.@maps$) > 0) {  
+			set .@index, rand(getarraysize(.@maps$));  
+			//debugmes "Index: " + .@index;  
+		} else {  
+			//debugmes "Error: Array is empty!";
+			end;
+		}
+		set .@map$, .@maps$[.@index];  
+		set .@spawn_x, .@x[.@index];  
+		set .@spawn_y, .@y[.@index];  
+		  
+		savepoint .@map$, 164, 209;  
+		warp .@map$, .@spawn_x, .@spawn_y;
+		end;
+	} else {
+		mes "<B>[ Chocolat ]</B>";
+		mes "Are you lost?";
+		next;
+		switch(select("No, just looking around:Yes, send me to the Combat Training Field")) {
+		case 1:
+			mes "<B>[ Chocolat ]</B>";
+			mes "Okay, come back to me if";
+			mes "you need me to redirect you.";
+			close;
+		case 2:
+			mes "<B>[ Chocolat ]</B>";
+			mes "I will send you to the Real Combat Training Field.";
+			close2;
+			setarray .@maps$[0], "tg_1-1", "tg_1-2", "tg_1-3", "tg_1-4";  
+			setarray .@x[0], 144, 149, 303, 304;
+			setarray .@y[0], 131, 333, 302, 82;
+			//debugmes "Array size: " + getarraysize(.@maps$);
+			if (getarraysize(.@maps$) > 0) {  
+				set .@index, rand(getarraysize(.@maps$));  
+				//debugmes "Index: " + .@index;  
+			} else {  
+				//debugmes "Error: Array is empty!";
+				end;
+			}
+			set .@map$, .@maps$[.@index];  
+			set .@spawn_x, .@x[.@index];  
+			set .@spawn_y, .@y[.@index];  
+			  
+			savepoint .@map$, 164, 209;  
+			warp .@map$, .@spawn_x, .@spawn_y;  
+			end;
+		}
+	}
+}
+tg_1-1,148,234,5	duplicate(NvChocolat)	Chocolat#nv1	4W_KID
+tg_1-2,148,234,5	duplicate(NvChocolat)	Chocolat#nv2	4W_KID
+tg_1-3,148,234,5	duplicate(NvChocolat)	Chocolat#nv3	4W_KID
+tg_1-4,148,234,5	duplicate(NvChocolat)	Chocolat#nv4	4W_KID

@@ -1,0 +1,107 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 2.5
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//= 2.5 Separated and improved Jinha [Louis T Steinhil]
+//============================================================
+-	script	Jinha#newbe03::NvJinha	HIDDEN_NPC,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q < 5) {
+		mes "<B>[ Jinha ]</B>";
+		mes "What can I help you with?";
+		mes "Hmm? You haven't followed the curriculum correctly.";
+		next;
+		mes "<B>[ Jinha ]</B>";
+		mes "You have to see Instructor Brade first before me.";
+		close2;
+	} else if (job_novice_q == 5) {
+		if (getskilllv("NV_FIRSTAID") > 0) {
+			mes "<B>[ Jinha ]</B>";
+			mes "Hello!";
+			mes "I am responsible for teaching you the [First Aid] skill.";
+			mes "Instructor Brade asked you to learn it right?.";
+			next;
+			mes "<B>[ Jinha ]</B>";
+			mes "Wow... ...it's amazing!";
+			mes "You already know the First Aid Skill.";
+			mes "There doesn't seem to be anything for me to teach you.";
+			next;
+			mes "<B>[ Jinha ]</B>";
+			mes "Great. Was your instructor from the previous management Cecil?";
+			mes "Well, you have learned First Aid, I can confirm that.";
+			next;
+			mes "<B>[ Jinha ]</B>";
+			mes "Well, you can directly go to the next step of the course.";
+			mes "Go back to Instructor Brade.";
+			set job_novice_q,6;
+			close;
+		} else {
+			mes "<B>[ Jinha ]</B>";
+			mes "Hello!";
+			mes "How can I help you?";
+			next;
+			select("I want to learn to use the [First Aid] Skill.");
+			mes "<B>[ Jinha ]</B>";
+			mes "That's right.";
+			mes "First Aid is the skill used to convert SP into HP when you are in danger.";
+			next;
+			mes "<B>[ Jinha ]</B>";
+			mes "It's recovery amount is small.";
+			mes "Still, it will help you not to faint from a critical hit.";
+			specialeffect2 EF_BEGINSPELL6;
+			specialeffect2 EF_SPELLBREAKER;
+			next;
+			mes "<B>[ Jinha ]</B>";
+			mes "You can open the Skill Window by pressing the ^4d4dffskill^000000 button in the Basic Window.";
+			mes "Hot Key is ^4d4dffALT + S^000000.";
+			mes "Why don't you try the skill?";
+			skill "NV_FIRSTAID",1,SKILL_PERM;
+			set skill_nov,3; // Has future uses - do not remove! [Euphy]
+			set job_novice_q,6;
+			next;
+			mes "<B>[ Jinha ]</B>";
+			mes "Good, now you know how to use the First Aid Skill, you have to move on to the next step.";
+			mes "Go back to Instructor Brade and show him what you've learned here.";
+			close;
+		}
+	} else if (job_novice_q == 6) {
+		mes "<B>[ Jinha ]</B>";
+		mes "Didn't you learn the First Aid Skill already?";
+		mes "Have it checked by Instructor Brade.";
+		close;
+	} else {
+		mes "<B>[ Jinha ]</B>";
+		mes "What can I do for you?";
+		mes "Next course will be continued in the West Room.";
+		mes "Go on into the west room.";
+		close;
+	}
+}
+tg_1-1,142,175,5	duplicate(NvJinha)	Jinha#nv1	59
+tg_1-2,142,175,5	duplicate(NvJinha)	Jinha#nv2	59
+tg_1-3,142,175,5	duplicate(NvJinha)	Jinha#nv3	59
+tg_1-4,142,175,5	duplicate(NvJinha)	Jinha#nv4	59

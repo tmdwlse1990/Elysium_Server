@@ -13,7 +13,7 @@
 //= 1.1 Aligned coordinates with @go.
 //============================================================
 
--	script	Healer	-1,{
+-	script	Healer	HIDDEN_NPC,{
 
 	.@Price = 1000;	// Zeny required for heal
 	.@Buffs = 1;	// Also buff players? (1: yes / 0: no)
@@ -95,3 +95,4 @@ ecl_in01,45,60,4	duplicate(Healer)	Healer#ecl	HIDDEN_NPC
 malangdo,132,114,6	duplicate(Healer)	Healer#mal	HIDDEN_NPC
 malaya,227,204,6	duplicate(Healer)	Healer#ma	HIDDEN_NPC
 mora,55,152,4	duplicate(Healer)	Healer#mora	HIDDEN_NPC
+

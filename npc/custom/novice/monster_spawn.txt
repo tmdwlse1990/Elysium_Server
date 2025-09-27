@@ -1,0 +1,320 @@
+//===== rAthena Script =======================================
+//= Cryptura Academy Monster Spawn Script
+//===== By: ==================================================
+//= Louis T Steinhil
+//===== Current Version: =====================================
+//= 1.0
+//===== Compatible With: =====================================
+//= rAthena Project
+//===== Additional Comments: =================================
+//= 1.0 First version.
+//============================================================
+
+//==================================================
+// tg_1-1 - Training Grounds
+//==================================================
+tg_1-1,0,0	monster	Poring	1002,110,5000
+tg_1-1,0,0	monster	Lunatic	1063,100,5000
+tg_1-1,0,0	monster	Fabre	1007,100,5000
+tg_1-1,0,0	monster	Little Poring	2398,30,50000
+tg_1-1,0,0	monster	Poring	1002,110,5000
+tg_1-1,0,0	monster	Lunatic	1063,100,5000
+tg_1-1,0,0	monster	Fabre	1007,100,5000
+tg_1-1,0,0	monster	Little Poring	2398,30,50000
+tg_1-1,0,0	monster	Poring	1002,110,5000
+tg_1-1,0,0	monster	Lunatic	1063,100,5000
+tg_1-1,0,0	monster	Fabre	1007,100,5000
+tg_1-1,0,0	monster	Little Poring	2398,30,50000
+tg_1-1,0,0	monster	Poring	1002,110,5000
+tg_1-1,0,0	monster	Lunatic	1063,100,5000
+tg_1-1,0,0	monster	Fabre	1007,100,5000
+tg_1-1,0,0	monster	Little Poring	2398,30,50000
+tg_1-1,0,0	monster	Poring	1002,110,5000
+tg_1-1,0,0	monster	Lunatic	1063,100,5000
+tg_1-1,0,0	monster	Fabre	1007,100,5000
+tg_1-1,0,0	monster	Little Poring	2398,30,50000
+tg_1-1,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-1,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-1,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-1,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-1,0,0	monster	Dead Plankton	2404,10,50000
+tg_1-1,0,0	monster	Red Plant	1078,5,50000
+tg_1-1,0,0	monster	Green Plant	1080,5,50000
+tg_1-1,0,0	monster	Yellow Plant	1081,5,50000
+tg_1-1,0,0	monster	Blue Plant	1079,5,50000
+tg_1-1,0,0	monster	White Plant	1082,5,50000
+tg_1-1,0,0	monster	Zombie	1015,1,100000
+tg_1-1,0,0	monster	Zombie	1015,1,100000
+tg_1-1,0,0	monster	Weak Skeleton	2405,4,8000
+tg_1-1,0,0	monster	Roda Frog	1012,3,60000
+tg_1-1,0,0	monster	Roda Frog	1012,6,60000
+tg_1-1,0,0	monster	Spore	1014,3,20000
+tg_1-1,0,0	monster	Spore	1014,3,20000
+tg_1-1,0,0	monster	Roda Frog	1012,3,20000
+tg_1-1,0,0	monster	Roda Frog	1012,3,60000
+tg_1-1,0,0	monster	Dead Plankton	2404,5,60000
+tg_1-1,0,0	monster	Dead Plankton	2404,7,120000
+tg_1-1,0,0	monster	Spore	1014,4,60000
+tg_1-1,0,0	monster	Spore	1014,2,60000
+tg_1-1,0,0	monster	Weak Skeleton	2405,3,8000
+tg_1-1,0,0	monster	Weak Skeleton	2405,5,8000
+tg_1-1,0,0	monster	Zombie	1015,1,8000
+tg_1-1,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-1,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-1,0,0	monster	Weak Soldier Skeleton	2406,3,50000
+tg_1-1,0,0	monster	Weak Skeleton	2405,5,50000
+tg_1-1,0,0	monster	Red Plant	1078,5,50000
+tg_1-1,0,0	monster	Green Plant	1080,5,50000
+tg_1-1,0,0	monster	Yellow Plant	1081,5,50000
+tg_1-1,0,0	monster	Blue Plant	1079,5,50000
+tg_1-1,0,0	monster	White Plant	1082,5,50000
+tg_1-1,0,0	monster	Weak Skeleton	2405,7,30000
+tg_1-1,0,0	monster	Dead Plankton	2404,5,30000
+tg_1-1,0,0	monster	Weak Soldier Skeleton	2406,3,50000
+tg_1-1,0,0	monster	Weak Skeleton	2405,5,50000
+tg_1-1,0,0	monster	Zombie	1015,2,60000
+tg_1-1,0,0	monster	Dead Plankton	2404,4,60000
+tg_1-1,0,0	monster	Weak Skeleton	2405,10,60000
+tg_1-1,0,0	monster	Weak Soldier Skeleton	2406,5,60000
+tg_1-1,0,0	monster	Weak Skeleton	2405,5,60000
+tg_1-1,0,0	monster	Weak Soldier Skeleton	2406,3,60000
+tg_1-1,0,0	monster	Zombie	1015,3,60000
+tg_1-1,0,0	monster	Weak Skeleton	2405,5,30000
+tg_1-1,0,0	monster	Dead Plankton	2404,7,30000
+tg_1-1,0,0	monster	Zombie	1015,3,120000
+tg_1-1,0,0	monster	Weak Soldier Skeleton	2406,2,50000
+tg_1-1,0,0	monster	Weak Soldier Skeleton	2406,5,120000
+tg_1-1,0,0	monster	Weak Skeleton	2405,7,200000
+tg_1-1,0,0	monster	Dead Plankton	2404,4,60000
+tg_1-1,0,0	monster	Little Poring	2398,30,50000
+//==================================================
+// tg_1-2 - Training Grounds
+//==================================================
+tg_1-2,0,0	monster	Poring	1002,110,5000
+tg_1-2,0,0	monster	Lunatic	1063,100,5000
+tg_1-2,0,0	monster	Fabre	1007,100,5000
+tg_1-2,0,0	monster	Little Poring	2398,30,50000
+tg_1-2,0,0	monster	Poring	1002,110,5000
+tg_1-2,0,0	monster	Lunatic	1063,100,5000
+tg_1-2,0,0	monster	Fabre	1007,100,5000
+tg_1-2,0,0	monster	Little Poring	2398,30,50000
+tg_1-2,0,0	monster	Poring	1002,110,5000
+tg_1-2,0,0	monster	Lunatic	1063,100,5000
+tg_1-2,0,0	monster	Fabre	1007,100,5000
+tg_1-2,0,0	monster	Little Poring	2398,30,50000
+tg_1-2,0,0	monster	Poring	1002,110,5000
+tg_1-2,0,0	monster	Lunatic	1063,100,5000
+tg_1-2,0,0	monster	Fabre	1007,100,5000
+tg_1-2,0,0	monster	Little Poring	2398,30,50000
+tg_1-2,0,0	monster	Poring	1002,110,5000
+tg_1-2,0,0	monster	Lunatic	1063,100,5000
+tg_1-2,0,0	monster	Fabre	1007,100,5000
+tg_1-2,0,0	monster	Little Poring	2398,30,50000
+tg_1-2,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-2,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-2,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-2,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-2,0,0	monster	Dead Plankton	2404,10,50000
+tg_1-2,0,0	monster	Red Plant	1078,5,50000
+tg_1-2,0,0	monster	Green Plant	1080,5,50000
+tg_1-2,0,0	monster	Yellow Plant	1081,5,50000
+tg_1-2,0,0	monster	Blue Plant	1079,5,50000
+tg_1-2,0,0	monster	White Plant	1082,5,50000
+tg_1-2,0,0	monster	Zombie	1015,1,100000
+tg_1-2,0,0	monster	Zombie	1015,1,100000
+tg_1-2,0,0	monster	Weak Skeleton	2405,4,8000
+tg_1-2,0,0	monster	Roda Frog	1012,3,60000
+tg_1-2,0,0	monster	Roda Frog	1012,6,60000
+tg_1-2,0,0	monster	Spore	1014,3,20000
+tg_1-2,0,0	monster	Spore	1014,3,20000
+tg_1-2,0,0	monster	Roda Frog	1012,3,20000
+tg_1-2,0,0	monster	Roda Frog	1012,3,60000
+tg_1-2,0,0	monster	Dead Plankton	2404,5,60000
+tg_1-2,0,0	monster	Dead Plankton	2404,7,120000
+tg_1-2,0,0	monster	Spore	1014,4,60000
+tg_1-2,0,0	monster	Spore	1014,2,60000
+tg_1-2,0,0	monster	Weak Skeleton	2405,3,8000
+tg_1-2,0,0	monster	Weak Skeleton	2405,5,8000
+tg_1-2,0,0	monster	Zombie	1015,1,8000
+tg_1-2,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-2,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-2,0,0	monster	Weak Soldier Skeleton	2406,3,50000
+tg_1-2,0,0	monster	Weak Skeleton	2405,5,50000
+tg_1-2,0,0	monster	Red Plant	1078,5,50000
+tg_1-2,0,0	monster	Green Plant	1080,5,50000
+tg_1-2,0,0	monster	Yellow Plant	1081,5,50000
+tg_1-2,0,0	monster	Blue Plant	1079,5,50000
+tg_1-2,0,0	monster	White Plant	1082,5,50000
+tg_1-2,0,0	monster	Weak Skeleton	2405,7,30000
+tg_1-2,0,0	monster	Dead Plankton	2404,5,30000
+tg_1-2,0,0	monster	Weak Soldier Skeleton	2406,3,50000
+tg_1-2,0,0	monster	Weak Skeleton	2405,5,50000
+tg_1-2,0,0	monster	Zombie	1015,2,60000
+tg_1-2,0,0	monster	Dead Plankton	2404,4,60000
+tg_1-2,0,0	monster	Weak Skeleton	2405,10,60000
+tg_1-2,0,0	monster	Weak Soldier Skeleton	2406,5,60000
+tg_1-2,0,0	monster	Weak Skeleton	2405,5,60000
+tg_1-2,0,0	monster	Weak Soldier Skeleton	2406,3,60000
+tg_1-2,0,0	monster	Zombie	1015,3,60000
+tg_1-2,0,0	monster	Weak Skeleton	2405,5,30000
+tg_1-2,0,0	monster	Dead Plankton	2404,7,30000
+tg_1-2,0,0	monster	Zombie	1015,3,120000
+tg_1-2,0,0	monster	Weak Soldier Skeleton	2406,2,50000
+tg_1-2,0,0	monster	Weak Soldier Skeleton	2406,5,120000
+tg_1-2,0,0	monster	Weak Skeleton	2405,7,200000
+tg_1-2,0,0	monster	Dead Plankton	2404,4,60000
+tg_1-2,0,0	monster	Little Poring	2398,30,50000
+//==================================================
+// tg_1-3 - Training Grounds
+//==================================================
+tg_1-3,0,0	monster	Poring	1002,110,5000
+tg_1-3,0,0	monster	Lunatic	1063,100,5000
+tg_1-3,0,0	monster	Fabre	1007,100,5000
+tg_1-3,0,0	monster	Little Poring	2398,30,50000
+tg_1-3,0,0	monster	Poring	1002,110,5000
+tg_1-3,0,0	monster	Lunatic	1063,100,5000
+tg_1-3,0,0	monster	Fabre	1007,100,5000
+tg_1-3,0,0	monster	Little Poring	2398,30,50000
+tg_1-3,0,0	monster	Poring	1002,110,5000
+tg_1-3,0,0	monster	Lunatic	1063,100,5000
+tg_1-3,0,0	monster	Fabre	1007,100,5000
+tg_1-3,0,0	monster	Little Poring	2398,30,50000
+tg_1-3,0,0	monster	Poring	1002,110,5000
+tg_1-3,0,0	monster	Lunatic	1063,100,5000
+tg_1-3,0,0	monster	Fabre	1007,100,5000
+tg_1-3,0,0	monster	Little Poring	2398,30,50000
+tg_1-3,0,0	monster	Poring	1002,110,5000
+tg_1-3,0,0	monster	Lunatic	1063,100,5000
+tg_1-3,0,0	monster	Fabre	1007,100,5000
+tg_1-3,0,0	monster	Little Poring	2398,30,50000
+tg_1-3,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-3,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-3,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-3,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-3,0,0	monster	Dead Plankton	2404,10,50000
+tg_1-3,0,0	monster	Red Plant	1078,5,50000
+tg_1-3,0,0	monster	Green Plant	1080,5,50000
+tg_1-3,0,0	monster	Yellow Plant	1081,5,50000
+tg_1-3,0,0	monster	Blue Plant	1079,5,50000
+tg_1-3,0,0	monster	White Plant	1082,5,50000
+tg_1-3,0,0	monster	Zombie	1015,1,100000
+tg_1-3,0,0	monster	Zombie	1015,1,100000
+tg_1-3,0,0	monster	Weak Skeleton	2405,4,8000
+tg_1-3,0,0	monster	Roda Frog	1012,3,60000
+tg_1-3,0,0	monster	Roda Frog	1012,6,60000
+tg_1-3,0,0	monster	Spore	1014,3,20000
+tg_1-3,0,0	monster	Spore	1014,3,20000
+tg_1-3,0,0	monster	Roda Frog	1012,3,20000
+tg_1-3,0,0	monster	Roda Frog	1012,3,60000
+tg_1-3,0,0	monster	Dead Plankton	2404,5,60000
+tg_1-3,0,0	monster	Dead Plankton	2404,7,120000
+tg_1-3,0,0	monster	Spore	1014,4,60000
+tg_1-3,0,0	monster	Spore	1014,2,60000
+tg_1-3,0,0	monster	Weak Skeleton	2405,3,8000
+tg_1-3,0,0	monster	Weak Skeleton	2405,5,8000
+tg_1-3,0,0	monster	Zombie	1015,1,8000
+tg_1-3,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-3,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-3,0,0	monster	Weak Soldier Skeleton	2406,3,50000
+tg_1-3,0,0	monster	Weak Skeleton	2405,5,50000
+tg_1-3,0,0	monster	Red Plant	1078,5,50000
+tg_1-3,0,0	monster	Green Plant	1080,5,50000
+tg_1-3,0,0	monster	Yellow Plant	1081,5,50000
+tg_1-3,0,0	monster	Blue Plant	1079,5,50000
+tg_1-3,0,0	monster	White Plant	1082,5,50000
+tg_1-3,0,0	monster	Weak Skeleton	2405,7,30000
+tg_1-3,0,0	monster	Dead Plankton	2404,5,30000
+tg_1-3,0,0	monster	Weak Soldier Skeleton	2406,3,50000
+tg_1-3,0,0	monster	Weak Skeleton	2405,5,50000
+tg_1-3,0,0	monster	Zombie	1015,2,60000
+tg_1-3,0,0	monster	Dead Plankton	2404,4,60000
+tg_1-3,0,0	monster	Weak Skeleton	2405,10,60000
+tg_1-3,0,0	monster	Weak Soldier Skeleton	2406,5,60000
+tg_1-3,0,0	monster	Weak Skeleton	2405,5,60000
+tg_1-3,0,0	monster	Weak Soldier Skeleton	2406,3,60000
+tg_1-3,0,0	monster	Zombie	1015,3,60000
+tg_1-3,0,0	monster	Weak Skeleton	2405,5,30000
+tg_1-3,0,0	monster	Dead Plankton	2404,7,30000
+tg_1-3,0,0	monster	Zombie	1015,3,120000
+tg_1-3,0,0	monster	Weak Soldier Skeleton	2406,2,50000
+tg_1-3,0,0	monster	Weak Soldier Skeleton	2406,5,120000
+tg_1-3,0,0	monster	Weak Skeleton	2405,7,200000
+tg_1-3,0,0	monster	Dead Plankton	2404,4,60000
+tg_1-3,0,0	monster	Little Poring	2398,30,50000
+//==================================================
+// tg_1-4 - Training Grounds
+//==================================================
+tg_1-4,0,0	monster	Poring	1002,110,5000
+tg_1-4,0,0	monster	Lunatic	1063,100,5000
+tg_1-4,0,0	monster	Fabre	1007,100,5000
+tg_1-4,0,0	monster	Little Poring	2398,30,50000
+tg_1-4,0,0	monster	Poring	1002,110,5000
+tg_1-4,0,0	monster	Lunatic	1063,100,5000
+tg_1-4,0,0	monster	Fabre	1007,100,5000
+tg_1-4,0,0	monster	Little Poring	2398,30,50000
+tg_1-4,0,0	monster	Poring	1002,110,5000
+tg_1-4,0,0	monster	Lunatic	1063,100,5000
+tg_1-4,0,0	monster	Fabre	1007,100,5000
+tg_1-4,0,0	monster	Little Poring	2398,30,50000
+tg_1-4,0,0	monster	Poring	1002,110,5000
+tg_1-4,0,0	monster	Lunatic	1063,100,5000
+tg_1-4,0,0	monster	Fabre	1007,100,5000
+tg_1-4,0,0	monster	Little Poring	2398,30,50000
+tg_1-4,0,0	monster	Poring	1002,110,5000
+tg_1-4,0,0	monster	Lunatic	1063,100,5000
+tg_1-4,0,0	monster	Fabre	1007,100,5000
+tg_1-4,0,0	monster	Little Poring	2398,30,50000
+tg_1-4,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-4,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-4,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-4,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-4,0,0	monster	Dead Plankton	2404,10,50000
+tg_1-4,0,0	monster	Red Plant	1078,5,50000
+tg_1-4,0,0	monster	Green Plant	1080,5,50000
+tg_1-4,0,0	monster	Yellow Plant	1081,5,50000
+tg_1-4,0,0	monster	Blue Plant	1079,5,50000
+tg_1-4,0,0	monster	White Plant	1082,5,50000
+tg_1-4,0,0	monster	Zombie	1015,1,100000
+tg_1-4,0,0	monster	Zombie	1015,1,100000
+tg_1-4,0,0	monster	Weak Skeleton	2405,4,8000
+tg_1-4,0,0	monster	Roda Frog	1012,3,60000
+tg_1-4,0,0	monster	Roda Frog	1012,6,60000
+tg_1-4,0,0	monster	Spore	1014,3,20000
+tg_1-4,0,0	monster	Spore	1014,3,20000
+tg_1-4,0,0	monster	Roda Frog	1012,3,20000
+tg_1-4,0,0	monster	Roda Frog	1012,3,60000
+tg_1-4,0,0	monster	Dead Plankton	2404,5,60000
+tg_1-4,0,0	monster	Dead Plankton	2404,7,120000
+tg_1-4,0,0	monster	Spore	1014,4,60000
+tg_1-4,0,0	monster	Spore	1014,2,60000
+tg_1-4,0,0	monster	Weak Skeleton	2405,3,8000
+tg_1-4,0,0	monster	Weak Skeleton	2405,5,8000
+tg_1-4,0,0	monster	Zombie	1015,1,8000
+tg_1-4,0,0	monster	Red Mushroom	1085,10,50000
+tg_1-4,0,0	monster	Black Mushroom	1084,10,50000
+tg_1-4,0,0	monster	Weak Soldier Skeleton	2406,3,50000
+tg_1-4,0,0	monster	Weak Skeleton	2405,5,50000
+tg_1-4,0,0	monster	Red Plant	1078,5,50000
+tg_1-4,0,0	monster	Green Plant	1080,5,50000
+tg_1-4,0,0	monster	Yellow Plant	1081,5,50000
+tg_1-4,0,0	monster	Blue Plant	1079,5,50000
+tg_1-4,0,0	monster	White Plant	1082,5,50000
+tg_1-4,0,0	monster	Weak Skeleton	2405,7,30000
+tg_1-4,0,0	monster	Dead Plankton	2404,5,30000
+tg_1-4,0,0	monster	Weak Soldier Skeleton	2406,3,50000
+tg_1-4,0,0	monster	Weak Skeleton	2405,5,50000
+tg_1-4,0,0	monster	Zombie	1015,2,60000
+tg_1-4,0,0	monster	Dead Plankton	2404,4,60000
+tg_1-4,0,0	monster	Weak Skeleton	2405,10,60000
+tg_1-4,0,0	monster	Weak Soldier Skeleton	2406,5,60000
+tg_1-4,0,0	monster	Weak Skeleton	2405,5,60000
+tg_1-4,0,0	monster	Weak Soldier Skeleton	2406,3,60000
+tg_1-4,0,0	monster	Zombie	1015,3,60000
+tg_1-4,0,0	monster	Weak Skeleton	2405,5,30000
+tg_1-4,0,0	monster	Dead Plankton	2404,7,30000
+tg_1-4,0,0	monster	Zombie	1015,3,120000
+tg_1-4,0,0	monster	Weak Soldier Skeleton	2406,2,50000
+tg_1-4,0,0	monster	Weak Soldier Skeleton	2406,5,120000
+tg_1-4,0,0	monster	Weak Skeleton	2405,7,200000
+tg_1-4,0,0	monster	Dead Plankton	2404,4,60000
+tg_1-4,0,0	monster	Little Poring	2398,30,50000

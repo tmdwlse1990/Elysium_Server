@@ -1,0 +1,232 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 2.5
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//= 2.5 Separated and improved Sprakki [Louis T Steinhil]
+//============================================================
+-	script	Sprakki#newbe01::NvSprakkiA	HIDDEN_NPC,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q == 0) {
+		mes "<B>[ Sprakki ]</B>";
+		mes "Hello there! Welcome to the World of Ragnarok Online. My name is Sprakki and I'm in charge of giving you basic gameplay tips.";
+		mes "Click on the [Next] button or press [Enter] to continue.";
+		next;
+		mes "<B>[ Sprakki ]</B>";
+		mes "First you need to learn the very basics of controlling your character.";
+		mes "All the basic ^4d4dffmoves, selection of items, and attacks^000000 use the ^4d4dff left click of the mouse^000000.";
+		next;
+		cutin "tutorial01",1;
+		mes "-! Info !-";
+		mes "Click on the ground to move the character.";
+		mes "Attacking monsters and conversations with the people of this world can be done by simply clicking on them.";
+		next;
+		cutin "",255;
+		mes "<B>[ Sprakki ]</B>";
+		mes "First off, try moving around.";
+		mes "Do you see that wooden bridge to the right?";
+		next;
+		mes "<B>[ Sprakki ]</B>";
+		mes "Walk over that bridge and there's a castle used as the Training Center.";
+		mes "I will be waiting for you inside of that Castle. Please come to the castle by yourself.";
+		set job_novice_q,1;  
+		if (checkquest(7117) == -1) {  
+			setquest 7117;  
+		}
+		next;
+		cutin "tutorial02",1;
+		mes "-! Info !-";
+		mes "You've received a quest from Sprakki.";
+		mes "You can check the contents of the quest in the Quest Info Window.";
+		next;
+		mes "<B>[ Sprakki ]</B>";
+		mes "I will wait inside the Training Center across the bridge.";
+		next;
+		mes "-! Info !-";
+		mes "You can open the Quest Info Window by pressing the ^4d4dffAlt + U^000000 keys at the same time.";
+		next;
+		cutin "",255;
+		mes "<B>[ Sprakki ]</B>";
+		mes "Have you checked the Quest Info Window?";
+		mes "I'll be waiting in the castle across the bridge.";
+		close2;
+		cutin "",255;
+		end;
+	} else if (job_novice_q == 1) {
+		mes "<B>[ Sprakki ]</B>";
+		mes "I will be waiting for you across the Bridge to the east.";
+		close;
+	} else {
+		mes "<B>[ Sprakki ]</B>";
+		mes "Are you lost?";
+		mes "Have you gone beyond the bridge to the east?";
+		mes "I will guide you further after we meet in the Training Center.";
+		close;
+	}
+}
+
+tg_1-1,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv1a	4_F_01
+tg_1-2,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv2a	4_F_01
+tg_1-3,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv3a	4_F_01
+tg_1-4,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv4a	4_F_01
+
+-	script	Sprakki#newbe05::NvSprakkiB	-1,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q == 0) {	
+		mes "<B>[ Sprakki ]</B>";
+		mes "Hello there! Welcome to the World of Ragnarok Online.";
+		mes "My name is Sprakki and I'm in charge of giving you basic gameplay tips.";
+		mes "Click on the [Next] button or press [Enter] key to continue.";
+		next;
+		mes "<B>[ Sprakki ]</B>";
+		mes "First you need to learn the very basics of controlling your character.";
+		mes "All the basic ^4d4dffmoves, selection of items, and attacks^000000 use the ^4d4dff left click of the mouse^000000.";
+		next;
+		cutin "tutorial01",3;
+		mes "-! Info !-";
+		mes "Click on the ground to move the character.";
+		mes "Attacking monsters and conversations with the people of this world can be done by simply clicking on them.";
+		next;
+		cutin "",255;
+		mes "<B>[ Sprakki ]</B>";
+		mes "Well then, I will give you a quest to talk to me.";
+		mes "After the conversation is over, talk to me again by left-clicking on me.";
+		set job_novice_q,1;
+		if (checkquest(7117) == -1) {  
+			setquest 7117;  
+		}
+		next;
+		cutin "tutorial02",3;
+		mes "-! Info !-";
+		mes "You've received a quest from Sprakki.";
+		mes "You can check the contents of the quest in the Quest Info Window by pressing the ^4d4dffAlt + U^000000 keys at the same time.";
+		next;
+		cutin "",255;
+		mes "<B>[ Sprakki ]</B>";
+		mes "Have you checked the Quest Info Window?";
+		mes "Well, talk to me again.";
+		close;
+	} else if (job_novice_q < 3) {
+		if (job_novice_q == 1) {
+			mes "<B>[ Sprakki ]</B>";
+			mes "Great!";
+			mes "Now you know how to move and talk to others, right?";
+			set job_novice_q,2;
+			getexp 600,5;
+			completequest 7117;
+			next;
+		}
+		mes "<B>[ Sprakki ]</B>";
+		mes "The Training Center is prepared for novices just like you.";
+		mes "You are going to be trained to get used to the basics of the Game.";
+		next;
+		mes "<B>[ Sprakki ]</B>";
+		mes "Of course, this Training Process is optional, if you want to go straight to town, that's also fine.";
+		mes "But, you will miss all the advantages you can get in the Training Center.";
+		next;
+		switch(select("Begin Training.:Start the game right away.")) {
+		case 1:
+			mes "<B>[ Sprakki ]</B>";
+			mes "I will guide you to the Novice Training Center.";
+			mes "Inside, Instructor 'Brade' will be waiting to speak to you.";
+			next;
+			mes "<B>[ Sprakki ]</B>";
+			mes "Instructor 'Brade' will help you afterwards.";
+			mes "Please, Go see him.";
+			if (checkquest(7118) == -1) {  
+				setquest 7118;  
+			}
+			next;
+			mes "^4d4dff- You received a quest 'Novice Training Ground -1' from Sprakki.";
+			mes "Please check the Quest Info Window. -^000000";
+			close2;
+			savepoint strnpcinfo(4),100,100,1,1;
+			warp strnpcinfo(4),100,100;
+			end;
+		case 2:
+			set nov_1st_cos,0;
+			set nov_2nd_cos,0;
+			set nov_3_swordman,0;
+			set nov_3_archer,0;
+			set nov_3_thief,0;
+			set nov_3_magician,0;
+			set nov_3_acolyte,0;
+			set nov_3_merchant,0;
+			mes "<B>[ Sprakki ]</B>";
+			mes "Ok, You want to start right away.";
+			mes "Which Town do you want to start at?";
+			next;
+			set .@select, select("Prontera:Morocc:Geffen:Payon:Alberta:Izlude");
+			mes "<B>[ Sprakki ]</B>";
+			mes "I see.";
+			mes "Go ahead and grow stronger! Look toward a brighter future ahead of you.";
+			callfunc "F_NvErase";
+			close2;
+			switch(.@select) {
+			case 1:
+				savepoint "prontera",273,354,1,1;
+				warp "prontera",273,354;
+				break;
+			case 2:
+				savepoint "morocc",160,94,1,1;
+				warp "morocc",160,94;
+				break;
+			case 3:
+				savepoint "geffen",120,100,1,1;
+				warp "geffen",120,100;
+				break;
+			case 4:
+				savepoint "payon",70,100,1,1;
+				warp "payon",70,100;
+				break;
+			case 5:
+				savepoint "alberta",116,57,1,1;
+				warp "alberta",116,57;
+				break;
+			case 6: // Old coordinates: (94,103)
+				savepoint "izlude",128,98,1,1;
+				warp "izlude",128,98;
+				break;
+			}
+			end;
+		}
+	} else {
+		mes "<B>[ Sprakki ]</B>";
+		mes "These are the Novice Training Grounds.";
+		mes "I will guide you to the Novice Training Center.";
+		close2;
+		savepoint strnpcinfo(4),100,100,1,1;
+		warp strnpcinfo(4),100,100;
+		end;
+	}
+}
+
+tg_1-1,119,198,3	duplicate(NvSprakkiB)	Sprakki#nv1b	4_F_01
+tg_1-2,119,198,3	duplicate(NvSprakkiB)	Sprakki#nv2b	4_F_01
+tg_1-3,119,198,3	duplicate(NvSprakkiB)	Sprakki#nv3b	4_F_01
+tg_1-4,119,198,3	duplicate(NvSprakkiB)	Sprakki#nv4b	4_F_01

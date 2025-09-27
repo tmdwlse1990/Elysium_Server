@@ -1,0 +1,83 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 2.5
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//= 2.5 Separated and improved Guide [Louis T Steinhil]
+//============================================================
+-	script	Guide::NvGuide	HIDDEN_NPC,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q < 10) {
+		mes "<B>[ Guide ]</B>";
+		mes "It ain't my turn yet.";
+		mes "Listen to Chocolat.";
+		close;
+	} else if (job_novice_q == 10) {
+		mes "<B>[ Guide ]</B>";
+		mes "Guides are in each town to guide you to useful places.";
+		mes "Ask us where you want to go and we'll mark your mini maps with a ^4d4dff+^000000.";
+		mes "Don't hesitate to ask us questions.";
+		next;
+		mes "<B>[ Guide ]</B>";
+		mes "We all don't look the same in every town but our roles are the same.";
+		mes "Take note of this whenever you go to a new town.";
+		next;
+		mes "<B>[ Guide ]</B>";
+		mes "If you want to go to your first town, you can ask the Kafra Employee to the left.";
+		mes "You can move there with the Teleport Service.";
+		set job_novice_q,11;
+		close;
+	} else {
+		mes "<B>[ Guide ]</B>";
+		mes "What can I help you with?";
+		mes "Need me to explain what I do again?";
+		next;
+		switch(select("Yes, I need an explanation.:Nope.")) {
+		case 1:
+			mes "<B>[ Guide ]</B>";
+			mes "Guides are in each town to guide you to useful places in each town.";
+			mes "Ask us where you want to go and we'll mark your mini maps with a ^4d4dff+^000000.";
+			mes "Don't hesitate to ask us questions.";
+			next;
+			mes "<B>[ Guide ]</B>";
+			mes "We all don't look the same in every town but our roles are the same.";
+			mes "Take note of this whenever you go to a new town.";
+			next;
+			mes "<B>[ Guide ]</B>";
+			mes "If you want to go to your first town, you can ask the Kafra Employee to the left.";
+			mes "You can move there with the Teleport Service.";
+			close;
+		case 2:
+			mes "<B>[ Guide ]</B>";
+			mes "Ok well talk to Chocolat if you're done talking with us.";
+			close;
+		}
+	}
+}
+tg_1-1,149,237,5	duplicate(NvGuide)	Guide#nv1	8W_SOLDIER
+tg_1-2,149,237,5	duplicate(NvGuide)	Guide#nv2	8W_SOLDIER
+tg_1-3,149,237,5	duplicate(NvGuide)	Guide#nv3	8W_SOLDIER
+tg_1-4,149,237,5	duplicate(NvGuide)	Guide#nv4	8W_SOLDIER

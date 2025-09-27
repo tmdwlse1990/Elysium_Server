@@ -1,0 +1,596 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 2.5
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//= 2.5 Separated and improved Brade [Louis T Steinhil]
+//============================================================
+-	script	Brade#newbe02::NvBradeA	HIDDEN_NPC,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q < 2) {
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Hello there! Welcome to the World of Ragnarok Online.";
+		mes "You have participated on the previous Training Grounds.";
+		mes "The Training Grounds have now come under new management.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "I guess we will just have to start your training all over again.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "My name is Instructor Brade and I'm in charge of giving you basic gameplay tips.";
+		mes "Click on the [Next] button or press [Enter] to continue.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "First you need to learn the very basics of controlling your character.";
+		mes "All the basic ^4d4dff moves, selection of items, and attacks^000000 use the ^4d4dff left click of the mouse^000000.";
+		next;
+		cutin "tutorial01",1;
+		mes "-! Info !-";
+		mes "Click on the ground to move the character.";
+		mes "Attacking monsters and conversations with the people of this world can be done by simply clicking on them.";
+		next;
+		cutin "",255;
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "First off, try moving around.";
+		mes "After moving around, talk to me again.";
+		set nov_1st_cos,0;
+		set nov_2nd_cos,0;
+		set nov_3_swordman,0;
+		set nov_3_archer,0;
+		set nov_3_thief,0;
+		set nov_3_magician,0;
+		set nov_3_acolyte,0;
+		set nov_3_merchant,0;
+		set treasure_alb,0;
+		set job_novice_q,2;
+		if (checkquest(7118) == -1) {  
+			setquest 7118;  
+		}		
+		next;
+		cutin "tutorial02",1;
+		mes "-! Info !-";
+		mes "You've received a quest from Instructor Brade.";
+		mes "You can check the contents of the quest in the Quest Info Window.";
+		next;
+		mes "-! Info !-";
+		mes "You can open the Quest Info Window by pressing the ^4d4dffAlt + U^000000keys at the same time.";
+		next;
+		cutin "",255;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Have you checked the Quest Info Window?";
+		mes "Well, talk to me again.";
+		close;
+	} else if (job_novice_q < 4) {
+		if (job_novice_q == 2) {
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Great.";
+			mes "You've completed the given quest successfully, so I will reward you with experience points.";
+			set job_novice_q,3;
+			getexp 900,10;
+			completequest 7118;
+			next;
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Experience Points you've earned from hunting or finishing quests can be checked by tracking the EXP Bar, located at upper-left side of the display.";
+			next;
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Sigh... I will just talk roughly.";
+			mes "...I just can't get used to 'politeness' you know.";
+			mes "Don't look at me like that!";
+			next;
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Ok look alive you maggot.";
+			mes "Next up is items and equipment.";
+			next;
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "First, take these.";
+			mes "These are very basic equipments and recovery potions.";
+		} else {
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Uh... Where were we? Oh right, let's continue.";
+			mes "It's about items and equipments.";
+			next;
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Take these.";
+			mes "Basic equipments and recovery potions.";
+		}
+		set job_novice_q,4;
+		getitem 2352,1; //Novice_Plate
+		getitem 2510,1; //Novice_Hood
+		getitem 2414,1; //Novice_Boots
+		getitem 5055,1; //Novice_Egg_Cap
+		getitem 1243,1; //Novice_Knife
+		getitem 2112,1; //Novice_Guard
+		getitem 569,300; //Novice_Potion
+		if (checkquest(7119) == -1) {  
+			setquest 7119;  
+		}		
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "In the upper left Basic Info. Window, press the 'Item' icon to open the Item Window.";
+		mes "The item window is divided into...";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "3 sections: consumable items, equipment and other items.";
+		mes "If you want to use or equip items, just double-click on the item or drag them into the Equipment Window.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "You can see detailed info. of each item by right-clicking on the item.";
+		mes "Detailed information of the item will pop up.";
+		next;
+		cutin "tutorial04",1;
+		mes "!- Info -!";
+		mes "Right-click on an item to see detailed information about it.";
+		next;
+		mes "!- Info -!";
+		mes "Right-click on other players to show the Community Menu and you can join a party, or request trade with a player etc.";
+		next;
+		cutin "",255;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Why don't you equip the items I gave you earlier?";
+		mes "^4d4dffDouble-Click^000000 on the item you want to equip. Let us continue after you are done gearing up.";
+		next;
+		cutin "tutorial03",1;
+		mes "!- Info -!";
+		mes "Items can be easily equipped or used by simply double-clicking on them.";
+		mes "The Hot Key to open the Inventory Window is ALT + E.";
+		next;
+		mes "!- Info -!";
+		mes "To check on the items that are currently equipped, use the Hot Key ALT + Q.";
+		mes "Or, drag the item on to the item slot you want the item to be equipped.";
+		next;
+		mes "!- Info -!";
+		mes "Equip all of the equipment given by Instructor Brade.";
+		close2;
+		cutin "",255;
+		end;
+	} else if (job_novice_q == 4) {
+		if (isequipped(2414) + isequipped(2352) + isequipped(2510) + isequipped(2112) + isequipped(1243) < 4) {
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Try to put on at least 4 of the equipments I gave you.";
+			mes "Put those shoes on, wear those clothes, and arm yourself with that weapon you maggot.";
+			close;
+		}
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "You are all set.";
+		mes "You are coming along just fine.";
+		set job_novice_q,5;
+		getexp 1200,15;
+		getitem 12323,50; //N_Fly_Wing
+		getitem 12324,20; //N_Butterfly_Wing
+		completequest 7119;
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Here's some Fly Wings and Butterfly Wings as a reward.";
+		mes "You don't need these in the Training Ground, but they will come in handy later.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Next, are Hot Keys.";
+		mes "Press the ^4d4dffF12 key^000000 on your keyboard.";
+		mes "A box with 9 slots will pop up.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Drag on the right corner of the Hot Key Window and you will be able to see the other pages of the Hot Key.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "The F1 to F9 keys are the designated hotkeys.";
+		mes "Just drag a skill or an item onto the Hot Key Window and press a corresponding key to use them right away.";
+		next;
+		cutin "tutorial05",1;
+		mes "!- Info -!";
+		mes "You can register a skill or an item to the Hot Key Window by just dragging them onto the Hot Key Slot.";
+		next;
+		mes "!- Info -!";
+		mes "Registered Skills or Items can be used/equipped by just pressing the corresponding key.";
+		next;
+		mes "!- Info -!";
+		mes "You can customize the Hot Key to use any keys you please as the Hot Key by changing the Shortcut configuration in the options menu.";
+		next;
+		mes "!- Info -!";
+		mes "Register skills and items that you use often so that you can use them easily.";
+		next;
+		cutin "",255;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "The last part is how to use Skills.";
+		mes "But before that, you need to learn something first.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Talk to Jinha and learn the ^4d4dff[First Aid]^000000 skill from him.";
+		if (checkquest(7120) == -1) {  
+			setquest 7120;  
+		}		
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Your lesson is after that.";
+		mes "Go find Jinha and learn the [First Aid] Skill. Then come back to me.";
+		close;
+	} else if (job_novice_q == 5) {
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Somewhere in this room, there's someone named ^4d4dffJinha^000000.";
+		mes "Find Jinha and learn the ^4d4dff[First Aid]^000000 skill from him.";
+		close;
+	} else if (job_novice_q == 6) {
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Now you've learned the [First Aid] Skill.";
+		mes "Just as I told you before, by registering the First Aid Skill onto the Hot Key Window, you can use the skill fast and easy.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "And that's it, that's all I can teach you.";
+		mes "You see that exit to the west?";
+		mes "Move on to the next room and there will be another instructor waiting for you.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "We will be seeing each other soon enough.";
+		mes "But for now, go to the room to the west and get more information.";
+		next;
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "You've come along fine this far.";
+		mes "This is not much, but take this as a reward.";
+		set job_novice_q,7;
+		getitem 2393,1; //N_Adventurer's_Suit
+		completequest 7120;
+		close;
+	} else if (job_novice_q == 7) {
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Next step of the Training is done.";
+		mes "If you are lost, I can send you there.";
+		next;
+		switch(select("I can get there by myself.:Please, send me to Chocolat.")) {
+		case 1:
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Good. That's the attitude you must have.";
+			mes "You can't just lean on others to help you.";
+			mes "Now, go ahead.";
+			close;
+		case 2:
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Oh well.";
+			mes "I think it's better than seeing you lost and wandering about.";
+			mes "Hahahaha...";
+			close2;
+			setarray .@maps$[0], "tg_1-1", "tg_1-2", "tg_1-3", "tg_1-4";  
+			setarray .@x[0], 149, 149, 149, 149;
+			setarray .@y[0], 231, 231, 231, 231;
+			//debugmes "Array size: " + getarraysize(.@maps$);
+			if (getarraysize(.@maps$) > 0) {  
+				set .@index, rand(getarraysize(.@maps$));  
+				//debugmes "Index: " + .@index;  
+			} else {  
+				//debugmes "Error: Array is empty!";
+				end;
+			}
+			set .@map$, .@maps$[.@index];  
+			set .@spawn_x, .@x[.@index];  
+			set .@spawn_y, .@y[.@index];  
+			  
+			savepoint .@map$, 164, 209;  
+			warp .@map$, .@spawn_x, .@spawn_y;
+			end;
+		}
+	} else {
+		mes "<B>[ Instructor Brade ]</B>";
+		mes "Aren't you done with the courses here?";
+		mes "Or are you just lost?";
+		next;
+		switch(select("Send me to the Combat Training Ground.:I want to go to town.")) {
+		case 1:
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Sure.";
+			mes "Be careful not to be lost again.";
+			close2;
+			setarray .@maps$[0], "tg_1-1", "tg_1-2", "tg_1-3", "tg_1-4";  
+			setarray .@x[0], 144, 149, 303, 304;
+			setarray .@y[0], 131, 333, 302, 82;
+			//debugmes "Array size: " + getarraysize(.@maps$);
+			if (getarraysize(.@maps$) > 0) {  
+				set .@index, rand(getarraysize(.@maps$));  
+				//debugmes "Index: " + .@index;  
+			} else {  
+				//debugmes "Error: Array is empty!";
+				end;
+			}
+			set .@map$, .@maps$[.@index];  
+			set .@spawn_x, .@x[.@index];  
+			set .@spawn_y, .@y[.@index];  
+			  
+			savepoint .@map$, 164, 209;  
+			warp .@map$, .@spawn_x, .@spawn_y;
+			end;
+		case 2:
+			mes "<B>[ Instructor Brade ]</B>";
+			mes "Town... Eh?";
+			mes "In that case, I will send you to where the Kafra Employee is at.";
+			mes "Use ^4d4dffKafra's Warp Service^000000 to go to town.";
+			close2;
+			warp strnpcinfo(4),41,172;
+			end;
+		}
+	}
+}
+
+tg_1-1,143,178,5	duplicate(NvBradeA)	Brade#nv1a	4_M_JOB_KNIGHT1
+tg_1-2,143,178,5	duplicate(NvBradeA)	Brade#nv2a	4_M_JOB_KNIGHT1
+tg_1-3,143,178,5	duplicate(NvBradeA)	Brade#nv3a	4_M_JOB_KNIGHT1
+tg_1-4,143,178,5	duplicate(NvBradeA)	Brade#nv4a	4_M_JOB_KNIGHT1
+
+-	script	Brade#newbe04::NvBradeB	HIDDEN_NPC,{
+	if (job_novice_q < 12) {
+		if (job_novice_q < 2) {
+			mes "[Brade]";
+			mes "You have participated on the previous Training Grounds.";
+			mes "The Training Grounds have now come under new management.";
+			next;
+			mes "[Brade]";
+			mes "Do you want to do the basic course,";
+			mes "or do you just want to go through from here?";
+			next;
+			switch(select("Send me to Basic Training.:I'll start from here.")) {
+			case 1:
+				mes "[Brade]";
+				mes "Ok. I'll send you to the basic course.";
+				close2;
+				setarray .@maps$[0], "tg_1-1", "tg_1-2", "tg_1-3", "tg_1-4";  
+				setarray .@x[0], 144, 149, 303, 304;
+				setarray .@y[0], 131, 333, 302, 82;
+				//debugmes "Array size: " + getarraysize(.@maps$);
+				if (getarraysize(.@maps$) > 0) {  
+					set .@index, rand(getarraysize(.@maps$));  
+					//debugmes "Index: " + .@index;  
+				} else {  
+					//debugmes "Error: Array is empty!";
+					end;
+				}
+				set .@map$, .@maps$[.@index];  
+				set .@spawn_x, .@x[.@index];  
+				set .@spawn_y, .@y[.@index];  
+				  
+				savepoint .@map$, 164, 209;  
+				warp .@map$, .@spawn_x, .@spawn_y;
+				end;
+			case 2:
+				mes "[Brade]";
+				mes "Then we will start your training.";
+				mes "I'll write down the registration form.";
+				set job_novice_q,12;
+				close;
+			}
+		} else {
+			mes "[Brade]";
+			mes "I think you came back from theory training course,";
+			mes "can I send you back to there or do you just want to go through from here?";
+			next;
+			switch(select("Send me back to Chocolat.:I'll start from here.")) {
+			case 1:
+				mes "[Brade]";
+				mes "Ok. I'll send you to Chocolat.";
+				close2;
+				setarray .@maps$[0], "tg_1-1", "tg_1-2", "tg_1-3", "tg_1-4";  
+				setarray .@x[0], 149, 149, 149, 149;
+				setarray .@y[0], 231, 231, 231, 231;
+				//debugmes "Array size: " + getarraysize(.@maps$);
+				if (getarraysize(.@maps$) > 0) {  
+					set .@index, rand(getarraysize(.@maps$));  
+					//debugmes "Index: " + .@index;  
+				} else {  
+					//debugmes "Error: Array is empty!";
+					end;
+				}
+				set .@map$, .@maps$[.@index];  
+				set .@spawn_x, .@x[.@index];  
+				set .@spawn_y, .@y[.@index];  
+				  
+				savepoint .@map$, 164, 209;  
+				warp .@map$, .@spawn_x, .@spawn_y;
+				end;
+			case 2:
+				mes "[Brade]";
+				mes "Then we will start your training.";
+				mes "I'll write down the registration form.";
+				set job_novice_q,12;
+				close;
+			}
+		}
+	} else if (job_novice_q == 12) {
+		mes "[Brade]";
+		mes "Welcome.";
+		mes "Now this is real practice.";
+		mes "We can practice real battle here.";
+		next;
+		mes "[Brade]";
+		mes "As I explained the first time, we can click on the monsters.";
+		mes "One attack per click.";
+		next;
+		mes "[Brade]";
+		mes "For convenience,";
+		mes "^4d4dffIf you hold down the Ctrl key,^000000 while attacking, you will automatically attack.";
+		next;
+		mes "[Brade]";
+		mes "You can also set this mode before battle by typing ^4d4dff[ /nc ]^000000.";
+		next;
+		mes "[Brade]";
+		mes "Then, let's go Poring hunting.";
+		mes "Please hunt 'Poring's on Level 1 of the training grounds.";
+		set job_novice_q,13;
+		setquest 7122;
+		getitem 569,100; //Novice_Potion
+		savepoint strnpcinfo(4),96,21,1,1;
+		next;
+		mes "^4d4dff- You've received a quest from Instructor Brade.";
+		mes "Please check the quest information window. -^000000";
+		close2;
+	} else if (job_novice_q < 15) {
+		if (job_novice_q == 13) {
+			if (checkquest(7122,HUNTING) == 2) {
+				mes "[Brade]";
+				mes "You can see it is not so hard, huh?";
+				mes "Nice job.";
+				set job_novice_q,14;
+				getitem 13040,1; //N_Cutter
+				getexp 3000,30;
+				completequest 7122;
+				next;
+			} else {
+				mes "[Brade]";
+				mes "Kill enough Porings.";
+				mes "Porings are easy to deal with, so cheer up.";
+				mes "Try again.";
+				npcskill "AL_HEAL",11,99,60;
+				close;
+			}
+		}
+		mes "[Brade]";
+		mes "Now all of the courses are almost done.";
+		mes "You are a Novice, and you can't get any jobs yet.";
+		next;
+		mes "[Brade]";
+		mes "If you acquire all of basic skills with JOB Level 10, you can change your job.";
+		next;
+		mes "[Brade]";
+		mes "The first Job classes are defined into 6 classes.";
+		next;
+		mes "[Brade]";
+		mes "The 6 basic jobs are";
+		mes "Swordman, Thief,";
+		mes "Acolyte, Mage,";
+		mes "Archer and Merchant.";
+		next;
+		mes "[Brade]";
+		mes "Let's experience the basic 6 jobs, Swordman, Thief, Acolyte, Mage, Archer and Merchant and see what those jobs can do.";
+		next;
+		mes "[Brade]";
+		mes "Behind me, there are people dispatched from each of the basic Job Guilds.";
+		mes "These people will give you instruction manuals that allow you to experience some limited skills of each job.";
+		next;
+		mes "[Brade]";
+		mes "Equip a manual of the job which you want to experience, and you will be able to use some basic skills of that corresponding job.";
+		mes "Try those skills and decide which job to choose.";
+		set job_novice_q,15;
+		close;
+	} else {
+		mes "[Brade]";
+		mes "Have you tried the skills in the Manuals?";
+		mes "If you want to hear information about each job, talk to the people dispatched by the Job Guilds.";
+		next;
+		mes "[Brade]";
+		mes "I think you've learned enough, do you want to quit and go to your first town?";
+		next;
+		switch(select("I will stay little longer.:I want to quit and go to the town.")) {
+		case 1:
+			mes "[Brade]";
+			mes "It's ok to stay here and practice until you think you are ready.";
+			next;
+			mes "[Brade]";
+			mes "Try using the job manuals to find out the characteristics of each job's skills.";
+			mes "I will restore your HP and SP... Keep it up.";
+			npcskill "AL_HEAL",11,99,60;
+			percentheal 0,100;
+			close;
+		case 2:
+			mes "[Brade]";
+			mes "Looks like you are ready.";
+			mes "I guess you have made up your mind, huh?";
+			mes "Well, where do you want to go?";
+			next;
+			switch(select("Prontera:Morocc:Payon:Alberta:Geffen:Cancel")) {
+			case 1:
+				mes "[Brade]";
+				mes "Prontera, the Capital city of the Rune-Midgarts Kingdom.";
+				mes "Take care and god bless you on your journey.";
+				callfunc "F_NvErase";
+				close2;
+				savepoint "prontera",117,72,1,1;
+				warp "prontera",150,50;
+				end;
+			case 2:
+				mes "[Brade]";
+				mes "The Desert Town, Morocc...";
+				mes "There's lots of hidden stories within that town.";
+				mes "Take care.";
+				callfunc "F_NvErase";
+				close2;
+				savepoint "morocc",150,99,1,1;
+				warp "morocc",155,110;
+				end;
+			case 3:
+				mes "[Brade]";
+				mes "You've selected Payon.";
+				mes "God bless you.";
+				callfunc "F_NvErase";
+				close2;
+				savepoint "payon",70,100,1,1;
+				warp "payon",166,67;
+				end;
+			case 4:
+				mes "[Brade]";
+				mes "Alberta, the Port City.";
+				mes "It's the main hub of all trades.";
+				mes "If you want to meet with other civilizations, you have to go to Alberta first.";
+				mes "Well then, god bless you on your soul.";
+				callfunc "F_NvErase";
+				close2;
+				savepoint "alberta",30,232,1,1;
+				warp "alberta",114,58;
+				end;
+			case 5:
+				mes "[Brade]";
+				mes "Geffen, the City of Magic.";
+				mes "Geffen Tower in the middle of the city is nice.";
+				mes "I will send you near the Geffen fountain.";
+				mes "May Goddess Freya bless you.";
+				callfunc "F_NvErase";
+				close2;
+				savepoint "geffen",119,37,1,1;
+				warp "geffen",122,65;
+				end;
+			case 6:
+				mes "[Brade]";
+				mes "Yeah... Think with prudence.";
+				mes "...Meet up with the people from each guild.";
+				close;
+			}
+		}
+	}
+}
+
+tg_1-1,300,307,4	duplicate(NvBradeB)	Brade#nv1b	4_M_JOB_KNIGHT1
+tg_1-2,300,307,4	duplicate(NvBradeB)	Brade#nv2b	4_M_JOB_KNIGHT1
+tg_1-3,300,307,4	duplicate(NvBradeB)	Brade#nv3b	4_M_JOB_KNIGHT1
+tg_1-4,300,307,4	duplicate(NvBradeB)	Brade#nv4b	4_M_JOB_KNIGHT1
+
+tg_1-1,149,333,4	duplicate(NvBradeB)	Brade#nv5b	4_M_JOB_KNIGHT1
+tg_1-2,149,333,4	duplicate(NvBradeB)	Brade#nv6b	4_M_JOB_KNIGHT1
+tg_1-3,149,333,4	duplicate(NvBradeB)	Brade#nv7b	4_M_JOB_KNIGHT1
+tg_1-4,149,333,4	duplicate(NvBradeB)	Brade#nv8b	4_M_JOB_KNIGHT1
+
+tg_1-1,146,138,4	duplicate(NvBradeB)	Brade#nv9b	4_M_JOB_KNIGHT1
+tg_1-2,146,138,4	duplicate(NvBradeB)	Brade#nv10b	4_M_JOB_KNIGHT1
+tg_1-3,146,138,4	duplicate(NvBradeB)	Brade#nv11b	4_M_JOB_KNIGHT1
+tg_1-4,146,138,4	duplicate(NvBradeB)	Brade#nv12b	4_M_JOB_KNIGHT1
+
+tg_1-1,301,89,4	duplicate(NvBradeB)	Brade#nv13b	4_M_JOB_KNIGHT1
+tg_1-2,301,89,4	duplicate(NvBradeB)	Brade#nv14b	4_M_JOB_KNIGHT1
+tg_1-3,301,89,4	duplicate(NvBradeB)	Brade#nv15b	4_M_JOB_KNIGHT1
+tg_1-4,301,89,4	duplicate(NvBradeB)	Brade#nv16b	4_M_JOB_KNIGHT1
