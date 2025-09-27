@@ -1,0 +1,147 @@
+//===== eAthena Script =======================================
+//= New Warps for AMP
+//===== By: ==================================================
+//= w0wZukuBg
+//===== Current Version: =====================================
+//= 1.0
+//===== Compatible With: =====================================
+//= eAthena SVN
+//===== Description: =========================================
+//= New Warps for AMP
+//===== Additional Comments: =================================
+//= The NPC's were born. [w0wZukuBg]
+//============================================================
+
+//=======================================================
+// ein_fild
+//=======================================================
+
+ein_fild02,134,123,0	warp	newein01	1,1,ein_fild02,118,134
+ein_fild02,121,131,0	warp	newein02	1,1,ein_fild02,137,123
+
+ein_fild02,223,137,0	warp	newein03	1,1,ein_fild02,223,148
+ein_fild02,223,145,0	warp	newein04	1,1,ein_fild02,220,137
+
+ein_fild02,186,226,0	warp	newein05	1,1,ein_fild02,204,224
+ein_fild02,201,224,0	warp	newein06	1,1,ein_fild02,183,229
+
+ein_fild04,385,181,0	warp	newein07	1,1,ein_fild05,36,185
+ein_fild05,33,185,0	warp	newein08	1,1,ein_fild04,382,181
+ein_fild05,35,167,0	warp	newein09	1,1,ein_fild04,382,181
+
+ein_fild05,120,292,0	warp	newein10	1,1,ein_fild05,120,300
+ein_fild05,120,297,0	warp	newein11	1,1,ein_fild05,120,289
+
+ein_fild06,231,81,0	warp	newein12	1,1,ein_fild06,231,67
+ein_fild06,231,70,0	warp	newein13	1,1,ein_fild06,231,84
+
+ein_fild03,245,55,0	script	Lift-E02	139,2,2,{
+	OnTouch:
+	mes "Lift up?";
+	next;
+	if(select("Yes","Stay")==1)
+		warp "ein_fild03",201,41;
+	close;
+}
+
+ein_fild03,204,43,0	script	Lift-E01	139,2,2,{
+	OnTouch:
+	mes "Lift down?";
+	next;
+	if(select("Yes","Stay")==1)
+		warp "ein_fild03",248,53;
+	close;
+}
+
+//=======================================================
+// ra_fild
+//=======================================================
+
+ra_fild09,362,76,0	warp	newra01	1,1,lhz_fild01,15,79 
+lhz_fild01,12,79,0	warp	newra02	1,1,ra_fild09,359,76
+
+//=======================================================
+// ra_fild -> ein_fild
+//=======================================================
+
+ein_fild03,19,181,0	warp	newraein01	1,1,ra_fild06,374,223;
+ra_fild06,377,223,0	warp	newraein02	1,1,ein_fild03,22,181;
+
+//=======================================================
+// hu_fild
+//=======================================================
+
+hu_fild02,378,244,0	warp	newhu01	1,1,hu_fild03,22,253
+hu_fild03,19,253,0	warp	newhu02	1,1,hu_fild02,375,244
+
+hu_fild02,378,194,0	warp	newhu03	1,1,hu_fild03,22,205
+hu_fild03,19,205,0	warp	newhu04	1,1,hu_fild02,375,194
+
+hu_fild02,375,303,0	warp	newhu05	1,1,hu_fild03,22,308
+hu_fild03,19,308,0	warp	newhu06	1,1,hu_fild02,372,303
+
+hu_fild02,378,125,0	warp	newhu07	1,1,hu_fild03,22,129
+hu_fild03,19,129,0	warp	newhu08	1,1,hu_fild02,375,125
+
+//=======================================================
+// ve_fild
+//=======================================================
+
+ve_fild03,327,294,0	warp	newve01	1,1,ve_fild04,34,322
+ve_fild04,31,322,0	warp	newve02	1,1,ve_fild03,324,294
+
+ve_fild03,316,251,0	warp	newve03	1,1,ve_fild04,42,295
+ve_fild04,39,295,0	warp	newve04	1,1,ve_fild03,312,251
+
+//=======================================================
+// einbroch
+//=======================================================
+
+einbech,50,223,0	warp	neweinb01	1,1,einbech,50,230
+einbech,50,227,0	warp	neweinb02	1,1,einbech,50,220
+
+einbech,37,223,0	warp	neweinb03	1,1,einbech,37,230
+einbech,37,227,0	warp	neweinb04	1,1,einbech,37,220
+
+//=======================================================
+// veins
+//=======================================================
+
+veins,296,335,0	warp	newve05	1,1,veins,290,342
+veins,293,342,0	warp	newve06	1,1,veins,275,352
+veins,278,352,0	warp	newve07	1,1,veins,296,332
+
+//=======================================================
+// lighthalzen
+//=======================================================
+
+lighthalzen,241,163,0	warp	newlhzs01	1,1,lighthalzen,265,163
+lighthalzen,262,163,0	warp	newlhzs02	1,1,lighthalzen,238,163
+lighthalzen,282,327,0	warp	newlhzs03	1,1,lhz_fild01,278,19
+lhz_fild01,278,16,0	warp	newlhzs04	1,1,lighthalzen,282,324
+
+//=======================================================
+// juperos_
+//=======================================================
+
+juperos_01,96,220,0	warp	newjup01	1,1,juperos_01,152,183
+juperos_01,149,185,0	warp	newjup01-1	1,1,juperos_01,93,217
+
+//=======================================================
+// jawaii
+//=======================================================
+
+jawaii,138,182,4	script	Stairs#ja1	111,{
+	mes "[Stairs]";
+	mes "Want to go up or go down?";
+	next;
+	switch(select("Up","Down")) {
+		case 1:
+			warp "jawaii",136,183;
+			close;
+		case 2:
+			warp "jawaii",140,180;
+			close;
+		}
+	close;
+}
