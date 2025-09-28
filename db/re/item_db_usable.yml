@@ -80502,19 +80502,33 @@ Body:
       NoMail: true
       NoAuction: true
   - Id: 103501
-    AegisName: aegis_103501
+    AegisName: Jorscalp_Fly_Wing_1
     Name: Yorscalp 1st Floor Travel Scale
     Type: Usable
     Weight: 30
     Flags:
       BuyingStore: true
+    Script: |
+      if ( strcharinfo(3) != "jor_sklf1" ) {
+          specialeffect2 EF_FREEZING;
+          dispbottom "It seems that I can't use this one in this place."; // 기본 함수 사용
+      } else {
+          warp "jor_sklf1",0,0;
+      }
   - Id: 103502
-    AegisName: aegis_103502
+    AegisName: Jorscalp_Fly_Wing_2
     Name: Yorscalp 2nd Floor Travel Scale
     Type: Usable
     Weight: 30
     Flags:
       BuyingStore: true
+    Script: |
+      if ( strcharinfo(3) != "jor_sklf2" ){
+        specialeffect2 EF_FREEZING;
+        showscript "It seems that I can't use this one in this place.",getcharid(3),SELF;
+      } else {
+        warp "jor_sklf2",0,0;
+      }
   - Id: 103503
     AegisName: Yorscalp_Scroll_A
     Name: Yorscalp Upgrade
@@ -80529,7 +80543,7 @@ Body:
       NoMail: true
       NoAuction: true
     Script: |
-      item_reform();
+      item_reform(103503);
   - Id: 103505
     AegisName: Yorscalp_Refin_Hammer
     Name: +10 Yorscalp Equipment Refine Hammer
@@ -80555,12 +80569,16 @@ Body:
     Script: |
       getgroupitem(IG_YOR_CARD_P_BOX);
   - Id: 103523
-    AegisName: aegis_103523
+    AegisName: Corruped_Fruit
     Name: Encroached Fruit
     Type: Usable
     Weight: 30
+    Delay:
+      Duration: 3000
     Flags:
       BuyingStore: true
+    Script: |
+      percentheal 100,100;
   - Id: 103524
     AegisName: EP21_Costume_Box1
     Name: Costume Gift Box I
@@ -80594,11 +80612,12 @@ Body:
     Script: |
       getgroupitem(IG_EP21_COSTUME_BOX2);
   - Id: 103537
-    AegisName: aegis_103537
+    AegisName: Tan_Antiquity
     Name: Antiquity of Giant Snake (Encroached Tan Hard)
     Type: Usable
     Weight: 200
     Flags:
+      BuyingStore: true
       Container: true
       DropEffect: CLIENT
     Script: |

@@ -36153,7 +36153,7 @@ Body:
       bonus2 bMagicAddSize,Size_Large,10+3*(.@r_shoes/2);
   - Combos:
       - Combo:
-          - Jormun_Guardian_Card   # 300460
+          - Jormun_Guardian_Card  # 300460
           - E_Rgan_Healer_Card   # 300459
     Script: |
       bonus2 bMagicAtkEle,Ele_Ghost,15;
@@ -53093,7 +53093,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300585   # 300585
+          - Tris_Card   # 300585
           - Yorscalp_P_Circlet   # 400723
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53103,7 +53103,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300586   # 300586
+          - Tan_Card   # 300586
           - Yorscalp_P_Circlet   # 400723
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53113,7 +53113,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300587   # 300587
+          - W_Lugenburg_Card   # 300587
           - Yorscalp_P_Circlet   # 400723
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53123,7 +53123,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300588   # 300588
+          - R_Lugenburg_Card   # 300588
           - Yorscalp_M_Circlet   # 400724
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53134,7 +53134,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300589   # 300589
+          - Ivan_Card   # 300589
           - Yorscalp_P_Circlet   # 400723
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53144,7 +53144,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300590   # 300590
+          - Lalaila_Card   # 300590
           - Yorscalp_P_Circlet   # 400723
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53154,7 +53154,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300591   # 300591
+          - Richard_Card   # 300591
           - Yorscalp_P_Circlet   # 400723
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53164,7 +53164,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300592   # 300592
+          - Valdaris_Card   # 300592
           - Yorscalp_M_Circlet   # 400724
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53175,7 +53175,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300593   # 300593
+          - Aurelie_Card   # 300593
           - Yorscalp_M_Circlet   # 400724
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53187,7 +53187,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300594   # 300594
+          - Heine_Card   # 300594
           - Yorscalp_M_Circlet   # 400724
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53197,7 +53197,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300595   # 300595
+          - Epesto_Card   # 300595
           - Yorscalp_P_Circlet   # 400723
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53207,7 +53207,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300596   # 300596
+          - Maristella_Card   # 300596
           - Yorscalp_P_Circlet   # 400723
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53218,7 +53218,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300597   # 300597
+          - Yohan_Card   # 300597
           - Yorscalp_P_Circlet   # 400723
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53228,7 +53228,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300598   # 300598
+          - Gunter_Card   # 300598
           - Yorscalp_P_Circlet   # 400723
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53238,7 +53238,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300599   # 300599
+          - Galaxia_Card   # 300599
           - Yorscalp_M_Circlet   # 400724
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53248,7 +53248,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300600   # 300600
+          - Iana_Card   # 300600
           - Yorscalp_M_Circlet   # 400724
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53258,7 +53258,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300601   # 300601
+          - Lee_Card   # 300601
           - Yorscalp_M_Circlet   # 400724
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);
@@ -53268,7 +53268,7 @@ Body:
       }
   - Combos:
       - Combo:
-          - aegis_300602   # 300602
+          - Nadoyo_Card   # 300602
           - Yorscalp_M_Circlet   # 400724
     Script: |
       .@r = getequiprefinerycnt(EQI_HEAD_TOP);

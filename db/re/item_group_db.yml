@@ -116944,58 +116944,58 @@ Body:
         Algorithm: Random
         List:
           - Index: 0
-            Item: aegis_1001837
+            Item: Tris_Card_Fragment
             Rate: 556
           - Index: 1
-            Item: aegis_1001838
+            Item: Tan_Card_Fragment
             Rate: 556
           - Index: 2
-            Item: aegis_1001839
+            Item: W_Lugenburg_Card_Fragment
             Rate: 556
           - Index: 3
-            Item: aegis_1001840
+            Item: R_Lugenburg_Card_Fragment
             Rate: 556
           - Index: 4
-            Item: aegis_1001841
+            Item: Ivan_Card_Fragment
             Rate: 556
           - Index: 5
-            Item: aegis_1001842
+            Item: Lalaila_Card_Fragment
             Rate: 556
           - Index: 6
-            Item: aegis_1001843
+            Item: Richard_Card_Fragment
             Rate: 556
           - Index: 7
-            Item: aegis_1001844
+            Item: Valdaris_Card_Fragment
             Rate: 556
           - Index: 8
-            Item: aegis_1001845
+            Item: Aurelie_Card_Fragment
             Rate: 556
           - Index: 9
-            Item: aegis_1001846
+            Item: Heine_Card_Fragment
             Rate: 556
           - Index: 10
-            Item: aegis_1001847
+            Item: Epesto_Card_Fragment
             Rate: 555
           - Index: 11
-            Item: aegis_1001848
+            Item: Maristella_Card_Fragment
             Rate: 555
           - Index: 12
-            Item: aegis_1001849
+            Item: Yohan_Card_Fragment
             Rate: 555
           - Index: 13
-            Item: aegis_1001850
+            Item: Gunter_Card_Fragment
             Rate: 555
           - Index: 14
-            Item: aegis_1001851
+            Item: Galaxia_Card_Fragment
             Rate: 555
           - Index: 15
-            Item: aegis_1001852
+            Item: Iana_Card_Fragment
             Rate: 555
           - Index: 16
-            Item: aegis_1001853
+            Item: Lee_Card_Fragment
             Rate: 555
           - Index: 17
-            Item: aegis_1001854
+            Item: Nadoyo_Card_Fragment
             Rate: 555
   - Group: EP21_COSTUME_BOX1
     SubGroups:
@@ -117045,15 +117045,15 @@ Body:
             Rate: 1000
             Amount: 16
           - Index: 5
-            Item: aegis_103523
+            Item: Corruped_Fruit
             Rate: 50
             Amount: 3
           - Index: 6
-            Item: aegis_103523
+            Item: Corruped_Fruit
             Rate: 100
             Amount: 2
           - Index: 7
-            Item: aegis_103523
+            Item: Corruped_Fruit
             Rate: 200
           - Index: 8
             Item: Yorscalp_Serpent
@@ -117144,19 +117144,19 @@ Body:
             Rate: 100
             Amount: 42
           - Index: 30
-            Item: aegis_103501
+            Item: Jorscalp_Fly_Wing_1
             Rate: 150
             Amount: 100
           - Index: 31
-            Item: aegis_103501
+            Item: Jorscalp_Fly_Wing_1
             Rate: 100
             Amount: 200
           - Index: 32
-            Item: aegis_103502
+            Item: Jorscalp_Fly_Wing_2
             Rate: 150
             Amount: 100
           - Index: 33
-            Item: aegis_103502
+            Item: Jorscalp_Fly_Wing_2
             Rate: 100
             Amount: 200
           - Index: 34
