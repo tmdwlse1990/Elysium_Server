@@ -1440,7 +1440,7 @@ void atcommand_gspecificbonuses_sub(int fd, class map_session_data *sd) {
 			
 		if (sd->indexed_bonus.subele_script[ele] != 0) {    
 			std::string ele_name = get_element_name(ele);    
-			sprintf(output, "   -> Damage reduction against attack %s element: %s%s%%",     
+			sprintf(output, "   -> Damage reduction against %s element: %s%s%%",     
 					ele_name.c_str(), sd->indexed_bonus.subele_script[ele] > 0 ? "+" : "",     
 					rathena::util::insert_comma(sd->indexed_bonus.subele_script[ele]).c_str());    
 			clif_messagecolor(sd, sd->indexed_bonus.subele_script[ele] > 0 ? color_table[COLOR_WHITE] : color_table[COLOR_RED], output, false, SELF);    
