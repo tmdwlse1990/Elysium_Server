@@ -50,6 +50,7 @@ enum e_instance_notify : uint8;
 struct s_laphine_synthesis;
 struct s_laphine_upgrade;
 struct s_captcha_data;
+struct s_stall_data;
 enum e_macro_detect_status : uint8;
 enum e_macro_report_status : uint8;
 enum e_hom_state2 : uint8;
@@ -520,6 +521,7 @@ enum useskill_fail_cause : uint8_t
 	USESKILL_FAIL_SH_TEMPORARY_COMMUNION,
 	USESKILL_FAIL_MAP,
 	USESKILL_FAIL_NEED_SUMMON_SP,
+	USESKILL_FAIL_EXIST_STORE_ASSISTANT = 89,
 	USESKILL_FAIL_SAME_VEND,
 	USESKILL_FAIL_NEED_BULLETS,
 	USESKILL_FAIL_NEED_ARROWS,
@@ -677,6 +679,10 @@ enum e_clif_messages : uint16 {
 
 	// [Holy Water] must be equipped.
 	MSI_FAIL_NEED_EQUIPPED_GUN_GRANADE = 2561,
+
+	MSI_CANNOT_ACCESS_BY_WEIGHTOVER_80 = 2921,
+
+	MSI_STORE_ASSISTANT_REUTRN_DATE = 2947,
 
 	// [Grenade Launcher] weapon class must be equipped.
 	MSI_IMPOSSIBLE_CHANGE_GUILD_MASTER_IN_SIEGE_TIME = 2963,
@@ -1501,6 +1507,20 @@ void clif_summon_hp_bar(mob_data& md);
 // Laphine System
 void clif_laphine_synthesis_open( map_session_data *sd, std::shared_ptr<s_laphine_synthesis> synthesis );
 void clif_laphine_upgrade_open( map_session_data* sd, std::shared_ptr<s_laphine_upgrade> upgrade );
+
+void clif_stall_vending_open(map_session_data *sd);
+void clif_stall_buying_open(map_session_data *sd);
+void clif_buyingstall_entry(block_list* bl, uint32 stall_id, const char* message);
+void clif_parse_stall_buying_set( int32 fd, map_session_data* sd );
+void clif_parse_stall_vending_set( int32 fd, map_session_data* sd );
+void clif_stall_showunit(map_session_data *sd, s_stall_data *st);
+void clif_stall_ui_close(map_session_data *sd, int32 type, int32 reason);
+void clif_parse_stall_vending_cancel( int32 fd, map_session_data* sd );
+void clif_parse_stall_buying_cancel( int32 fd, map_session_data* sd );
+void clif_parse_stall_close( int32 fd, map_session_data* sd );
+void clif_showstallboard(block_list* bl, uint32 stall_id, const char* message);
+void clif_stall_vending_list(map_session_data *sd, s_stall_data *st);
+void clif_stall_buying_list(map_session_data *sd, s_stall_data *st);
 
 // Reputation System
 void clif_reputation_type( map_session_data& sd, int64 type, int64 points );

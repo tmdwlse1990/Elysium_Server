@@ -52,6 +52,7 @@
 #include "pet.hpp"
 #include "quest.hpp"
 #include "rune.hpp"
+#include "stall.hpp"
 #include "storage.hpp"
 #include "title.hpp"
 #include "trade.hpp"
@@ -90,6 +91,9 @@ char mob_skill2_table[32] = "mob_skill_db2";
 #endif
 char sales_table[32] = "sales";
 char vendings_table[32] = "vendings";
+char stalls_table[32] = "stalls";
+char stalls_vending_items_table[32] = "stalls_vending_items";
+char stalls_buying_items_table[32] = "stalls_buying_items";
 char vending_items_table[32] = "vending_items";
 char market_table[32] = "market";
 char partybookings_table[32] = "party_bookings";
@@ -281,7 +285,8 @@ void map_destroyblock( block_list* bl ){
 		case BL_ELEM:
 			reinterpret_cast<s_elemental_data*>( bl )->~s_elemental_data();
 			break;
-
+		case BL_STALL:
+			break;
 		default:
 			ShowError( "map_destroyblock: unknown type %d\n", bl->type );
 			break;
@@ -2382,6 +2387,14 @@ pet_data* map_id2pd(int32 id){
 s_elemental_data* map_id2ed(int32 id) {
 	block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_ELEM, bl);
+}
+
+s_stall_data* map_id2st(int32 id) {  
+    block_list* bl = map_id2bl(id);  
+    if (bl && bl->type == BL_STALL) {  
+        return reinterpret_cast<s_stall_data*>(bl);  
+    }  
+    return nullptr;  
 }
 
 chat_data* map_id2cd(int32 id){
@@ -5091,6 +5104,7 @@ void MapServer::finalize(){
 	do_final_collection();
 	do_final_emotions();
 	do_final_rune();	
+	do_final_stall();
 
 	map_db->destroy(map_db, map_db_final);
 
@@ -5471,6 +5485,7 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	do_init_collection();
 	do_init_emotions();	
 	do_init_rune();	
+	do_init_stall();
 
 	npc_event_do_oninit();	// Init npcs (OnInit)
 

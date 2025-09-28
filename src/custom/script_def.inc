@@ -52,3 +52,6 @@ BUILDIN_DEF(getreformrefinechange, "ss"),
 BUILDIN_DEF(getreformrandomoptiongroup, "ss"),
 BUILDIN_DEF(getreformclearslots, "ss"),  
 BUILDIN_DEF(getreformremoveenchantgrade, "ss"),
+
+// Stall System
+BUILDIN_DEF(open_stall,"si"),

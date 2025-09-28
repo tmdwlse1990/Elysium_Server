@@ -64,6 +64,7 @@
 #include "pc_groups.hpp"
 #include "pet.hpp"
 #include "quest.hpp"
+#include "stall.hpp"
 #include "storage.hpp"
 
 using namespace rathena;
