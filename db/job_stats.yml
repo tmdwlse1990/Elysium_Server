@@ -102,8 +102,8 @@ Footer:
   # Next, populate with experience information
   - Path: db/pre-re/job_exp.yml
     Mode: Prerenewal
-  - Path: db/re/job_exp.yml
-    Mode: Renewal
+#  - Path: db/re/job_exp.yml
+#    Mode: Renewal
 
   # Next, populate HP/SP/AP information
   - Path: db/pre-re/job_basepoints.yml
@@ -117,3 +117,4 @@ Footer:
 
   # Finally, import custom information
   - Path: db/import/job_stats.yml
+  - Path: db/import/job_exp.yml

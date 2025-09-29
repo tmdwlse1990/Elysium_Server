@@ -29,7 +29,7 @@
 /// Leave this line to enable renewal hit calculation algorithms  
 /// - Changes how HIT is calculated from stats  
 /// - Affects accuracy formulas in battle calculations  
-//#define RENEWAL_HIT  
+///#define RENEWAL_HIT  
   
 /// Renewal flee calculations    
 /// (disable by commenting the line)  
@@ -37,7 +37,7 @@
 /// Leave this line to enable renewal flee calculation algorithms  
 /// - Changes how FLEE is calculated from stats  
 /// - Affects evasion formulas in battle calculations  
-//#define RENEWAL_FLEE
+///#define RENEWAL_FLEE
 
 /// Renewal cast time
 /// (disable by commenting the line)
@@ -65,7 +65,7 @@
 ///
 /// Leave this line to enable renewal item exp rate algorithms
 /// While enabled a special modified based on the difference between the player and monster level is applied
-#define RENEWAL_EXP
+///#define RENEWAL_EXP
 
 /// Renewal level modifier on damage
 /// (disable by commenting the line)

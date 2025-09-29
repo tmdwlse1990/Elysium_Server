@@ -35,6 +35,6 @@ Footer:
   Imports:
   - Path: db/pre-re/statpoint.yml
     Mode: Prerenewal
-  - Path: db/re/statpoint.yml
-    Mode: Renewal
+#  - Path: db/re/statpoint.yml
+#    Mode: Renewal
   - Path: db/import/statpoint.yml
