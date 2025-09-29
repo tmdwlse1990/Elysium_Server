@@ -22,23 +22,26 @@
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
 pay_arche,41,136,3	script	Eden Member Karl#para05	904,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
 	// Check Eden Group membership and quest state  
 	if (para_suv01 < 13) {  
 		if (callfunc("F_HasEdenGroupMark")) {  
-			mes "[Karl]";  
+			mes "<B>[ Karl ]</B>";  
 			mes "Hey, how are you?";  
 			mes "Good to see you~";  
 			mes "Are you going inside?";  
 			close;  
 		}  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "Umm...?";  
 		mes "You are not the one I am waiting for.";  
 		next;  
 		switch(select("Quest Management:Just passing by:Leave")) {  
 			case 1: callsub S_QuestManagement; break;  
 			case 2:  
-				mes "[Karl]";  
+				mes "<B>[ Karl ]</B>";  
 				mes "Take care and stay safe out there!";  
 				break;  
 			case 3: break;  
@@ -72,43 +75,43 @@ pay_arche,41,136,3	script	Eden Member Karl#para05	904,{
   
 // Initial quest introduction  
 S_InitialQuest:  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "Hello?";  
 	mes "Since I got a report, I was waiting for you.";  
 	mes "You came here to join the training mission, right?";  
 	next;  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "Have you ever entered this cave before?";  
 	mes "I don't know if you already heard some stories in this village.";  
 	next;  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "There are many dead souls that change their appearance as if they are real people and make threatening remarks.";  
 	mes "It's too bad, isn't it?";  
 	next;  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "That's why we chose this place as step 2 of the battle training mission.";  
 	mes "This step is called 'Conquer Ghost Cave~'.";  
 	mes "Help people to enjoy their nights comfortably.";  
 	next;  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "There are many dangerous things there. Hmm...";  
 	mes "To you the 1st floor is enough.";  
 	next;  
 	switch(select("Accept the mission:Quest Help:Not ready yet")) {  
 		case 1:  
-			mes "[Karl]";  
+			mes "<B>[ Karl ]</B>";  
 			mes "Let's conquer the dangerous ghost cave...";  
 			mes "Kill the bone Skeletons in there.";  
 			next;  
-			mes "[Karl]";  
+			mes "<B>[ Karl ]</B>";  
 			mes "The bones are from Skeletons.";  
 			mes "Actually Skeletons or just normal bones are all the same but...";  
 			next;  
-			mes "[Karl]";  
+			mes "<B>[ Karl ]</B>";  
 			mes "Skeletons are one of the basic undead classes.";  
 			mes "Undead never die. Hunt 15 undead Skeletons.";  
 			next;  
-			mes "[Karl]";  
+			mes "<B>[ Karl ]</B>";  
 			mes "If you feel like you're in danger don't hesitate to just leave.";  
 			mes "You're not worried about getting hurt are you?";  
 			para_suv01 = 14;  
@@ -118,7 +121,7 @@ S_InitialQuest:
 			callsub S_QuestManagement;  
 			break;  
 		case 3:  
-			mes "[Karl]";  
+			mes "<B>[ Karl ]</B>";  
 			mes "Come back when you're ready for the ghost cave challenge.";  
 			close;  
 	}  
@@ -127,15 +130,15 @@ S_InitialQuest:
 // Skeleton hunting phase  
 S_SkeletonHunt:  
 	if (checkquest(7139,HUNTING) == 2) {  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "Did you get how the undead work?";  
 		mes "As you know undead never die so, blessing of live person is the same as curse to them.";  
 		next;  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "So... skills which can save people like Heal and Resurrection.";  
 		mes "Those things are really strong attacks to undead class.";  
 		next;  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "Anyway... that's it..."; 
 		mes "Let me reward you.";  
 		mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
@@ -148,11 +151,11 @@ S_SkeletonHunt:
 		mes "Next... I guess you already saw while you were killing Skeletons.";  
 		mes "Some green things are picking up all of the stuff dropped by the dead monsters.";  
 		next;  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "Do you know Porings? Maybe they are related to them.";  
 		mes "They look really bad, maybe they have been eating poison or something.";  
 		next;  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "Ok if you're ready go and kill those Poporings.";  
 		mes "You should hunt 10 of them.";  
 		next;  
@@ -161,12 +164,12 @@ S_SkeletonHunt:
 		close;  
 	}  
 	  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "Skeletons are basic undead.";  
 	mes "Use the Heal or Resurrection skill.";  
 	mes "If you can.";  
 	next;  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "Just in case I will recover all your energy.";  
 	mes "It's not the last step so be careful.";  
 	next;  
@@ -180,11 +183,11 @@ S_SkeletonHunt:
 // Poporing hunting phase  
 S_PoporingHunt:  
 	if (checkquest(7140,HUNTING) == 2) {  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "Did you get back what the Poporing stole?";  
 		mes "This cave is really deep and there are lots of precious things that they could have picked up.";  
 		next;  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "You did a really great job. Excellent.";  
 		mes "The 1st floor is safer now. Thanks for helping.";  
 		mes "Let me reward you.";  
@@ -195,10 +198,10 @@ S_PoporingHunt:
 		// Claim reward
 		getexp .base_exp[1], .job_exp[1];  
 		getitem .item_reward[1], .item_amount[1];  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "You've completed all of the training missions so go back to the headquarters and get approval from the flashy Rune Knight.";  
 		next;  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "You might get a new uniform.";  
 		mes "Haha. I will keep tabs on your progression.";  
 		para_suv01 = 16;  
@@ -206,11 +209,11 @@ S_PoporingHunt:
 		close;  
 	}  
 	  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "Poporings are stronger than you expect.";  
 	mes "If you treat them the same as a normal Poring it will get you in trouble.";  
 	next;  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "Just in case I will recover all your energy.";  
 	mes "It's the last step so be careful.";  
 	next;  
@@ -223,18 +226,18 @@ S_PoporingHunt:
   
 // Quest completion state  
 S_QuestComplete:  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "I already informed Boya at the Eden Group headquarters.";  
 	mes "If you go there he will give you a big welcome.";  
 	next;  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "You will get a new uniform, aren't you excited?";  
 	mes "Hahaha...";  
 	next;  
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Karl]";  
+			mes "<B>[ Karl ]</B>";  
 			mes "Keep up the good work with Eden Group!";  
 			break;  
 		case 3: break;  
@@ -243,7 +246,7 @@ S_QuestComplete:
   
 // Default dialog  
 S_DefaultDialog:  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "Killing undead?";  
 	mes "Do your best to make the world safer.";  
 	mes "It's one of the goals of the Eden Group.";  
@@ -251,7 +254,7 @@ S_DefaultDialog:
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Karl]";  
+			mes "<B>[ Karl ]</B>";  
 			mes "Keep up the good work with Eden Group!";  
 			break;  
 		case 3: break;  
@@ -267,7 +270,7 @@ S_HealPlayer:
   
 // Quest Management Functions  
 S_QuestManagement:  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "What do you need help with regarding your ghost cave training?";  
 	next;  
 	switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
@@ -279,7 +282,7 @@ S_QuestManagement:
 	return;  
   
 S_ViewCurrentQuest:  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "Your current ghost cave training progress:";  
 	mes " ";  
 	  
@@ -309,18 +312,18 @@ S_ViewCurrentQuest:
   
 S_AbandonQuest:  
 	if (para_suv01 < 13 || para_suv01 > 15) {  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "You don't have any active ghost cave training to abandon.";  
 		return;  
 	}  
 	  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "^FF0000Warning:^000000 Abandoning will only clear your current hunting progress!";  
 	mes "Are you sure you want to give up? The cave needs to be cleared!";  
 	next;  
 	  
 	if (select("Yes, abandon current hunt:No, continue training") == 2) {  
-		mes "[Karl]";  
+		mes "<B>[ Karl ]</B>";  
 		mes "Good choice! The undead won't defeat themselves!";  
 		return;  
 	}  
@@ -337,12 +340,12 @@ S_AbandonQuest:
 			break;  
 	}  
 	  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "Current hunt abandoned. You can restart this step anytime.";  
 	return;  
   
 S_QuestStatus:  
-	mes "[Karl]";  
+	mes "<B>[ Karl ]</B>";  
 	mes "Let me check your hunting progress...";  
 	mes " ";  
 	  

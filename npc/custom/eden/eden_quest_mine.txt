@@ -22,6 +22,9 @@
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
 spl_fild02,377,149,3	script	Dispatched Instructor#08	4_M_DST_MASTER,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
     switch(para_2nd01) {  
         case 25: callsub S_InitialQuestStart; break;  
         case 26: callsub S_PinguiculaHuntProgress; break;  
@@ -33,44 +36,44 @@ spl_fild02,377,149,3	script	Dispatched Instructor#08	4_M_DST_MASTER,{
     close;  
   
 S_InitialQuestStart:  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Oh cruel world...";  
     mes "...";  
     mes "Who are you?";  
     next;  
     if (select("Margaret sent me.", "Yeah I'm here...") == 1) {  
-        mes "[Mine]";  
+        mes "<B>[ Mine ]</B>";  
         mes "Eh? Who!";  
         mes "I see. Is it that time already?";  
         mes "This has been difficult.";  
         mes "I'm in a crisis here!";  
     }  
     else {  
-        mes "[Mine]";  
+        mes "<B>[ Mine ]</B>";  
         mes "Oh so you're not here by your own will eh?";  
         mes "So why even bother coming?";  
         next;  
-        mes "[Mine]";  
+        mes "<B>[ Mine ]</B>";  
         mes "You didn't want to be here right?";  
         mes "Margaret sent you instead of someone else I bet.";  
         mes "Whatever, anyway I'm in a crisis here!";  
     }  
     next;  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Ok I don't want to admit it but you gotta help me out here.";  
     next;  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Ok just because I was complaining doesn't mean they have to send me here!";  
     next;  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "I mean they've asked for too much of a simple person like myself.";  
     next;  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Ok here's the deal.";  
     mes "I'm supposed to hunt those Pinguiculas. Just 5 of 'em.";  
     mes "But you'll do that for me yeah?";  
     next;  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "I promise you I'll give you something good.";  
     mes "Thanks.";  
     para_2nd01 = 26;  
@@ -86,7 +89,7 @@ S_PinguiculaHuntProgress:
     return;  
   
 S_PinguiculaHuntComplete:  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Excellent!";  
     mes "Now I can go back to the camp and...";  
     mes "Let me reward you for helping me out of this mess.";  
@@ -97,10 +100,10 @@ S_PinguiculaHuntComplete:
     // Claim reward  
     getexp .base_exp[0], .job_exp[0];  
     getitem .item_reward[0], .item_amount[0];  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "I mean, can you tell Margaret that it's all done?";  
     next;  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Oh don't worry she won't mind. I'll just go back to doing what I was doing. Here's your reward.";  
     mes "The brother investigation is finally complete!";  
     para_2nd01 = 27;  
@@ -108,11 +111,11 @@ S_PinguiculaHuntComplete:
     return;  
   
 S_PinguiculaHuntReminder:  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Come on 5 Pinguicula.";  
     mes "Really how did you get here then?";  
     next;  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "You're not lying about being a real adventurer are you?";  
     next;  
     switch(select("Get healed:Quest Management:Continue hunting")) {  
@@ -123,20 +126,20 @@ S_PinguiculaHuntReminder:
     return;  
   
 S_TrainingComplete:  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Margaret gets everything she wants back at the camp.";  
     mes "Don't you worry, I'm going back soon.";  
     return;  
   
 S_PostTrainingChat:  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "How are your adventures going?";  
     mes "I'm finally done with this Pinguicula business.";  
     next;  
     switch(select("Quest Management:Just chatting:Leave")) {  
         case 1: callsub S_QuestManagement; break;  
         case 2:  
-            mes "[Mine]";  
+            mes "<B>[ Mine ]</B>";  
             mes "Take care in your future adventures!";  
             break;  
         case 3: break;  
@@ -144,7 +147,7 @@ S_PostTrainingChat:
     return;  
   
 S_DefaultGreeting:  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     if (para_2nd01 < 25) {  
         mes "Oh cruel world.";  
         mes "...";  
@@ -157,7 +160,7 @@ S_DefaultGreeting:
         switch(select("Quest Management:Just visiting:Leave")) {  
             case 1: callsub S_QuestManagement; break;  
             case 2:  
-                mes "[Mine]";  
+                mes "<B>[ Mine ]</B>";  
                 mes "Thanks for stopping by!";  
                 break;  
             case 3: break;  
@@ -166,7 +169,7 @@ S_DefaultGreeting:
     return;  
   
 S_HealPlayer:  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "-Mine reluctantly helps restore your strength.-";  
     npcskill "AL_HEAL",10,99,60;  
     percentheal 100,100;  
@@ -174,7 +177,7 @@ S_HealPlayer:
   
 // Quest Management Functions  
 S_QuestManagement:  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "What do you need help with regarding your Pinguicula hunting?";  
     next;  
     switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
@@ -186,7 +189,7 @@ S_QuestManagement:
     return;  
   
 S_ViewCurrentQuest:  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Your current brother investigation progress:";  
     mes " ";  
       
@@ -212,18 +215,18 @@ S_ViewCurrentQuest:
   
 S_AbandonQuest:  
     if (para_2nd01 < 25 || para_2nd01 > 26) {  
-        mes "[Mine]";  
+        mes "<B>[ Mine ]</B>";  
         mes "You don't have any active Pinguicula hunting to abandon.";  
         return;  
     }  
       
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "^FF0000Warning:^000000 Abandoning will reset your current progress!";  
     mes "Are you sure you want to give up? I really need your help here!";  
     next;  
       
     if (select("Yes, abandon current hunt:No, continue hunting") == 2) {  
-        mes "[Mine]";  
+        mes "<B>[ Mine ]</B>";  
         mes "Good choice! Those Pinguiculas won't defeat themselves!";  
         return;  
     }  
@@ -231,7 +234,7 @@ S_AbandonQuest:
     // Reset quest progression  
     switch(para_2nd01) {  
         case 25:  
-            mes "[Mine]";  
+            mes "<B>[ Mine ]</B>";  
             mes "You're already at the beginning of the investigation.";  
             return;  
         case 26:  
@@ -240,12 +243,12 @@ S_AbandonQuest:
             break;  
     }  
       
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Pinguicula hunting progress reset. You can restart anytime.";  
     return;  
   
 S_QuestStatus:  
-    mes "[Mine]";  
+    mes "<B>[ Mine ]</B>";  
     mes "Let me check your hunting progress...";  
     mes " ";  
       

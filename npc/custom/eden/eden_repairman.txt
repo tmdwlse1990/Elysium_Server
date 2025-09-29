@@ -1,0 +1,292 @@
+//===== rAthena Script =======================================
+//= Eden Group Quest - Quests NPCs
+//===== Description: =========================================
+//= Eden Group Headquarter NPCs.
+//===== Changelogs: ==========================================
+//= 1.0 First Version. [L0ne_W0lf]
+//= 1.1 Removed unencoded comments (Korean -> Gibberish)
+//=     Readded the GM helper NPC, commented out.
+//= 1.2 Some little optimization here and there. [Masao]
+//= 1.3 Added Instructor Ur and the new Quests which come
+//=     alongside him. Special thanks to Chilly for the base. [Masao]
+//= 1.4 Partial cleaning and bug fixing. [Euphy]
+//= 1.4a Added 'npcskill' command. [Euphy]
+//= 1.4b Added 'disable_items' command. [Euphy]
+//= 1.5 Added GM management function. [Euphy]
+//= 1.6 Kagerou/Oboro support (Class -> BaseClass) [Euphy]
+//= 2.0 Updated Instructor Ur's quests. [Capuche]
+//= 2.1 Updated Blacksmith Thorn and Weapons Expert NPC. [Capuche]
+//= 2.2 Added support to Para_Team_Mark_ in Eden Group. [Ragno]
+//= 2.3 Added use of F_HasEdenGroupMark function. [Ragno]
+//============================================================
+moc_para01,112,79,4	script	[ Weapons Expert ]#2nd11	4_M_REPAIR,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	setarray .@wplist[0],
+		1197,	// P_Slayer3
+		13434,	// P_Saber3
+		13066,	// P_Dagger3
+		1289,	// P_Katar1
+		1391,	// P_Two_Handed_Axe1
+		1434,	// P_Spear I
+		1658,	// P_Staff3
+		16014,	// P_Mace3
+		18106,	// P_Bow3
+		1583,	// P.Book I
+		1931,	// P_Guitar I
+		1986,	// P_Tail1
+		13114,	// P_Revolver3
+		1831,	// P_Knuckle1
+		13310,	// P_Huuma_Shuriken1
+		26101;	// P_Foxtail III
+	.@wplist_size = getarraysize(.@wplist);
+
+	.@menu$ = "Eden Group Slayer III:" +
+		"Eden Group Saber III:" +
+		"Eden Group Dagger III:" +
+		"Eden Group Katar I:" +
+		"Eden Group Axe I:" +
+		"Eden Group Spear I:" +
+		"Eden Group Staff III:" +
+		"Eden Group Mace III:" +
+		"Eden Group Bow III:" +
+		"Eden Group Dictionary I:" +
+		"Eden Group Guitar I:" +
+		"Eden Group Whip I:" +
+		"Eden Group Revolver III:" +
+		"Eden Group Knuckles I:" +
+		"Eden Group Huuma Shuriken I:" +
+		"Eden Group Foxtail III";
+	mes "<B>[ BK ]</B>";
+	mes "What's happening?";
+	mes "No way?!";
+	next;
+	if (select( "Enhancing weapons.", "What?" ) == 2) {
+		mes "<B>[ BK ]</B>";
+		mes "Yeah?";
+		mes "Are you asking me what I know?";
+		next;
+		select("...??");
+		mes "<B>[ BK ]</B>";
+		mes ".....????";
+		close;
+	}
+	mes "<B>[ BK ]</B>";
+	mes "Ah, you're here to enhance your gear.";
+	mes "Okay, shall we?";
+	next;
+	mes "<B>[ BK ]</B>";
+	if (para_2nd02 < 2) {
+		mes "You have to have the equipment first in order for me to do anything.";
+		mes "Didn't you get anything from Thorn yet?";
+	}
+	else if (para_2nd02 == 2) {
+		if (para_2nd01 < 11) {
+			mes "Hmm, no.";
+			mes "I don't have permission from Instructor Ur.";
+			mes "You have to finish your training.";
+			next;
+			mes "<B>[ BK ]</B>";
+			mes "Once you do that I can help you.";
+			mes "Until then I won't talk to you.";
+		}
+		else {
+			mes "Okay, what weapon do you want to enhance?";
+			next;
+			.@s = select(.@menu$) -1;
+			mes "<B>[ BK ]</B>";
+			if (countitem(.@wplist[.@s]) > 0) {
+				mes "Ok for the first reinforcement.";
+				mes "ATK + 3% or MATK + 3%?";
+				mes "I'll give you the option to grant this effect on the selected gear.";
+				next;
+				mes "<B>[ BK ]</B>";
+				mes "You can't change your mind after so choose wisely.";
+				next;
+				if (select( "ATK +3%","MATK +3%" ) == 1) {
+					.@string$ = "Ok, you've chosen to raise physical attack.";
+					.@card = 4767;
+				}
+				else {
+					.@string$ = "Ok, you've chosen to raise magical attack.";
+					.@card = 4806;
+					.@add = 1;
+				}
+				mes "<B>[ BK ]</B>";
+				mes .@string$;
+				mes "Would you look at that. Your weapon will now be stronger.";
+				para_2nd03 = 1 + .@add;
+				next;
+				specialeffect EF_REPAIRWEAPON;
+				progressbar "ffff00",3;
+				para_2nd02 = 3;
+				delitem .@wplist[.@s],1;
+				getitem2 .@wplist[.@s],1,1,0,0,0,0,0,.@card;
+				mes "<B>[ BK ]</B>";
+				mes "Isn't it magnificent?";
+				mes "I know, I know, I'm pretty amazing!";
+			}
+			else {
+				mes "Are you kidding me?";
+				mes "You don't seem to have that weapon in your possession.";
+			}
+		}
+	}
+	else if (para_2nd02 == 3) {
+		if (para_2nd01 < 16) {
+			mes "Hmm, I'm not sure you're ready.";
+			mes "All 3 steps of Instructor Ur's missions have to be completed first.";
+			next;
+			mes "<B>[ BK ]</B>";
+			mes "You get what I'm saying?";
+			mes "Finish the third mission from Instructor Ur.";
+		}
+		else {
+			mes "Good. So you previously received an addition to Atk or Matk.";
+			mes "For this option you can choose from Brute, Plant, Fish, Dragon, Increased Heal.";
+			next;
+			mes "<B>[ BK ]</B>";
+			mes "Once you've chosen you can't change your mind again.";
+			mes "But your weapon will increase damage to the type of enhancement you pick.";
+			next;
+			mes "<B>[ BK ]</B>";
+			mes "Basically I will add a random monster card with the property type that you choose.";
+			mes "Good luck!";
+			next;
+			switch( select( "Brute Type", "Plant Type", "Insect Type", "Fish Type", "Dragon Type", "Increased Heal" ) ) {
+			case 1:
+				setarray .@arg[0],4060,4472,111;// Goblin_Card, Bradium_Goram_Card
+				.@type$ = "Brute";
+				break;
+			case 2:
+				setarray .@arg[0],4068,4470,121;// Scorpion_Card, Nepenthes_Card
+				.@type$ = "Plant";
+				break;
+			case 3:
+				setarray .@arg[0],4063,4476,131;// Caramel_Card, Pinguicula_Card
+				.@type$ = "Insect";
+				break;
+			case 4:
+				setarray .@arg[0],4080,4469,141;// Flora_Card, Naga_Card
+				.@type$ = "Fish";
+				break;
+			case 5:
+				setarray .@arg[0],4118,4471,151;// Petit_Card, Egg_Of_Draco_Card
+				.@type$ = "Dragon";
+				break;
+			case 6:
+				setarray .@arg[0],4805,4805,161;// Heal_Amount2
+			}
+			mes "<B>[ BK ]</B>";
+			for ( .@i = 0; .@i < .@wplist_size; .@i++ ) {
+				if (countitem(.@wplist[.@i]) > 0) {
+					if (.@arg[0] == 4805)
+						mes "Good. Your weapon will now increase Heal effectiveness.";
+					else
+						mes "Good. Your weapon will increase attacks to "+ .@type$ +" type monsters.";
+					next;
+					specialeffect EF_REPAIRWEAPON;
+					progressbar "ffff00",3;
+					delitem .@wplist[.@i],1;
+					para_2nd02 = 4;
+					if (para_2nd03 == 1) {
+						para_2nd03 = .@arg[2];
+						getitem2 .@wplist[.@i],1,1,0,0,0,0,.@arg[0],4767;
+					}
+					else {
+						para_2nd03 = .@arg[2] + 100;
+						getitem2 .@wplist[.@i],1,1,0,0,0,0,.@arg[1],4806;
+					}
+					mes "<B>[ BK ]</B>";
+					mes "Isn't it magnificent?";
+					mes "I know, I know, I'm pretty amazing!";
+					close;
+				}
+			}
+			mes "Sorry, but it doesn't seem like you have a weapon that can be enhanced.";
+			mes "How did this happen?";
+			close;
+		}
+	}
+	else if (para_2nd02 == 4) {
+		if (para_2nd01 < 30) {
+			mes "Instructor Ur has a lot of training missions doesn't he?";
+			mes "There's only one more stage.";
+			mes "Reach the final stage of training.";
+		}
+		else {
+			mes "Okay, this is the last step.";
+			mes "I will make your weapon even more enhanced.";
+			next;
+			mes "<B>[ BK ]</B>";
+			mes "The card added from the previous step will be doubled.";
+			mes "And if you have a healing weapon it will increase it's healing efficiency.";
+			mes "You understand?";
+			next;
+			mes "<B>[ BK ]</B>";
+			mes "Ok what weapon did you have now?";
+			next;
+			.@s = select(.@menu$) -1;
+			mes "<B>[ BK ]</B>";
+			if (countitem(.@wplist[.@s]) > 0) {
+				mes "Doubling the strength of your bonus stat.";
+				next;
+				specialeffect EF_REPAIRWEAPON;
+				progressbar "ffff00",3;
+				delitem .@wplist[.@s],1;
+				para_2nd02 = 5;
+				if (para_2nd03 == 111)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4060,4060,4767;// Goblin_Card, Goblin_Card, Atk3
+				else if (para_2nd03 == 121)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4068,4068,4767;// Scorpion_Card, Scorpion_Card, Atk3
+				else if (para_2nd03 == 131)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4063,4063,4767;// Caramel_Card, Caramel_Card, Atk3
+				else if (para_2nd03 == 141)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4080,4080,4767;// Flora_Card, Flora_Card, Atk3
+				else if (para_2nd03 == 151)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4118,4118,4767;// Petit_Card, Petit_Card, Atk3
+				else if (para_2nd03 == 161)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4805,4805,4767;// Heal_Amount2, Heal_Amount2, Atk3
+				else if (para_2nd03 == 211)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4472,4472,4806;// Bradium_Goram_Card, Bradium_Goram_Card, Matk3
+				else if (para_2nd03 == 221)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4470,4470,4806;// Nepenthes_Card, Nepenthes_Card, Matk3
+				else if (para_2nd03 == 231)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4476,4476,4806;// Pinguicula_Card, Pinguicula_Card, Matk3
+				else if (para_2nd03 == 241)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4469,4469,4806;// Naga_Card, Naga_Card, Matk3
+				else if (para_2nd03 == 251)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4471,4471,4806;// Egg_Of_Draco_Card, Egg_Of_Draco_Card, Matk3
+				else if (para_2nd03 == 261)
+					getitem2 .@wplist[.@s],1,1,0,0,0,4805,4805,4806;// Heal_Amount2, Heal_Amount2, Matk3
+				mes "<B>[ BK ]</B>";
+				mes "Isn't it magnificent?";
+				mes "I know, I know, I'm pretty amazing!";
+			}
+			else {
+				mes "Hey, you think I'm joking?";
+				mes "Do you have the weapons or not?";
+			}
+		}
+	}
+	else if (para_2nd02 > 4) {
+		mes "How do you like your enhanced weapon?";
+		mes "Hopefully it has helped you.";
+		next;
+		mes "<B>[ BK ]</B>";
+		mes "I've given you the peak of your weapon's efficiency.";
+		mes "Weapons aren't the only things that need strength, though, don't you agree?";
+		next;
+		mes "<B>[ BK ]</B>";
+		mes "Come on admit it.";
+		mes "Thorn gave inspiration and I intend on providing strong equipment, that's how to live life.";
+		mes "Hahahaha!";
+	}
+	close;
+
+OnInit:
+	setunitdata( getnpcid(0), UNPC_GROUP_ID,6 );
+	setunittitle( getnpcid(0), "BK" );
+	end;	
+}

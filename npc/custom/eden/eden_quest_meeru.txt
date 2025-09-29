@@ -22,6 +22,9 @@
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
 man_fild01,43,234,3	script	Dispatched Instructor#07	4_DST_SOLDIER,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
     switch(para_2nd01) {  
         case 23: callsub S_InitialQuestStart; break;  
         case 24: callsub S_NepenthesHuntProgress; break;  
@@ -33,44 +36,44 @@ man_fild01,43,234,3	script	Dispatched Instructor#07	4_DST_SOLDIER,{
     close;  
   
 S_InitialQuestStart:  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "You think I'll lose!";  
     mes "...?";  
     mes "All of them... Who're you?!";  
     mes "Mine is a stooge?";  
     mes "He sent you to watch me!?";  
     next;  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "What? Isn't that it?";  
     mes "... ...";  
     mes "Mine didn't send you did he?";  
     mes "So why are you here?";  
     next;  
     select("Margaret sent me");  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Ah, Margaret!";  
     mes "Mine and Margaret are always trying to mess with me because of my win-!";  
     mes "Gosh...";  
     next;  
     select("What happened?", "What do you win?");  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "It all started with them bickering.";  
     mes "Margaret was asked to scout for both of us. It's like what you're doing now.";  
     next;  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Mine said that he was strong enough to defeat any monster.";  
     mes "So I insisted that he go to either East or West of the camp and show me.";  
     next;  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Mine made an idle threat and huffed and puffed but didn't do anything.";  
     next;  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Basically, Margaret didn't believe him and challenged him to kill 1 Nepenthes.";  
     next;  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "So anyways now I'm charged with asking people to go and hunt 1 Nepenthes because of that bickering incident.";  
     next;  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "It's really not that difficult to hunt 1 so just go to the field East of here and kill one of them.";  
     para_2nd01 = 24;  
     setquest 7235;  
@@ -85,11 +88,11 @@ S_NepenthesHuntProgress:
     return;  
   
 S_NepenthesHuntComplete:  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Hmm yes I saw.";  
     mes "I knew I should've asked you to hunt more than 1.";  
     next;  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Anyways you've proven that you're stronger than Mine ever made himself out to be.";  
     mes "Let me reward you for settling this argument.";  
     mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
@@ -99,10 +102,10 @@ S_NepenthesHuntComplete:
     // Claim reward  
     getexp .base_exp[0], .job_exp[0];  
     getitem .item_reward[0], .item_amount[0];  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Well anyways here's a small reward.";  
     next;  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "I'll just be here making sure other people hunt the Nepenthes. I might ask them to hunt more than 1 who knows.";  
     mes "The brothers' dispute is settled for now!";  
     para_2nd01 = 25;  
@@ -110,7 +113,7 @@ S_NepenthesHuntComplete:
     return;  
   
 S_NepenthesHuntReminder:  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Is hunting the Nepenthes too much for you?";  
     mes "You seem a bit flushed.";  
     mes "Fine I'll heal you!";  
@@ -123,19 +126,19 @@ S_NepenthesHuntReminder:
     return;  
   
 S_TrainingComplete:  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "I'll just be here making sure other people hunt the Nepenthes. I might ask them to hunt more than 1 who knows.";  
     return;  
   
 S_PostTrainingChat:  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "How are your adventures going?";  
     mes "The Nepenthes situation is under control now.";  
     next;  
     switch(select("Quest Management:Just chatting:Leave")) {  
         case 1: callsub S_QuestManagement; break;  
         case 2:  
-            mes "[Meeru]";  
+            mes "<B>[ Meeru ]</B>";  
             mes "Take care in your future adventures!";  
             break;  
         case 3: break;  
@@ -143,7 +146,7 @@ S_PostTrainingChat:
     return;  
   
 S_DefaultGreeting:  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     if (para_2nd01 < 23) {  
         mes "You think I'll lose!";  
         mes "...?";  
@@ -151,7 +154,7 @@ S_DefaultGreeting:
         mes "Mine is a stooge?";  
         mes "He sent you to watch me!?";  
         next;  
-        mes "[Meeru]";  
+        mes "<B>[ Meeru ]</B>";  
         mes "What? Isn't that it?";  
         mes "... ...";  
         mes "Mine didn't send you did he?";  
@@ -164,7 +167,7 @@ S_DefaultGreeting:
         switch(select("Quest Management:Just visiting:Leave")) {  
             case 1: callsub S_QuestManagement; break;  
             case 2:  
-                mes "[Meeru]";  
+                mes "<B>[ Meeru ]</B>";  
                 mes "Thanks for stopping by!";  
                 break;  
             case 3: break;  
@@ -173,7 +176,7 @@ S_DefaultGreeting:
     return;  
   
 S_HealPlayer:  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "-Meeru's competitive spirit restores your strength.-";  
     npcskill "AL_HEAL",10,99,60;  
     percentheal 100,100;  
@@ -181,7 +184,7 @@ S_HealPlayer:
   
 // Quest Management Functions  
 S_QuestManagement:  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "What do you need help with regarding your Nepenthes hunting?";  
     next;  
     switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
@@ -193,7 +196,7 @@ S_QuestManagement:
     return;  
   
 S_ViewCurrentQuest:  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Your current brother investigation progress:";  
     mes " ";  
       
@@ -219,18 +222,18 @@ S_ViewCurrentQuest:
   
 S_AbandonQuest:  
     if (para_2nd01 < 23 || para_2nd01 > 24) {  
-        mes "[Meeru]";  
+        mes "<B>[ Meeru ]</B>";  
         mes "You don't have any active Nepenthes hunting to abandon.";  
         return;  
     }  
       
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "^FF0000Warning:^000000 Abandoning will reset your current progress!";  
     mes "Are you sure you want to give up? We need to settle this argument!";  
     next;  
       
     if (select("Yes, abandon current hunt:No, continue hunting") == 2) {  
-        mes "[Meeru]";  
+        mes "<B>[ Meeru ]</B>";  
         mes "Good choice! That Nepenthes won't defeat itself!";  
         return;  
     }  
@@ -238,7 +241,7 @@ S_AbandonQuest:
     // Reset quest progression  
     switch(para_2nd01) {  
         case 23:  
-            mes "[Meeru]";  
+            mes "<B>[ Meeru ]</B>";  
             mes "You're already at the beginning of the investigation.";  
             return;  
         case 24:  
@@ -247,12 +250,12 @@ S_AbandonQuest:
             break;  
     }  
       
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Nepenthes hunting progress reset. You can restart anytime.";  
     return;  
   
 S_QuestStatus:  
-    mes "[Meeru]";  
+    mes "<B>[ Meeru ]</B>";  
     mes "Let me check your hunting progress...";  
     mes " ";  
       

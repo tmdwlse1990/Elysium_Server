@@ -22,24 +22,27 @@
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
 in_orcs01,38,175,3	script	Eden Member Hooksha	1_F_SIGNZISK,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
 	// Check Eden Group membership and quest state  
 	if (para_suv01 < 24) {  
 		if (callfunc("F_HasEdenGroupMark")) {  
-			mes "[Hooksha]";  
+			mes "<B>[ Hooksha ]</B>";  
 			mes "Unbelievable why did you come here?";  
 			mes "Um... You are not on the third step of the training?";  
 			mes "Yeeee~ I'm excited~";  
 			next;  
-			mes "[Hooksha]";  
+			mes "<B>[ Hooksha ]</B>";  
 			mes "I am a little bored waiting for trainees. Where are they?";  
 			close;  
 		}  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Hello.";  
 		mes "Why did you come here?";  
 		mes "Umm... Aaaaa...";  
 		next;  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Why don't you join my group?";  
 		mes "If you have interest in joining us,";  
 		mes "you won't regret your decision.";  
@@ -47,7 +50,7 @@ in_orcs01,38,175,3	script	Eden Member Hooksha	1_F_SIGNZISK,{
 		switch(select("Quest Management:Just passing by:Leave")) {  
 			case 1: callsub S_QuestManagement; break;  
 			case 2:  
-				mes "[Hooksha]";  
+				mes "<B>[ Hooksha ]</B>";  
 				mes "Take care in the dangerous orc territory!";  
 				break;  
 			case 3: break;  
@@ -101,42 +104,42 @@ in_orcs01,38,175,3	script	Eden Member Hooksha	1_F_SIGNZISK,{
   
 // Initial quest introduction  
 S_InitialQuest:  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Hello.";  
 	mes "Are you a trainee?";  
 	mes "Yeah I can tell.";  
 	mes "So shall we begin?";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Actually I don't like this training mission much but anyway let me explain it to you.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "As you know this is Orc Village.";  
 	mes "Orcs don't like humans.";  
 	mes "They don't try to communicate with us. When they see humans they immediately attack us.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Sadly humans don't want to communicate with them either.";  
 	mes "So we decided to take a strong approach towards them.";  
 	mes "Actually we'd like to get rid of them all.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "We're trying to conquer Orc Village.";  
 	mes "It's the proper place to finish the beginners training mission for an adventurer like you.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "That's why we've chosen this place for this mission.";  
 	mes "Ok, we don't have a lot of time so let's begin.";  
 	mes "First let's eliminate the weakest one.";  
 	next;  
 	switch(select("Accept the mission:Quest Help:Not ready yet")) {  
 		case 1:  
-			mes "[Hooksha]";  
+			mes "<B>[ Hooksha ]</B>";  
 			mes "It's better to kill them before they grow up.";  
 			mes "Hunt 10 Orc Babies.";  
 			mes "Don't pity them because when they grow up they become aggressive Orc Warriors.";  
 			next;  
-			mes "[Hooksha]";  
+			mes "<B>[ Hooksha ]</B>";  
 			mes "Good or bad this is how it is going to be.";  
 			mes "Even if they are babies don't hesitate.";  
 			para_suv01 = 25;  
@@ -146,7 +149,7 @@ S_InitialQuest:
 			callsub S_QuestManagement;  
 			break;  
 		case 3:  
-			mes "[Hooksha]";  
+			mes "<B>[ Hooksha ]</B>";  
 			mes "Come back when you're ready for the orc village challenge.";  
 			close;  
 	}  
@@ -155,7 +158,7 @@ S_InitialQuest:
 // Orc Baby hunting phase  
 S_OrcBabyHunt:  
 	if (checkquest(7148,HUNTING) == 2) {  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Great. Awesome.";  
 		mes "Let me reward you.";  
 		mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
@@ -165,16 +168,16 @@ S_OrcBabyHunt:
 		// Claim reward  
 		getexp .base_exp[0], .job_exp[0];  
 		getitem .item_reward[0], .item_amount[0];
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "It's not very pleasant so let's move on.";  		
 		mes "On the next step we will fight with Orc Warriors.";  
 		mes "When Orc Babies grow up they become strong Orc Warriors.";  
 		next;  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "They all are powerful warriors.";  
 		mes "When you were fighting Orc Babies, you probably have been attacked by them.";  
 		next;
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Now it's time to hunt 10 Orc Warriors.";  
 		mes "If you are in trouble just come back here to safety.";  
 		mes "Do you understand?";  
@@ -183,11 +186,11 @@ S_OrcBabyHunt:
 		close;  
 	}  
 	  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "There are Orc Warriors, Orc Ladies and Orc Babies in Orc Village.";  
 	mes "They are really aggressive.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "You look tired I will recover your health.";  
 	mes "If you are in trouble just come back here to safety.";  
 	next;  
@@ -201,7 +204,7 @@ S_OrcBabyHunt:
 // Orc Warrior hunting phase  
 S_OrcWarriorHunt:  
 	if (checkquest(7149,HUNTING) == 2) {  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Let me reward you.";  
 		mes "Base Experience: "+ F_Insertcomma(.base_exp[1]) +".";  
 		mes "Job Experience: "+ F_Insertcomma(.job_exp[1]) +".";  
@@ -210,18 +213,18 @@ S_OrcWarriorHunt:
 		// Claim reward  
 		getexp .base_exp[1], .job_exp[1];  
 		getitem .item_reward[1], .item_amount[1];	
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Now you can move on to the next step.";  
 		next;  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Exactly... now it's time to hunt Orc Ladies.";  
 		mes "If you want to conquer Orc Village completely, you should kill them before they have more Orc Babies.";  
 		next;  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "But you don't need to kill all of them.";  
 		mes "Go and hunt 10 Orc Ladies.";  
 		next;
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "You can already feel the strong power from outside...";  
 		mes "Don't hesitate to attack them.";  
 		para_suv01 = 27;  
@@ -229,11 +232,11 @@ S_OrcWarriorHunt:
 		close;  
 	}  
 	  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "You should be exhausted by now.";  
 	mes "But you still have more targets, understand.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "You look tired, I will recover your health.";  
 	mes "If you are in trouble just come back here to safety.";  
 	next;  
@@ -247,7 +250,7 @@ S_OrcWarriorHunt:
 // Orc Lady hunting phase  
 S_OrcLadyHunt:  
 	if (checkquest(7150,HUNTING) == 2) {  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Great job.";  
 		mes "Now you should understand how the orc tribe works here in Orc Village.";  
 		mes "You've followed the training mission well under hot and humid circumstances.";  
@@ -260,7 +263,7 @@ S_OrcLadyHunt:
 		// Claim reward  
 		getexp .base_exp[2], .job_exp[2];  
 		getitem .item_reward[2], .item_amount[2];  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Go back and report to the Eden Group headquarters.";  
 		mes "I'm sure they will have good news for you.";  
 		para_suv01 = 28;  
@@ -268,11 +271,11 @@ S_OrcLadyHunt:
 		close;  
 	}  
 	  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Orc Lady is the last target.";  
 	mes "Cheer up~!";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "You look tired, I will recover your health.";  
 	mes "If you are in trouble just come back here to safety.";  
 	next;  
@@ -285,14 +288,14 @@ S_OrcLadyHunt:
   
 // Village quest completion state  
 S_VillageQuestComplete:  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "You have completed the training mission.";  
 	mes "Go back to the Eden Group headquarters and report there.";  
 	next;  
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Hooksha]";  
+			mes "<B>[ Hooksha ]</B>";  
 			mes "Keep up the good work with Eden Group!";  
 			break;  
 		case 3: break;  
@@ -301,36 +304,36 @@ S_VillageQuestComplete:
   
 // Dungeon introduction  
 S_DungeonIntroduction:  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Have you come here to join in the training?";  
 	mes "You look like an expert.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "This isn't a good place to talk so let's hurry.";  
 	mes "This place is linked with the dungeon of Orc Village.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Can you see that way.";  
 	mes "There is a cave under the ground, normal orcs don't come here.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "The safest place is in here.";  
 	mes "There are many undead monsters down there.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "The undead monsters are dangerous and threatening.";  
 	mes "Don't hesitate when fighting them.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Now hunt those undead monsters down there.";  
 	next;  
 	switch(select("Accept dungeon mission:Quest Help:Not ready yet")) {  
 		case 1:  
-			mes "[Hooksha]";  
+			mes "<B>[ Hooksha ]</B>";  
 			mes "Try to hunt 20 Orc zombies in the dungeon.";  
 			mes "They are really well organized.";  
 			next;  
-			mes "[Hooksha]";  
+			mes "<B>[ Hooksha ]</B>";  
 			mes "They will attack you anywhere without hesitating.";  
 			mes "May Freya bless you.";  
 			para_suv01 = 30;  
@@ -340,7 +343,7 @@ S_DungeonIntroduction:
 			callsub S_QuestManagement;  
 			break;  
 		case 3:  
-			mes "[Hooksha]";  
+			mes "<B>[ Hooksha ]</B>";  
 			mes "Come back when you're ready for the dungeon challenge.";  
 			close;  
 	}  
@@ -349,7 +352,7 @@ S_DungeonIntroduction:
 // Orc Zombie hunting phase  
 S_OrcZombieHunt:  
 	if (checkquest(7153,HUNTING) == 2) {  
-		mes "[Hooksha]";
+		mes "<B>[ Hooksha ]</B>";
 		mes "Let me reward you.";  
 		mes "Base Experience: "+ F_Insertcomma(.base_exp[3]) +".";  
 		mes "Job Experience: "+ F_Insertcomma(.job_exp[3]) +".";  
@@ -358,22 +361,22 @@ S_OrcZombieHunt:
 		// Claim reward  
 		getexp .base_exp[3], .job_exp[3];  
 		getitem .item_reward[3], .item_amount[3];	
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "It's different from what you saw in Payon, right?";  
 		mes "Although you managed to kill the Orc Zombies, you can't be sure you are much stronger...";  
 		next;  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "So don't go deeper into that cave or you will die for sure.";  
 		next;  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "The next target is the Orc Skeleton who was walking next to the Orc Zombies.";  
 		mes "Hunt 20 Orc Skeletons.";  
 		next;
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "It's the last step of the training mission in the Orc Dungeon.";  
 		mes "It's all up to you.";  
 		next;  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Ok, cheer up and see you again.";  
 		mes "Hunt 20 Orc Skeletons.";  
 		para_suv01 = 31;  
@@ -381,7 +384,7 @@ S_OrcZombieHunt:
 		close;  
 	}  
 	  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Can you stay longer?";  
 	mes "You look tired, I will recover your health.";  
 	mes "If you are in trouble just come back here to safety.";  
@@ -396,7 +399,7 @@ S_OrcZombieHunt:
 // Orc Skeleton hunting phase  
 S_OrcSkeletonHunt:  
 	if (checkquest(7154,HUNTING) == 2) {  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Your training mission has been completed.";  
 		mes "Go back to the Eden Group headquarters and report.";  
 		mes "I would like to say more in detail but I'm getting so tired.";  
@@ -408,7 +411,7 @@ S_OrcSkeletonHunt:
 		// Claim reward  
 		getexp .base_exp[4], .job_exp[4];  
 		getitem .item_reward[4], .item_amount[4];
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Recently trainees have come here more and more so, I can't sleep at all.";  
 		mes "I mean not due to you.";  
 		mes "Anyway I will inform the group so go there and report.";    
@@ -417,7 +420,7 @@ S_OrcSkeletonHunt:
 		close;  
 	}  
 	  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Can you stay longer?";  
 	mes "You look tired I will recover your health.";  
 	mes "If you are in trouble just come back here to safety.";  
@@ -432,14 +435,14 @@ S_OrcSkeletonHunt:
 // All quests completion state  
 S_AllQuestsComplete:  
 	if (para_suv01 == 32) {  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Don't you have to report back to the Eden Group headquarters?";  
 		mes "I am so tired leave me alone.";  
 		next;  
 		switch(select("Quest Management:Just chatting:Leave")) {  
 			case 1: callsub S_QuestManagement; break;  
 			case 2:  
-				mes "[Hooksha]";  
+				mes "<B>[ Hooksha ]</B>";  
 				mes "Keep up the good work with Eden Group!";  
 				break;  
 			case 3: break;  
@@ -447,18 +450,18 @@ S_AllQuestsComplete:
 		close;  
 	}  
 	  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Uh? What Orc? Explore the dungeon?";  
 	mes "You are having such a hard time.";  
 	next;  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "This place is really good to take a rest because Orcs don't come here.";  
 	mes "Ho hum...";  
 	next;  
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Hooksha]";  
+			mes "<B>[ Hooksha ]</B>";  
 			mes "Keep up the good work with Eden Group!";  
 			break;  
 		case 3: break;  
@@ -474,7 +477,7 @@ S_HealPlayer:
   
 // Quest Management Functions  
 S_QuestManagement:  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "What do you need help with regarding your orc training?";  
 	next;  
 	switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
@@ -486,7 +489,7 @@ S_QuestManagement:
 	return;  
   
 S_ViewCurrentQuest:  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Your current orc training progress:";  
 	mes " ";  
 	  
@@ -536,18 +539,18 @@ S_ViewCurrentQuest:
   
 S_AbandonQuest:  
 	if (para_suv01 < 24 || para_suv01 > 31) {  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "You don't have any active orc training to abandon.";  
 		return;  
 	}  
 	  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "^FF0000Warning:^000000 Abandoning will only clear your current hunting progress!";  
 	mes "Are you sure you want to give up? The orcs need to be controlled!";  
 	next;  
 	  
 	if (select("Yes, abandon current hunt:No, continue training") == 2) {  
-		mes "[Hooksha]";  
+		mes "<B>[ Hooksha ]</B>";  
 		mes "Good choice! The orcs won't defeat themselves!";  
 		return;  
 	}  
@@ -576,12 +579,12 @@ S_AbandonQuest:
 			break;  
 	}  
 	  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Current hunt abandoned. You can restart this step anytime.";  
 	return;  
   
 S_QuestStatus:  
-	mes "[Hooksha]";  
+	mes "<B>[ Hooksha ]</B>";  
 	mes "Let me check your hunting progress in orc territory...";  
 	mes " ";  
 	  

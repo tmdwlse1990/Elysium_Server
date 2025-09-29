@@ -22,6 +22,9 @@
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
 ein_fild08,172,359,3	script	Dispatched Instructor#04	4_M_4THPRIN1,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
     switch(para_2nd01) {  
         case 12: callsub S_InitialQuestStart; break;  
         case 13: callsub S_PorcellioHuntProgress; break;  
@@ -34,29 +37,29 @@ ein_fild08,172,359,3	script	Dispatched Instructor#04	4_M_4THPRIN1,{
     close;  
   
 S_InitialQuestStart:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "What?";  
     mes "....";  
     mes "Hmm, Ur sent you?";  
     mes "Oh, that training mission thing.";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "You've came a long way, I won't make you do anything too tough, don't worry.";  
     mes "The fields outside of Einbroch isn't too bad.";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "And monsters here usually leaves me alone, so I can nap all day.";  
     mes "But there are some that bother me.";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "Do you know Porcellios are?";  
     mes "Ugly looking insects... They steal too..";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "Let's defeat some of them as a warm up.";  
     mes "There are plenty of them around here. 30 shouldn't be too hard right?";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "I'm not holding a grudge just because they ate my lunch.";  
     mes "I'll be resting here until you're done.";  
     para_2nd01 = 13;  
@@ -73,7 +76,7 @@ S_PorcellioHuntProgress:
     return;  
   
 S_PorcellioHuntComplete:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "What, You're done already?";  
     mes "I was just about to fall asleep... Oh well..";  
     mes "It can't be helped, I guess. Let's go to a different spot..";  
@@ -85,26 +88,26 @@ S_PorcellioHuntComplete:
     // Claim reward  
     getexp .base_exp[0], .job_exp[0];  
     getitem .item_reward[0], .item_amount[0];  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "No, what are you talking about?";  
     mes "Go... with you?";  
     mes "You can by yourself right?";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "Okay, next task!";  
     mes "People of Einbroch say that the pollution is really bad in the north.";  
     mes "They are worried that pollution will drift into the town.";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "It's probably all those factories right there...";  
     mes "I guess I should still look into it.";  
     mes "The cause for the pollution... Find it and destroy it.";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "30 Venomous and 5 Teddy Bears.";  
     mes "That should be good enough.";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "I'm sure you'll do fine without me watching.";  
     mes "The monsters are at the northern fields of Einbroch.";  
     mes "Okay then, be safe.";  
@@ -116,7 +119,7 @@ S_PorcellioHuntComplete:
     return;  
   
 S_PorcellioHuntReminder:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "So, have you punished those Porcellio's yet?";  
     mes "I don't think you're done yet right?";  
     next;  
@@ -136,13 +139,13 @@ S_PollutionHuntProgress:
     return;  
   
 S_PollutionHuntComplete:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "Um...";  
     mes "I'm getting it done.";  
     mes "Hmm...";  
     mes "I'm still tired to finish...";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "Good. Those monsters have been bothering the Einbroch workers.";  
     mes "That was great..";  
     mes "Let me reward you for cleaning up the pollution.";  
@@ -153,7 +156,7 @@ S_PollutionHuntComplete:
     // Claim reward  
     getexp .base_exp[1], .job_exp[1];  
     getitem .item_reward[1], .item_amount[1];  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "I have some things to report to Instructor Ur.";  
     mes "I've been watching you closely and you've done well. Go back to Ur and deliver this report.";  
     mes "The fields are much cleaner now thanks to your work!";  
@@ -164,12 +167,12 @@ S_PollutionHuntComplete:
     return;  
   
 S_PollutionHuntReminder:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "The monsters are at the northern fields of Einbroch.";  
     mes "Find the Venomous and Teddy Bears...";  
     mes "Don't try to lie to me that you've finished hunting them.";  
     next;  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "Yeah, if this is okay?";  
     mes "Ugh this is difficult.";  
     mes "I'll make you feel better though.";  
@@ -182,21 +185,21 @@ S_PollutionHuntReminder:
     return;  
   
 S_TrainingComplete:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "What serious?";  
     mes "Have you made your report to Instructor Ur?";  
     mes "Einbroch has commissioned work out so that means more training.";  
     return;  
   
 S_PostTrainingChat:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "How are your adventures going?";  
     mes "The fields are much quieter now for my naps.";  
     next;  
     switch(select("Quest Management:Just chatting:Leave")) {  
         case 1: callsub S_QuestManagement; break;  
         case 2:  
-            mes "[Kiren]";  
+            mes "<B>[ Kiren ]</B>";  
             mes "Take care and don't disturb my sleep!";  
             break;  
         case 3: break;  
@@ -204,7 +207,7 @@ S_PostTrainingChat:
     return;  
   
 S_DefaultGreeting:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     if (para_2nd01 < 12) {  
         mes "What are you looking at?";  
         mes "You want something from me?";  
@@ -215,7 +218,7 @@ S_DefaultGreeting:
         mes "It's a hard living.";  
         mes "Nor is there any real ambition.";  
         next;  
-        mes "[Kiren]";  
+        mes "<B>[ Kiren ]</B>";  
         mes "Come practitioners?";  
         mes "Make things.";  
         mes "How convenient witchinya.";  
@@ -224,7 +227,7 @@ S_DefaultGreeting:
         switch(select("Quest Management:Just visiting:Leave")) {  
             case 1: callsub S_QuestManagement; break;  
             case 2:  
-                mes "[Kiren]";  
+                mes "<B>[ Kiren ]</B>";  
                 mes "Don't bother me while I'm trying to sleep.";  
                 break;  
             case 3: break;  
@@ -233,7 +236,7 @@ S_DefaultGreeting:
     return;  
   
 S_HealPlayer:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "-Kiren lazily waves his hand and your strength is restored.-";  
     npcskill "AL_HEAL",10,99,60;  
     percentheal 100,100;  
@@ -241,7 +244,7 @@ S_HealPlayer:
   
 // Quest Management Functions  
 S_QuestManagement:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "What do you need help with regarding your field training?";  
     next;  
     switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
@@ -253,7 +256,7 @@ S_QuestManagement:
     return;  
   
 S_ViewCurrentQuest:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "Your current field training progress:";  
     mes " ";  
       
@@ -283,18 +286,18 @@ S_ViewCurrentQuest:
   
 S_AbandonQuest:  
     if (para_2nd01 < 12 || para_2nd01 > 14) {  
-        mes "[Kiren]";  
+        mes "<B>[ Kiren ]</B>";  
         mes "You don't have any active field training to abandon.";  
         return;  
     }  
       
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "^FF0000Warning:^000000 Abandoning will reset your current progress!";  
     mes "Are you sure you want to give up? The fields need to be cleaned!";  
     next;  
       
     if (select("Yes, abandon current training:No, continue training") == 2) {  
-        mes "[Kiren]";  
+        mes "<B>[ Kiren ]</B>";  
         mes "Good choice! The monsters won't defeat themselves!";  
         return;  
     }  
@@ -302,7 +305,7 @@ S_AbandonQuest:
     // Reset quest progression  
     switch(para_2nd01) {  
         case 12:  
-            mes "[Kiren]";  
+            mes "<B>[ Kiren ]</B>";  
             mes "You're already at the beginning of field training.";  
             return;  
         case 13:  
@@ -316,12 +319,12 @@ S_AbandonQuest:
             break;  
     }  
       
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "Field training progress reset. You can restart anytime.";  
     return;  
   
 S_QuestStatus:  
-    mes "[Kiren]";  
+    mes "<B>[ Kiren ]</B>";  
     mes "Let me check your hunting progress...";  
     mes " ";  
       

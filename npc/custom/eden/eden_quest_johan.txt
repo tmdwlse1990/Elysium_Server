@@ -22,6 +22,9 @@
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
 glast_01,195,131,5	script	Dispatched Instructor#03	4_F_SISTER,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
     switch(para_2nd01) {  
         case 7: callsub S_InitialQuestStart; break;  
         case 8: callsub S_WraithHuntProgress; break;  
@@ -34,39 +37,39 @@ glast_01,195,131,5	script	Dispatched Instructor#03	4_F_SISTER,{
     close;  
   
 S_InitialQuestStart:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Oh oh!!";  
     mes "You're finally here!";  
     mes "I asked Ur to send someone to help me here!";  
     next;  
     select("What? I came for training..");  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "No no, that's the same thing!";  
     mes "Your training mission is to help me clear out this Abbey!";  
     next;  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Phew... It's been so tough.";  
     mes "I can't run in by myself, but then Gargoyles attack me out here..";  
     mes "Hahaha...";  
     next;  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "This abbey is our responsibility.";  
     mes "Just like other monasteries, this one has an underground graveyard as well, but..";  
     next;  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "As you well know, this castle... is not at a normal state.";  
     mes "I think that's causing these souls from being able to rest in peace.";  
     next;  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Let's defeat the ones around here first, since going underground may be too much for just us.";  
     mes "I'll be testing how skilled you are as well...";  
     next;  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "First target are the Wraiths.";  
     mes "You can tell them apart by their strange laugh.";  
     mes "They look like demons, but we can't tell for sure...";  
     next;  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Defeat 20 Wraiths.";  
     mes "I'll assist you from here!";  
     para_2nd01 = 8;  
@@ -83,7 +86,7 @@ S_WraithHuntProgress:
     return;  
   
 S_WraithHuntComplete:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Oh~ You are pretty strong!";  
     mes "I'm so glad that someone strong like you came.";  
     mes "I wouldn't have lasted long here by myself.";  
@@ -95,12 +98,12 @@ S_WraithHuntComplete:
     // Claim reward  
     getexp .base_exp[0], .job_exp[0];  
     getitem .item_reward[0], .item_amount[0];  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "By the way, did you see those other monsters besides the Wraiths?";  
     mes "They are the corrupted souls of priests.";  
     mes "They are called 'Evil Druid' as well.";  
     next;  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Let's take care of these Evil Druids this time.";  
     mes "10 of them.";  
     mes "You can do it right?";  
@@ -111,7 +114,7 @@ S_WraithHuntComplete:
     return;  
   
 S_WraithHuntReminder:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "20 Wraiths!";  
     mes "I'll watch your back!";  
     mes "... Of.. Course.. I'll fight too!";  
@@ -132,13 +135,13 @@ S_EvilDruidHuntProgress:
     return;  
   
 S_EvilDruidHuntComplete:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "...Oh you're back!";  
     mes "(Johan Opens the door and checks)";  
     mes "....!";  
     mes "Okay!!";  
     next;  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Thank you! I really appreciate it!";  
     mes "I think I can enter without any worries now!";  
     mes "I hope those evil souls left it alone..";  
@@ -150,11 +153,11 @@ S_EvilDruidHuntComplete:
     // Claim reward  
     getexp .base_exp[1], .job_exp[1];  
     getitem .item_reward[1], .item_amount[1];  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Hehe, I'll put in a good word to Ur!";  
     mes "You're a valiant and skilled exorcist!";  
     next;  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "You can go back to Eden now";  
     mes "I'll stay and clean up the rest, hehe";  
     mes "The abbey is much safer thanks to your efforts!";  
@@ -164,7 +167,7 @@ S_EvilDruidHuntComplete:
     return;  
   
 S_EvilDruidHuntReminder:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "10 Evil Druids!";  
     mes "I'll watch your back, like last time.";  
     mes "... Of... Course... I'll fight them too!";  
@@ -177,21 +180,21 @@ S_EvilDruidHuntReminder:
     return;  
   
 S_TrainingComplete:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Go back and report to Ur.";  
     mes "That Glast Heim Abbey is clear now.";  
     mes "I need to stay and look for something... Good bye.";  
     return;  
   
 S_PostTrainingChat:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "How are your adventures going?";  
     mes "The abbey is much quieter now, thanks to your help.";  
     next;  
     switch(select("Quest Management:Just chatting:Leave")) {  
         case 1: callsub S_QuestManagement; break;  
         case 2:  
-            mes "[Johan]";  
+            mes "<B>[ Johan ]</B>";  
             mes "Take care in your future adventures!";  
             break;  
         case 3: break;  
@@ -199,13 +202,13 @@ S_PostTrainingChat:
     return;  
   
 S_DefaultGreeting:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     if (para_2nd01 < 7) {  
         mes "Ah~ So bored.";  
         mes "You're not the one Ur sent, are you?";  
         mes "Oh~ That's okay.";  
         next;  
-        mes "[Johan]";  
+        mes "<B>[ Johan ]</B>";  
         mes "This is Glast Heim Abbey.";  
         mes "Be careful, there are a lot of lost souls around here.";  
     }  
@@ -213,7 +216,7 @@ S_DefaultGreeting:
         mes "Ugh, I still haven't found the thing I lost.";  
         mes "Hmm... I may need to wait for the next trainee before I can start looking again... Eep!";  
         next;  
-        mes "[Johan]";  
+        mes "<B>[ Johan ]</B>";  
         mes "Uh... You didn't hear that did you?";  
         mes "Hahahahahahaha!!!";  
         mes "Hahahahaha!!";  
@@ -221,7 +224,7 @@ S_DefaultGreeting:
         switch(select("Quest Management:Just visiting:Leave")) {  
             case 1: callsub S_QuestManagement; break;  
             case 2:  
-                mes "[Johan]";  
+                mes "<B>[ Johan ]</B>";  
                 mes "Thanks for stopping by!";  
                 break;  
             case 3: break;  
@@ -230,7 +233,7 @@ S_DefaultGreeting:
     return;  
   
 S_HealPlayer:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "-Johan's holy blessing restores your strength.-";  
     npcskill "AL_HEAL",10,99,60;  
     percentheal 100,100;  
@@ -238,7 +241,7 @@ S_HealPlayer:
   
 // Quest Management Functions  
 S_QuestManagement:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "What do you need help with regarding your abbey training?";  
     next;  
     switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
@@ -250,7 +253,7 @@ S_QuestManagement:
     return;  
   
 S_ViewCurrentQuest:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Your current abbey training progress:";  
     mes " ";  
       
@@ -280,18 +283,18 @@ S_ViewCurrentQuest:
   
 S_AbandonQuest:  
     if (para_2nd01 < 7 || para_2nd01 > 9) {  
-        mes "[Johan]";  
+        mes "<B>[ Johan ]</B>";  
         mes "You don't have any active abbey training to abandon.";  
         return;  
     }  
       
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "^FF0000Warning:^000000 Abandoning will reset your current progress!";  
     mes "Are you sure you want to give up? The abbey needs to be cleansed!";  
     next;  
       
     if (select("Yes, abandon current training:No, continue training") == 2) {  
-        mes "[Johan]";  
+        mes "<B>[ Johan ]</B>";  
         mes "Good choice! These evil spirits won't banish themselves!";  
         return;  
     }  
@@ -299,7 +302,7 @@ S_AbandonQuest:
     // Reset quest progression  
     switch(para_2nd01) {  
         case 7:  
-            mes "[Johan]";  
+            mes "<B>[ Johan ]</B>";  
             mes "You're already at the beginning of abbey training.";  
             return;  
         case 8:  
@@ -312,12 +315,12 @@ S_AbandonQuest:
             break;  
     }  
       
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Abbey training progress reset. You can restart anytime.";  
     return;  
   
 S_QuestStatus:  
-    mes "[Johan]";  
+    mes "<B>[ Johan ]</B>";  
     mes "Let me check your hunting progress...";  
     mes " ";  
       

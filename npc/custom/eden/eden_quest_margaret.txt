@@ -22,6 +22,9 @@
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
 mid_camp,212,229,3	script	Dispatched Instructor#06	4_F_HUWOMAN,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
     switch(para_2nd01) {  
         case 22: callsub S_InitialQuestStart; break;  
         case 23: case 24: case 25: case 26: callsub S_InvestigationProgress; break;  
@@ -34,35 +37,35 @@ mid_camp,212,229,3	script	Dispatched Instructor#06	4_F_HUWOMAN,{
     close;  
   
 S_InitialQuestStart:  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "The proof that you have there.";  
     mes "You're here in paradise.";  
     mes "Instructor Ur sent you?";  
     next;  
     if (select("Yes.", "No.") == 2) {  
-        mes "[Margaret]";  
+        mes "<B>[ Margaret ]</B>";  
         mes "Oh, my mistake.";  
         return;  
     }  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "How do you do?";  
     mes "Oh, so you're here for the training from Instructor Ur.";  
     next;  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Ok, I'm in a bit of a situation right now so I asked Instructor Ur to use his missions to help.";  
     next;  
     select("A situation?");  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Yes, ";  
     mes "Find Mine and do what he asks you.";  
     next;  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "We dispatched him to do something and he hasn't done it yet so I'm guessing he's either chickened out or failed.";  
     next;  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "So can you find him out there in Splendide Field?";  
     next;  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Find him and figure out what the heck he's up to please.";  
     para_2nd01 = 23;  
     erasequest 7233;  
@@ -70,14 +73,14 @@ S_InitialQuestStart:
     return;  
   
 S_InvestigationProgress:  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Can you find those two brothers?";  
     mes "Find out what's up with them.";  
     next;  
     switch(select("Quest Management:Still investigating:Leave")) {  
         case 1: callsub S_QuestManagement; break;  
         case 2:  
-            mes "[Margaret]";  
+            mes "<B>[ Margaret ]</B>";  
             mes "Please hurry and find out what's happening with Mine and Meeru.";  
             break;  
         case 3: break;  
@@ -85,12 +88,12 @@ S_InvestigationProgress:
     return;  
   
 S_InvestigationComplete:  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "So what's up?!";  
     next;  
     mes "- You tell her about Meeru and Mine. -";  
     next;  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Yeah? Oh what?";  
     mes "This is not really...";  
     mes "Ok I'll go deal with them.";  
@@ -102,10 +105,10 @@ S_InvestigationComplete:
     // Claim reward  
     getexp .base_exp[0], .job_exp[0];  
     getitem .item_reward[0], .item_amount[0];  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Well, whatever the Nepenthes and Pinguicula proof has been collected.";  
     next;  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Your training is done so go back and talk to Instructor Ur.";  
     mes "The expedition camp is more organized now thanks to your investigation!";  
     para_2nd01 = 29;  
@@ -114,22 +117,22 @@ S_InvestigationComplete:
     return;  
   
 S_TrainingComplete:  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Well, whatever the Nepenthes and Pinguicula proof has been collected.";  
     next;  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Your training is done so go back and talk to Instructor Ur.";  
     return;  
   
 S_PostTrainingChat:  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "How are your adventures going?";  
     mes "The expedition camp is running much smoother now.";  
     next;  
     switch(select("Quest Management:Just chatting:Leave")) {  
         case 1: callsub S_QuestManagement; break;  
         case 2:  
-            mes "[Margaret]";  
+            mes "<B>[ Margaret ]</B>";  
             mes "Take care in your future expeditions!";  
             break;  
         case 3: break;  
@@ -137,7 +140,7 @@ S_PostTrainingChat:
     return;  
   
 S_DefaultGreeting:  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     if (para_2nd01 < 22) {  
         mes "Oh, sorry.";  
         mes "I don't know much about the life of an adventurer.";  
@@ -149,7 +152,7 @@ S_DefaultGreeting:
         switch(select("Quest Management:Just visiting:Leave")) {  
             case 1: callsub S_QuestManagement; break;  
             case 2:  
-                mes "[Margaret]";  
+                mes "<B>[ Margaret ]</B>";  
                 mes "Thanks for stopping by the expedition camp.";  
                 break;  
             case 3: break;  
@@ -159,7 +162,7 @@ S_DefaultGreeting:
   
 // Quest Management Functions  
 S_QuestManagement:  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "What do you need help with regarding your expedition training?";  
     next;  
     switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
@@ -171,7 +174,7 @@ S_QuestManagement:
     return;  
   
 S_ViewCurrentQuest:  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Your current expedition training progress:";  
     mes " ";  
       
@@ -201,18 +204,18 @@ S_ViewCurrentQuest:
   
 S_AbandonQuest:  
     if (para_2nd01 < 22 || para_2nd01 > 27) {  
-        mes "[Margaret]";  
+        mes "<B>[ Margaret ]</B>";  
         mes "You don't have any active expedition training to abandon.";  
         return;  
     }  
       
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "^FF0000Warning:^000000 Abandoning will reset your current progress!";  
     mes "Are you sure you want to give up? We need to know what happened to those brothers!";  
     next;  
       
     if (select("Yes, abandon current training:No, continue training") == 2) {  
-        mes "[Margaret]";  
+        mes "<B>[ Margaret ]</B>";  
         mes "Good choice! This mystery won't solve itself!";  
         return;  
     }  
@@ -220,7 +223,7 @@ S_AbandonQuest:
     // Reset quest progression  
     switch(para_2nd01) {  
         case 22:  
-            mes "[Margaret]";  
+            mes "<B>[ Margaret ]</B>";  
             mes "You're already at the beginning of expedition training.";  
             return;  
         case 23: case 24: case 25: case 26:  
@@ -232,12 +235,12 @@ S_AbandonQuest:
             break;  
     }  
       
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Expedition training progress reset. You can restart anytime.";  
     return;  
   
 S_QuestStatus:  
-    mes "[Margaret]";  
+    mes "<B>[ Margaret ]</B>";  
     mes "Let me check your investigation progress...";  
     mes " ";  
       

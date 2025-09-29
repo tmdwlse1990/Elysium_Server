@@ -21,10 +21,11 @@
 //= 2.4 Adds quest management, progression, and warp points to 
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
-
 moc_para01,13,26,5	script	[ Instructor ]#2nd01	4_M_KNIGHT_BLACK,{  
-	mes "[Instructor Ur]";  
-	  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	mes "<B>[ Instructor Ur ]</B>";  
 	// Check Eden Group membership  
 	if (!callfunc("F_HasEdenGroupMark")) {  
 		callsub S_NonMemberMessage;  
@@ -58,11 +59,11 @@ S_NonMemberMessage:
 	mes "I see you're not one of our agents?";  
 	mes "Are you interested in joining us?";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "There are no fees to join!";  
 	mes "We are brokers that send help where help is needed. More adventurers like you means more profit.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "If you're interested, talk to Raim.";  
 	mes "Raim's a good guy.";  
 	mes "Hahaha..";  
@@ -76,7 +77,7 @@ S_InitialConversation:
 	switch(select("What are you doing here?:It's nothing.:Quest Management")) {  
 		case 1: callsub S_ExplainRole; break;  
 		case 2:  
-			mes "[Instructor Ur]";  
+			mes "<B>[ Instructor Ur ]</B>";  
 			mes "I guess I have no business with you then.";  
 			break;  
 		case 3: callsub S_QuestManagement; break;  
@@ -84,20 +85,20 @@ S_InitialConversation:
 	return;  
   
 S_ExplainRole:  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Well, I'm an instructor for Eden Group.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "I'm here to give you missions based on your current base level.";  
 	mes "These missions are not very difficult to do.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "I am the senior instructor here at Eden Group.";  
 	mes "What do you say are you up for the challenge?";  
 	next;  
 	switch(select("Not today I'm not.:Okay, I'll try.:Quest Help")) {  
 		case 1:  
-			mes "[Instructor Ur]";  
+			mes "<B>[ Instructor Ur ]</B>";  
 			mes "Really?";  
 			mes "That's so sad.";  
 			mes "When you finish these missions I will even give you a pretty decent reward.";  
@@ -108,16 +109,16 @@ S_ExplainRole:
 	return;  
   
 S_AssignInitialQuest:  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Yeah!";  
 	mes "Ok, let me check what mission you should get ok?";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	  
 	if (BaseLevel < 60) {  
 		mes "Well... I know that you've got the heart but you're just a little too weak to help.";  
 		next;  
-		mes "[Instructor Ur]";  
+		mes "<B>[ Instructor Ur ]</B>";  
 		mes "Sorry, but your basic level should be at least 60 to help with these missions.";  
 	}  
 	else if (BaseLevel < 70) {  
@@ -137,21 +138,21 @@ S_AssignInitialQuest:
 S_AssignComodo:  
 	mes "Ok, I guess you're the bare minimum level for these missions.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Based on your level, I think that the Comodo area suits you.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Do you know where Comodo is?";  
 	mes "You can get there by going to Morocc and then through Pharos Lighthouse.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Comodo is a small city on the coast with many caves.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Look for the cave located to the north. There's someone there named Romeo.";  
 	mes "You know? As in Romeo, Romeo, wherefore art thou Romeo.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Go there and get the mission from him.";  
 	mes "Well, then come back here alive when you're done!";  
 	para_2nd01 = 1;  
@@ -163,14 +164,14 @@ S_AssignGlastHeim:
 	mes "Your level would suggest that Comodo is just too easy for you.";  
 	mes "Yeah, here we go.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Do you know where Glast Heim is?";  
 	mes "If there was a tragic accident now, the capital of the Rune-Midgarts Kingdom could revert back to there.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Well, if it wasn't infested with undead monsters, it would become the new capitol of Rune-Midgarts.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Please, come back alive.";  
 	para_2nd01 = 7;  
 	setquest 7219;// Advanced Training at Glast Heim  
@@ -180,12 +181,12 @@ S_AssignEinbroch:
 	mes "Ah, ok so for you...";  
 	mes "Hmm where do I send you?";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "There is an industrial city called Einbroch.";  
 	mes "You know it? It's a city covered in smog.";  
 	mes "It's a pretty gloomy city come to think of it.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Anyways, go to Einbroch and find the Dispatched Instructor there. He should be in the field south of the main city.";  
 	setquest 7223;// Advanced Training in Einbroch  
 	para_2nd01 = 12;  
@@ -199,7 +200,7 @@ S_QuestInProgress:
 	switch(select("Quest Management:I'm on my way:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Instructor Ur]";  
+			mes "<B>[ Instructor Ur ]</B>";  
 			mes "Good luck out there!";  
 			break;  
 		case 3: break;  
@@ -210,16 +211,16 @@ S_ComodoComplete:
 	mes "Oh, there he is.";  
 	mes "Romeo seems to be back from his field report.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "We have rewards for you.";  
 	mes "I'm sure Romeo gave you some items, but we brought more useful things.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Do you know where the weapon storage is at?";  
 	mes "Go out through that large blue door and walk to the end of the hallway.";  
 	mes "Ask the Blacksmith, and he will give you new equipment.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "And the 2nd stage training and missions start at level 70, so come back then.";  
 	mes "Don't forget, I'll be waiting for you.";  
 	para_2nd01 = 6;  
@@ -235,7 +236,7 @@ S_SecondStageOffer:
 		switch(select("I want to start training.:I'm just visiting.:Quest Management")) {  
 			case 1: callsub S_AssignSecondStage; break;  
 			case 2:  
-				mes "[Instructor Ur]";  
+				mes "<B>[ Instructor Ur ]</B>";  
 				mes "Really? At your level, I think you can easily complete the top class missions..";  
 				mes "I'll be here if you change your mind.";  
 				break;  
@@ -251,7 +252,7 @@ S_SecondStageOffer:
 		switch(select("Quest Management:Just checking:Leave")) {  
 			case 1: callsub S_QuestManagement; break;  
 			case 2:  
-				mes "[Instructor Ur]";  
+				mes "<B>[ Instructor Ur ]</B>";  
 				mes "Come back when you're ready!";  
 				break;  
 			case 3: break;  
@@ -260,12 +261,12 @@ S_SecondStageOffer:
 	return;  
   
 S_AssignSecondStage:  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Hmm... You have a good form!";  
 	mes "Let me see....";  
 	mes "Which location would suit you...?";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	if (BaseLevel < 80) {  
 		callsub S_AssignGlastHeimSecond;  
 	}  
@@ -283,19 +284,19 @@ S_AssignGlastHeimSecond:
 	mes "If it wasn't for that terrible accident, Glast Heim would still be";  
 	mes "the capital of Rune-Midgarts, not Prontera.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Anyways, that ancient castle is now full of undead monsters.";  
 	mes "It's especially bad around the Abbey in the south.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "All of those undead monsters come from the underground graveyard";  
 	mes "Well... I guess you don't have to go all the way into the graveyard...";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Once you get to the Abbey you'll see our unit member stationed in front of the entrance.";  
 	mes "Follow his instructions to help clear out that area.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Please come back alive.";  
 	para_2nd01 = 7;  
 	setquest 7219;// Advanced Training at Glast Heim  
@@ -306,12 +307,12 @@ S_GlastHeimComplete:
 	mes "I just got a message from Johan.";  
 	mes "I think he's not telling me something, but I can't figure out what that is.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Anyways, good job. I'm glad you're not hurt";  
 	mes "The Blacksmith BK said he'll reinforce your weapon.";  
 	next;  
 	callsub S_Para2;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "You know where the Blacksmith is at right??";  
 	mes "Go out through the blue door, to the end of the hallway.";  
 	mes "BK is a great blacksmith, he'll make your weapon stronger.";  
@@ -328,7 +329,7 @@ S_ThirdStageOffer:
 		switch(select("I came for more training.:I'm just visiting.:Quest Management")) {  
 			case 1: callsub S_AssignThirdStage; break;  
 			case 2:  
-				mes "[Instructor Ur]";  
+				mes "<B>[ Instructor Ur ]</B>";  
 				mes "Really? At your level, I think you can easily complete the top class missions..";  
 				mes "I'll be here if you change your mind.";  
 				break;  
@@ -343,7 +344,7 @@ S_ThirdStageOffer:
 		switch(select("Quest Management:Just checking:Leave")) {  
 			case 1: callsub S_QuestManagement; break;  
 			case 2:  
-				mes "[Instructor Ur]";  
+				mes "<B>[ Instructor Ur ]</B>";  
 				mes "Come back when you're ready!";  
 				break;  
 			case 3: break;  
@@ -352,11 +353,11 @@ S_ThirdStageOffer:
 	return;  
   
 S_AssignThirdStage:  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Hmm... You have a good form!";  
 	mes "Let me see....";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	if (BaseLevel < 90) {  
 		callsub S_Quest7990;  
 	}  
@@ -370,12 +371,12 @@ S_EinbrochComplete:
 	mes "I just received a message from Kiren.";  
 	mes "How was he? He didn't throw a tantrum for waking him up?";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Anyways, good job. I'm glad you're not hurt.";  
 	mes "The Blacksmith BK said he'll reinforce your weapon.";  
 	next;  
 	callsub S_Para2;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "You know where the Blacksmith is at right?";  
 	mes "Go out through the blue door, to the end of the hallway.";  
 	mes "BK is a great blacksmith, he'll make your weapon stronger.";  
@@ -392,7 +393,7 @@ S_FourthStageOffer:
 		switch(select("I want to continue training.:I'm just visiting.:Quest Management")) {  
 			case 1: callsub S_AssignFourthStage; break;  
 			case 2:  
-				mes "[Instructor Ur]";  
+				mes "<B>[ Instructor Ur ]</B>";  
 				mes "Really? At your level, I think you can easily complete the top class missions...";  
 				mes "I'll be here if you change your mind.";  
 				break;  
@@ -407,7 +408,7 @@ S_FourthStageOffer:
 		switch(select("Quest Management:Just checking:Leave")) {  
 			case 1: callsub S_QuestManagement; break;  
 			case 2:  
-				mes "[Instructor Ur]";  
+				mes "<B>[ Instructor Ur ]</B>";  
 				mes "Come back when you're ready!";  
 				break;  
 			case 3: break;  
@@ -416,7 +417,7 @@ S_FourthStageOffer:
 	return;  
   
 S_AssignFourthStage:  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	callsub S_Quest89100;  
 	return;  
   
@@ -426,12 +427,12 @@ S_IceDungeonComplete:
 	mes "The Blacksmith BK said he'll reinforce your weapon.";  
 	next;  
 	callsub S_Para2;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "You know where the Blacksmith is at right?";  
 	mes "Go out through the blue door, to the end of the hallway.";  
 	mes "BK is a great blacksmith, he'll make your weapon stronger.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Good job!";  
 	para_2nd01 = 21;  
 	erasequest 7232;  
@@ -441,17 +442,17 @@ S_ExpeditionComplete:
 	mes "Congratulations on completing all training stages!";  
 	mes "How was the Expedition? From the looks of it, it must've been pretty tough.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Good job...";  
 	mes "The Blacksmith BK said he'll reinforce your weapon.";  
 	next;  
 	callsub S_Para2;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "You know where the Blacksmith is at right?";  
 	mes "Go out through the blue door, to the end of the hallway.";  
 	mes "BK is a great blacksmith, he'll make your weapon stronger.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "By the way, it looked like Michael had something to tell you as well";  
 	mes "Go talk to him, he's at the weapon storage as well.";  
 	mes "Go ahead.";  
@@ -463,14 +464,14 @@ S_AllTrainingComplete:
 	mes "Good job.";  
 	mes "Oh, if you haven't reinforced your weapon yet, go talk to BK.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "You've completed all available training missions.";  
 	mes "Keep up the excellent work!";  
 	next;  
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Instructor Ur]";  
+			mes "<B>[ Instructor Ur ]</B>";  
 			mes "Keep making Eden Group proud!";  
 			break;  
 		case 3: break;  
@@ -484,7 +485,7 @@ S_UnknownState:
 	switch(select("Quest Management:Report Issue:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Instructor Ur]";  
+			mes "<B>[ Instructor Ur ]</B>";  
 			mes "Please contact a GM about your quest state.";  
 			break;  
 		case 3: break;  
@@ -493,7 +494,7 @@ S_UnknownState:
   
 // Quest Management Functions  
 S_QuestManagement:  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "What do you need help with regarding your advanced training?";  
 	next;  
     switch(select("View Available Quests:View Active Quests:Abandon Quest:Cancel")) {  
@@ -505,7 +506,7 @@ S_QuestManagement:
 	return;  
   
 S_ViewAvailableQuests:  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Your current advanced training progress:";  
 	mes " ";  
 	  
@@ -562,7 +563,7 @@ S_ViewAvailableQuests:
 	return;  
   
 S_ViewActiveQuests:  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Let me check your current training status...";  
 	mes " ";  
 	  
@@ -582,18 +583,18 @@ S_ViewActiveQuests:
 
 S_AbandonQuest:  
 	if (para_2nd01 < 1 || para_2nd01 > 31) {  
-		mes "[Instructor Ur]";  
+		mes "<B>[ Instructor Ur ]</B>";  
 		mes "You don't have any active advanced training to abandon.";  
 		return;  
 	}  
 	  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "^FF0000Warning:^000000 Abandoning will only clear your current mission progress!";  
 	mes "Are you sure you want to give up your current assignment?";  
 	next;  
 	  
 	if (select("Yes, abandon current mission:No, continue training") == 2) {  
-		mes "[Instructor Ur]";  
+		mes "<B>[ Instructor Ur ]</B>";  
 		mes "Good choice! Complete your current assignment!";  
 		return;  
 	}  
@@ -636,12 +637,12 @@ S_AbandonQuest:
 			break;  
 	}  
 	  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Current mission abandoned. You can restart this step anytime.";  
 	return;
 	
 S_TrainingInfo:  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Advanced Training Information:";  
 	mes " ";  
 	mes "^0000FF1st Stage^000000: Comodo (Level 60-69)";  
@@ -650,14 +651,14 @@ S_TrainingInfo:
 	mes "^0000FF4th Stage^000000: Ice Dungeon (Level 90-99)";  
 	mes "^0000FF5th Stage^000000: Expedition (Level 100+)";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Each stage provides valuable experience and equipment upgrades.";  
 	mes "Complete them in order for the best results.";  
 	return;  
   
 S_Para2:  
 	if (para_2nd02 == 0) {  
-		mes "[Instructor Ur]";  
+		mes "<B>[ Instructor Ur ]</B>";  
 		mes "I just realized... this was your first mission, wasn't it?";  
 		mes "You must not have gotten the basic equipment yet, right?";  
 		mes "Pick them up at the weapon storage.";  
@@ -672,18 +673,18 @@ S_Quest7990:
 	mes "You must be getting a hang of this...";  
 	mes "Let's go with a simple mission this time";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "There is an industrial city called Einbroch.";  
 	mes "You've heard of it? It's a city clouded with pollution.";  
 	mes "You'll appreciate the environment here so much more after visiting that city...";  
 	mes "We should all be thankful.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "Anyways, go out to the field south of Einbroch and you'll see the Dispatched Instructor.";  
 	mes "I'm sure he'll recognize you first.";  
 	mes "Don't forget to bring the Eden Group badge.";  
 	next;  
-	mes "[Instructor Ur]";  
+	mes "<B>[ Instructor Ur ]</B>";  
 	mes "The city's pollution is unbearable";  
 	mes "But the surrounding fields are relatively clean...";  
 	mes "This should be pretty easy for you.";  
@@ -697,7 +698,7 @@ S_Quest89100:
 		mes "Hmm...";  
 		mes "You seem like a cool-headed person. What do you think about the ice caves?";  
 		next;  
-		mes "[Instructor Ur]";  
+		mes "<B>[ Instructor Ur ]</B>";  
 		mes "North of the city of Rachel is a cave filled with ice.";  
 		mes "Find the Dispatched Instructor there.";  
 		para_2nd01 = 17;  
@@ -708,27 +709,27 @@ S_Quest89100:
 		mes "I don't even know where to send you now.";  
 		mes "I'm sure you are familiar with most places around here";  
 		next;  
-		mes "[Instructor Ur]";  
+		mes "<B>[ Instructor Ur ]</B>";  
 		mes "Then, should I send you somewhere farther this time?";  
 		mes "There is a Cat Paw Agent here.";  
 		mes "Do you see him over there?";  
 		next;  
-		mes "[Instructor Ur]";  
+		mes "<B>[ Instructor Ur ]</B>";  
 		mes "Through him, you can get to Ash Vacuum pretty easily.";  
 		mes "Since there is an Expedition Camp there...";  
 		next;  
-		mes "[Instructor Ur]";  
+		mes "<B>[ Instructor Ur ]</B>";  
 		mes "All you have to do is find the Eden Group agent there.";  
 		mes "Tell him I sent you, and he'll give you instructions.";  
 		mes "You can explore the new world";  
 		mes "It's like a vacation isn't it?";  
 		next;  
-		mes "[Instructor Ur]";  
+		mes "<B>[ Instructor Ur ]</B>";  
 		mes "Hahaha!";  
 		mes ".. Maybe I'll go instead of sending you.";  
 		mes "Anyways, their names are Ma~ something... I don't know.";  
 		next;  
-		mes "[Instructor Ur]";  
+		mes "<B>[ Instructor Ur ]</B>";  
 		mes "So, the mission, once again, is finding our agent at the Midgard Expedition Camp.";  
 		mes "Isn't this the easiest mission you've ever had?";  
 		mes "Don't forget my present when you come back~!";  

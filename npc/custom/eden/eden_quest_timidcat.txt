@@ -22,9 +22,12 @@
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
 prt_sewb1,131,262,3	script	Timid Cat#para04	4_M_BABYCAT,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
 	// Check Eden Group membership  
 	if (!callfunc("F_HasEdenGroupMark")) {  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Meow...";  
 		mes "Who are you meow?";  
 		mes "Why are you here meow?";  
@@ -34,7 +37,7 @@ prt_sewb1,131,262,3	script	Timid Cat#para04	4_M_BABYCAT,{
 	// Quest state management  
 	switch(para_suv01) {  
 	case 0: case 1: case 2: case 3: case 4: case 5:  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Meow...";  
 		mes "Who are you meow?";  
 		mes "Why are you here meow?";  
@@ -42,7 +45,7 @@ prt_sewb1,131,262,3	script	Timid Cat#para04	4_M_BABYCAT,{
 		switch(select("Quest Management:Just saying hello:Leave")) {  
 			case 1: callsub S_QuestManagement; break;  
 			case 2:  
-				mes "[Timid Cat]";  
+				mes "<B>[ Timid Cat ]</B>";  
 				mes "Take care and good luck with your adventures meow!";  
 				break;  
 			case 3: break;  
@@ -77,11 +80,11 @@ prt_sewb1,131,262,3	script	Timid Cat#para04	4_M_BABYCAT,{
   
 // Initial quest dialog and fish selection  
 S_InitialDialog:  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "Come on meow...";  
 	mes "I may be standing here and talking to you like this meow but I am a still a cat meow...";  
 	next;  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "Dear human you are";  
 	mes "a member of my group?";  
 	mes "Re... really...!";  
@@ -90,39 +93,39 @@ S_InitialDialog:
 	  
 	switch (select("Beautiful Saury:Fresh Mackerel:Beautiful Tuna:Quest Help")) {  
 	case 1:  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Big and beautiful Saury...";  
 		mes "I am shy.";  
 		close;  
 		  
 	case 2:  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "I want to eat mackerel.";  
 		mes "Where are the big and fresh mackerel meow?";  
 		close;  
 		  
 	case 3:  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Do you know the big and beautiful tuna?";  
 		mes "Dear Boya sent you here for sure.";  
 		mes "How do I explain this...?";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Did something pass under my feet just now meow?";  
 		mes "Do you want to kill a cat.";  
 		mes "The environment here is terrible.";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Anyway I'm doing what I was assigned to do.";  
 		mes "So hi, hello and welcome.";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Did you come here to have a battle?";  
 		mes "Hunt those Thief Bugs, hurry up!";  
 		mes "Hunt at least 10!";  
 		mes "Meooow!";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "I really don't like those nasty crawlers...";  
 		mes "Meow~!";  
 		next;  
@@ -143,7 +146,7 @@ S_InitialDialog:
 // Thief Bug hunting phase  
 S_ThiefBugHunt:  
 	if (checkquest(7134,HUNTING) == 2) {  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Now do you understand the dirty and humid underground sewers?";  
 		mes "Eeeh look what's next meow.";  
 		mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
@@ -153,21 +156,21 @@ S_ThiefBugHunt:
 		// Claim reward
 		getexp .base_exp[0], .job_exp[0];  
 		getitem .item_reward[0], .item_amount[0];
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "It's a symbol of dirt next to those Thief Bugs.";  
 		mes "Hunt some Tarou to make the sewers cleaner.";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "For our members joining this mission.";  
 		mes "Hunt 10 Tarou.";  
 		mes "Easy, ain't it?";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Why didn't I ask you at once? kkk..??";  
 		mes "Umm........";  
 		mes "Because it's just a training mission.";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Training missions are hard and annoying.";  
 		mes "So go hurry and hunt 10 Tarou.";  
 		para_suv01 = 8;  
@@ -175,11 +178,11 @@ S_ThiefBugHunt:
 		close;  
 	}  
 	  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "Clean the sewers. Now the first step is hunting Thief Bugs.";  
 	mes "Isn't that simple, meow?";  
 	next;  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "Take care to check your map so you don't get lost.";  
 	mes "It's a service meeow.";  
 	next;  
@@ -193,7 +196,7 @@ S_ThiefBugHunt:
 // Tarou hunting phase  
 S_TarouHunt:  
 	if (checkquest(7135,HUNTING) == 2) {  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Great job~!";  
 		mes "How'd you get rid of those dirty bugs and Tarou. You are brave.";  
 		mes "Base Experience: "+ F_Insertcomma(.base_exp[1]) +".";  
@@ -203,20 +206,20 @@ S_TarouHunt:
 		// Claim reward
 		getexp .base_exp[1], .job_exp[1];  
 		getitem .item_reward[22], .item_amount[1];
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Now have courage because I'm sending you to a stronger opponent.";  
 		mes "But first in order to test your courage, hunt Familiars.";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Familiars will bite you so be careful.";  
 		mes "They are mean.";  
 		mes "They scare me so just hunt 5 and that should be enough.";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "That will show me that you are brave.";  
 		mes "Meow~!";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "I don't have anything...";  
 		mes "......";  
 		mes "What do you want meow? Familiars are waiting to fight with you, hurry up, move~!";  
@@ -225,11 +228,11 @@ S_TarouHunt:
 		close;  
 	}  
 	  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "If you can't kill the Tarou you might get all kinds of dirty diseases.";  
 	mes "So be proud of yourself and do your best to kill them.";  
 	next;  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "I will help you a little.";  
 	mes "Here, I have recovered your strength meow..";  
 	next;  
@@ -243,12 +246,12 @@ S_TarouHunt:
 // Familiar hunting phase  
 S_FamiliarHunt:  
 	if (checkquest(7136,HUNTING) == 2) {  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "You are great meow~";  
 		mes "You killed them so quickly!";  
 		mes "Meow...";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Now you are not scared of bugs and tarou at all.";  
 		mes "Thanks for participating in the Conquer the Culvert training mission.";  
 		mes "Base Experience: "+ F_Insertcomma(.base_exp[2]) +".";  
@@ -258,11 +261,11 @@ S_FamiliarHunt:
 		// Claim reward
 		getexp .base_exp[2], .job_exp[2];  
 		getitem .item_reward[22], .item_amount[2];
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Now go back to the headquarters and ask Instructor Boya to make sure he has the beautiful tuna...";  
 		mes "I will be waiting here.";  
 		next;  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Do you know how to get to the Eden Group Headquarters?";  
 		mes "Prontera is the closest city from here.";  
 		mes "Go to Prontera and find an Eden Group Teleporter.";  
@@ -271,11 +274,11 @@ S_FamiliarHunt:
 		close;  
 	}  
 	  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "Familiars are really scary.";  
 	mes "They're always flying.";  
 	next;  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "It's the last course so cheer up.";  
 	mes "I will help you a little.";  
 	mes "Here, I have recovered your strength meow..";  
@@ -289,17 +292,17 @@ S_FamiliarHunt:
   
 // Quest completion state  
 S_QuestComplete:  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "You've completed 'Conquer the Culvert'.";  
 	mes "Go back to the Eden Group headquarters to report to Boya.";  
 	next;  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "Boya might eat my tuna while he is waiting for you.";  
 	next;  
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Timid Cat]";  
+			mes "<B>[ Timid Cat ]</B>";  
 			mes "Take care and good luck with your adventures meow!";  
 			break;  
 		case 3: break;  
@@ -308,7 +311,7 @@ S_QuestComplete:
   
 // Default dialog for other states  
 S_DefaultDialog:  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "How are you meeow?";  
 	mes "Did you volunteer to conquer the Culvert?";  
 	mes "You are a member of the Eden Group for sure.";  
@@ -317,7 +320,7 @@ S_DefaultDialog:
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Timid Cat]";  
+			mes "<B>[ Timid Cat ]</B>";  
 			mes "Take care and good luck with your adventures meow!";  
 			break;  
 		case 3: break;  
@@ -333,7 +336,7 @@ S_HealPlayer:
   
 // Quest Management Functions (adapted from Talking Dog)  
 S_QuestManagement:  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "Meow! What do you need help with regarding your culvert training?";  
 	next;  
 	switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
@@ -345,7 +348,7 @@ S_QuestManagement:
 	return;  
   
 S_ViewCurrentQuest:  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "Your current culvert training progress:";  
 	mes " ";  
 	  
@@ -379,18 +382,18 @@ S_ViewCurrentQuest:
   
 S_AbandonQuest:  
 	if (para_suv01 < 6 || para_suv01 > 9) {  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Meow! You don't have any active culvert training to abandon.";  
 		return;  
 	}  
 	  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "^FF0000Warning:^000000 Abandoning will only clear your current hunting progress!";  
 	mes "Are you sure you want to give up? The sewers need your help meow!";  
 	next;  
 	  
 	if (select("Yes, abandon current hunt:No, continue training") == 2) {  
-		mes "[Timid Cat]";  
+		mes "<B>[ Timid Cat ]</B>";  
 		mes "Good choice meow! The sewer creatures won't defeat themselves!";  
 		return;  
 	}  
@@ -411,12 +414,12 @@ S_AbandonQuest:
 			break;  
 	}  
 	  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "Meow... Current hunt abandoned. You can restart this step anytime.";  
 	return;  
   
 S_QuestStatus:  
-	mes "[Timid Cat]";  
+	mes "<B>[ Timid Cat ]</B>";  
 	mes "Let me check your hunting progress meow...";  
 	mes " ";  
 	  

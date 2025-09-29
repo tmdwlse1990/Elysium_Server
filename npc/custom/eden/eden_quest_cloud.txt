@@ -22,27 +22,30 @@
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
 anthell01,29,264,5	script	Eden Member Cloud#para06	899,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
 	// Check Eden Group membership and quest state  
 	if (para_suv01 < 17) {  
 		if (callfunc("F_HasEdenGroupMark")) {  
-			mes "[Cloud]";  
+			mes "<B>[ Cloud ]</B>";  
 			mes "Oops.";  
 			mes "You are a member of my group.";  
 			mes "Why did you come here, are you looking for danger?";  
 			next;  
-			mes "[Cloud]";  
+			mes "<B>[ Cloud ]</B>";  
 			mes "One of the strongest boss monsters is in here.";  
 			mes "Be careful when exploring here.";  
 			close;  
 		}  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "What are you looking at?";  
 		mes "We are not related to each other, are we...";  
 		next;  
 		switch(select("Quest Management:Just passing by:Leave")) {  
 			case 1: callsub S_QuestManagement; break;  
 			case 2:  
-				mes "[Cloud]";  
+				mes "<B>[ Cloud ]</B>";  
 				mes "Take care in the desert heat!";  
 				break;  
 			case 3: break;  
@@ -80,56 +83,56 @@ anthell01,29,264,5	script	Eden Member Cloud#para06	899,{
   
 // Initial quest introduction  
 S_InitialQuest:  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "Hello?";  
 	mes "Why did you come here, looking for danger?";  
 	next;  
 	switch (select("Conquer Ant Hell:Just wanted to meet you:Where am I?:Quest Help")) {  
 	case 1:  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Uh. Conquer Ant Hell? Did you say that?";  
 		mes "You are a trainee.";  
 		mes "You have come to the right place.";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "At first I will explain about Ant Hell.";  
 		mes "Ants dug a cave in the sand and it is linked to the surface. That's Ant Hell.";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Sand flowed into the hole gradually.";  
 		mes "If anyone steps on the hole they will fall into the cave through the hole in the sand...";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "It's hard to survive from there.";  
 		mes "To us it seems like a normal happening so it isn't a matter of survival like to normal people.";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Many kinds of ants have come to live here.";  
 		mes "There is a boss monster named Maya so you should be more cautious.";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Ok let's try to hunt the weakest ant first.";  
 		mes "Pierre is the name of the weakest ant.";  
 		mes "They are just down here.";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "In the case of ants, they assist each other when attacked.";  
 		mes "Be careful and kill 15 Pierre ants.";  
 		para_suv01 = 18;  
 		changequest 7142,7143;  
 		close;  
 	case 2:  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "......";  
 		mes "Haha... are you joking?";  
 		mes "You are exhausted from the extremely hot weather in the desert.";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "I am a busy man.";  
 		mes "One of the trainees was planning to visit me but that person still hasn't showed yet. I am getting nervous.";  
 		close;  
 	case 3:  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Where you are?";  
 		mes "You are in Ant Hell southwest of Morocc.";  
 		mes "Morocc is the closest city, northeast of here.";  
@@ -143,14 +146,14 @@ S_InitialQuest:
 // Pierre hunting phase  
 S_PierreHunt:  
 	if (checkquest(7143,HUNTING) == 2) {  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Hey, what was it?";  
 		mes "Let me reward you.";  
 		mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
 		mes "Job Experience: "+ F_Insertcomma(.job_exp[0]) +".";  
 		mes "Item: "+ F_Insertcomma(.item_amount[0]) +"x "+ mesitemicon(.item_reward[0]) +".";  
 		next;  
-		mes "[Cloud]";
+		mes "<B>[ Cloud ]</B>";
 		// Claim reward  
 		getexp .base_exp[0], .job_exp[0];  
 		getitem .item_reward[0], .item_amount[0];
@@ -158,12 +161,12 @@ S_PierreHunt:
 		mes "Well, now let's hunt Andre as well.";  
 		mes "Ahah the way you're looking at me, 'why didn't I ask you to do this all at once' right?";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Ain't it more fun this way?";  
 		mes "Hey, now your next target is 15 Andre!";  
 		mes "You are strong so it will be fine!";  
 		next;
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "If you can't find Andre go deeper into the cave.";  
 		mes "Ah, and be careful of Maya.";  
 		para_suv01 = 19;  
@@ -171,7 +174,7 @@ S_PierreHunt:
 		close;  
 	}  
 	  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "What do you think of Ant Hell?";  
 	mes "Can you stay longer?";  
 	mes "Ok, I will recover your strength so, keep going.";  
@@ -186,38 +189,38 @@ S_PierreHunt:
 // Andre hunting phase  
 S_AndreHunt:  
 	if (checkquest(7144,HUNTING) == 2) {  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Great. You seem to have killed all of the Andre.";  
 		mes "Let me reward you.";  
 		mes "Base Experience: "+ F_Insertcomma(.base_exp[1]) +".";  
 		mes "Job Experience: "+ F_Insertcomma(.job_exp[1]) +".";  
 		mes "Item: "+ F_Insertcomma(.item_amount[1]) +"x "+ mesitemicon(.item_reward[1]) +".";  
 		next;  
-		mes "[Cloud]";
+		mes "<B>[ Cloud ]</B>";
 		// Claim reward  
 		getexp .base_exp[1], .job_exp[1];  
 		getitem .item_reward[1], .item_amount[1];
 		mes "How do you think about fighting ants?";  
 		mes "Was it good?";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Hey, cheer up.";  
 		mes "To conquer Ant Hell you have one step left.";  
 		mes "You might have guessed your next target already.";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Vitata!";  
 		mes "How can I say... He seems like honey.";  
 		mes "Pierre is a worker. Andre is a guardian and so... Vitata is like a mother.";    
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "They are really kind to kids and women but don't show any pity to ants.";  
 		mes "Hunt the Vitata who takes care of the ant eggs.";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "If somebody falls into Ant Hell it might be a bit safer than before.";  
 		mes "Now it's the last step so cheer up and let's kill 10 Vitata.";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "If you feel you're in too much danger. Just come back.";  
 		mes "I will heal you.";  
 		para_suv01 = 20;  
@@ -225,7 +228,7 @@ S_AndreHunt:
 		close;  
 	}  
 	  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "See, to cheer you up I will heal you until you finish the training.";  
 	mes "Chin up and cheer up.";  
 	next;  
@@ -239,11 +242,11 @@ S_AndreHunt:
 // Vitata hunting phase  
 S_VitataHunt:  
 	if (checkquest(7145,HUNTING) == 2) {  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Oh... it might have been an annoying fight.";  
 		mes "You finished so fast.";  
 		next;  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Good job. Go back to the headquarters and report.";  
 		mes "You've completed the training quickly.";  
 		mes "Let me reward you.";  
@@ -254,7 +257,7 @@ S_VitataHunt:
 		// Claim reward  
 		getexp .base_exp[2], .job_exp[2];  
 		getitem .item_reward[2], .item_amount[2];  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "You will get good news.";  
 		mes "You did a really good job even under the hot weather.";  
 		para_suv01 = 21;  
@@ -262,11 +265,11 @@ S_VitataHunt:
 		close;  
 	}  
 	  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "See, to cheer you up I will heal you until you finish the training.";  
 	mes "Chin up and cheer up.";  
 	next;  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "Just Vitata, isn't that an easy opponent?";  
 	mes "If you see Maya just run away.";  
 	next;  
@@ -279,11 +282,11 @@ S_VitataHunt:
   
 // Quest completion state  
 S_QuestComplete:  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "It's enough to say that you've conquered Ant Hell.";  
 	mes "Aren't you getting used to it here?";  
 	next;  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "Go back to the headquarters and report that you completed the mission, hurry up";  
 	mes "you will receive good news.";  
 	mes "You will receive the Eden Group uniform as well.";  
@@ -291,7 +294,7 @@ S_QuestComplete:
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Cloud]";  
+			mes "<B>[ Cloud ]</B>";  
 			mes "Keep up the excellent work with Eden Group!";  
 			break;  
 		case 3: break;  
@@ -300,7 +303,7 @@ S_QuestComplete:
   
 // Default dialog  
 S_DefaultDialog:  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "I am really proud of the Eden Group.";  
 	mes "Does the uniform look good on me?";  
 	mes "Haha...";  
@@ -308,7 +311,7 @@ S_DefaultDialog:
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Cloud]";  
+			mes "<B>[ Cloud ]</B>";  
 			mes "Keep up the excellent work with Eden Group!";  
 			break;  
 		case 3: break;  
@@ -324,7 +327,7 @@ S_HealPlayer:
   
 // Quest Management Functions  
 S_QuestManagement:  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "What do you need help with regarding your Ant Hell training?";  
 	next;  
 	switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
@@ -336,7 +339,7 @@ S_QuestManagement:
 	return;  
   
 S_ViewCurrentQuest:  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "Your current Ant Hell training progress:";  
 	mes " ";  
 	  
@@ -370,18 +373,18 @@ S_ViewCurrentQuest:
   
 S_AbandonQuest:  
 	if (para_suv01 < 17 || para_suv01 > 20) {  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "You don't have any active Ant Hell training to abandon.";  
 		return;  
 	}  
 	  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "^FF0000Warning:^000000 Abandoning will only clear your current hunting progress!";  
 	mes "Are you sure you want to give up? The ants need to be controlled!";  
 	next;  
 	  
 	if (select("Yes, abandon current hunt:No, continue training") == 2) {  
-		mes "[Cloud]";  
+		mes "<B>[ Cloud ]</B>";  
 		mes "Good choice! The ants won't defeat themselves!";  
 		return;  
 	}  
@@ -402,12 +405,12 @@ S_AbandonQuest:
 			break;  
 	}  
 	  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "Current hunt abandoned. You can restart this step anytime.";  
 	return;  
   
 S_QuestStatus:  
-	mes "[Cloud]";  
+	mes "<B>[ Cloud ]</B>";  
 	mes "Let me check your hunting progress in the desert heat...";  
 	mes " ";  
 	  

@@ -22,29 +22,32 @@
 //=		support multi-step training quests for players.. [Louis T Steinhil]
 //============================================================
 iz_dun04,43,46,3	script	Eden Member Callandiva	4_F_CRU,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
 	// Check Eden Group membership and quest state  
 	if (para_suv01 < 33) {  
 		if (callfunc("F_HasEdenGroupMark")) {  
-			mes "[Callandiva]";  
+			mes "<B>[ Callandiva ]</B>";  
 			mes "How did you get so deep in this ocean city?";  
 			mes "Ah, that symbol is of our group.";  
 			mes "You're a trainee for sure.";  
 			next;  
-			mes "[Callandiva]";  
+			mes "<B>[ Callandiva ]</B>";  
 			mes "What? You aren't?";  
 			mes "I... see... I see...";  
 			mes "Ok... keep going.";  
 			close;  
 		}  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "Mysteriously although we're under the sea you can still breathe here.";  
 		mes "Do you know why?";  
 		next;  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "Let's see due to the moisture my skin is so soft.";  
 		mes "My fingers and toes are not attached to each other amazing.";  
 		next;  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "I was really shocked and scared when the Eden Group dispatched me here.";  
 		mes "Now I love this environment so much.";  
 		mes "It's really calm...";  
@@ -52,7 +55,7 @@ iz_dun04,43,46,3	script	Eden Member Callandiva	4_F_CRU,{
 		switch(select("Quest Management:Just exploring:Leave")) {  
 			case 1: callsub S_QuestManagement; break;  
 			case 2:  
-				mes "[Callandiva]";  
+				mes "<B>[ Callandiva ]</B>";  
 				mes "Take care in the deep ocean waters!";  
 				break;  
 			case 3: break;  
@@ -86,27 +89,27 @@ iz_dun04,43,46,3	script	Eden Member Callandiva	4_F_CRU,{
   
 // Initial quest introduction  
 S_InitialQuest:  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "How did you get so deep in this ocean city?";  
 	mes "Ah, that symbol is of our group.";  
 	mes "You're a trainee for sure.";  
 	next;  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "Good to see you!";  
 	mes "Alright, look down.";  
 	mes "Ancient buildings are sleeping under the water. They were actually built under the sea.";  
 	next;  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "As you know we don't have any trouble living here.";  
 	mes "But if you see over there... yes right there.";  
 	next;  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "Can you see a humanoid fish with a very threatening spear?";  
 	mes "He is called a Merman and is a really professional warrior.";  
 	next;  
 	switch(select("Accept the mission:Quest Help:Not ready yet")) {  
 		case 1:  
-			mes "[Callandiva]";  
+			mes "<B>[ Callandiva ]</B>";  
 			mes "Okay, go and hunt 15 Merman.";  
 			mes "That will be your 1st training mission here.";  
 			para_suv01 = 34;  
@@ -116,7 +119,7 @@ S_InitialQuest:
 			callsub S_QuestManagement;  
 			break;  
 		case 3:  
-			mes "[Callandiva]";  
+			mes "<B>[ Callandiva ]</B>";  
 			mes "Come back when you're ready for the ocean city challenge.";  
 			close;  
 	}  
@@ -125,7 +128,7 @@ S_InitialQuest:
 // Merman hunting phase  
 S_MermanHunt:  
 	if (checkquest(7157,HUNTING) == 2) {  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "Oh, you came back~!";  
 		mes "Let me reward you.";  
 		mes "Base Experience: "+ F_Insertcomma(.base_exp[0]) +".";  
@@ -135,28 +138,28 @@ S_MermanHunt:
 		// Claim reward  
 		getexp .base_exp[0], .job_exp[0];  
 		getitem .item_reward[0], .item_amount[0];
-		mes "[Callandiva]";
+		mes "<B>[ Callandiva ]</B>";
 		mes "What did you think of those threatening Mermans?";  
 		mes "Actually, I thought that you would chicken out~";  
 		next;  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "Good your next opponent will be...~";  
 		mes "Yes, this one...";  
 		mes "The monster that is holding a trident.";  
 		next;  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "His main abilities are magical.";  
 		mes "The monster is called Strouf!";  
 		mes "Now, it's time to fight with a real magician!";  
 		next;
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "Try avoiding the Mermans and hunt 10 Strouf, kill them.";  
 		para_suv01 = 35;  
 		changequest 7157,7158;  
 		close;  
 	}  
 	  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "Oh are you tired?";  
 	mes "Mermans are not easy opponents.";  
 	mes "I will help you recover so cheer up.";  
@@ -171,7 +174,7 @@ S_MermanHunt:
 // Strouf hunting phase  
 S_StroufHunt:  
 	if (checkquest(7158,HUNTING) == 2) {  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "Did you kill all the Strouf already?";  
 		mes "I wasn't counting that you'd make it.";  
 		mes "I have eyes on the top of my head haha.";  
@@ -183,26 +186,26 @@ S_StroufHunt:
 		// Claim reward  
 		getexp .base_exp[1], .job_exp[1];  
 		getitem .item_reward[1], .item_amount[1];
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "Of course I'm just kidding.";  
 		mes "Don't look at me like that~ it was a joke~!";  
 		mes "Now you're feeling more at ease about this.";  
 		next;  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "Go back to the headquarters and report it.~";  
 		mes "You will receive the last uniform from the Eden Group headquarters.";    
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "This training mission is made for beginners.";  
 		mes "So it might be useless to you or not.";  
 		next;  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "Anyway you did great job!";  
 		para_suv01 = 36;  
 		changequest 7158,7159;  
 		close;  
 	}  
 	  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "Oh are you tired?";  
 	mes "Strouf are not easy opponents.";  
 	mes "I can help you recover so cheer up.";  
@@ -216,14 +219,14 @@ S_StroufHunt:
   
 // Quest completion state  
 S_QuestComplete:  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "I won't give help to you anymore.";  
 	mes "Go back to our headquarters and report about this training mission.";  
 	next;  
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Callandiva]";  
+			mes "<B>[ Callandiva ]</B>";  
 			mes "Keep up the excellent work with Eden Group!";  
 			break;  
 		case 3: break;  
@@ -232,15 +235,15 @@ S_QuestComplete:
   
 // Default dialog  
 S_DefaultDialog:  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "Mysteriously although we're under the sea you can still breathe here.";  
 	mes "Do you know why?";  
 	next;  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "Let's see due to the moisture my skin is so soft.";  
 	mes "My fingers and toes are not attached to each other amazing.";  
 	next;  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "I was really shocked and scared when the Eden Group dispatched me here.";  
 	mes "Now I love this environment so much.";  
 	mes "It's really calm...";  
@@ -248,7 +251,7 @@ S_DefaultDialog:
 	switch(select("Quest Management:Just chatting:Leave")) {  
 		case 1: callsub S_QuestManagement; break;  
 		case 2:  
-			mes "[Callandiva]";  
+			mes "<B>[ Callandiva ]</B>";  
 			mes "Keep up the excellent work with Eden Group!";  
 			break;  
 		case 3: break;  
@@ -264,7 +267,7 @@ S_HealPlayer:
   
 // Quest Management Functions  
 S_QuestManagement:  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "What do you need help with regarding your ocean city training?";  
 	next;  
 	switch(select("View Current Quest:Abandon Quest:Quest Status:Cancel")) {  
@@ -276,7 +279,7 @@ S_QuestManagement:
 	return;  
   
 S_ViewCurrentQuest:  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "Your current ocean city training progress:";  
 	mes " ";  
 	  
@@ -306,18 +309,18 @@ S_ViewCurrentQuest:
   
 S_AbandonQuest:  
 	if (para_suv01 < 33 || para_suv01 > 35) {  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "You don't have any active ocean city training to abandon.";  
 		return;  
 	}  
 	  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "^FF0000Warning:^000000 Abandoning will only clear your current hunting progress!";  
 	mes "Are you sure you want to give up? The ocean needs to be secured!";  
 	next;  
 	  
 	if (select("Yes, abandon current hunt:No, continue training") == 2) {  
-		mes "[Callandiva]";  
+		mes "<B>[ Callandiva ]</B>";  
 		mes "Good choice! The sea creatures won't defeat themselves!";  
 		return;  
 	}  
@@ -334,12 +337,12 @@ S_AbandonQuest:
 			break;  
 	}  
 	  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "Current hunt abandoned. You can restart this step anytime.";  
 	return;  
   
 S_QuestStatus:  
-	mes "[Callandiva]";  
+	mes "<B>[ Callandiva ]</B>";  
 	mes "Let me check your hunting progress in the ocean depths...";  
 	mes " ";  
 	  
