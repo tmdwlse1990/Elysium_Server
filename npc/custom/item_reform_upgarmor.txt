@@ -19,7 +19,7 @@ moc_para01,110,87,5	script	Armor Researcher#moc_para01	4_F_JOB_BLACKSMITH,{
 			setdialogsize(300,600);    
 			setdialogpospercent(50,25);
 			clear;            
-			mes "[ <B>Miriam</B> ]";          
+			mes "<B>[ Miriam ]</B>";          
 			.@count = getreformbaseitems("Upg_Armors");          
 
 			if (.@count == 0) {          
@@ -56,13 +56,14 @@ moc_para01,110,87,5	script	Armor Researcher#moc_para01	4_F_JOB_BLACKSMITH,{
 				if (getiteminfo(.@result_item$, ITEMINFO_ID) == -1) continue;        
 
 				// Display Result Item first with icon      
-				mes "^000000Result Item:^000000 " + mesitemicon(getiteminfo(.@result_item$, ITEMINFO_ID)) + " " + getitemname(getiteminfo(.@result_item$, ITEMINFO_ID));      
+				mes "^000000Result Item:^000000";      
+				mes "       * 1x " + mesitemicon(getiteminfo(.@result_item$, ITEMINFO_ID)) + " " + getitemname(getiteminfo(.@result_item$, ITEMINFO_ID));      
 
 				if (.@required_options > 0) {      
-					mes "Requires " + .@required_options + " random options on the item.";      
+					mes "       * Requires " + .@required_options + " random options on the item.";      
 				}      
 				if (!.@cards_allowed) {      
-					mes "^FF0000Warning: Cards are not allowed in this item!^000000";      
+					mes "^FF0000       * Warning: Cards are not allowed in this item!^000000";      
 				}                   
 				if (.@random_group$ != "") {      
 					mes "Random options will be applied from group: " + .@random_group$;      
@@ -70,18 +71,18 @@ moc_para01,110,87,5	script	Armor Researcher#moc_para01	4_F_JOB_BLACKSMITH,{
 
 				// Display refine change info      
 				if (.@refine_change < 0) {        
-					mes "^FF0000Refine level reduced by " + (-.@refine_change) + "^000000.";        
+					mes "^FF0000       * Refine level reduced by " + (-.@refine_change) + "^000000.";        
 				} else if (.@refine_change > 0) {        
-					mes "^00FF00Refine level increased by " + .@refine_change + "^000000.";        
+					mes "^00FF00       * Refine level increased by " + .@refine_change + "^000000.";        
 				} else {        
-					mes "Refine level unchanged.";        
+					mes "       * Refine level unchanged.";        
 				}            
 
 				if (.@clear_slots) {      
-					mes "^FF0000Warning: Cards and socket enchants will be removed!^000000";      
+					mes "^FF0000       * Warning: Cards and socket enchants will be removed!^000000";      
 				}      
 				if (.@remove_enchant) {      
-					mes "^FF0000Warning: Enchantgrade will be removed!^000000";      
+					mes "^FF0000       * Warning: Enchantgrade will be removed!^000000";      
 				}    
 
 				// Display Materials section      
@@ -161,13 +162,13 @@ moc_para01,110,87,5	script	Armor Researcher#moc_para01	4_F_JOB_BLACKSMITH,{
 			}
 
         case 2:  
-            mes "[ <B>Miriam</B> ]";  
+            mes "<B>[ Miriam ]</B>";  
 			mes "Opening Item Reform";  
 			close2;    
 			item_reform("Upg_Armors");    
 			end;  
         case 3:  
-            mes "[ <B>Miriam</B> ]";  
+            mes "<B>[ Miriam ]</B>";  
             mes "If you need mods, come back.";  
             mes "You are welcome any time you help us with our research.";  
             close;			

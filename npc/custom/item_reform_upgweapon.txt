@@ -1,0 +1,181 @@
+//===== rAthena Script ======================================= 
+//= Reform NPCs in rgsr_in
+//===== Changelogs: ==========================================
+//= 1.0 First Version. [Louis T Steinhil]
+//============================================================
+moc_para01,110,83,5	script	Weapon Researcher#moc_para01	REPAIR_ROBOT,{  
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);	
+    mes "<B>[ C3PO ]</B>";	
+    mes "Let's see... You're a guest.";  
+    mes "I like people who are sure what they want.";  
+    mes "Modifiable items can also be read in the information section.";  
+    mes "I will try to answer any questions you have.";  
+    next;  
+    switch( select( "Information","Upgraded Weapons", "Quit" ) ) {  
+		case 1:    
+		L_ShowInfo:  
+			setdialogsize(300,600);    
+			setdialogpospercent(50,25);
+			clear;            
+			mes "<B>[ C3PO ]</B>";          
+			.@count = getreformbaseitems("Upg_Weapons");          
+
+			if (.@count == 0) {          
+				mes "No reform options available.";          
+				close;          
+			}          
+
+			// Initialize page if not set    
+			if (!.@page) .@page = 1;    
+
+			// Calculate pagination    
+			.@items_per_page = 3;    
+			.@total_pages = ((.@count - 1) / .@items_per_page) + 1;    
+			.@start_index = (.@page - 1) * .@items_per_page;    
+			.@end_index = min(.@start_index + .@items_per_page, .@count);    
+
+			// Display items for current page  
+			for(.@i = .@start_index; .@i < .@end_index; .@i++) {          
+				.@base_item$ = .@base_items$[.@i];        
+
+				// Check if base item exists using getiteminfo        
+				if (getiteminfo(.@base_item$, ITEMINFO_ID) == -1) continue;        
+
+				.@result_item$ = getreformresult("Upg_Weapons", .@base_item$);          
+				.@min_refine = getreformminrefine("Upg_Weapons", .@base_item$);                  
+				.@max_refine = getreformmaxrefine("Upg_Weapons", .@base_item$);    
+				.@required_options = getreformrequiredrandomoptions("Upg_Weapons", .@base_item$);      
+				.@cards_allowed = getreformcardsallowed("Upg_Weapons", .@base_item$);    
+				.@random_group$ = getreformrandomoptiongroup("Upg_Weapons", .@base_item$);      
+				.@refine_change = getreformrefinechange("Upg_Weapons", .@base_item$);    
+				.@clear_slots = getreformclearslots("Upg_Weapons", .@base_item$);      
+				.@remove_enchant = getreformremoveenchantgrade("Upg_Weapons", .@base_item$);                 
+				// Check if result item exists        
+				if (getiteminfo(.@result_item$, ITEMINFO_ID) == -1) continue;        
+
+				// Display Result Item first with icon      
+				mes "^000000Result Item:^000000";      
+				mes "       * 1x " + mesitemicon(getiteminfo(.@result_item$, ITEMINFO_ID)) + " " + getitemname(getiteminfo(.@result_item$, ITEMINFO_ID));      
+
+				if (.@required_options > 0) {      
+					mes "       * Requires " + .@required_options + " random options on the item.";      
+				}      
+				if (!.@cards_allowed) {      
+					mes "^FF0000       * Warning: Cards are not allowed in this item!^000000";      
+				}                   
+				if (.@random_group$ != "") {      
+					mes "Random options will be applied from group: " + .@random_group$;      
+				}    
+
+				// Display refine change info      
+				if (.@refine_change < 0) {        
+					mes "^FF0000       * Refine level reduced by " + (-.@refine_change) + "^000000.";        
+				} else if (.@refine_change > 0) {        
+					mes "^00FF00       * Refine level increased by " + .@refine_change + "^000000.";        
+				} else {        
+					mes "       * Refine level unchanged.";        
+				}            
+
+				if (.@clear_slots) {      
+					mes "^FF0000       * Warning: Cards and socket enchants will be removed!^000000";      
+				}      
+				if (.@remove_enchant) {      
+					mes "^FF0000       * Warning: Enchantgrade will be removed!^000000";      
+				}    
+
+				// Display Materials section      
+				mes "^000000- Materials:^000000";      
+
+				// Show materials needed          
+				.@mat_count = getreformmaterials("Upg_Weapons", .@base_item$);            
+				if (.@mat_count > 0) {            
+					// Check if the base item can be refined      
+					.@base_item_id = getiteminfo(.@base_item$, ITEMINFO_ID);      
+					.@item_type = getiteminfo(.@base_item_id, ITEMINFO_TYPE);      
+						  
+					// Only show refine info for weapons and armor that can be refined      
+					if ((.@item_type == IT_WEAPON || .@item_type == IT_ARMOR) && .@min_refine > 0) {      
+						// Show base item required with refine levels      
+						if (.@max_refine > 0 && .@max_refine != .@min_refine) {      
+							mes "       * 1x +" + .@min_refine + " up to +"+ .@max_refine +" " + mesitemicon(.@base_item_id) + " " + getitemname(.@base_item_id);      
+						} else if (.@min_refine > 0) {      
+							mes "       * 1x +" + .@min_refine + " " + mesitemicon(.@base_item_id) + " " + getitemname(.@base_item_id);      
+						} else {      
+							mes "       * 1x " + mesitemicon(.@base_item_id) + " " + getitemname(.@base_item_id);      
+						}      
+					} else {      
+						// Show base item without refine info for accessories and non-refinable items      
+						mes "       * 1x " + mesitemicon(.@base_item_id) + " " + getitemname(.@base_item_id);      
+					}      
+						  
+					for(.@j = 0; .@j < .@mat_count; .@j++) {            
+						explode(.@mat_info$, .@materials$[.@j], ":");            
+						mes "       * " + .@mat_info$[1] + "x " + mesitemicon(getiteminfo(.@mat_info$[0], ITEMINFO_ID)) + " " + getitemname(getiteminfo(.@mat_info$[0], ITEMINFO_ID));    
+					}            
+				}    
+				mes " ";          
+			}
+			mes "<B>Page " + .@page + " of " + .@total_pages + "</B>";    
+			//mes "<B>Showing items " + (.@start_index + 1) + " to " + .@end_index + " of " + .@count + "</B>";
+			mes " ";
+			// Build navigation menu dynamically  
+			if (.@total_pages > 1) {  
+				if (.@page > 1 && .@page < .@total_pages) {  
+					// Both Previous and Next available  
+					switch(select("Next Page:Previous Page:Close")) {  
+						case 1:   
+							.@page++;   
+							goto L_ShowInfo;  
+						case 2:
+							.@page--;   
+							goto L_ShowInfo;						  
+						case 3:   
+							close;  
+					}  
+				} else if (.@page > 1) {  
+					// Only Previous available  
+					switch(select("Previous Page:Close")) {  
+						case 1:   
+							.@page--;   
+							goto L_ShowInfo;  
+						case 2:   
+							close;  
+					}  
+				} else if (.@page < .@total_pages) {  
+					// Only Next available  
+					switch(select("Next Page:Close")) {  
+						case 1:   
+							.@page++;   
+							goto L_ShowInfo;  
+						case 2:   
+							close;  
+					}  
+				} else {  
+					// Single page, just close  
+					close;  
+				}  
+			} else {  
+				// Single page, just close  
+				close;  
+			}
+
+        case 2:  
+            mes "<B>[ C3PO ]</B>";  
+			mes "Opening Item Reform";  
+			close2;    
+			item_reform("Upg_Weapons");    
+			end;  
+        case 3:  
+            mes "<B>[ C3PO ]</B>";  
+            mes "If you need mods, come back.";  
+            mes "You are welcome any time you help us with our research.";  
+            close;			
+    }  
+    end;  
+  
+OnInit:  
+    setunittitle( getnpcid(0), "C3PO");  
+    end;  
+}

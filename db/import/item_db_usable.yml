@@ -95,6 +95,12 @@ Body:
     Type: DelayConsume
     Script: |
       item_reform();
+  - Id: 50001
+    AegisName: Upg_Weapons
+    Name: Upgraded Weapons (Lower)
+    Type: DelayConsume
+    Script: |
+      item_reform();
   - Id: 50500
     AegisName: Autoattack_Pack
     Name: Autoattack Pack

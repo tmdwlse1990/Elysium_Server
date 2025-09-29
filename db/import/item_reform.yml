@@ -53,6 +53,10 @@ Body:
             Amount: 100
           - Material: Animal's_Skin
             Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1
         ResultItem: Upg_Adv_Suit
         ChangeRefine: -4
       - BaseItem: Boots_  
@@ -63,9 +67,13 @@ Body:
           - Material: Zargon
             Amount: 100
           - Material: Elunium_Stone
-            Amount: 100
+            Amount: 10
           - Material: Violet_Jewel
-            Amount: 100            
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Boots
         ChangeRefine: -4
       - BaseItem: Buckler_  
@@ -74,7 +82,11 @@ Body:
           - Material: Iron
             Amount: 100
           - Material: Scell
-            Amount: 100            
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Buckler
         ChangeRefine: -4      
       - BaseItem: Clip  
@@ -83,10 +95,12 @@ Body:
             Amount: 100
           - Material: Skull
             Amount: 100
-          - Material: Oridecon
-            Amount: 100
           - Material: Zargon
-            Amount: 100            
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Clip        
       - BaseItem: Coat_
         MinimumRefine: 4
@@ -95,6 +109,10 @@ Body:
             Amount: 100
           - Material: Animal's_Skin
             Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Coat
         ChangeRefine: -4        
       - BaseItem: Formal_Suit
@@ -108,6 +126,10 @@ Body:
             Amount: 100
           - Material: Mementos
             Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1
         ResultItem: Upg_Formal_Dress
         ChangeRefine: -4
       - BaseItem: Grave_
@@ -117,6 +139,10 @@ Body:
             Amount: 100
           - Material: Steel
             Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Greave
         ChangeRefine: -4        
       - BaseItem: Guard_
@@ -130,8 +156,10 @@ Body:
             Amount: 100
           - Material: Shell
             Amount: 100
-          - Material: Iron_Ore
-            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1
         ResultItem: Upg_Guard
         ChangeRefine: -4
       - BaseItem: Hood_
@@ -142,7 +170,11 @@ Body:
           - Material: Scarlet_Jewel
             Amount: 100          
           - Material: Zargon
-            Amount: 100            
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Hood
         ChangeRefine: -4        
       - BaseItem: Chain_Mail_
@@ -151,7 +183,9 @@ Body:
           - Material: Skel_Bone
             Amount: 100
           - Material: Oridecon_Stone
-            Amount: 100            
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Mail
         ChangeRefine: -4
       - BaseItem: Manteau_
@@ -160,7 +194,11 @@ Body:
           - Material: Transparent_Cloth
             Amount: 100
           - Material: Crystal_Jewel_
-            Amount: 100            
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Manteau
         ChangeRefine: -4
       - BaseItem: Muffler_
@@ -169,7 +207,11 @@ Body:
           - Material: Long_Hair
             Amount: 100
           - Material: Skirt_Of_Virgin
-            Amount: 100            
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Muffler
         ChangeRefine: -4         
       - BaseItem: Saint_Robe_
@@ -182,7 +224,11 @@ Body:
           - Material: Skyblue_Jewel
             Amount: 100
           - Material: Fin
-            Amount: 100            
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Saint_Robe
         ChangeRefine: -4
       - BaseItem: Shield_ 
@@ -194,8 +240,10 @@ Body:
             Amount: 100
           - Material: Scell
             Amount: 100
-          - Material: Elunium_Stone
-            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1
           - Material: Solid_Shell
             Amount: 100             
         ResultItem: Upg_Shield
@@ -206,7 +254,11 @@ Body:
           - Material: Armlet_Of_Prisoner
             Amount: 100
           - Material: Lab_Staff_Record
-            Amount: 100           
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Tights
         ChangeRefine: -4
       - BaseItem: Shoes_ 
@@ -215,7 +267,11 @@ Body:
           - Material: Danggie
             Amount: 100
           - Material: Amulet
-            Amount: 100           
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Shoes
         ChangeRefine: -4        
       - BaseItem: Thief_Clothes 
@@ -224,6 +280,141 @@ Body:
           - Material: Cyfar
             Amount: 100
           - Material: Witherless_Rose
-            Amount: 100           
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 10
+          - Material: Gold
+            Amount: 1            
         ResultItem: Upg_Thief_Cloth
+        ChangeRefine: -4
+  - Item: Upg_Weapons
+    BaseItems:
+      - BaseItem: Book
+        MinimumRefine: 4
+        Materials:
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Book
+        ChangeRefine: -4
+      - BaseItem: Bow_
+        MinimumRefine: 4
+        Materials:
+          - Material: Talon
+            Amount: 100          
+          - Material: Feather_Of_Birds
+            Amount: 100        
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Bow
+        ChangeRefine: -4
+      - BaseItem: Dagger_
+        MinimumRefine: 4
+        Materials:
+          - Material: Skel_Bone
+            Amount: 100
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Dagger
+        ChangeRefine: -4
+      - BaseItem: Huuma_Bird_Wing
+        MinimumRefine: 4
+        Materials:
+          - Material: Rust_Suriken
+            Amount: 100        
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Huuma_Shuriken
+        ChangeRefine: -4        
+      - BaseItem: Katar_
+        MinimumRefine: 4
+        Materials:
+          - Material: Claw_Of_Desert_Wolf
+            Amount: 100
+          - Material: Wolf_Blood
+            Amount: 100            
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Katar
+        ChangeRefine: -4
+      - BaseItem: Lance_
+        MinimumRefine: 4
+        Materials:           
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Lance
+        ChangeRefine: -4
+      - BaseItem: Mace_
+        MinimumRefine: 4
+        Materials:
+          - Material: Phracon
+            Amount: 100
+          - Material: Skel_Bone
+            Amount: 100            
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Mace
+        ChangeRefine: -4
+      - BaseItem: Crimson_Bolt_
+        MinimumRefine: 4
+        Materials:
+          - Material: Iron
+            Amount: 100
+          - Material: Iron_Ore
+            Amount: 100
+          - Material: Large_Jellopy
+            Amount: 100
+          - Material: Jubilee
+            Amount: 100            
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Revolver
+        ChangeRefine: -4
+      - BaseItem: Staff_
+        MinimumRefine: 4
+        Materials:
+          - Material: Flame_Heart
+            Amount: 100
+          - Material: Sacred_Masque
+            Amount: 100         
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Staff
+        ChangeRefine: -4
+      - BaseItem: Two_Handed_Axe_
+        MinimumRefine: 4
+        Materials:
+          - Material: Nose_Ring
+            Amount: 100       
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Two_Handed_Axe
+        ChangeRefine: -4        
+      - BaseItem: Claymore_
+        MinimumRefine: 4
+        Materials:       
+          - Material: Oridecon_Stone
+            Amount: 100
+          - Material: Gold
+            Amount: 1
+        ResultItem: Upg_Twohand_Sword
         ChangeRefine: -4
