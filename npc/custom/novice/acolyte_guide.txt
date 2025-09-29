@@ -1,0 +1,119 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 2.5
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//= 2.5 Separated and improved Acolyte Guide [Louis T Steinhil]
+//============================================================
+-	script	Acolyte Guide#newbe10::NvAcolyte	HIDDEN_NPC,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q < 15) {
+		mes "<B>[ Prontera Acolyte ]</B>";
+		mes "You look like you are not done with Instructor Brade's lessons.";
+		close;
+	}
+	mes "<B>[ Prontera Acolyte ]</B>";
+	mes "What can I do for you?";
+	next;
+	switch(select("What is an Acolyte?:Job change to Acolyte.:Cancel")) {
+	case 1:
+		mes "<B>[ Prontera Acolyte ]</B>";
+		mes "An Acolyte is someone who worships the goddess Freya sacrificing themselves to help others.";
+		next;
+		mes "<B>[ Prontera Acolyte ]</B>";
+		mes "Acolytes use supportive skills to make combat easier.";
+		mes "It is essential to have an Acolyte in any successful party.";
+		next;
+		mes "<B>[ Prontera Acolyte ]</B>";
+		mes "^8E2323As an Acolyte, you can upgrade your future job to Priest or Monk^8E2323.";
+		next;
+		if (isequipped(2821) || countitem(2821)) {
+			mes "<B>[ Prontera Acolyte ]</B>";
+			mes "Try the Acolyte Skills with the manual you have. It will help you understand the job easier.";
+			mes "Open your Skill Tree by pressing ^4d4dffAlt + S^000000 and minimize the window by pressing the ^4d4dff'-'^000000 button on the top right corner of the window to see the available skills.";
+			close;
+		}
+		mes "<B>[ Prontera Acolyte ]</B>";
+		mes "If you want, I can give you a skill manual to experience what it is like to be an Acolyte.";
+		mes "Would you like to experience the skills of an Acolyte?";
+		next;
+		switch(select("Yes, please.:No, I'm not interested.")) {
+		case 1:
+			mes "<B>[ Prontera Acolyte ]</B>";
+			mes "Here you go, the instruction manual of an Acolyte.";
+			mes "I will take away those other job's manuals while you study this one.";
+			next;
+			callfunc "F_NvErase";
+			getitem 2821,1; //Acolyte_Manual
+			next;
+			mes "<B>[ Prontera Acolyte ]</B>";
+			mes "Make sure to equip the Skill Manual by double-clicking it in the Inventory Window.";
+			mes "Open your Skill Tree by pressing ^4d4dffAlt + S^000000 and minimize the window by pressing the ^4d4dff'-'^000000 button on the top right corner of the window to see the available skills.";
+			close;
+		case 2:
+			mes "<B>[ Prontera Acolyte ]</B>";
+			mes "Hum. Do you think so.";
+			mes "Ok, I agree with you. Choosing a job is very important in our life.";
+			mes "Just talk to me whenever you want to know about Acolytes.";
+			close;
+		}
+	case 2:
+		mes "<B>[ Prontera Acolyte ]</B>";
+		mes "Do you really want to become an Acolyte?";
+		mes "If you do, I will send you to Prontera's Sanctuary.";
+		next;
+		mes "<B>[ Prontera Acolyte ]</B>";
+		mes "Of course, I assume you have enough job levels to become an Acolyte right?";
+		mes "Would you like to quit the Training Process and go to the Prontera's Sanctuary?";
+		next;
+		switch(select("Let me reconsider.:I will go to the Sanctuary.")) {
+		case 1:
+			mes "<B>[ Prontera Acolyte ]</B>";
+			mes "You should try out each job's manuals.";
+			mes "Go through them thoroughly and decide carefully.";
+			mes "Of course, I will welcome you anytime.";
+			close;
+		case 2:
+			mes "<B>[ Prontera Acolyte ]</B>";
+			mes "That's great.";
+			mes "Then I will completely end the Training Process and send you to Prontera's Sanctuary.";
+			callfunc "F_NvErase",1;
+			close2;
+			savepoint "prontera",117,72,1,1;
+			warp "prt_church",172,19;
+			end;
+		}
+	case 3:
+		mes "<B>[ Prontera Acolyte ]</B>";
+		mes "If you have any questions about Acolytes, please ask me anytime.";
+		mes "Our God, Odin awaits adventurers like you.";
+		close;
+	}
+}
+tg_1-1,156,233,3	duplicate(NvAcolyte)	Acolyte Guide#nv1	4_F_SISTER
+tg_1-2,156,233,3	duplicate(NvAcolyte)	Acolyte Guide#nv2	4_F_SISTER
+tg_1-3,156,233,3	duplicate(NvAcolyte)	Acolyte Guide#nv3	4_F_SISTER
+tg_1-4,156,233,3	duplicate(NvAcolyte)	Acolyte Guide#nv4	4_F_SISTER

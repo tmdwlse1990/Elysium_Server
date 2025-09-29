@@ -1,0 +1,126 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 2.5
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//= 2.5 Separated and improved Archer Guide [Louis T Steinhil]
+//============================================================
+-	script	Archer Guide#newbe10::NvArcher	HIDDEN_NPC,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q < 15) {
+		mes "<B>[ Archer Guildsman ]</B>";
+		mes "You are still in the process of training with sir Brade.";
+		close;
+	}
+	mes "<B>[ Archer Guildsman ]</B>";
+	mes "What can I help you with?";
+	next;
+	switch(select("Tell me about Archers:I want to be an Archer:Cancel")) {
+	case 1:
+		mes "<B>[ Archer Guildsman ]</B>";
+		mes "Archers have specialized skills by using a Bow and have a variety of powerful skills.";
+		mes "Archers are good at staying back and picking off their targets.";
+		next;
+		mes "<B>[ Archer Guildsman ]</B>";
+		mes "Archers don't have great";
+		mes "vitality so they have to keep";
+		mes "their distance from enemies.";
+		next;
+		mes "<B>[ Archer Guildsman ]</B>";
+		mes "On the other hand, Archers are attentive and have incredibly accurate eyes.";
+		mes "So once they are ready to attack, they can kill enemies before they're even aware of their presence.";
+		next;
+		mes "<B>[ Archer Guildsman ]</B>";
+		mes "^8E2323Archers can transform to many second jobs like a Hunter.";
+		mes "Besides Hunters, Archers can transform to a Bard, if they are male.";
+		mes "They can transform to a Dancer, if they are female^000000.";
+		next;
+		if (isequipped(2822) || countitem(2822)) {
+			mes "<B>[ Archer Guildsman ]</B>";
+			mes "I think you should test Archer skills before you decide what to do.";
+			mes "I can provide you our test skill manual.";
+			close;
+		}
+		mes "<B>[ Archer Guildsman ]</B>";
+		mes "Do you want to register to test skill experience?";
+		mes "Would like to test Archer skills?";
+		next;
+		switch(select("I want to test Archer skills.:I don't want to test it.")) {
+		case 1:
+			mes "<B>[ Archer Guildsman ]</B>";
+			mes "Here is the Archer manual.";
+			mes "I will take the other job manuals from you while you test the Archer manual out.";
+			next;
+			callfunc "F_NvErase";
+			getitem 2822,1; //Archer_Manual
+			next;
+			mes "<B>[ Archer Guildsman ]</B>";
+			mes "Make sure to equip the Skill Manual by double-clicking it in the Inventory Window.";
+			mes "Open your Skill Tree by pressing ^4d4dffAlt + S^000000 and minimize the window by pressing the ^4d4dff'-'^000000 button on the top right corner of the window to see the available skills.";
+			close;
+		case 2:
+			mes "<B>[ Archer Guildsman ]</B>";
+			mes "Hum. Do you think so.";
+			mes "Ok, I agree with you. Choosing a job is very important in our life.";
+			mes "Just talk to me whenever you want to experience Archer skills.";
+			close;
+		}
+	case 2:
+		mes "<B>[ Archer Guildsman ]</B>";
+		mes "You want to be an Archer?";
+		mes "Ok, then, I will send you to the Archer Guild right away.";
+		next;
+		mes "<B>[ Archer Guildsman ]</B>";
+		mes "Wait, have you checked your Job level?";
+		mes "Do you want to complete the Novice training arena and go to the Archer Guild right now?";
+		next;
+		switch(select("I will think about it again.:Yes, I want to go to the Archer Guilds union")) {
+		case 1:
+			mes "<B>[ Archer Guildsman ]</B>";
+			mes "Test out all the jobs if you have to but choose Archer because we're the best.";
+			mes "We are always welcome to have you!";
+			close;
+		case 2:
+			mes "<B>[ Archer Guildsman ]</B>";
+			mes "That's great.";
+			mes "Then I will completely end the Training Process and send you to the Archer Guild.";
+			callfunc "F_NvErase",1;
+			close2;
+			savepoint "payon",256,242,1,1;
+			warp "payon_in02",64,65;
+			end;
+		}
+	case 3:
+		mes "<B>[ Archer Guildsman ]</B>";
+		mes "If you have any questions about Archers, feel free to ask me.";
+		mes "I think you could be a strong Archer young Novice.";
+		close;
+	}
+}
+tg_1-1,152,229,3	duplicate(NvArcher)	Archer Guide#nv1	4_F_JOB_HUNTER
+tg_1-2,152,229,3	duplicate(NvArcher)	Archer Guide#nv2	4_F_JOB_HUNTER
+tg_1-3,152,229,3	duplicate(NvArcher)	Archer Guide#nv3	4_F_JOB_HUNTER
+tg_1-4,152,229,3	duplicate(NvArcher)	Archer Guide#nv4	4_F_JOB_HUNTER

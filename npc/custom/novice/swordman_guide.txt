@@ -1,0 +1,189 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 2.5
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//= 2.5 Separated and improved Swordman Guide [Louis T Steinhil]
+//============================================================
+-	script	Swordman Guide#newbe10::NvSwordman	HIDDEN_NPC,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q < 15) {
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "I won't help you until you finish Brade's instructions.";
+		close;
+	}
+	mes "<B>[ Swordman Guildsman ]</B>";
+	mes "Can I help you?";
+	next;
+	switch(select("About Swordman Class.:Job change to Swordman.:Got any quests?:Cancel.")) {
+	case 1:
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "Literally, Swordman means one, who";
+		mes "is specialized in wielding swords.";
+		mes "But they can also choose to use spears if they so choose.";
+		next;
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "We possesses strong physical strength.";
+		mes "So naturally we can equip heavy armors and weapons.";
+		mes "Most weapon classes, except for bows and rods,";
+		mes "are equippable by our class.";
+		next;
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "The only weakness of the Swordman class is that they cannot use magic spells.";
+		mes "But we've compensated for that by using elemental weapons.";
+		next;
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "The merits of being a Swordman is the enormous amount of HP we have.";
+		mes "Most of us can bear the grunt of our enemies' attacks with relative ease.";
+		next;
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "And we are unrivaled when it comes to one-on-one melee combat.";
+		next;
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "Anyone who chooses to be a Swordman will likely play the role of the tank. It is our duty to protect the weak.";
+		next;
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "As a Swordman you can advance to a ^8E2323Knight^000000 or ^8E2323Crusader^000000 class as your 2nd class profession.";
+		mes "And just recently third professions have been discovered.";
+		next;
+		if (isequipped(2819) || countitem(2819)) {
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "Try the Swordman skills listed in the manual.";
+			mes "Open your skill menu by pressing Alt + S";
+			mes "Make sure it is in list mode by clicking the minimize button on the top right corner of the Skill Menu.";
+			close;
+		}
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "If you're interested in being a Swordman, I'll offer you this manual.";
+		mes "Do you want to try the skills of a Swordman?";
+		next;
+		switch(select("I'll try the Swordman skills.:No thanks.")) {
+		case 1:
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "Here is the Swordman manual.";
+			mes "I'll just take any manuals from any other classes you have.";
+			next;
+			callfunc "F_NvErase";
+			getitem 2819,1; //Swordman_Manual
+			next;
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "After equipping the Manual, open your Skill menu by pressing ALT+S.";
+			mes "Make sure to minimize your Skill tree by clicking the '-' button on the top right corner of the Skill Tree Window.";
+			close;
+		case 2:
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "Hum. Do you think so?";
+			mes "Ok, I agree with you. Choosing a job is very important in our lives.";
+			mes "Just talk to me whenever you want to experience Swordman skills.";
+			close;
+		}
+	case 2:
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "Do you really want to change your job to Swordman?";
+		mes "If you want to be a Swordman, I'll send you to the Swordman Association immediately.";
+		next;
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "I think you have enough job levels, of course, right?";
+		mes "Do you want to stop your training now and go to the Swordman Association?";
+		next;
+		switch(select("I'll consider it again.:I'll go to the Swordman Association.")) {
+		case 1:
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "Please try enough instruction manuals from each job class and consider it carefully.";
+			mes "Of course, you're always welcomed.";
+			close;
+		case 2:
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "I see.";
+			mes "Then I'll end your training process and send you to the Swordman Guild.";
+			callfunc "F_NvErase",1;
+			close2;
+			savepoint "izlude",128,98,1,1; // Old coordinates: (95,104)
+			warp "izlude_in",74,167;
+			end;
+		}
+	case 3:
+		set .@quest, checkquest(7123);
+		if (.@quest == -1) {
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "You want me to give you a quest?";
+			mes "Umm. Let me see.";
+			mes "Ok! Hunt a couple of Picky monsters around here?";
+			next;
+			mes "^4d4dffYou received a hunting request from a staff of the Swordman Guild.";
+			mes "You can check the contents of the quest from the quest information window.^000000";
+			setquest 7123;
+			next;
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "Use the 'Bash' skill in the Swordman manual.";
+			mes "Open your Skill Tree by pressing ^4d4dffAlt + S^000000 and minimize the window by pressing the ^4d4dff'-'^000000 button on the top right corner of the window to see the available Swordman skills.";
+			next;
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "Talk to Trainer Brutus if you want to fight stronger monsters.";
+			mes "I'll wait for you here.";
+			mes "Wish you a good luck.";
+			close;
+		} else if (.@quest == 0 || .@quest == 1) {
+			if (checkquest(7123,HUNTING) == 2) {
+				mes "<B>[ Swordman Guildsman ]</B>";
+				mes "Great.";
+				mes "I think that you're good enough to be a Swordman.";
+				mes "I'll give you some potions as a reward.";
+				completequest 7123;
+				getitem 569,200; //Novice_Potion
+				getexp 5000,100;
+				close;
+			} else {
+				mes "<B>[ Swordman Guildsman ]</B>";
+				mes "Hunt two Picky monsters.";
+				mes "You can find them in the more difficult training grounds by talking to Trainer Brutus.";
+				close;
+			}
+		} else if (.@quest == 2) {
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "I think you finished that quest already, right?";
+			mes "You'll experience more of these quests as you grow as an adventurer in the world.";
+			next;
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "Your training is now complete.";
+			mes "If you choose to become a Swordman I wish you good luck.";
+			close;
+		} else {
+			mes "<B>[ Swordman Guildsman ]</B>";
+			mes "I'm sorry but I don't have any quests to give you right now.";
+			close;
+		}
+	case 4:
+		mes "<B>[ Swordman Guildsman ]</B>";
+		mes "If you have any questions about the Swordman class, please ask me.";
+		mes "The Swordman Guild is waiting for novices like you.";
+		close;
+	}
+}
+tg_1-1,155,236,3	duplicate(NvSwordman)	Swordman Guide#nv1	4_F_JOB_KNIGHT
+tg_1-2,155,236,3	duplicate(NvSwordman)	Swordman Guide#nv2	4_F_JOB_KNIGHT
+tg_1-3,155,236,3	duplicate(NvSwordman)	Swordman Guide#nv3	4_F_JOB_KNIGHT
+tg_1-4,155,236,3	duplicate(NvSwordman)	Swordman Guide#nv4	4_F_JOB_KNIGHT

@@ -1,0 +1,92 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 2.5
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//= 2.5 Separated and improved Expanded Guide [Louis T Steinhil]
+//============================================================
+-	script	Bruce#nv::NvBruce	HIDDEN_NPC,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	mes "<B>[ Bruce ]</B>";
+	mes "Hello?";
+	mes "I'm here to guide you about extra jobs and special classes.";
+	next;
+	mes "<B>[ Bruce ]</B>";
+	mes "For special classes, there are Taekwon Boy, Taekwon Girl, Ninja, Supernovice, Gunslinger.";
+	mes "Which job description do you want to hear?";
+	next;
+	while(1) {
+		switch(select("Taekwon:Ninja:Super Novice:Gunslinger:End the conversation.")) {
+		case 1:
+			mes "<B>[ Bruce ]</B>";
+			mes "It's a job that usually uses a lot of kicking skills.";
+			mes "It belongs to special class and later you can change your job into Taekwon Master which has much stronger attack skills.";
+			next;
+			mes "<B>[ Bruce ]</B>";
+			mes "There is a secondary class to choose from called Soul Linker which also has strong attacks.";
+			mes "You can decide that later when you get stronger.";
+			next;
+			break;
+		case 2:
+			mes "<B>[ Bruce ]</B>";
+			mes "Ninja's specialty is rapid movement.";
+			mes "They specialize in using throwing weapons.";
+			next;
+			mes "<B>[ Bruce ]</B>";
+			mes "Ninjas are kind of a hybrid class that can use various dodge skills with the capability of both physical and magical attacks depending on their preference.";
+			next;
+			break;
+		case 3:
+			mes "<B>[ Bruce ]</B>";
+			mes "The biggest attraction of the stronger Novice, called Super Novice, is their pull to mediocrity.";
+			mes "They are the proverbial Jack-of-all-Trades but Master of none.";
+			next;
+			mes "<B>[ Bruce ]</B>";
+			mes "Super Novices can learn most of the 1st job class skills.";
+			mes "If you become a Super Novice, you cannot change your job, which is too bad, but you can grow as a very individual character.";
+			next;
+			break;
+		case 4:
+			mes "<B>[ Bruce ]</B>";
+			mes "You can job change directly from Novice to a special class which is optimized for a long-distance attack with guns.";
+			next;
+			mes "<B>[ Bruce ]</B>";
+			mes "Gunslingers use all kinds of guns made in 'Einbroch', the city of steel.";
+			mes "I recommend this for those who want to become powerful sharpshooters.";
+			next;
+			break;
+		case 5:
+			mes "<B>[ Bruce ]</B>";
+			mes "If you need more information,";
+			mes "you can always go to ^2F4F4F'www.ragnarok.co.kr'^000000";
+			close;
+		}
+	}
+}
+tg_1-1,161,238,3	duplicate(NvBruce)	Bruce#nv1	1_M_LIBRARYMASTER
+tg_1-2,161,238,3	duplicate(NvBruce)	Bruce#nv2	1_M_LIBRARYMASTER
+tg_1-3,161,238,3	duplicate(NvBruce)	Bruce#nv3	1_M_LIBRARYMASTER
+tg_1-4,161,238,3	duplicate(NvBruce)	Bruce#nv4	1_M_LIBRARYMASTER
