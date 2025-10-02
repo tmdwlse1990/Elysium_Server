@@ -3249,7 +3249,7 @@ static bool is_attack_hitting(struct Damage* wd, block_list *src, block_list *ta
 		return false;
 
 	flee = tstatus->flee;
-#ifdef RENEWAL
+#ifdef RENEWAL_HIT
 	hitrate = 0; //Default hitrate
 #else
 	hitrate = 80; //Default hitrate
@@ -3277,7 +3277,7 @@ static bool is_attack_hitting(struct Damage* wd, block_list *src, block_list *ta
 	if(sd && is_skill_using_arrow(src, skill_id))
 		hitrate += sd->bonus.arrow_hit;
 
-#ifdef RENEWAL
+#ifdef RENEWAL_HIT
 	if (sd) //in Renewal hit bonus from Vultures Eye is not anymore shown in status window
 		hitrate += pc_checkskill(sd,AC_VULTURE);
 #endif
@@ -3328,13 +3328,13 @@ static bool is_attack_hitting(struct Damage* wd, block_list *src, block_list *ta
 				break;
 			case AS_SONICBLOW:
 				if(sd && pc_checkskill(sd,AS_SONICACCEL) > 0)
-#ifdef RENEWAL
+#ifdef RENEWAL_HIT
 					hitrate += hitrate * 90 / 100;
 #else
 					hitrate += hitrate * 50 / 100;
 #endif
 				break;
-#ifdef RENEWAL
+#ifdef RENEWAL_HIT
 			case RG_BACKSTAP:
 				hitrate += skill_lv; // !TODO: What's the rate increase?
 				break;
@@ -10064,7 +10064,7 @@ struct Damage battle_calc_misc_attack(block_list *src,block_list *target,uint16 
 		else {
 			int16
 				flee = tstatus->flee,
-#ifdef RENEWAL
+#ifdef RENEWAL_HIT
 				hitrate = 0; //Default hitrate
 #else
 				hitrate = 80; //Default hitrate
@@ -10084,7 +10084,7 @@ struct Damage battle_calc_misc_attack(block_list *src,block_list *target,uint16 
 			}
 
 			hitrate += sstatus->hit - flee;
-#ifdef RENEWAL
+#ifdef RENEWAL_HIT
 			if( sd ) //in Renewal hit bonus from Vultures Eye is not shown anymore in status window
 				hitrate += pc_checkskill(sd,AC_VULTURE);
 #endif
