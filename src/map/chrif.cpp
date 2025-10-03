@@ -501,7 +501,6 @@ int32 chrif_connectack(int32 fd) {
 	if( !char_init_done ) {
 		npc_event_runall(script_config.inter_init_once_event_name);
 		guild_castle_map_init();
-		intif_clan_requestclans();
 	}
 
 	return 0;

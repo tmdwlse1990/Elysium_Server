@@ -187,25 +187,25 @@ OnInit:
 	set .@offsetFantasyC, 0;
 	set .@offsetFantasyH, 0;
 	
-	setarray $RacePalsFantasy[1*4], 700+.@offsetFantasyC,732+.@offsetFantasyC,700+.@offsetFantasyH,732+.@offsetFantasyH;	// Dark Elf
-	setarray $RacePalsFantasy[2*4], 732+.@offsetFantasyC,764+.@offsetFantasyC,732+.@offsetFantasyH,764+.@offsetFantasyH;	// Formless
-	setarray $RacePalsFantasy[3*4], 764+.@offsetFantasyC,796+.@offsetFantasyC,764+.@offsetFantasyH,796+.@offsetFantasyH;	// Fish
-	setarray $RacePalsFantasy[4*4], 796+.@offsetFantasyC,828+.@offsetFantasyC,796+.@offsetFantasyH,828+.@offsetFantasyH;	// Orc
-	setarray $RacePalsFantasy[5*4], 828+.@offsetFantasyC,860+.@offsetFantasyC,828+.@offsetFantasyH,860+.@offsetFantasyH;	// Vampire
-	setarray $RacePalsFantasy[6*4], 860+.@offsetFantasyC,892+.@offsetFantasyC,860+.@offsetFantasyH,892+.@offsetFantasyH;	// Beast
-	setarray $RacePalsFantasy[7*4], 892+.@offsetFantasyC,924+.@offsetFantasyC,892+.@offsetFantasyH,924+.@offsetFantasyH;	// Demon
-	setarray $RacePalsFantasy[8*4], 924+.@offsetFantasyC,956+.@offsetFantasyC,924+.@offsetFantasyH,956+.@offsetFantasyH;	// Dragon
-	setarray $RacePalsFantasy[9*4], 1276+.@offsetFantasyC,1308+.@offsetFantasyC,1276+.@offsetFantasyH,1308+.@offsetFantasyH;	// Angel
-	setarray $RacePalsFantasy[10*4], 1020+.@offsetFantasyC,1052+.@offsetFantasyC,1020+.@offsetFantasyH,1052+.@offsetFantasyH;	// Plant
+	setarray $RacePalsFantasy[1*4], 700+.@offsetFantasyC,732+.@offsetFantasyC,700+.@offsetFantasyH,732+.@offsetFantasyH;	// Demi-Human Clan
+	setarray $RacePalsFantasy[2*4], 732+.@offsetFantasyC,764+.@offsetFantasyC,732+.@offsetFantasyH,764+.@offsetFantasyH;	// Formless Clan
+	setarray $RacePalsFantasy[3*4], 764+.@offsetFantasyC,796+.@offsetFantasyC,764+.@offsetFantasyH,796+.@offsetFantasyH;	// Fish Clan
+	setarray $RacePalsFantasy[4*4], 796+.@offsetFantasyC,828+.@offsetFantasyC,796+.@offsetFantasyH,828+.@offsetFantasyH;	// Orc Clan
+	setarray $RacePalsFantasy[5*4], 828+.@offsetFantasyC,860+.@offsetFantasyC,828+.@offsetFantasyH,860+.@offsetFantasyH;	// Vampire Clan
+	setarray $RacePalsFantasy[6*4], 860+.@offsetFantasyC,892+.@offsetFantasyC,860+.@offsetFantasyH,892+.@offsetFantasyH;	// Brute Clan
+	setarray $RacePalsFantasy[7*4], 892+.@offsetFantasyC,924+.@offsetFantasyC,892+.@offsetFantasyH,924+.@offsetFantasyH;	// Demon Clan
+	setarray $RacePalsFantasy[8*4], 924+.@offsetFantasyC,956+.@offsetFantasyC,924+.@offsetFantasyH,956+.@offsetFantasyH;	// Dragon Clan
+	setarray $RacePalsFantasy[9*4], 1276+.@offsetFantasyC,1308+.@offsetFantasyC,1276+.@offsetFantasyH,1308+.@offsetFantasyH;	// Angel Clan
+	setarray $RacePalsFantasy[10*4], 1020+.@offsetFantasyC,1052+.@offsetFantasyC,1020+.@offsetFantasyH,1052+.@offsetFantasyH;	// Plant Clan
 	setarray $RacePalsFantasy[11*4], 1052+.@offsetFantasyC,1084+.@offsetFantasyC,1052+.@offsetFantasyH,1084+.@offsetFantasyH;	// Wind
 	setarray $RacePalsFantasy[12*4], 1084+.@offsetFantasyC,1116+.@offsetFantasyC,1084+.@offsetFantasyH,1116+.@offsetFantasyH;	// Water
 	setarray $RacePalsFantasy[13*4], 1116+.@offsetFantasyC,1148+.@offsetFantasyC,1116+.@offsetFantasyH,1148+.@offsetFantasyH;	// Fire
 	setarray $RacePalsFantasy[14*4], 1148+.@offsetFantasyC,1180+.@offsetFantasyC,1148+.@offsetFantasyH,1180+.@offsetFantasyH;	// Electric
-	setarray $RacePalsFantasy[15*4], 1180+.@offsetFantasyC,1212+.@offsetFantasyC,1180+.@offsetFantasyH,1212+.@offsetFantasyH;	// Insect
+	setarray $RacePalsFantasy[15*4], 1180+.@offsetFantasyC,1212+.@offsetFantasyC,1180+.@offsetFantasyH,1212+.@offsetFantasyH;	// Insect Clan
 	setarray $RacePalsFantasy[16*4], 1212+.@offsetFantasyC,1244+.@offsetFantasyC,1212+.@offsetFantasyH,1244+.@offsetFantasyH;	// Ghost
 	setarray $RacePalsFantasy[17*4], 1244+.@offsetFantasyC,1276+.@offsetFantasyC,1244+.@offsetFantasyH,1276+.@offsetFantasyH;	// Poison
 	setarray $RacePalsFantasy[18*4], 1276+.@offsetFantasyC,1308+.@offsetFantasyC,1276+.@offsetFantasyH,1308+.@offsetFantasyH;	// Holy
-	setarray $RacePalsFantasy[19*4], 1308+.@offsetFantasyC,1340+.@offsetFantasyC,1308+.@offsetFantasyH,1340+.@offsetFantasyH;	// Undead
+	setarray $RacePalsFantasy[19*4], 1308+.@offsetFantasyC,1340+.@offsetFantasyC,1308+.@offsetFantasyH,1340+.@offsetFantasyH;	// Undead Clan
 	
 	/* Define Races Names */
 	setarray $RaceNamesFantasy$[0], "Player"

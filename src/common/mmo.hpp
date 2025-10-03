@@ -1157,23 +1157,6 @@ enum e_rank {
 	RANK_KILLER = 3
 };
 
-struct clan_alliance {
-	int32 opposition;
-	int32 clan_id;
-	char name[NAME_LENGTH];
-};
-
-struct clan{
-	int32 id;
-	char name[NAME_LENGTH];
-	char master[NAME_LENGTH];
-	char map[MAP_NAME_LENGTH_EXT];
-	int16 max_member, connect_member;
-	map_session_data *members[MAX_CLAN];
-	struct clan_alliance alliance[MAX_CLANALLIANCE];
-	uint16 instance_id;
-};
-
 // Sanity checks...
 #if MAX_ZENY > INT_MAX
 #error MAX_ZENY is too big

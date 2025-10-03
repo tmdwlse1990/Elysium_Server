@@ -1,0 +1,341 @@
+# This file is a part of rAthena.
+#   Copyright(C) 2021 rAthena Development Team
+#   https://rathena.org - https://github.com/rathena
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+###########################################################################
+# Clan Database
+###########################################################################
+#
+# Clan Database Settings
+#
+###########################################################################  
+#		Id: ID                              Unique ID of the Clan
+#		Name: "Clan Name"                   Name of the Clan
+#		Leader: "Leader Name"               Name of the Clan Leader
+#		Map: "Map Name"                     Name of the Clan Map
+#		MaxMembers: Max                     Max Member of Clan
+#		KickTime:                           Defines how long (in seconds, default: 0 disabled) a player can be inactive before being kicked from the clan
+#       CheckTime:                          Defines how frequently (in seconds, default: 3600) the system should check for inactive members
+#		Buff:
+#			Icon: State Icon ID/Constant    EFST_Constant
+#			Script: |                       Bonus Script
+#				Script (it can be multi-line)
+#		Allies:
+#			- "CLAN_NAME_CONSTANT",         Name of Allies
+#		Antagonists:
+#			- "CLAN_NAME_CONSTANT",         Name of Antagonist
+########################################################################### 
+
+Header:  
+  Type: CLAN_DB  
+  Version: 1  
+  
+Body:  
+  - Id: 1  
+    Name: "Sword Clan"  
+    Leader: "Raffam Oranpere"  
+    Map: "prontera"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_SWORDCLAN"  
+      Script: |  
+        bonus bStr, 1;  
+        bonus bVit, 1;  
+        bonus bMaxHP, 30;  
+        bonus bMaxSP, 10;  
+    Allies:  
+      - "Golden Mace Clan"  
+  
+  - Id: 2  
+    Name: "Arc Wand Clan"  
+    Leader: "Devon Aire"  
+    Map: "geffen"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_ARCWANDCLAN"  
+      Script: |  
+        bonus bInt, 1;  
+        bonus bDex, 1;  
+        bonus bMaxHP, 30;  
+        bonus bMaxSP, 10;  
+    Allies:  
+      - "Golden Mace Clan"  
+    Antagonists:  
+      - "Crossbow Clan"  
+  
+  - Id: 3  
+    Name: "Golden Mace Clan"  
+    Leader: "Berman Aire"  
+    Map: "prontera"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_GOLDENMACECLAN"  
+      Script: |  
+        bonus bInt, 1;  
+        bonus bLuk, 1;  
+        bonus bMaxHP, 30;  
+        bonus bMaxSP, 10;  
+    Allies:  
+      - "Sword Clan"  
+      - "Arc Wand Clan"  
+      - "Crossbow Clan"  
+  
+  - Id: 4  
+    Name: "Crossbow Clan"  
+    Leader: "Shaam Rumi"  
+    Map: "payon"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_CROSSBOWCLAN"  
+      Script: |  
+        bonus bDex, 1;  
+        bonus bAgi, 1;  
+        bonus bMaxHP, 30;  
+        bonus bMaxSP, 10;  
+    Allies:  
+      - "Golden Mace Clan"  
+    Antagonists:  
+      - "Arc Wand Clan"
+
+  - Id: 5  
+    Name: "Jumping Clan"  
+    Leader: "Dummy Data"  
+    Map: "payon"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_JUMPINGCLAN"  
+      Script: |  
+        bonus bDex, 1;  
+        bonus bAgi, 1;  
+        bonus bMaxHP, 30;  
+        bonus bMaxSP, 10;  
+    Allies:  
+      - "Golden Mace Clan"  
+    Antagonists:  
+      - "Arc Wand Clan"
+
+  - Id: 6  
+    Name: "Angel Clan"  
+    Leader: "Reginleif"  
+    Map: "valkyrie"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_ANGELCLAN"  
+      Script: |  
+        bonus bRace, RC_Angel;
+        bonus2 bSubEle, Ele_Earth, 20;  
+        bonus2 bSubEle, Ele_Fire, 20;  
+        bonus2 bSubEle, Ele_Water, 20;  
+        bonus2 bSubEle, Ele_Wind, 20;  
+        bonus bHealPower, 100;
+        bonus bDef, 10;
+        bonus bMdef, 10;
+        bonus2 bSubRace, RC_Demon, -20;
+    Allies:  
+      - "Demi-Human Clan"  
+    Antagonists:  
+      - "Demon Clan"
+
+  - Id: 7  
+    Name: "Brute Clan"  
+    Leader: "Ragnar"  
+    Map: "lasgna"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_BRUTECLAN"  
+      Script: |  
+        bonus bRace, RC_Brute;
+        bonus bCritAtkRate, 10;
+        bonus bCriticalRate, 10;
+        bonus bAspdRate, 10;
+        bonus bVariableCastrate, 10;
+    Allies:  
+      - "Angel Clan"  
+    Antagonists:  
+      - "Demon Clan"
+
+  - Id: 8  
+    Name: "Demi-Human Clan"  
+    Leader: "Saber"  
+    Map: "prontera"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_DEMIHUMANCLAN"  
+      Script: |  
+        bonus bRace, RC_Brute;
+        bonus2 bSubEle, Ele_All, 20;  
+        bonus bHealPower, 100;
+        bonus bDef, 10;
+        bonus bMdef, 10;
+        bonus2 bSubRace, RC_Demon, -20;
+    Allies:  
+      - "Angel Clan"  
+    Antagonists:  
+      - "Demon Clan"
+
+  - Id: 9  
+    Name: "Demon Clan"  
+    Leader: "Zarathos"  
+    Map: "gl_cas02"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_DEMONCLAN"  
+      Script: |  
+        bonus bRace, RC_Demon;
+        bonus bAtkRate, 10;
+        bonus bMatkRate, 10;
+        bonus bDef, -10;
+        bonus bMdef, -10;
+        bonus2 bSubRace, RC_Angel, -20;
+    Allies:  
+      - "Demi-Human Clan"  
+    Antagonists:  
+      - "Angel Clan"
+
+  - Id: 10  
+    Name: "Dragon Clan"  
+    Leader: "Drakorath"  
+    Map: "abyss_04"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_DRAGONCLAN"  
+      Script: |  
+        bonus bRace, RC_Dragon;
+        bonus2 bMagicAtkEle, Ele_Fire, 10;
+        bonus bVit, 10;
+        bonus2 bSubEle, Ele_Water, -20;
+    Allies:  
+      - "Demon Clan"  
+    Antagonists:  
+      - "Demi-Human Clan"
+      - "Brute Clan"
+
+  - Id: 11  
+    Name: "Fish Clan"  
+    Leader: "Aquaros"  
+    Map: "iz_dun04"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_FISHCLAN"  
+      Script: |  
+        bonus bRace, RC_Fish;
+        bonus2 bMagicAtkEle, Ele_Water, 10;
+        bonus bDex, 10;
+        bonus2 bSubEle, Ele_Wind, -20;
+    Allies:  
+      - "Brute Clan"  
+    Antagonists:  
+      - "Demi-Human Clan"
+
+  - Id: 12  
+    Name: "Formless Clan"  
+    Leader: "Belzhar"  
+    Map: "1@xm_d"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_FORMLESSCLAN"  
+      Script: |  
+        bonus bRace, RC_Formless;
+        bonus2 bSubEle, Ele_All, 10;
+        bonus bVit, 10;
+        bonus bDef, 10;
+        bonus bMdef, 10;        
+        bonus bMaxHP, 1000;
+    Allies:  
+      - "Insect Clan"  
+    Antagonists:  
+      - "Demi-Human Clan"
+      - "Brute Clan"
+      - "Fish Clan"
+
+  - Id: 13  
+    Name: "Insect Clan"  
+    Leader: "Venothrax"  
+    Map: "1@xm_d"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_INSECTCLAN"  
+      Script: |  
+        bonus bRace, RC_Insect;
+        bonus bIntravision;
+        bonus bNoGemStone;
+        bonus bHealPower, 100;
+        bonus2 bSubRace, RC_Plant, -20;
+    Allies:  
+      - "Formless Clan"  
+    Antagonists:  
+      - "Demi-Human Clan"
+      - "Plant Clan"
+
+  - Id: 14  
+    Name: "Plant Clan"  
+    Leader: "Thornroot"  
+    Map: "mora"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_PLANTCLAN"  
+      Script: |  
+        bonus bRace, RC_Plant;
+        bonus bShortWeaponDamageReturn, 10;
+        bonus bLongWeaponDamageReturn, 10;
+        bonus bMagicDamageReturn, 50;
+        bonus bHPrecovRate, 100;
+        bonus2 bSubEle, Ele_All, -20;
+    Allies:  
+      - "Demi-Human Clan"
+    Antagonists:  
+      - "Insect Clan"
+      - "Brute Clan"
+
+  - Id: 15  
+    Name: "Undead Clan"  
+    Leader: "Mordath"  
+    Map: "gl_chyard_"  
+    MaxMembers: 500  
+    Buff:  
+      Icon: "EFST_UNDEADCLAN"  
+      Script: |  
+        bonus bRace, RC_Undead;
+        bonus2 bResEff, Eff_Bleeding, 10000;
+        bonus2 bResEff, Eff_Blind, 10000;
+        bonus2 bResEff, Eff_Burning, 10000;
+        bonus2 bResEff, Eff_Confusion, 10000;
+        bonus2 bResEff, Eff_Crystalize, 10000;
+        bonus2 bResEff, Eff_Curse, 10000;
+        bonus2 bResEff, Eff_DPoison, 10000;
+        bonus2 bResEff, Eff_Fear, 10000;
+        bonus2 bResEff, Eff_Freeze, 10000;
+        bonus2 bResEff, Eff_Poison, 10000;
+        bonus2 bResEff, Eff_Silence, 10000;
+        bonus2 bResEff, Eff_Sleep, 10000;
+        bonus2 bResEff, Eff_Stone, 10000;
+        bonus2 bResEff, Eff_Stun, 10000;
+        bonus2 bResEff, Eff_Freezing, 10000;
+        bonus2 bResEff, Eff_Heat, 10000;
+        bonus2 bResEff, Eff_Deepsleep, 10000;
+        bonus2 bResEff, Eff_WhiteImprison, 10000;
+        bonus2 bResEff, Eff_Hallucination, 10000;
+        bonus2 bSubRace, RC_Angel, -20;
+        bonus2 bSubEle, Ele_Holy, -20;
+        bonus2 bHPDrainRate, 1000, 1; 
+        bonus2 bSPDrainRate, 1000, 1;
+        autobonus "{ bonus2 bHPRegenRate, 300, 1000; }", 500, 5000, BF_MAGIC; 
+        autobonus "{ bonus2 bSPRegenRate, 70, 1000; }", 500, 5000, BF_MAGIC;
+    Allies:  
+      - "Demon Clan"
+    Antagonists:  
+      - "Angel Clan"
+      - "Demi-Human Clan"

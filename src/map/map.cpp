@@ -3111,6 +3111,30 @@ void map_removemobs(int16 m)
 	mapdata->mob_delete_timer = add_timer(gettick()+battle_config.mob_remove_delay, map_removemobs_timer, m, 0);
 }
 
+TIMER_FUNC(clan_member_cleanup) {  
+    for (const auto& pair : clan_db_yaml) {  
+        std::shared_ptr<clan> clan_entry = pair.second;  
+          
+        // Skip if kick time is disabled or not set  
+        if (clan_entry->kick_time <= 0) {  
+            continue;  
+        }  
+          
+        // Convert seconds to days for SQL query  
+        int32 kick_days = clan_entry->kick_time / (24 * 60 * 60);  
+        if (kick_days <= 0) kick_days = 1; // Minimum 1 day  
+          
+        // Execute per-clan cleanup query using mmysql_handle  
+        if (SQL_ERROR == Sql_Query(mmysql_handle,  
+            "UPDATE `char` SET `clan_id`='0' WHERE `online`='0' AND `clan_id`='%d' AND `last_login` IS NOT NULL AND `last_login` <= NOW() - INTERVAL %d DAY",   
+            clan_entry->id, kick_days)) {  
+            Sql_ShowDebug(mmysql_handle);  
+        }  
+    }  
+      
+    return 0;  
+}
+
 /*==========================================
  * Check for map_name from map_id
  *------------------------------------------*/
@@ -5440,11 +5464,11 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	do_init_battle();
 	do_init_instance();
 	do_init_chrif();
-	do_init_clan();
 #ifndef MAP_GENERATOR
 	do_init_clif();
 #endif
 	do_init_script();
+	do_init_clan();
 	do_init_itemdb();
 	do_init_channel();
 	do_init_cashshop();

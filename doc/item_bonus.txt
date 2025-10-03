@@ -102,6 +102,7 @@ bonus bLuk,n;      			LUK + n
 bonus bAllStats,n; 			STR + n, AGI + n, VIT + n, INT + n, DEX + n, LUK + n
 bonus bAgiVit,n;   			AGI + n, VIT + n
 bonus bAgiDexStr,n;			STR + n, AGI + n, DEX + n
+bonus bRace,r;				Set the player's race to race r
 
 Trait Stats
 -----------
@@ -510,4 +511,3 @@ bonus bClassChange,n;     		Gives a n/100% chance to change the attacked monster
 bonus bAddStealRate,n;    		Increases success rate of Steal skill by n/100%
 bonus bNoMadoFuel;			Nullify Magic Gear Fuel requirement for skills.
 bonus bNoWalkDelay;				Give infinite Endure.
-bonus bRace,r;          		Set the player's race to race r

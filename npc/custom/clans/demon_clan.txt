@@ -1,0 +1,173 @@
+//===== rAthena Script =======================================
+//= Clan masters
+//===== Description: =========================================
+//= The clan master NPCs that allow you to join and leave
+//= one of the clans.
+//===== Changelogs: ==========================================
+//= 1.0 Initial release. [Louis T Steinhil]
+//============================================================
+gl_cas02_,103,177,4	script	[ Clan Master ]#4	4_BAPHOMET,{
+	mes "<B>[ Zarathos ]</B>";
+	mes "Hi, there! I'm Zarathos, master of the ^0000FFDemon Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Demon Clan:Cancel." ) ){
+				case 1:
+					mes "<B>[ Zarathos ]</B>";
+					mes "The ^3131FFClans^000000 are a type of guild ran by the Kingdom.";
+					mes "They don't participate in the Siege, so members are free to join/leave anytime.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "Join us, if no clan suits your taste.";
+					mes "New members are given ^3131FFfree stat bonus^000000.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "The ^3131FFDemon Clan^000000 is renowned for its fierce strength and relentless power.";
+					mes "Founded by ancient demons, the clan thrives on the chaos and power of battle.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "Melee stats are offered as the name suggests, but not all members are Melee classes.";
+					mes "The clan welcomes warriors of all types who seek to unleash their inner fury.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "Our headquarters, a fortress of dark stone and flickering torches, stands as a testament to our might.";
+					mes "Here, we train under the watchful eyes of demon lords, mastering our skills and forging unbreakable bonds.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "In battle, Demon Clan members are a fearsome force. With our melee prowess and demonic heritage,";
+					mes "we crush our enemies and revel in the thrill of combat.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "The Demon Clan believes in the strength of individuality and the thrill of competition.";
+					mes "We often engage in duels and contests to hone our skills and prove our dominance.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "Join us, and embrace the power within you. Unleash your fury and rise to greatness in the Demon Clan.";
+					mes "Difference in variety creates the fun. These odd bunches never bore me in the party.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "And who knows, you might meet your soul mate in the clan! Hahah!";
+					close;
+				case 2:
+					mes "<B>[ Zarathos ]</B>";
+					mes "The ^0000FFDemon Clan^000000 is known to have demonic strength.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Demon>^000000.";
+					mes "^0000FF<ATK & MATK + 10%>^000000!";
+					mes "^0000FF<DEF & MDEF - 10%>^000000!";
+					mes "^0000FF<Damage received from Angel Type Enemies + 20%>^000000.";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "<B>[ Zarathos ]</B>";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "<B>[ Zarathos ]</B>";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "<B>[ Zarathos ]</B>";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Demon>^000000.";
+			mes "^0000FF<ATK & MATK + 10%>^000000!";
+			mes "^0000FF<DEF & MDEF - 10%>^000000!";
+			mes "^0000FF<Damage received from Angel Type Enemies + 20%>^000000.";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "<B>[ Zarathos ]</B>";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "<B>[ Zarathos ]</B>";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "<B>[ Zarathos ]</B>";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "<B>[ Zarathos ]</B>";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "<B>[ Zarathos ]</B>";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(DEMONCLAN)) {
+							sc_start2 SC_DEMONCLAN, INFINITE_TICK, 0, DEMONCLAN;
+							callfunc "TransformToRaceFantasy", 7;
+							cutin "sham02.bmp", 2;
+							mes "<B>[ Zarathos ]</B>";
+							mes "Welcome to the ^0000FFDemon Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "<B>[ Zarathos ]</B>";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "<B>[ Zarathos ]</B>";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "<B>[ Zarathos ]</B>";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "<B>[ Zarathos ]</B>";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "<B>[ Zarathos ]</B>";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "<B>[ Zarathos ]</B>";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_DEMONCLAN;
+						callfunc "TransformToPlayer";
+						mes "<B>[ Zarathos ]</B>";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_DEMONCLAN, INFINITE_TICK, 0, DEMONCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 103);
+	setunittitle( getnpcid(0), "Zarathos" );	
+	end;
+}

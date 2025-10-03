@@ -89,7 +89,15 @@ void atcommand_basicbonuses_sub(int fd, class map_session_data *sd) {
 			base_stats_found = true;        
 		}        
 	}  
-      
+
+	// bRace - Race Change  
+	if (sd->bonus.change_race != RC_NONE_) {    
+		std::string race_name = get_race_name(sd->bonus.change_race);  
+		sprintf(output, "   -> Race: %s", race_name.c_str());    
+		clif_messagecolor(sd, color_table[COLOR_WHITE], output, false, SELF);    
+		base_stats_found = true;
+	}
+
     if (!base_stats_found) {    
         clif_displaymessage(fd, "   -> No Base Stats bonuses found");    
     }  

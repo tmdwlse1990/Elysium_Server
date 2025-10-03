@@ -365,6 +365,7 @@ INSERT INTO `clan` VALUES ('1', 'Swordman Clan', 'Raffam Oranpere', 'prontera', 
 INSERT INTO `clan` VALUES ('2', 'Arcwand Clan', 'Devon Aire', 'geffen', '500');
 INSERT INTO `clan` VALUES ('3', 'Golden Mace Clan', 'Berman Aire', 'prontera', '500');
 INSERT INTO `clan` VALUES ('4', 'Crossbow Clan', 'Shaam Rumi', 'payon', '500');
+INSERT INTO `clan` VALUES ('5', 'Jumping Clan', 'Noob', 'payon', '500');
 INSERT INTO `clan` VALUES ('6', 'Angel Clan', 'Reginleif', 'valkyrie', '500');	
 INSERT INTO `clan` VALUES ('7', 'Brute Clan', 'Ragnar', 'lasgna', '500');
 INSERT INTO `clan` VALUES ('8', 'Demi-Human Clan', 'Saber', 'prontera', '500');

@@ -1,0 +1,176 @@
+//===== rAthena Script =======================================
+//= Clan masters
+//===== Description: =========================================
+//= The clan master NPCs that allow you to join and leave
+//= one of the clans.
+//===== Changelogs: ==========================================
+//= 1.0 Initial release. [Louis T Steinhil]
+//============================================================
+abyss_04,147,173,4	script	[ Clan Master ]#5	4_4JOB_LETICIA,{
+	//cutin "sham01.bmp", 2;
+	mes "[Drakorath]";
+	mes "Hi, there! I'm Drakorath, master of the ^0000FFDragon Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Dragon Clan:Cancel." ) ){
+				case 1:
+					mes "[Drakorath]";
+					mes "The ^0000FFClans^000000 are factions sanctioned by the Kingdom, each with unique traditions and strengths.";
+					mes "Unlike guilds that wage war in the Siege, Clans are free to join or leave as one pleases.";
+					next;
+					mes "[Drakorath]";
+					mes "If no other clan calls to your spirit, consider the path of the Dragon Clan.";
+					mes "New members receive a ^0000FFpowerful stat bonus^000000 to help forge their legend.";
+					next;
+					mes "[Drakorath]";
+					mes "The ^0000FFDragon Clan^000000 is forged in fire and tempered in battle.";
+					mes "Founded by ancient Dragons, our lineage is one of strength, resilience, and unwavering fury.";
+					next;
+					mes "[Drakorath]";
+					mes "Though our clan is known for its unmatched melee prowess, we welcome warriors of all disciplines.";
+					mes "Any who seek to embrace their primal might will find a home among us.";
+					next;
+					mes "[Drakorath]";
+					mes "Our stronghold, a fortress of obsidian and flame-lit halls, stands as a testament to our legacy.";
+					mes "Here, under the guidance of Dragon Lords, we train, sharpen our skills, and forge bonds as strong as dragon scales.";
+					next;
+					mes "[Drakorath]";
+					mes "In battle, Dragon Clan warriors are an unstoppable force. Our fury is unmatched, our strikes relentless.";
+					mes "With Dragonic heritage coursing through our veins, we dominate the battlefield with sheer might.";
+					next;
+					mes "[Drakorath]";
+					mes "Strength, honor, and competition drive us forward.";
+					mes "Within our ranks, duels and trials of combat are common tests that refine our power and prove our supremacy.";
+					next;
+					mes "[Drakorath]";
+					mes "Join us, embrace your inner dragon, and rise to greatness.";
+					mes "Power lies dormant in us all it is time to awaken yours.";
+					next;
+					mes "[Drakorath]";
+					mes "And who knows? You may just find a kindred spirit, or even a soul mate, within our ranks! Hahaha!";
+					close;
+				case 2:
+					mes "[Drakorath]";
+					mes "The ^0000FFDragon Clan^000000 mainly supports Support & Tank adventurers.";
+					next;
+					mes "[Drakorath]";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Dragon>^000000.";
+					mes "^0000FF<Reflect 10% of Physical Damage Received>^000000!";
+					mes "^0000FF<Reflect 10% of Magical Damage Received>^000000!";
+					mes "^0000FF<HP/SP Recovery + 100%>^000000!";
+					mes "^0000FF<Resistance to all elements - 20%>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "[Drakorath]";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "[Drakorath]";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "[Drakorath]";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "[Drakorath]";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Dragon>^000000.";
+			mes "^0000FF<Reflect 10% of Physical Damage Received>^000000!";
+			mes "^0000FF<Reflect 10% of Magical Damage Received>^000000!";
+			mes "^0000FF<HP/SP Recovery + 100%>^000000!";
+			mes "^0000FF<Resistance to all elements - 20%>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "[Drakorath]";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "[Drakorath]";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "[Drakorath]";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "[Drakorath]";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "[Drakorath]";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(DRAGONCLAN)) {
+							sc_start2 SC_DRAGONCLAN, INFINITE_TICK, 0, DRAGONCLAN;
+							callfunc "TransformToRaceFantasy", 8;
+							cutin "sham02.bmp", 2;
+							mes "[Drakorath]";
+							mes "Welcome to the ^0000FFDragon Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "[Drakorath]";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "[Drakorath]";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "[Drakorath]";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "[Drakorath]";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "[Drakorath]";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "[Drakorath]";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_DRAGONCLAN;
+						callfunc "TransformToPlayer";
+						mes "[Drakorath]";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_DRAGONCLAN, INFINITE_TICK, 0, DRAGONCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 104);
+	setunittitle( getnpcid(0), "Drakorath" );	
+	end;
+}

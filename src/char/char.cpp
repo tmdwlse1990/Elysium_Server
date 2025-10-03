@@ -2220,19 +2220,6 @@ TIMER_FUNC(char_online_data_cleanup){
 	return 0;
 }
 
-TIMER_FUNC(char_clan_member_cleanup){
-	// Auto removal is disabled
-	if( charserv_config.clan_remove_inactive_days <= 0 ){
-		return 0;
-	}
-
-	if( SQL_ERROR == Sql_Query( sql_handle, "UPDATE `%s` SET `clan_id`='0' WHERE `online`='0' AND `clan_id`<>'0' AND `last_login` IS NOT NULL AND `last_login` <= NOW() - INTERVAL %d DAY", schema_config.char_db, charserv_config.clan_remove_inactive_days ) ){
-		Sql_ShowDebug(sql_handle);
-	}
-
-	return 0;
-}
-
 //----------------------------------
 // Reading Lan Support configuration
 // Rewrote: Anvanced subnet check [LuzZza]
@@ -2307,7 +2294,7 @@ bool char_checkdb(void){
                 schema_config.homunculus_db, schema_config.skill_homunculus_db, schema_config.skillcooldown_homunculus_db,
                 schema_config.mercenary_db, schema_config.mercenary_owner_db, schema_config.skillcooldown_mercenary_db,
 		schema_config.elemental_db, schema_config.skillcooldown_db, schema_config.bonus_script_db,
-		schema_config.clan_table, schema_config.clan_alliance_table, schema_config.mail_attachment_db, schema_config.achievement_table
+		schema_config.mail_attachment_db, schema_config.achievement_table
 	};
 	ShowInfo("Start checking DB integrity\n");
 	for (i=0; i<ARRAYLENGTH(sqltable); i++){ //check if they all exist and we can acces them in sql-server
@@ -2544,18 +2531,6 @@ bool char_checkdb(void){
 		Sql_ShowDebug(sql_handle);
 		return false;
 	}
-	//checking clan table
-	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT  `clan_id`,`name`,`master`,`mapname`,`max_member`"
-		" FROM `%s` LIMIT 1;", schema_config.clan_table) ){
-		Sql_ShowDebug(sql_handle);
-		return false;
-	}
-	//checking clan alliance table
-	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT  `clan_id`,`opposition`,`alliance_id`,`name`"
-		" FROM `%s` LIMIT 1;", schema_config.clan_alliance_table) ){
-		Sql_ShowDebug(sql_handle);
-		return false;
-	}
 	//checking achievement_table
 	if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `char_id`,`id`,`count1`,`count2`,`count3`,`count4`,`count5`,`count6`,`count7`,`count8`,`count9`,`count10`,`completed`,`rewarded`"
 		" FROM `%s` LIMIT 1;", schema_config.achievement_table)) {
@@ -2713,8 +2688,6 @@ void char_set_default_sql(){
 	safestrncpy(schema_config.char_reg_str_table,"char_reg_str",sizeof(schema_config.char_reg_str_table));
 	safestrncpy(schema_config.acc_reg_str_table,"acc_reg_str",sizeof(schema_config.acc_reg_str_table));
 	safestrncpy(schema_config.acc_reg_num_table,"acc_reg_num",sizeof(schema_config.acc_reg_num_table));
-	safestrncpy(schema_config.clan_table,"clan",sizeof(schema_config.clan_table));
-	safestrncpy(schema_config.clan_table,"clan_alliance",sizeof(schema_config.clan_alliance_table));
 	safestrncpy(schema_config.achievement_table,"achievement",sizeof(schema_config.achievement_table));
 }
 
@@ -2808,7 +2781,6 @@ void char_set_defaults(){
 	charserv_config.start_zeny = 0;
 	charserv_config.guild_exp_rate = 100;
 
-	charserv_config.clan_remove_inactive_days = 14;
 	charserv_config.mail_return_days = 14;
 	charserv_config.mail_delete_days = 14;
 	charserv_config.mail_retrieve = 1;
@@ -3092,8 +3064,6 @@ bool char_config_read(const char* cfgName, bool normal){
 			charserv_config.charmove_config.char_moves_unlimited = config_switch(w2);
 		} else if (strcmpi(w1, "char_checkdb") == 0) {
 			charserv_config.char_check_db = config_switch(w2);
-		} else if (strcmpi(w1, "clan_remove_inactive_days") == 0) {
-			charserv_config.clan_remove_inactive_days = atoi(w2);
 		} else if (strcmpi(w1, "mail_return_days") == 0) {
 			charserv_config.mail_return_days = atoi(w2);
 		} else if (strcmpi(w1, "mail_delete_days") == 0) {
@@ -3236,10 +3206,6 @@ bool CharacterServer::initialize( int32 argc, char *argv[] ){
 	// Online Data timers (checking if char still connected)
 	add_timer_func_list(char_online_data_cleanup, "online_data_cleanup");
 	add_timer_interval(gettick() + 1000, char_online_data_cleanup, 0, 0, 600 * 1000);
-
-	// periodically remove players that have not logged in for a long time from clans
-	add_timer_func_list(char_clan_member_cleanup, "clan_member_cleanup");
-	add_timer_interval(gettick() + 1000, char_clan_member_cleanup, 0, 0, 60 * 60 * 1000); // every 60 minutes
 
 	// periodically check if mails need to be returned to their sender
 	add_timer_func_list(mail_return_timer, "mail_return_timer");

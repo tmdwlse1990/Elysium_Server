@@ -3671,19 +3671,6 @@ bool intif_storage_save(map_session_data *sd, struct s_storage *stor, uint16 mod
 	return true;
 }
 
-int32 intif_clan_requestclans(){
-	if (CheckForCharServer())
-		return 0;
-	WFIFOHEAD(inter_fd, 2);
-	WFIFOW(inter_fd, 0) = 0x30A0;
-	WFIFOSET(inter_fd, 2);
-	return 1;
-}
-
-void intif_parse_clans( int32 fd ){
-	clan_load_clandata( ( RFIFOW(fd, 2) - 4 ) / sizeof( struct clan ), (struct clan*)RFIFOP(fd,4) );
-}
-
 int32 intif_clan_message( int32 clan_id, uint32 account_id, const char *mes, size_t len ){
 	if (CheckForCharServer())
 		return 0;
@@ -3885,7 +3872,6 @@ int32 intif_parse(int32 fd)
 	case 0x3893:	intif_parse_DeleteHomunculusOk(fd); break;
 
 	// Clan system
-	case 0x38A0:	intif_parse_clans(fd); break;
 	case 0x38A1:	intif_parse_clan_message(fd); break;
 	case 0x38A2:	intif_parse_clan_onlinecount(fd); break;
 

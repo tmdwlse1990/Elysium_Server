@@ -22,6 +22,7 @@
 #include "autocombat.hpp"
 #include "battle.hpp"
 #include "battleground.hpp"
+#include "clan.hpp"
 #include "clif.hpp"
 #include "collection.hpp"
 #include "elemental.hpp"
@@ -3194,14 +3195,6 @@ static int32 status_get_hpbonus(block_list *bl, enum e_status_bonus type) {
 				bonus += 2000;
 			if(sc->getSCE(SC_MARIONETTE))
 				bonus -= 1000;
-			if(sc->getSCE(SC_SWORDCLAN))
-				bonus += 30;
-			if(sc->getSCE(SC_ARCWANDCLAN))
-				bonus += 30;
-			if(sc->getSCE(SC_GOLDENMACECLAN))
-				bonus += 30;
-			if(sc->getSCE(SC_CROSSBOWCLAN))
-				bonus += 30;
 #ifdef RENEWAL
 			if (sc->getSCE(SC_ANGELUS))
 				bonus += sc->getSCE(SC_ANGELUS)->val1 * 50;
@@ -3352,14 +3345,6 @@ static int32 status_get_spbonus(block_list *bl, enum e_status_bonus type) {
 				bonus += sc->getSCE(SC_INCMSP)->val1;
 			if(sc->getSCE(SC_EARTH_INSIGNIA) && sc->getSCE(SC_EARTH_INSIGNIA)->val1 == 3)
 				bonus += 50;
-			if(sc->getSCE(SC_SWORDCLAN))
-				bonus += 10;
-			if(sc->getSCE(SC_ARCWANDCLAN))
-				bonus += 10;
-			if(sc->getSCE(SC_GOLDENMACECLAN))
-				bonus += 10;
-			if(sc->getSCE(SC_CROSSBOWCLAN))
-				bonus += 10;
 		}
 	} else if (type == STATUS_BONUS_RATE) {
 		status_change *sc = status_get_sc(bl);
@@ -4332,6 +4317,14 @@ int32 status_calc_pc_sub(map_session_data* sd, uint8 opt)
 
 	if(sd->runeactivated_data.tagID){
 		rune_active_bonus(sd);
+	}
+
+	// Clan Bonus
+	if (sd->status.clan_id > 0) {  
+		struct clan* c = clan_search(sd->status.clan_id);  
+		if (c && c->script) {  
+			run_script(c->script, 0, sd->id, 0);  
+		}  
 	}
 // ----- STATS CALCULATION -----
 
@@ -6915,10 +6908,6 @@ static uint16 status_calc_str(block_list *bl, status_change *sc, int32 str)
 		str -= sc->getSCE(SC_STOMACHACHE)->val1;
 	if(sc->getSCE(SC_KYOUGAKU))
 		str -= sc->getSCE(SC_KYOUGAKU)->val2;
-	if(sc->getSCE(SC_SWORDCLAN))
-		str += 1;
-	if(sc->getSCE(SC_JUMPINGCLAN))
-		str += 1;
 	if(sc->getSCE(SC_FULL_THROTTLE))
 		str += str * sc->getSCE(SC_FULL_THROTTLE)->val3 / 100;
 	if(sc->getSCE(SC_CHEERUP))
@@ -6986,10 +6975,6 @@ static uint16 status_calc_agi(block_list *bl, status_change *sc, int32 agi)
 		agi -= sc->getSCE(SC_STOMACHACHE)->val1;
 	if(sc->getSCE(SC_KYOUGAKU))
 		agi -= sc->getSCE(SC_KYOUGAKU)->val2;
-	if(sc->getSCE(SC_CROSSBOWCLAN))
-		agi += 1;
-	if(sc->getSCE(SC_JUMPINGCLAN))
-		agi += 1;
 	if(sc->getSCE(SC_FULL_THROTTLE))
 		agi += agi * sc->getSCE(SC_FULL_THROTTLE)->val3 / 100;
 	if (sc->getSCE(SC_ARCLOUSEDASH))
@@ -7045,10 +7030,6 @@ static uint16 status_calc_vit(block_list *bl, status_change *sc, int32 vit)
 		vit -= sc->getSCE(SC_STOMACHACHE)->val1;
 	if(sc->getSCE(SC_KYOUGAKU))
 		vit -= sc->getSCE(SC_KYOUGAKU)->val2;
-	if(sc->getSCE(SC_SWORDCLAN))
-		vit += 1;
-	if(sc->getSCE(SC_JUMPINGCLAN))
-		vit += 1;
 	if(sc->getSCE(SC_STRIPARMOR) && bl->type != BL_PC)
 		vit -= vit * sc->getSCE(SC_STRIPARMOR)->val2/100;
 	if(sc->getSCE(SC_FULL_THROTTLE))
@@ -7118,12 +7099,6 @@ static uint16 status_calc_int(block_list *bl, status_change *sc, int32 int_)
 		int_ -= sc->getSCE(SC_STOMACHACHE)->val1;
 	if(sc->getSCE(SC_KYOUGAKU))
 		int_ -= sc->getSCE(SC_KYOUGAKU)->val2;
-	if(sc->getSCE(SC_ARCWANDCLAN))
-		int_ += 1;
-	if(sc->getSCE(SC_GOLDENMACECLAN))
-		int_ += 1;
-	if(sc->getSCE(SC_JUMPINGCLAN))
-		int_ += 1;
 	if(sc->getSCE(SC_FULL_THROTTLE))
 		int_ += int_ * sc->getSCE(SC_FULL_THROTTLE)->val3 / 100;
 	if(sc->getSCE(SC_CHEERUP))
@@ -7196,12 +7171,6 @@ static uint16 status_calc_dex(block_list *bl, status_change *sc, int32 dex)
 		dex -= sc->getSCE(SC_STOMACHACHE)->val1;
 	if(sc->getSCE(SC_KYOUGAKU))
 		dex -= sc->getSCE(SC_KYOUGAKU)->val2;
-	if(sc->getSCE(SC_ARCWANDCLAN))
-		dex += 1;
-	if(sc->getSCE(SC_CROSSBOWCLAN))
-		dex += 1;
-	if(sc->getSCE(SC_JUMPINGCLAN))
-		dex += 1;
 	if(sc->getSCE(SC__STRIPACCESSORY) && bl->type != BL_PC)
 		dex -= dex * sc->getSCE(SC__STRIPACCESSORY)->val2 / 100;
 	if(sc->getSCE(SC_MARSHOFABYSS))
@@ -7263,10 +7232,6 @@ static uint16 status_calc_luk(block_list *bl, status_change *sc, int32 luk)
 		luk -= luk * sc->getSCE(SC__STRIPACCESSORY)->val2 / 100;
 	if(sc->getSCE(SC_BANANA_BOMB))
 		luk -= 75;
-	if(sc->getSCE(SC_GOLDENMACECLAN))
-		luk += 1;
-	if(sc->getSCE(SC_JUMPINGCLAN))
-		luk += 1;
 	if(sc->getSCE(SC_FULL_THROTTLE))
 		luk += luk * sc->getSCE(SC_FULL_THROTTLE)->val3 / 100;
 	if(sc->getSCE(SC_CHEERUP))

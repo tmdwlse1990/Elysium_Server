@@ -1,0 +1,181 @@
+//===== rAthena Script =======================================
+//= Clan masters
+//===== Description: =========================================
+//= The clan master NPCs that allow you to join and leave
+//= one of the clans.
+//===== Changelogs: ==========================================
+//= 1.0 Initial release. [Louis T Steinhil]
+//============================================================
+lasagna,177,211,4	script	[ Clan Master ]#2	4_EP17_MIGUEL,{
+	mes "<B>[ Ragnar ]</B>";
+	mes "Hi, there! I'm Ragnar, master of the ^0000FFBrute Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Brute Clan:Cancel." ) ){
+				case 1:
+					mes "<B>[ Ragnar ]</B>";
+					mes "The ^0000FFClans^000000 are a type of guild ran by the Kingdom.";
+					mes "They don't participate in the Siege, so members are free to join/leave anytime.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "I wish we could join the Siege. I'd love flying over on my dragon and burning everyone in my way!";
+					mes "Oops, too thrilled!";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "Join us, if no clan suits your taste.";
+					mes "New members are given ^0000FFfree stat bonus^000000.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "The ^0000FFBrute Clan^000000 is a formidable group,";
+					mes "comprised of beastly monsters who harness their primal instincts in battle.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "Brute Clan members excel in critical strikes and swift attacks,";
+					mes "offering unique bonuses that enhance their ferocity and speed.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "Our headquarters is a rugged wilderness, reflecting the untamed nature of our members.";
+					mes "Here, we train to sharpen our instincts and strengthen our bonds.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "In battle, Brute Clan members are a fierce force. With our unique bonuses,";
+					mes "we deliver devastating critical strikes, attack with unmatched speed, and cast spells rapidly.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "The Brute Clan values raw power and primal instincts,";
+					mes "embracing the wild and constantly pushing their limits.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "Join us, and discover the power of the beast within. Embrace the wild and rise to greatness in the Brute Clan.";
+					mes "Difference in variety creates the fun. These odd bunches never bore me in the party.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "And who knows, you might meet your soul mate in the clan! Hahah!";
+					close;
+				case 2:
+					mes "<B>[ Ragnar ]</B>";
+					mes "The ^0000FFBrute Clan^000000 mainly for critical strikes and swift attacks.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "Eh, let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Brute>^000000.";
+					mes "^0000FF<Critical Damage + 10%>^000000!";
+					mes "^0000FF<Critical Rate + 10%>^000000!";
+					mes "^0000FF<Aspd + 10%>^000000!";
+					mes "^0000FF<Cast Time + 10%>^000000!";
+					mes "^0000FF<Increased Damage against Demi-Human Type Enemies + 20%>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "<B>[ Ragnar ]</B>";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "<B>[ Ragnar ]</B>";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "<B>[ Ragnar ]</B>";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Eh, let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Brute>^000000.";
+			mes "^0000FF<Critical Damage + 10%>^000000!";
+			mes "^0000FF<Critical Rate + 10%>^000000!";
+			mes "^0000FF<Aspd + 10%>^000000!";
+			mes "^0000FF<Cast Time + 10%>^000000!";
+			mes "^0000FF<Increased Damage against Demi-Human Type Enemies + 20%>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "<B>[ Ragnar ]</B>";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "<B>[ Ragnar ]</B>";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "<B>[ Ragnar ]</B>";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "<B>[ Ragnar ]</B>";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "<B>[ Ragnar ]</B>";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(BRUTECLAN)) {
+							sc_start2 SC_BRUTECLAN, INFINITE_TICK, 0, BRUTECLAN;
+							callfunc "TransformToRaceFantasy", 6;
+							cutin "sham02.bmp", 2;
+							mes "<B>[ Ragnar ]</B>";
+							mes "Welcome to the ^0000FFBrute Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "<B>[ Ragnar ]</B>";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "<B>[ Ragnar ]</B>";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "<B>[ Ragnar ]</B>";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "<B>[ Ragnar ]</B>";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "<B>[ Ragnar ]</B>";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "<B>[ Ragnar ]</B>";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_BRUTECLAN;
+						callfunc "TransformToPlayer";
+						mes "<B>[ Ragnar ]</B>";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_BRUTECLAN, INFINITE_TICK, 0, BRUTECLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 101);
+	setunittitle( getnpcid(0), "Ragnar" );	
+	end;
+}

@@ -1,0 +1,175 @@
+//===== rAthena Script =======================================
+//= Clan masters
+//===== Description: =========================================
+//= The clan master NPCs that allow you to join and leave
+//= one of the clans.
+//===== Changelogs: ==========================================
+//= 1.0 Initial release. [Louis T Steinhil]
+//============================================================
+splendide,175,164,4	script	[ Clan Master ]#8	MAYA_PUPLE,{
+	mes "<B>[ Venothrax ]</B>";
+	mes "Hi, there! I'm Venothrax, master of the ^0000FFInsect Clan^000000";
+	mes "What can I do for you?";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	next;
+	switch( select( "Clan Information:Join.:Leave." ) ){
+		case 1:
+			switch( select( "What are Clans?:About the Insect Clan:Cancel." ) ){
+				case 1:
+					mes "<B>[ Venothrax ]</B>";
+					mes "The ^0000FFClans^000000 are factions sanctioned by the Kingdom, each with unique traditions and strengths.";
+					mes "Unlike guilds that wage war in the Siege, Clans are free to join or leave as one pleases.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "If no other clan calls to your spirit, consider the path of the ^0000FFInsect Clan^000000.";
+					mes "New members receive a ^0000FFunique stat bonus^000000, enhancing their natural instincts.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "The ^0000FFInsect Clan^000000 thrives on unity, resilience, and adaptability.";
+					mes "Founded by the great swarms of old, our lineage carries the wisdom of the hive and the strength of countless generations.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "We may be small alone, but together, we are an unstoppable force.";
+					mes "With unyielding endurance and an exoskeleton tougher than steel, we overwhelm our foes.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "Our stronghold is a labyrinth of tunnels and chambers, carved deep within the earth.";
+					mes "Here, under the guidance of the Swarm Lords, we train our minds and bodies, sharpening our instincts.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "In battle, we move as one. Like a swarm of locusts, we descend upon our enemies, overwhelming them with sheer numbers and speed.";
+					mes "With our hardened carapaces, we shrug off attacks, while our relentless assault never ceases.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "Speed, defense, and precision define our way of life.";
+					mes "Within our ranks, we test our skills in duels, honing our reflexes and proving our worth.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "Join us and embrace the might of the swarm.";
+					mes "Become faster, stronger, and more resilient—just as nature intended.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "And who knows? In the heart of the hive, you may find allies, family, or even a soul mate! Hahaha!";
+					close;
+				case 2:
+					mes "<B>[ Venothrax ]</B>";
+					mes "The ^0000FFInsect Clan^000000 mainly supports Support & Tank adventurers.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+					mes "^0000FF<You'll be classified as a Insect>^000000.";
+					mes "^0000FF<Intravision>^000000!";
+					mes "^0000FF<Bypass gemstone requirements from skills>^000000!";
+					mes "^0000FF<DEF & MDEF + 10%>^000000!";
+					mes "^0000FF<Resistance to Plant Type Enemies - 20%>^000000!";
+					mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "The Clans are not allowed to participate in the Siege; you should join a private guild instead for Siege.";
+					mes "The Clans are for adventurers that hate being tied down.";
+					next;
+					mes "<B>[ Venothrax ]</B>";
+					mes "Do you have a question?";
+					break;
+				case 3:
+					break;
+			}
+			break;
+		case 2:
+			mes "<B>[ Venothrax ]</B>";
+			mes "Oh, yeah? Good choice!";
+			mes "Let's check the Clan policy then to begin admission procedures.";
+			next;
+			mes "<B>[ Venothrax ]</B>";
+			mes "^0000FFClansmen^000000 cannot participate in the Siege.";
+			mes "Let me check the Clan manual. Ah, and we offer stat bonuses to new members:";
+			mes "^0000FF<You'll be classified as a Insect>^000000.";
+			mes "^0000FF<Intravision>^000000!";
+			mes "^0000FF<Bypass gemstone requirements from skills>^000000!";
+			mes "^0000FF<DEF & MDEF + 10%>^000000!";
+			mes "^0000FF<Resistance to Plant Type Enemies - 20%>^000000!";
+			mes "^FF0000Warning: Your armor element is still neutral and will only change if you buff or equip an item that changes it^000000.";
+			mes "Do you agree?";
+			next;
+			if( select( "Yes.:No." ) == 1 ){
+				mes "<B>[ Venothrax ]</B>";
+				mes "You can join and leave a Clan anytime, but if you don't login for ^0000FFmore than 2 weeks^000000, you'll be ^0000FFexpelled^000000.";
+				mes "Do you promise you'll maintain good standing?";
+				next;
+				if( select( "Yes.:No." ) == 1 ){
+					mes "<B>[ Venothrax ]</B>";
+					mes "Good, write your name here.";
+					next;
+					input .@name$;
+					mes "<B>[ Venothrax ]</B>";
+					mes "^0000FF" + strcharinfo( 0 ) + "^000000..!";
+					mes "Ugh, your penmanship needs work. Let me process your application.";
+					next;
+					if( getcharid( 2 ) ){
+						mes "<B>[ Venothrax ]</B>";
+						mes "Did you finish things up with your guild?";
+						close;
+					}else if( getcharid( 5 ) != 0 ){
+						mes "<B>[ Venothrax ]</B>";
+						mes "Eh, you're already in a Clan. Hey, this isn't funny.";
+					}else{
+						if (clan_join(INSECTCLAN)) {
+							sc_start2 SC_INSECTCLAN, INFINITE_TICK, 0, INSECTCLAN;
+							callfunc "TransformToRaceFantasy", 15;
+							cutin "sham02.bmp", 2;
+							mes "<B>[ Venothrax ]</B>";
+							mes "Welcome to the ^0000FFInsect Clan^000000!";
+							next;
+							cutin "sham01.bmp", 2;
+							mes "<B>[ Venothrax ]</B>";
+							mes "You can review Clan info with ^0000FFCtrl+G^000000.";
+							next;
+							mes "<B>[ Venothrax ]</B>";
+							mes "Don't pick fights with other clansmen. Be social.";
+							mes "If you need help, you can always whisper me, okay? See you around!";
+						} else
+							mes "An error has occurred.";
+					}
+				}else{
+					mes "<B>[ Venothrax ]</B>";
+					mes "All right then. I'm just going to go have some fun.";
+				}
+			}else{
+				mes "<B>[ Venothrax ]</B>";
+				mes "Ah, do you need time to think about this? No problem.";
+			}
+			break;
+		case 3:
+			mes "<B>[ Venothrax ]</B>";
+			mes "Why, did you find a better Clan?";
+			mes "I'm disappointed, but it's your call. Let me process your withdrawal.";
+			next;
+			if( select( "Continue.:Cancel." ) == 1 ){
+				if( getcharid( 5 ) == 0 ){
+					cutin "sham04.bmp", 2;
+					mes "<B>[ Venothrax ]</B>";
+					mes "I can't let you leave--you're not even in my Clan!";
+				}else{
+					if (clan_leave()) {
+						sc_end SC_INSECTCLAN;
+						callfunc "TransformToPlayer";
+						mes "<B>[ Venothrax ]</B>";
+						mes "It's done.";
+						mes "If you ever miss us, don't hesitate to come back, alright?";
+					} else
+						mes "An error has occurred.";
+				}
+			}
+			break;
+	}
+	close2;
+	cutin "", 255;
+	end;
+
+OnInit:
+	//sc_start2 SC_INSECTCLAN, INFINITE_TICK, 0, INSECTCLAN, 10000, SCSTART_NOAVOID, getnpcid(0);
+	setunitdata( getnpcid(0), UNPC_GROUP_ID, 107);
+	setunittitle( getnpcid(0), "Venothrax" );	
+	end;
+}
