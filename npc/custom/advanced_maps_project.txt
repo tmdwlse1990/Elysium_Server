@@ -132,7 +132,7 @@ juperos_01,149,185,0	warp	newjup01-1	1,1,juperos_01,93,217
 //=======================================================
 
 jawaii,138,182,4	script	Stairs#ja1	111,{
-	mes "[Stairs]";
+	mes "<B>[ Stairs ]</B>";
 	mes "Want to go up or go down?";
 	next;
 	switch(select("Up","Down")) {

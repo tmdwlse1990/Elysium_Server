@@ -84,7 +84,10 @@ goto(OnMainMenu);
 end;
 
 OnMainMenu:
-	.@menu$ = "[Autocombat Configuration]";
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	.@menu$ = "<B>[ Autocombat Configuration ]</B>";
 	mes .@menu$;	
 	//if(!rentalcountitem(50501)){
 	//	mes "You need to have an AutoBuff Device to use this feature";
@@ -95,7 +98,7 @@ OnMainMenu:
     mes "Current Time: ^0000FF" + gettimestr("%H:%M:%S", 10) + "^000000";
     mes " ";	
 	next;
-	.@OnMainMenu = select(ac_getstate()?"[Stop]":"[Start]","[Configuration]","[Cancel]");
+	.@OnMainMenu = select(ac_getstate()?"[Stop]":"[ Start ]","[ Configuration ]","[ Cancel ]");
 	switch(.@OnMainMenu){
 		case 1:  
 			if (ac_getstate()) {  
@@ -141,7 +144,7 @@ OnMainMenu:
 
 config_menu:
 	clear;
-	.@menu$ = "[Autocombat Configuration]";
+	.@menu$ = "<B>[ Autocombat Configuration ]</B>";
 	mes .@menu$;
 
 	// To disable an option, comment the line

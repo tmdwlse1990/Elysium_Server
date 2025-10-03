@@ -7,10 +7,11 @@
 //============================================================
 
 -	script	achievement_shop#main	-1,{
-
-
-	mes "Vending Machine for Novices.";
-	mes "There are many buttons.";
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	mes "<B>[ Achievement Shop ] </B>";
+	mes "You can use your " + mesitemicon(40000) + " Achievement Badge on this shop.";
 	next;
 	switch( select( "Information", "Achievement Armor Shop", "Achievement Costume Shop", "Achievement Weapon Shop" ) ) {
 	case 1:
