@@ -1,0 +1,75 @@
+//===== rAthena Script =======================================
+//= Achievement Shop NPCs
+//===== Description: ========================================= 
+//= [Walkthrough Conversion]
+//===== Additional Comments: =================================
+//= 1.0 First version. [Louis T Steinhil]
+//============================================================
+
+-	script	achievement_shop#main	-1,{
+
+
+	mes "Vending Machine for Novices.";
+	mes "There are many buttons.";
+	next;
+	switch( select( "Information", "Achievement Armor Shop", "Achievement Costume Shop", "Achievement Weapon Shop" ) ) {
+	case 1:
+		mes "Information.";
+		end;
+	case 2:
+		close2;
+		callshop "Achievement_Armor_Shop";
+		end;
+	case 3:
+		close2;
+		callshop "Achievement_Costume_Shop";
+		end;
+	case 4:
+		close2;
+		callshop "Achievement_Weapon_Shop";
+		end;		
+	}
+
+	end;
+
+OnInit:
+	barter_clear "Achievement_Armor_Shop";
+	barter_add "Achievement_Armor_Shop", "Rebeginer_Cap", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Armor_Shop", "Rebeginer_Suits", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Armor_Shop", "Rebeginer_Manteau", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Armor_Shop", "Rebeginer_Boots", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Armor_Shop", "Rebeginer_Ring", 0, "Achievement_Badge", 2;
+
+	barter_clear "Achievement_Costume_Shop";
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Armor_S", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Earring_S", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Pendant_S", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Shield_S", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Shoes_S", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Weapon_S", 0, "Achievement_Badge", 2;
+
+	barter_clear "Achievement_Weapon_Shop";
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_AB_Bible", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_GN_Sword", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_GC_Katar", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_KO_Humma", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_NC_Mace", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_RN_Bow", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_RL_Gun", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_LG_Lance", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_RK_T_Sword", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_SC_Dagger", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_SO_Rod", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_DO_Rod", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_N2_Mace", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_SR_Nuckle", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_WM_Bow", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_WL_Staff", 0, "Achievement_Badge", 2;
+
+	setunitdata (getnpcid(0),UNPC_GROUP_ID,6);
+	//setunittitle (getnpcid(0),"Achievement Shop");
+
+	end;
+}
+
+moc_para01,14,37,3	duplicate(achievement_shop#main)	Achievement Shop#iz	2_DROP_MACHINE

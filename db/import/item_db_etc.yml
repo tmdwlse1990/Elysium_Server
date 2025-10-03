@@ -87,3 +87,11 @@
 Header:
   Type: ITEM_DB
   Version: 3
+
+Body:
+  - Id: 40000
+    AegisName: Achievement_Badge
+    Name: Achievement Badge
+    Type: Etc
+    Flags:
+      BuyingStore: true
