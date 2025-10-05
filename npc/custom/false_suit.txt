@@ -119,7 +119,7 @@ S_OK:
 	end;
 }
 
-function    script  JS_OnPCLoginEvent   {  
+function	script	JS_OnPCLoginEvent	{  
     if (JobSuit_active)  
         F_JobSuit(JobSuit_id);  
     return;  
