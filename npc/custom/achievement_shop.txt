@@ -11,7 +11,7 @@
 	setdialogsize(400, 300);
 	setdialogpospercent(50, 50);
 	mes "<B>[ Achievement Shop ] </B>";
-	mes "You can use your " + mesitemicon(40000) + " Achievement Badge on this shop.";
+	mes "You can use your " + mesitemicon(.ach_shop_currency$[0]) + " " + getitemname(.ach_shop_currency$[0]) + " on this shop.";
 	next;
 	switch( select( "Information", "Achievement Armor Shop", "Achievement Costume Shop", "Achievement Weapon Shop" ) ) {
 	case 1:
@@ -34,38 +34,41 @@
 	end;
 
 OnInit:
+	setarray .ach_shop_currency$[0], "Achievement_Badge";
+	setarray .ach_shop_cost[0], 2;
+
 	barter_clear "Achievement_Armor_Shop";
-	barter_add "Achievement_Armor_Shop", "Rebeginer_Cap", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Armor_Shop", "Rebeginer_Suits", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Armor_Shop", "Rebeginer_Manteau", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Armor_Shop", "Rebeginer_Boots", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Armor_Shop", "Rebeginer_Ring", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Armor_Shop", "Rebeginer_Cap", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Armor_Shop", "Rebeginer_Suits", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Armor_Shop", "Rebeginer_Manteau", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Armor_Shop", "Rebeginer_Boots", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Armor_Shop", "Rebeginer_Ring", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
 
 	barter_clear "Achievement_Costume_Shop";
-	barter_add "Achievement_Costume_Shop", "Rebeginer_Armor_S", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Costume_Shop", "Rebeginer_Earring_S", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Costume_Shop", "Rebeginer_Pendant_S", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Costume_Shop", "Rebeginer_Shield_S", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Costume_Shop", "Rebeginer_Shoes_S", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Costume_Shop", "Rebeginer_Weapon_S", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Armor_S", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Earring_S", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Pendant_S", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Shield_S", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Shoes_S", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Costume_Shop", "Rebeginer_Weapon_S", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
 
 	barter_clear "Achievement_Weapon_Shop";
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_AB_Bible", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_GN_Sword", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_GC_Katar", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_KO_Humma", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_NC_Mace", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_RN_Bow", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_RL_Gun", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_LG_Lance", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_RK_T_Sword", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_SC_Dagger", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_SO_Rod", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_DO_Rod", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_N2_Mace", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_SR_Nuckle", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_WM_Bow", 0, "Achievement_Badge", 2;
-	barter_add "Achievement_Weapon_Shop", "Rebeginer_WL_Staff", 0, "Achievement_Badge", 2;
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_AB_Bible", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_GN_Sword", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_GC_Katar", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_KO_Humma", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_NC_Mace", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_RN_Bow", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_RL_Gun", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_LG_Lance", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_RK_T_Sword", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_SC_Dagger", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_SO_Rod", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_DO_Rod", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_N2_Mace", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_SR_Nuckle", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_WM_Bow", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
+	barter_add "Achievement_Weapon_Shop", "Rebeginer_WL_Staff", 0, .ach_shop_currency$[0], .ach_shop_cost[0];
 
 	setunitdata (getnpcid(0),UNPC_GROUP_ID,6);
 	//setunittitle (getnpcid(0),"Achievement Shop");
