@@ -6,7 +6,7 @@
 //===== Changelogs: ==========================================
 //= 1.0 Initial release. [Louis T Steinhil]
 //============================================================
-valkyrie,49,86,4	script	[ Clan Master ]#1	4_EM_PROCELLA,{
+angel_clan,83,150,4	script	[ Clan Master ]#1	4_EM_PROCELLA,{
 	mes "<B>[ Reginleif ]</B>";
 	mes "Hi, there! I'm Reginleif, master of the ^0000FFAngel Clan^000000";
 	mes "What can I do for you?";

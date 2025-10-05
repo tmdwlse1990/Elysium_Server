@@ -130,7 +130,7 @@ Body:
   - Id: 6  
     Name: "Angel Clan"  
     Leader: "Reginleif"  
-    Map: "valkyrie"  
+    Map: "angel_clan"  
     MaxMembers: 500  
     Buff:  
       Icon: "EFST_ANGELCLAN"  
