@@ -32,3 +32,10 @@
 Header:
   Type: REPUTATION_DB
   Version: 1
+
+Body:  
+  - Id: 100  
+    Name: Eden Salvage  
+    Variable: EdenSalvageRep  
+    Minimum: 0  
+    Maximum: 5000

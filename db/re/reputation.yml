@@ -49,16 +49,91 @@ Body:
     Variable: RepPointsWolf
     Minimum: -5000
     Maximum: 5000
-#  - Id: 4
-#    Name: Isgard
-#    Variable: RepPointsIsgard
-#    Minimum: -3000
-#    Maximum: 300
   - Id: 4
+    Name: Isgard
+    Variable: RepPointsIsgard
+    Minimum: -3000
+    Maximum: 300
+  - Id: 5
     Name: White cat alliance
     Variable: RepPointsWhiteCatAlliance
     Minimum: -3000
     Maximum: 3000
+  - Id: 6
+    Name: In Depth 1 Research
+    Variable: RepPointsInDepth1Research
+    Minimum: -5000
+    Maximum: 5000
+  - Id: 7
+    Name: Hero Alliance
+    Variable: RepPointsHeroAlliance
+    Minimum: -3000
+    Maximum: 3000
+  - Id: 8
+    Name: Bard
+    Variable: RepPointsBard
+    Minimum: -1000
+    Maximum: 1000
+  - Id: 9
+    Name: In Depth Abyss Research
+    Variable: RepPointsInDepthAbyssResearch
+    Minimum: -5000
+    Maximum: 5000
+  - Id: 10
+    Name: Illusion Pass
+    Variable: RepPointsIllusionPass
+    Minimum: 0
+    Maximum: 3500
+  - Id: 11
+    Name: Sages Legacy Pass
+    Variable: RepPointsSagesLegacyPass
+    Minimum: 0
+    Maximum: 3500
+  - Id: 12
+    Name: Direction of Prayer Pass
+    Variable: RepPointsDirectionOfPrayerPass
+    Minimum: 0
+    Maximum: 3500    
+  - Id: 13
+    Name: Gaebolg Resistance
+    Variable: RepPointsGaebolgResistance
+    Minimum: -1000
+    Maximum: 1000
+  - Id: 14
+    Name: Blackstar Nerius
+    Variable: RepPointsBlackstarNerius
+    Minimum: -1000
+    Maximum: 1000
+  - Id: 15
+    Name: Comodo Sage Heine
+    Variable: RepPointsComodoSageHeine
+    Minimum: -1000
+    Maximum: 1000
+  - Id: 16
+    Name: Lugenburg Brothers
+    Variable: RepPointsLugenburgBrothers
+    Minimum: -1000
+    Maximum: 1000
+  - Id: 17
+    Name: Walter Fleet
+    Variable: RepPointsWalterFleet
+    Minimum: -1000
+    Maximum: 1000
+  - Id: 18
+    Name: Wigner Merchants
+    Variable: RepPointsWignerMerchants
+    Minimum: -1000
+    Maximum: 1000
+  - Id: 19
+    Name: Richard Mercenaries
+    Variable: RepPointsRichardMercenaries
+    Minimum: -1000
+    Maximum: 1000
+  - Id: 20
+    Name: Golden Root
+    Variable: RepPointsGoldenRoot
+    Minimum: -1000
+    Maximum: 1000    
 Footer:
   Imports:
   - Path: db/re/generator/reputation.yml

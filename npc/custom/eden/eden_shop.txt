@@ -1,0 +1,75 @@
+//===== rAthena Script =======================================
+//= Achievement Shop NPCs
+//===== Description: ========================================= 
+//= [Walkthrough Conversion]
+//===== Additional Comments: =================================
+//= 1.0 First version. [Louis T Steinhil]
+//============================================================
+
+-	script	eden_shop#main	-1,{
+	mes " ";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	mes "<B>[ Achievement Shop ] </B>";
+	mes "You can use your " + mesitemicon(.eden_currency$[0]) + " " + getitemname(.eden_currency$[0]) + " on this shop.";
+	next;
+	switch( select( "Information", "Eden Useable Shop", "Achievement Costume Shop", "Achievement Weapon Shop" ) ) {
+	case 1:
+		mes "Information.";
+		end;
+	case 2:
+		close2;
+		callshop "Eden_Shop_Useable";
+		end;
+	case 3:
+		close2;
+		callshop "Achievement_Costume_Shop";
+		end;
+	case 4:
+		close2;
+		callshop "Achievement_Weapon_Shop";
+		end;		
+	}
+
+	end;
+
+OnInit:
+	setarray .eden_currency$[0], "Para_Team_Coin";
+	setarray .eden_cost[0], 1;
+
+	barter_clear "Eden_Shop_Useable";
+	barter_add "Eden_Shop_Useable", "Almighty", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "ASPD_Potion", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Aspd_Trans_Scroll", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Blessing_10_Scroll_Box", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Comp_Battle_Manual", 10, .eden_currency$[0], 30;
+	barter_add "Eden_Shop_Useable", "Comp_Bubble_Gum", 10, .eden_currency$[0], 30;
+	barter_add "Eden_Shop_Useable", "Comp_Insurance", 10, .eden_currency$[0], 1;
+	barter_add "Eden_Shop_Useable", "Comp_Kafra_Card", 10, .eden_currency$[0], 1;
+	barter_add "Eden_Shop_Useable", "E_Token_Of_Siegfried", 10, .eden_currency$[0], 1;
+	barter_add "Eden_Shop_Useable", "Inc_Agi_10_Scroll_Box", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Infinity_Drink", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Limit_Power_Booster", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "M_DEFScroll", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Matk_Trans_Scroll", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Med_Life_Potion", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Mental_Potion", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Mysterious_Water", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Ratk_Trans_Scroll", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Red_Booster", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Small_Life_Potion", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Small_Mana_Potion", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Trance_Candy_B", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Trance_Candy_G", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Trance_Candy_R", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Trance_Candy_Y", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "Tyr's_Blessing", 10, .eden_currency$[0], 5;
+	barter_add "Eden_Shop_Useable", "World_Tour_Ticket", 10, .eden_currency$[0], 5;
+
+	setunitdata (getnpcid(0),UNPC_GROUP_ID,6);
+	//setunittitle (getnpcid(0),"Eden Shop");
+
+	end;
+}
+
+moc_para01,20,37,3	duplicate(eden_shop#main)	Eden Shop#moc_para01	2_VENDING_MACHINE1

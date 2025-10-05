@@ -1,0 +1,164 @@
+//===== rAthena Script =======================================  
+//= Eden Equipment Salvage NPC  
+//===== Description: =========================================  
+//= Converts Eden equipment into Eden Group Coins using shop interface  
+//============================================================
+moc_para01,110,79,4	script	Salvage Master	4_M_REPAIR,{  
+	mes "";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);	
+	mes "<B>[ Eden Salvage Master ]</B>";    	
+	mes "Hi, "+strcharinfo(0)+"!";    
+	mes "Current Reputation: ^0055FF"+get_reputation_points(.RepType)+"^000000";    
+	next;    
+	switch(select("Information:Salvage Equipment:Reputation Shop:Leave")) {    
+		case 1:    
+			mes "<B>[ Eden Salvage Master ]</B>";    
+			mes "Salvage Eden equipment to earn";    
+			mes "^0055FFEden Salvage Reputation^000000!";    
+			mes "Use your reputation to buy items.";    
+			close;    
+		case 2:    
+			mes "<B>[ Eden Salvage Master ]</B>";    
+			mes "Select equipment to salvage.";    
+			close2;    
+			callshop "eden_salvage_shop",2;    
+			npcshopattach "eden_salvage_shop";    
+			end;    
+		case 3:    
+			mes "<B>[ Eden Salvage Master ]</B>";    
+			mes "Reputation: ^0055FF"+get_reputation_points(.RepType)+"^000000";    
+			close2;    
+			callshop "eden_salvage_shop",1;    
+			npcshopattach "eden_salvage_shop";    
+			end;    
+		case 4:    
+			close;    
+	}    
+    
+OnSellItem:    
+	mes "Equipment to salvage:";    
+	mes "-----------------------------------";    
+	for(set .@i,0; .@i<getarraysize(@sold_nameid); set .@i,.@i+1) {    
+		set .@found, 0;    
+		set .@rep_value, 0;    
+		for(set .@j,0; .@j<getarraysize(.Items); set .@j,.@j+2) {    
+			if (@sold_nameid[.@i] == .Items[.@j]) {    
+				set .@found, 1;    
+				set .@rep_value, .Items[.@j+1];    
+				break;    
+			}    
+		}    
+		    
+		if (.@found) {    
+			set .@item_id[getarraysize(.@item_id)], @sold_nameid[.@i];    
+			set .@item_amt[getarraysize(.@item_amt)], @sold_quantity[.@i];    
+			mes "  ^0055FF"+@sold_quantity[.@i]+"x "+getitemname(@sold_nameid[.@i])+" ("+(.@rep_value*@sold_quantity[.@i])+" reputation)^000000";    
+			set .@total_rep, .@total_rep+(.@rep_value*@sold_quantity[.@i]);    
+		}    
+	}    
+	deletearray @sold_nameid[0], getarraysize(@sold_nameid);    
+	deletearray @sold_quantity[0], getarraysize(@sold_quantity);    
+	    
+	if (!.@item_id) {    
+		mes "  ^777777(none)^000000";    
+		emotion e_swt;    
+		close;    
+	}    
+	mes " ";    
+	mes "---------- Total: ^0055FF"+.@total_rep+" reputation^000000 -------";    
+	next;    
+	if(select(" > ^0055FFComplete salvage...^000000: > ^777777Cancel^000000") == 2) {    
+		mes "<B>[ Eden Salvage Master ]</B>";    
+		mes "Maybe next time!";    
+		emotion e_hmm;    
+		close;    
+	}    
+	for(set .@i,0; .@i<getarraysize(.@item_id); set .@i,.@i+1)    
+		delitem .@item_id[.@i],.@item_amt[.@i];    
+	add_reputation_points(.RepType, .@total_rep);    
+	mes "<B>[ Eden Salvage Master ]</B>";    
+	mes "Salvage complete!";    
+	mes "You earned ^0055FF"+.@total_rep+"^000000 reputation points!";    
+	emotion e_ho;    
+	close;    
+    
+OnBuyItem:    
+	for(set .@i,0; .@i<getarraysize(@bought_nameid); set .@i,.@i+1)    
+		for(set .@j,0; .@j<getarraysize(.Shop); set .@j,.@j+2)    
+			if (@bought_nameid[.@i] == .Shop[.@j]) {    
+				set .@cost, .@cost+(.Shop[.@j+1]*@bought_quantity[.@i]);    
+				break;    
+			}    
+	if (.@cost > get_reputation_points(.RepType)) {    
+		mes "<B>[ Eden Salvage Master ]</B>";    
+		mes "You don't have enough reputation points.";    
+		emotion e_omg;    
+	}    
+	else {    
+		mes "Items purchased:";    
+		mes "-----------------------------------";    
+		for(set .@i,0; .@i<getarraysize(@bought_nameid); set .@i,.@i+1) {    
+			getitem @bought_nameid[.@i], @bought_quantity[.@i];    
+			mes "  ^777777"+@bought_quantity[.@i]+"x "+getitemname(@bought_nameid[.@i])+"^000000";    
+		}    
+		mes " ";    
+		mes "---------- Total: ^0055FF"+.@cost+" reputation^000000 -------";    
+		add_reputation_points(.RepType, -.@cost);    
+		emotion e_cash;    
+	}    
+	deletearray @bought_nameid[0], getarraysize(@bought_nameid);    
+	deletearray @bought_quantity[0], getarraysize(@bought_quantity);    
+	close;    
+    
+OnInit:    
+	// Define reputation type ID    
+	set .RepType, 100;  // Must match Id in db/import/reputation.yml  
+	    
+	setarray .Items[0],    
+		// Tier 1 Equipment    
+		5583,10,   // Para_Team_Hat (Eden Group Hat)    
+		2560,10,   // Para_Team_Manteau1 (Eden Group Manteau)    
+		2456,5,    // Para_Team_Boots1 (Eden Group Boots I)    
+		15009,5,   // Para_Team_Uniform1 (Eden Group Uniform I)    
+		    
+		// Tier 2 Weapons    
+		1192,10,   // Eden Slayer I (Two-handed sword)    
+		13423,10,  // Eden Saber I (One-handed sword)    
+		13050,10,  // Eden Dagger I    
+		16004,10,  // Eden Mace I    
+		1747,10,   // Eden Bow I    
+		1650,10,   // Eden Staff I    
+		13112,10,  // Eden Revolver I    
+		1699,10,   // Eden Foxtail Staff I    
+		1583,10,   // Eden Book I    
+		    
+		// Tier 2 Armor    
+		2457,8,    // Para_Team_Boots2 (Eden Group Boots II)    
+		15010,8,   // Para_Team_Uniform2 (Eden Group Uniform II)    
+		    
+		// Tier 3 Weapons    
+		13424,15,  // Eden Saber II (One-handed sword)    
+		1193,15,   // Eden Slayer II (Two-handed sword)    
+		13051,15,  // Eden Dagger II    
+		16005,15,  // Eden Mace II    
+		1651,15,   // Eden Staff II    
+		1748,15,   // Eden Bow II    
+		13113,15,  // Eden Revolver II    
+		26100,15,  // Eden Foxtail Staff II    
+		    
+		// Tier 3 Armor    
+		2458,12,   // Para_Team_Boots3 (Eden Group Boots III)    
+		15011,12;  // Para_Team_Uniform3 (Eden Group Uniform III)    
+	    
+	setarray .Shop[0],    
+		607,10, 608,50, 12210,25, 12208,20;    
+	    
+	npcshopdelitem "eden_salvage_shop",909;    
+	for(set .@i,0; .@i<getarraysize(.Shop); set .@i,.@i+2)    
+		npcshopadditem "eden_salvage_shop",.Shop[.@i],.Shop[.@i+1];    
+	    
+	setunitdata(getnpcid(0), UNPC_GROUP_ID, 6);    
+	end;  
+}  
+-	shop	eden_salvage_shop	-1,909:-1
