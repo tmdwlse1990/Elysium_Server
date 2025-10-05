@@ -15,31 +15,224 @@
 
 -	script	Healer	HIDDEN_NPC,{
 
-	.@Price = 1000;	// Zeny required for heal
-	.@Buffs = 1;	// Also buff players? (1: yes / 0: no)
-	.@Delay = 5;	// Heal delay, in seconds
+	.@HealPrice = 1000;			// Zeny required for heal
+	.@BuffPrice = 1000;			// Zeny required per buff
+	.@BuffDuration = 300000;    // Duration in milliseconds (5 minutes)
+	.@Delay = 5;				// Heal delay, in seconds
+
+goto main_menu;
+end;
+
+main_menu:
+	mes "";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
 
 	if (@HD > gettimetick(2))
-		end;
-	if (.@Price) {
-		message strcharinfo(0), "Healing costs " + callfunc("F_InsertComma",.@Price) + " Zeny.";
-		if (Zeny < .@Price)
-			end;
-		if (select("^0055FFHeal^000000:^777777Cancel^000000") == 2)
-			end;
-		Zeny -= .@Price;
-	}
-	specialeffect2 EF_HEAL2;
-	percentheal 100,100;
-	if (.@Buffs) {
-		specialeffect2 EF_INCAGILITY;
-		sc_start SC_INCREASEAGI,240000,10;
-		specialeffect2 EF_BLESSING;
-		sc_start SC_BLESSING,240000,10;
-	}
-	if (.@Delay)
-		@HD = gettimetick(2) + .@Delay;
-	end;
+		end;  
+  
+    // Build first menu based on active buffs  
+    .@menu$ = "Heal (" + callfunc("F_InsertComma",.@HealPrice) + " Zeny)";  
+      
+    // Check if any buffs are enabled  
+    .@hasBuffs = 0;  
+    .@totalCost = .@HealPrice;  
+      
+    if (#HEALER_BUFF_AGI) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
+    if (#HEALER_BUFF_ANGELUS) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
+    if (#HEALER_BUFF_BLESS) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
+    if (#HEALER_BUFF_IMPOSITIO) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
+    if (#HEALER_BUFF_SUFFRAGIUM) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
+    if (#HEALER_BUFF_KYRIE) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
+    if (#HEALER_BUFF_MAGNIFICAT) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
+    if (#HEALER_BUFF_GLORIA) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
+      
+    if (.@hasBuffs) {  
+        .@menu$ += ":Heal and Buffs (" + callfunc("F_InsertComma",.@totalCost) + " Zeny)";  
+    }  
+      
+    .@menu$ += ":Options:Cancel";  
+      
+    mes "<B>[ Sister Frieda ]</B>";  
+    mes "Welcome! How can I help you?";  
+    next;  
+      
+    .@choice = select(.@menu$);  
+      
+    // Adjust choice if "Heal and Buffs" doesn't exist  
+    if (!.@hasBuffs && .@choice >= 2) .@choice++;  
+      
+    switch(.@choice) {  
+    case 1: // Heal only  
+        if (Zeny < .@HealPrice) {  
+            mes "<B>[ Sister Frieda ]</B>";  
+            mes "You need " + callfunc("F_InsertComma",.@HealPrice) + " Zeny for healing.";  
+            end;  
+        }  
+        Zeny -= .@HealPrice;  
+        specialeffect2 EF_HEAL2;  
+        percentheal 100,100;  
+        mes "<B>[ Sister Frieda ]</B>";  
+        mes "You have been healed!";  
+        break;  
+          
+    case 2: // Heal and Buffs  
+        if (Zeny < .@totalCost) {  
+            mes "<B>[ Sister Frieda ]</B>";  
+            mes "You need " + callfunc("F_InsertComma",.@totalCost) + " Zeny for healing and buffs.";  
+            end;  
+        }  
+        Zeny -= .@totalCost;  
+        specialeffect2 EF_HEAL2;  
+        percentheal 100,100;  
+          
+        // Apply buffs in skill ID order  
+        if (#HEALER_BUFF_AGI) {  
+            specialeffect2 EF_INCAGILITY;  
+            sc_start SC_INCREASEAGI,.@BuffDuration,10;  
+        }  
+        if (#HEALER_BUFF_ANGELUS) {  
+            specialeffect2 EF_ANGELUS;  
+            sc_start SC_ANGELUS,.@BuffDuration,10;  
+        }  
+        if (#HEALER_BUFF_BLESS) {  
+            specialeffect2 EF_BLESSING;  
+            sc_start SC_BLESSING,.@BuffDuration,10;  
+        }  
+        if (#HEALER_BUFF_IMPOSITIO) {  
+            specialeffect2 EF_IMPOSITIO;  
+            sc_start SC_IMPOSITIO,.@BuffDuration,5;  
+        }  
+        if (#HEALER_BUFF_SUFFRAGIUM) {  
+            specialeffect2 EF_SUFFRAGIUM;  
+            sc_start SC_SUFFRAGIUM,.@BuffDuration,3;  
+        }  
+        if (#HEALER_BUFF_KYRIE) {  
+            specialeffect2 EF_KYRIE;  
+            sc_start SC_KYRIE,.@BuffDuration,10;  
+        }  
+        if (#HEALER_BUFF_MAGNIFICAT) {  
+            specialeffect2 EF_MAGNIFICAT;  
+            sc_start SC_MAGNIFICAT,.@BuffDuration,5;  
+        }  
+        if (#HEALER_BUFF_GLORIA) {  
+            specialeffect2 EF_GLORIA;  
+            sc_start SC_GLORIA,.@BuffDuration,5;  
+        }  
+        mes "<B>[ Sister Frieda ]</B>";  
+        mes "You have been healed and buffed!";  
+        break;  
+          
+    case 3: // Options  
+        goto options_menu;  
+          
+    case 4: // Cancel  
+        mes "<B>[ Sister Frieda ]</B>";  
+        mes "Come back anytime!";  
+        end;  
+    }  
+      
+    if (.@Delay)  
+        @HD = gettimetick(2) + .@Delay;  
+    end;  
+  
+options_menu:  
+    mes "<B>[ Sister Frieda ]</B>";  
+    mes "Configure which buffs to include with 'Heal and Buffs'.";  
+    mes "Each buff costs " + callfunc("F_InsertComma",.@BuffPrice) + " Zeny.";  
+    mes " ";  
+    mes "^0000FFCurrent Settings:^000000";  
+    mes "Increase AGI: " + (#HEALER_BUFF_AGI ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
+    mes "Angelus: " + (#HEALER_BUFF_ANGELUS ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
+    mes "Blessing: " + (#HEALER_BUFF_BLESS ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
+    mes "Impositio Manus: " + (#HEALER_BUFF_IMPOSITIO ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
+    mes "Suffragium: " + (#HEALER_BUFF_SUFFRAGIUM ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
+    mes "Kyrie Eleison: " + (#HEALER_BUFF_KYRIE ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
+    mes "Magnificat: " + (#HEALER_BUFF_MAGNIFICAT ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
+    mes "Gloria: " + (#HEALER_BUFF_GLORIA ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
+    next;  
+      
+    .@optMenu$ = "";  
+    .@optMenu$ += (#HEALER_BUFF_AGI ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Increase AGI";  
+    .@optMenu$ += ":" + (#HEALER_BUFF_ANGELUS ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Angelus";  
+    .@optMenu$ += ":" + (#HEALER_BUFF_BLESS ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Blessing";  
+    .@optMenu$ += ":" + (#HEALER_BUFF_IMPOSITIO ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Impositio Manus";  
+    .@optMenu$ += ":" + (#HEALER_BUFF_SUFFRAGIUM ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Suffragium";  
+    .@optMenu$ += ":" + (#HEALER_BUFF_KYRIE ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Kyrie Eleison";  
+    .@optMenu$ += ":" + (#HEALER_BUFF_MAGNIFICAT ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Magnificat";  
+    .@optMenu$ += ":" + (#HEALER_BUFF_GLORIA ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Gloria";  
+	.@optMenu$ += ":^FF0000Clear All Active Buffs^000000";
+    .@optMenu$ += ":Back to Main Menu";  
+      
+    .@optChoice = select(.@optMenu$);  
+      
+    switch(.@optChoice) {  
+    case 1: // Toggle Increase AGI  
+        #HEALER_BUFF_AGI = !#HEALER_BUFF_AGI;  
+        goto options_menu;  
+          
+    case 2: // Toggle Angelus  
+        #HEALER_BUFF_ANGELUS = !#HEALER_BUFF_ANGELUS;  
+        goto options_menu;  
+          
+    case 3: // Toggle Blessing  
+        #HEALER_BUFF_BLESS = !#HEALER_BUFF_BLESS;  
+        goto options_menu;  
+          
+    case 4: // Toggle Impositio Manus  
+        #HEALER_BUFF_IMPOSITIO = !#HEALER_BUFF_IMPOSITIO;  
+        goto options_menu;  
+          
+    case 5: // Toggle Suffragium  
+        #HEALER_BUFF_SUFFRAGIUM = !#HEALER_BUFF_SUFFRAGIUM;  
+        goto options_menu;  
+          
+    case 6: // Toggle Kyrie Eleison  
+        #HEALER_BUFF_KYRIE = !#HEALER_BUFF_KYRIE;  
+        goto options_menu;  
+          
+    case 7: // Toggle Magnificat  
+        #HEALER_BUFF_MAGNIFICAT = !#HEALER_BUFF_MAGNIFICAT;  
+        goto options_menu;  
+          
+    case 8: // Toggle Gloria  
+        #HEALER_BUFF_GLORIA = !#HEALER_BUFF_GLORIA;  
+        goto options_menu;  
+          
+    case 9: // Clear All Active Buffs  
+        mes "<B>[ Sister Frieda ]</B>";  
+        mes "Are you sure you want to remove all active buffs?";  
+        next;  
+        if (select("Yes:No") == 1) {  
+			// Remove active status effects
+            sc_end SC_INCREASEAGI;  
+            sc_end SC_ANGELUS;  
+            sc_end SC_BLESSING;  
+            sc_end SC_IMPOSITIO;  
+            sc_end SC_SUFFRAGIUM;  
+            sc_end SC_KYRIE;  
+            sc_end SC_MAGNIFICAT;  
+            sc_end SC_GLORIA;  
+			// Clear permanent buff preference variables  
+			#HEALER_BUFF_AGI = 0;  
+			#HEALER_BUFF_ANGELUS = 0;  
+			#HEALER_BUFF_BLESS = 0;  
+			#HEALER_BUFF_IMPOSITIO = 0;  
+			#HEALER_BUFF_SUFFRAGIUM = 0;  
+			#HEALER_BUFF_KYRIE = 0;  
+			#HEALER_BUFF_MAGNIFICAT = 0;  
+			#HEALER_BUFF_GLORIA = 0;
+            specialeffect2 EF_DISPELL;  
+            mes "<B>[ Sister Frieda ]</B>";  
+            mes "All buffs have been removed!";  
+            next;  
+        }  
+        goto options_menu;  
+          
+    case 10: // Back  
+        goto main_menu;
+    }  
+    end;
 
 OnInit:
 	setunitdata (getnpcid(0),UNPC_SEX,SEX_FEMALE);
@@ -51,6 +244,8 @@ OnInit:
 	setunitdata (getnpcid(0),UNPC_HEADTOP,804);
 	setunitdata (getnpcid(0),UNPC_GROUP_ID,39);
 	setunittitle (getnpcid(0),"Sister Frieda");
+	
+	end;
 }
 
 
