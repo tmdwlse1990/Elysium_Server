@@ -2,3 +2,4 @@ map: tg_1-1
 map: tg_1-2
 map: tg_1-3
 map: tg_1-4
+map: angel_clan
