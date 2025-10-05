@@ -2863,6 +2863,7 @@ enum npce_event : uint8 {
 	NPCE_KILLPC,
 	NPCE_KILLNPC,
 	NPCE_IDENTIFY,
+	NPCE_USESKILL,
 	NPCE_MAX
 };
 

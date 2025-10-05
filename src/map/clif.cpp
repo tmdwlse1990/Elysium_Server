@@ -13176,7 +13176,15 @@ void clif_parse_skill_toid( map_session_data* sd, uint16 skill_id, uint16 skill_
 			skill_lv = sd->skillitemlv;
 		if( !(inf&INF_SELF_SKILL) )
 			pc_delinvincibletimer(sd); // Target skills thru items cancel invincibility. [Inkfish]
-		unit_skilluse_id(sd, target_id, skill_id, skill_lv);
+		int32 result = unit_skilluse_id(sd, target_id, skill_id, skill_lv);
+
+		// Only trigger OnPCUseSkillEvent if skill usage succeeded
+		if (result) {  
+			pc_setreg(sd, add_str("@skillused_id"), skill_id);  
+			pc_setreg(sd, add_str("@skillused_lv"), skill_lv);  
+			npc_script_event(*sd, NPCE_USESKILL);  
+		}
+
 		return;
 	}
 	sd->skillitem = sd->skillitemlv = 0;
@@ -13194,8 +13202,17 @@ void clif_parse_skill_toid( map_session_data* sd, uint16 skill_id, uint16 skill_
 
 	pc_delinvincibletimer(sd);
 
-	if( skill_lv )
-		unit_skilluse_id(sd, target_id, skill_id, skill_lv);
+	if( skill_lv ){
+		int32 result = unit_skilluse_id(sd, target_id, skill_id, skill_lv);
+
+		// Only trigger OnPCUseSkillEvent if skill usage succeeded
+		if (result) {  
+			pc_setreg(sd, add_str("@skillused_id"), skill_id);  
+			pc_setreg(sd, add_str("@skillused_lv"), skill_lv);  
+			npc_script_event(*sd, NPCE_USESKILL);  
+		}
+
+	}
 }
 
 
@@ -13292,14 +13309,29 @@ static void clif_parse_UseSkillToPosSub( int32 fd, map_session_data& sd, uint16 
 	if( sd.skillitem == skill_id ) {
 		if( skill_lv != sd.skillitemlv )
 			skill_lv = sd.skillitemlv;
-		unit_skilluse_pos(&sd, x, y, skill_id, skill_lv);
+		int32 result = unit_skilluse_pos(&sd, x, y, skill_id, skill_lv);
+
+		// Only trigger OnPCUseSkillEvent if skill usage succeeded
+		if (result) {  
+			pc_setreg(&sd, add_str("@skillused_id"), skill_id);  
+			pc_setreg(&sd, add_str("@skillused_lv"), skill_lv);  
+			npc_script_event(sd, NPCE_USESKILL);  
+		}
+
 	} else {
 		int32 lv;
 		sd.skillitem = sd.skillitemlv = 0;
 		if( (lv = pc_checkskill(&sd, skill_id)) > 0 ) {
 			if( skill_lv > lv )
 				skill_lv = lv;
-			unit_skilluse_pos(&sd, x, y, skill_id,skill_lv);
+			int32 result = unit_skilluse_pos(&sd, x, y, skill_id, skill_lv);
+
+			// Only trigger OnPCUseSkillEvent if skill usage succeeded
+			if (result) {  
+				pc_setreg(&sd, add_str("@skillused_id"), skill_id);  
+				pc_setreg(&sd, add_str("@skillused_lv"), skill_lv);  
+				npc_script_event(sd, NPCE_USESKILL);  
+			}
 		}
 	}
 }

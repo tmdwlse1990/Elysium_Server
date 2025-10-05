@@ -56,4 +56,8 @@ OnPCLoadMapEvent:	//	When player steps in a map
 OnPCIdentifyEvent:	//	When player identifies an item
 
 	end;
+
+OnPCUseSkillEvent:	//	When player used a skill
+	message strcharinfo(0), "You have used Skill ID: " + getskillname(@skillused_id) + " Level: " + @skillused_lv;
+	end;
 }

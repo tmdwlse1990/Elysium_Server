@@ -168,6 +168,7 @@ struct Script_Config {
 	const char *baselvup_event_name;
 	const char *joblvup_event_name;
 	const char *identify_event_name;
+	const char *useskill_event_name;
 
 	// NPC related
 	const char* ontouch_event_name;

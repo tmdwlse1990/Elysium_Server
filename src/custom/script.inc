@@ -1674,3 +1674,30 @@ BUILDIN_FUNC(open_stall){
 
 	return SCRIPT_CMD_SUCCESS;
 }
+
+BUILDIN_FUNC(getskillname)  
+{  
+    uint16 skill_id;  
+      
+    // Get input skill_id  
+    if (!script_hasdata(st, 2)) {  
+        script_pushconststr(st, "null");  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Support both numeric ID and skill name string  
+    skill_id = (script_isstring(st, 2) ? skill_name2id(script_getstr(st, 2)) : script_getnum(st, 2));  
+      
+    // Validate skill exists  
+    std::shared_ptr<s_skill_db> skill = skill_db.find(skill_id);  
+    if (!skill) {  
+        ShowError("buildin_getskillname: Unknown skill_id %d supplied.\\n", skill_id);  
+        script_pushconststr(st, "null");  
+        return SCRIPT_CMD_SUCCESS;  
+    }  
+      
+    // Push the skill description (display name)  
+    script_pushstrcopy(st, skill->desc);  
+      
+    return SCRIPT_CMD_SUCCESS;  
+}

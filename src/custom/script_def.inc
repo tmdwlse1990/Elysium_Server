@@ -55,3 +55,6 @@ BUILDIN_DEF(getreformremoveenchantgrade, "ss"),
 
 // Stall System
 BUILDIN_DEF(open_stall,"si"),
+
+// Skill
+BUILDIN_DEF(getskillname, "v"),
