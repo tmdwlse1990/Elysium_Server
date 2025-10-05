@@ -4,30 +4,18 @@
 //= Dr.Evil & MasterOfMuppets
 //= Updated by Louis T Steinhil
 //===== Current Version: ===================================== 
-//= 2.5
+//= 1.1
 //===== Compatible With: ===================================== 
 //= rAthena Project; SVN 3422+
 //===== Description: ========================================= 
 //= [Official Conversion]
 //= Novice Training Grounds
 //===== Additional Comments: ================================= 
-//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
-//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
-//=     NPCs are not backwards compatable, and will remove
-//=     old variables used in the previous novice grounds.
-//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
-//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
-//=     Added duplicate NPCs to combat training maps.
-//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
-//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
-//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
-//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
-//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
-//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
-//= 2.5 Separated and improved Sprakki [Louis T Steinhil]
+//= 1.0 Initial Version
+//= 1.1 Separated and improved Sprakki [Louis T Steinhil]
 //============================================================
 -	script	Sprakki#newbe01::NvSprakkiA	HIDDEN_NPC,{
-	mes " ";
+	mes "";
 	setdialogsize(400, 300);
 	setdialogpospercent(50, 50);
 	if (job_novice_q == 0) {
@@ -94,7 +82,7 @@ tg_1-3,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv3a	4_F_01
 tg_1-4,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv4a	4_F_01
 
 -	script	Sprakki#newbe05::NvSprakkiB	-1,{
-	mes " ";
+	mes "";
 	setdialogsize(400, 300);
 	setdialogpospercent(50, 50);
 	if (job_novice_q == 0) {	
@@ -107,7 +95,7 @@ tg_1-4,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv4a	4_F_01
 		mes "First you need to learn the very basics of controlling your character.";
 		mes "All the basic ^4d4dffmoves, selection of items, and attacks^000000 use the ^4d4dff left click of the mouse^000000.";
 		next;
-		cutin "tutorial01",3;
+		cutin "tutorial01", 1;
 		mes "-! Info !-";
 		mes "Click on the ground to move the character.";
 		mes "Attacking monsters and conversations with the people of this world can be done by simply clicking on them.";
@@ -121,7 +109,7 @@ tg_1-4,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv4a	4_F_01
 			setquest 7117;  
 		}
 		next;
-		cutin "tutorial02",3;
+		cutin "tutorial02", 1;
 		mes "-! Info !-";
 		mes "You've received a quest from Sprakki.";
 		mes "You can check the contents of the quest in the Quest Info Window by pressing the ^4d4dffAlt + U^000000 keys at the same time.";
@@ -165,8 +153,19 @@ tg_1-4,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv4a	4_F_01
 			mes "^4d4dff- You received a quest 'Novice Training Ground -1' from Sprakki.";
 			mes "Please check the Quest Info Window. -^000000";
 			close2;
-			savepoint strnpcinfo(4),100,100,1,1;
-			warp strnpcinfo(4),100,100;
+			setarray .@maps$[0], "tg_1-1", "tg_1-2", "tg_1-3", "tg_1-4";  
+			//debugmes "Array size: " + getarraysize(.@maps$);
+			if (getarraysize(.@maps$) > 0) {  
+				set .@index, rand(getarraysize(.@maps$));  
+				//debugmes "Index: " + .@index;  
+			} else {  
+				//debugmes "Error: Array is empty!";
+				end;
+			}
+			set .@map$, .@maps$[.@index];   
+
+			savepoint .@map$, 164, 209;
+			warp strnpcinfo(4), 146, 180;
 			end;
 		case 2:
 			set nov_1st_cos,0;
@@ -189,28 +188,28 @@ tg_1-4,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv4a	4_F_01
 			close2;
 			switch(.@select) {
 			case 1:
-				savepoint "prontera",273,354,1,1;
-				warp "prontera",273,354;
+				savepoint "prontera", 273, 354, 1, 1;
+				warp "prontera", 273, 354;
 				break;
 			case 2:
-				savepoint "morocc",160,94,1,1;
-				warp "morocc",160,94;
+				savepoint "morocc", 160, 94, 1, 1;
+				warp "morocc", 160, 94;
 				break;
 			case 3:
-				savepoint "geffen",120,100,1,1;
-				warp "geffen",120,100;
+				savepoint "geffen", 120, 100, 1, 1;
+				warp "geffen", 120, 100;
 				break;
 			case 4:
-				savepoint "payon",70,100,1,1;
-				warp "payon",70,100;
+				savepoint "payon", 70, 100, 1, 1;
+				warp "payon", 70, 100;
 				break;
 			case 5:
-				savepoint "alberta",116,57,1,1;
-				warp "alberta",116,57;
+				savepoint "alberta", 116, 57, 1, 1;
+				warp "alberta", 116, 57;
 				break;
 			case 6: // Old coordinates: (94,103)
-				savepoint "izlude",128,98,1,1;
-				warp "izlude",128,98;
+				savepoint "izlude", 128, 98, 1, 1;
+				warp "izlude", 128, 98;
 				break;
 			}
 			end;
@@ -220,8 +219,19 @@ tg_1-4,70,198,3	duplicate(NvSprakkiA)	Sprakki#nv4a	4_F_01
 		mes "These are the Novice Training Grounds.";
 		mes "I will guide you to the Novice Training Center.";
 		close2;
-		savepoint strnpcinfo(4),100,100,1,1;
-		warp strnpcinfo(4),100,100;
+		setarray .@maps$[0], "tg_1-1", "tg_1-2", "tg_1-3", "tg_1-4";  
+		//debugmes "Array size: " + getarraysize(.@maps$);
+		if (getarraysize(.@maps$) > 0) {  
+			set .@index, rand(getarraysize(.@maps$));  
+			//debugmes "Index: " + .@index;  
+		} else {  
+			//debugmes "Error: Array is empty!";
+			end;
+		}
+		set .@map$, .@maps$[.@index];   
+
+		savepoint .@map$, 164, 209;
+		warp strnpcinfo(4), 146, 180;
 		end;
 	}
 }

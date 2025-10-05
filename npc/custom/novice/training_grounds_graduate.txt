@@ -1,0 +1,115 @@
+//===== rAthena Script ======================================= 
+//= Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//= Updated by Louis T Steinhil
+//===== Current Version: ===================================== 
+//= 1.1
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.0 Initial Version
+//= 1.1 Separated and improved Training Grounds Graduate [Louis T Steinhil]
+//============================================================
+-	script	TGProf#nv1	HIDDEN_NPC,{
+	mes "";
+	setdialogsize(400, 300);
+	setdialogpospercent(50, 50);
+	if (job_novice_q < 15) {
+		mes "<B>[ Training Grounds Professor ]</B>";
+		mes "You are still in the process of training with Instructor Brade.";
+		close;
+	}
+	mes "<B>[ Training Grounds Professor ]</B>";
+	mes "Welcome to the Training Grounds Graduation.";
+	mes "You are now ready to take on real challenges!";
+		switch(select("I will stay little longer.:Let's get it on!")) {
+		case 1:
+			mes "<B>[ Training Grounds Professor ]</B>";
+			mes "It's ok to stay here and practice until you think you are ready.";
+			next;
+			mes "<B>[ Training Grounds Professor ]</B>";
+			mes "Try using the job manuals to find out the characteristics of each job's skills.";
+			mes "I will restore your HP and SP... Keep it up.";
+			npcskill "AL_HEAL",11,99,60;
+			percentheal 0,100;
+			close;
+		case 2:
+			mes "<B>[ Training Grounds Professor ]</B>";
+			mes "Looks like you are ready.";
+			mes "I guess you have made up your mind, huh?";
+			mes "Well, where do you want to go?";
+			next;
+			switch(select("Prontera:Morocc:Payon:Alberta:Geffen:Cancel")) {
+			case 1:
+				mes "<B>[ Training Grounds Professor ]</B>";
+				mes "Prontera, the Capital city of the Rune-Midgarts Kingdom.";
+				mes "Take care and god bless you on your journey.";
+				callfunc "F_NvErase";
+				close2;
+				savepoint "prontera",117,72,1,1;
+				warp "prontera",150,50;
+				end;
+			case 2:
+				mes "<B>[ Training Grounds Professor ]</B>";
+				mes "The Desert Town, Morocc...";
+				mes "There's lots of hidden stories within that town.";
+				mes "Take care.";
+				callfunc "F_NvErase";
+				close2;
+				savepoint "morocc",150,99,1,1;
+				warp "morocc",155,110;
+				end;
+			case 3:
+				mes "<B>[ Training Grounds Professor ]</B>";
+				mes "You've selected Payon.";
+				mes "God bless you.";
+				callfunc "F_NvErase";
+				close2;
+				savepoint "payon",70,100,1,1;
+				warp "payon",166,67;
+				end;
+			case 4:
+				mes "<B>[ Training Grounds Professor ]</B>";
+				mes "Alberta, the Port City.";
+				mes "It's the main hub of all trades.";
+				mes "If you want to meet with other civilizations, you have to go to Alberta first.";
+				mes "Well then, god bless you on your soul.";
+				callfunc "F_NvErase";
+				close2;
+				savepoint "alberta",30,232,1,1;
+				warp "alberta",114,58;
+				end;
+			case 5:
+				mes "<B>[ Training Grounds Professor ]</B>";
+				mes "Geffen, the City of Magic.";
+				mes "Geffen Tower in the middle of the city is nice.";
+				mes "I will send you near the Geffen fountain.";
+				mes "May Goddess Freya bless you.";
+				callfunc "F_NvErase";
+				close2;
+				savepoint "geffen",119,37,1,1;
+				warp "geffen",122,65;
+				end;
+			case 6:
+				mes "<B>[ Training Grounds Professor ]</B>";
+				mes "Yeah... Think with prudence.";
+				mes "...Meet up with the people from each guild.";
+				close;
+			}
+		}
+	close;
+	
+OnInit:
+    setarray .grad_reward_id[0], 40000;  
+    setarray .grad_reward_amount[0], 100; 
+	end;
+}
+
+tg_1-1,181,198,3	duplicate(TGProf#nv1)	TG Professor#nv1-1	4_M_PROFESSORWORM
+tg_1-2,181,198,3	duplicate(TGProf#nv1)	TG Professor#nv1-2	4_M_PROFESSORWORM
+tg_1-3,181,198,3	duplicate(TGProf#nv1)	TG Professor#nv1-3	4_M_PROFESSORWORM
+tg_1-4,181,198,3	duplicate(TGProf#nv1)	TG Professor#nv1-4	4_M_PROFESSORWORM

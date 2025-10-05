@@ -4,30 +4,18 @@
 //= Dr.Evil & MasterOfMuppets
 //= Updated by Louis T Steinhil
 //===== Current Version: ===================================== 
-//= 2.5
+//= 1.1
 //===== Compatible With: ===================================== 
 //= rAthena Project; SVN 3422+
 //===== Description: ========================================= 
 //= [Official Conversion]
 //= Novice Training Grounds
 //===== Additional Comments: ================================= 
-//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
-//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
-//=     NPCs are not backwards compatable, and will remove
-//=     old variables used in the previous novice grounds.
-//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
-//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
-//=     Added duplicate NPCs to combat training maps.
-//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
-//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
-//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
-//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
-//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
-//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
-//= 2.5 Separated and improved Guide [Louis T Steinhil]
+//= 1.0 Initial Version
+//= 1.1 Separated and improved Guide [Louis T Steinhil]
 //============================================================
 -	script	Guide::NvGuide	HIDDEN_NPC,{
-	mes " ";
+	mes "";
 	setdialogsize(400, 300);
 	setdialogpospercent(50, 50);
 	if (job_novice_q < 10) {
