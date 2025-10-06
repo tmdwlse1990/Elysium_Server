@@ -25,6 +25,7 @@ struct s_environment_data {
   
 // Function declarations  
 s_animation_data skill_animation_get_info(int skill_id);  
+void skill_animation_clear_internal(struct block_list* bl);
 void skill_animation_clear(struct block_list* bl);  
 void do_init_skill_animation();  
 void do_final_skill_animation();  

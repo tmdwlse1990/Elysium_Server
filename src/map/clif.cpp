@@ -6524,10 +6524,19 @@ static int clif_skill_damage_hook(struct block_list* src, struct block_list* dst
     skill_env->dir = dir;    
     
     if(src->type == BL_PC){    
-        BL_CAST(BL_PC,src)->skill_animation.tid = add_timer(tick + start_time + animation.interval, skill_animation_timer, src->id, (intptr_t)skill_env);    
+		int32 timer_id = add_timer(tick + start_time + animation.interval, skill_animation_timer, src->id, (intptr_t)skill_env);  
+		if (timer_id == INVALID_TIMER) {  
+			aFree(skill_env);  
+			return 0;  
+		}	
+        BL_CAST(BL_PC,src)->skill_animation.tid = timer_id;    
         BL_CAST(BL_PC,src)->skill_animation.step = 1;    
     } else {  
-        add_timer(tick + start_time + animation.interval, skill_animation_timer, src->id, (intptr_t)skill_env);    
+        t_tick timer_id = add_timer(tick + start_time + animation.interval, skill_animation_timer, src->id, (intptr_t)skill_env);    
+		if (timer_id == INVALID_TIMER) {  
+			aFree(skill_env);  
+			return 0;  
+		}
     }  
     
     return 0;    
@@ -6553,14 +6562,22 @@ void clif_send_miss_motion(struct block_list* bl, int target_id) {
 
 void clif_send_animation_motion(struct block_list* bl, int target_id, int motion_speed) {  
     nullpo_retv(bl);  
-      
+
+    const int expected_packet_len = packet_len(0x8a);  
+    if (expected_packet_len <= 0 || expected_packet_len > 32) {  
+        ShowError("clif_send_animation_motion: Invalid packet length '" CL_WHITE "%d" CL_RESET "' for packet 0x8a.\n", expected_packet_len);  
+        return;  
+    }
+	
     unsigned char buf[32];  
+	memset(buf, 0, sizeof(buf)); // Initialize buffer
     WBUFW(buf, 0) = 0x8a;  
     WBUFL(buf, 2) = bl->id;  
     WBUFL(buf, 14) = motion_speed; // src speed 
+	WBUFW(buf, 24) = 1; // div  
     WBUFB(buf, 26) = 10; // Critical hit type - avoids miss logic  
       
-    clif_send(buf, packet_len(0x8a), bl, AREA);
+    clif_send(buf, expected_packet_len, bl, AREA);
 }  
   
 void clif_send_animation_dir(struct block_list* bl, int target_id, int dir) {  
