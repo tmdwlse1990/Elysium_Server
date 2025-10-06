@@ -578,8 +578,7 @@ void collection_load_combo_states(map_session_data* sd) {
     }    
       
     Sql_FreeResult(mmysql_handle);  
-    ShowInfo("collection_load_combo_states: Loaded '" CL_WHITE "%d" CL_RESET "' combo states for account '" CL_WHITE "%d" CL_RESET "', char '" CL_WHITE "%d" CL_RESET "'.\n",   
-             loaded_count, sd->status.account_id, sd->status.char_id);  
+    //ShowInfo("collection_load_combo_states: Loaded '" CL_WHITE "%d" CL_RESET "' combo states for account '" CL_WHITE "%d" CL_RESET "', char '" CL_WHITE "%d" CL_RESET "'.\n", loaded_count, sd->status.account_id, sd->status.char_id);  
 }
 
 bool collection_validate_combo(map_session_data* sd, uint16 stor_id, size_t combo_index, bool check_active_state) {  
