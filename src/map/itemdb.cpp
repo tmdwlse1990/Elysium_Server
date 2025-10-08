@@ -2202,6 +2202,46 @@ uint64 ItemReformDatabase::parseBodyNode( const ryml::NodeRef& node ){
 				}
 			}
 
+			if (this->nodeExists(baseNode, "SuccessRate")) {  
+				uint16 success_rate;  
+				if (!this->asUInt16Rate(baseNode, "SuccessRate", success_rate)) {  
+					return 0;  
+				}  
+				base->success_rate = success_rate;  
+			} else {  
+				base->success_rate = 10000; // Default 100% success  
+			}  
+			  
+			if (this->nodeExists(baseNode, "BreakingRate")) {  
+				uint16 breaking_rate;  
+				if (!this->asUInt16Rate(baseNode, "BreakingRate", breaking_rate)) {  
+					return 0;  
+				}  
+				base->breaking_rate = breaking_rate;  
+			} else {  
+				base->breaking_rate = 0;  
+			}
+
+			if (this->nodeExists(baseNode, "BroadcastSuccess")) {  
+				bool bcast;  
+				if (!this->asBool(baseNode, "BroadcastSuccess", bcast)) {  
+					return 0;  
+				}  
+				base->broadcast_success = bcast;  
+			} else {  
+				base->broadcast_success = false;  
+			}  
+			  
+			if (this->nodeExists(baseNode, "BroadcastFailure")) {  
+				bool bcast;  
+				if (!this->asBool(baseNode, "BroadcastFailure", bcast)) {  
+					return 0;  
+				}  
+				base->broadcast_failure = bcast;  
+			} else {  
+				base->broadcast_failure = false;  
+			}
+
 			if( !base_exists ){
 				entry->base_items[base_itemid] = base;
 			}

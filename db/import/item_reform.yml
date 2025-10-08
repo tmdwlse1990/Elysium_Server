@@ -37,6 +37,10 @@
 #       RandomOptionGroup      Name of the random option group that will be applied. (Default: none)
 #       ClearSlots             Remove cards and socket enchants during reformation. (Default: false)
 #       RemoveEnchantgrade     Remove enchantgrade during reformation. (Default: false)
+#       SuccessRate            Chance of reform success out of 0~10000. (Default: 10000)  
+#       BreakingRate           Chance of item breaking on failure out of 0~10000. (Default: 0)  
+#       BroadcastSuccess       Broadcast to the whole server when reform succeeds. (Default: false)  
+#       BroadcastFailure       Broadcast to the whole server when reform fails. (Default: false)
 ###########################################################################
 
 Header:

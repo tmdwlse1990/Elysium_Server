@@ -24744,17 +24744,49 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
 		materials[material_index] = material.second;
 	}
 
-	// Remove the material
-	for( const auto& material : materials ){
-		if( pc_delitem( sd, material.first, material.second, 0, 0, LOG_TYPE_REFORM ) != 0 ){
-			return;
-		}
-	}
+    // NEW: Check success rate BEFORE removing materials  
+    uint16 success_rate = base->success_rate; // Default 10000 if not set  
+    bool success = (success_rate >= rnd() % 10000);  
+      
+    // Remove the material (happens regardless of success/failure)  
+    for( const auto& material : materials ){  
+        if( pc_delitem( sd, material.first, material.second, 0, 0, LOG_TYPE_REFORM ) != 0 ){  
+            return;  
+        }  
+    }  
+      
+    // If triggered from item  
+    if( sd->itemid == sd->state.item_reform && pc_delitem( sd, sd->itemindex, 1, 0, 0, LOG_TYPE_REFORM ) != 0 ){  
+        return;  
+    }  
+      
+    if (!success) {  
+        // Failure handling  
+        uint16 breaking_rate = base->breaking_rate;  
+        bool item_broken = (breaking_rate > rnd() % 10000);  
 
-	// If triggered from item
-	if( sd->itemid == sd->state.item_reform && pc_delitem( sd, sd->itemindex, 1, 0, 0, LOG_TYPE_REFORM ) != 0 ){
-		return;
-	}
+		std::string item_name = sd->inventory_data[index]->ename;
+
+        if (item_broken) {  
+            // Item destroyed  
+            log_pick_pc(sd, LOG_TYPE_REFORM, -1, &selected_item);
+			// Show effect failure (not working at the moment idk why)
+			clif_misceffect( *sd, NOTIFYEFFECT_REFINE_FAILURE );
+			// delete the item
+            pc_delitem(sd, index, 1, 0, 0, LOG_TYPE_REFORM);  
+            if (base->broadcast_failure) {  
+				char output[CHAT_SIZE_MAX];
+				sprintf(output, "%s has failed to slot %s", sd->status.name, item_name.c_str());  
+				intif_broadcast(output, strlen(output) + 1, BC_DEFAULT);
+            }
+
+			sd->state.item_reform = 0;
+			// Since there's no close when fail we immitate it by reopening the item reform
+            clif_item_reform_open(*sd, sd->state.item_reform);
+
+            return;  
+        }  
+    }
 
 	// Log removal of item
 	log_pick_pc( sd, LOG_TYPE_REFORM, -1, &selected_item );
@@ -24791,6 +24823,12 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
 
 	// Log retrieving the item again -> with the new options
 	log_pick_pc( sd, LOG_TYPE_REFORM, 1, &selected_item );
+  
+	if (base->broadcast_success) {  
+		char output[CHAT_SIZE_MAX];
+		sprintf(output, "%s has succeeded to slot %s", sd->status.name, sd->inventory_data[index]->ename.c_str());  
+		intif_broadcast(output, strlen(output) + 1, BC_DEFAULT);
+	}
 
 	// Make it visible for the client again
 	clif_additem( sd, index, 1, 0 );
