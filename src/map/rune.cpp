@@ -3,6 +3,7 @@
 
 #include "rune.hpp"
 
+#include <algorithm>
 #include <stdlib.h>
 #include <iostream>
 #include <set>
@@ -641,7 +642,7 @@ void rune_load(map_session_data* sd) {
 		}
 		if (set_data.selected) {
 			isSelected = true;
-			s_runeactivated_data active_data;
+			map_session_data::s_runeactivated_data active_data;
 			active_data.tagID = set_data.tagId;
 			active_data.runesetid = set_data.setId;
 			active_data.upgrade = set_data.upgrade;
@@ -1055,13 +1056,13 @@ bool rune_changestate(map_session_data* sd, uint16 tagID, uint32 runesetid){
 			
 			// Check if this runeset is already active
 			auto it = std::find_if(sd->runeactivated_data.begin(), sd->runeactivated_data.end(),
-				[tagID, runesetid](const s_runeactivated_data& active) {
+				[tagID, runesetid](const map_session_data::s_runeactivated_data& active) {
 					return active.tagID == tagID && active.runesetid == runesetid;
 				});
 			
 			if(it == sd->runeactivated_data.end()) {
 				// Add to active runesets
-				s_runeactivated_data active_data;
+				map_session_data::s_runeactivated_data active_data;
 				active_data.tagID = set_data.tagId;
 				active_data.runesetid = set_data.setId;
 				active_data.upgrade = set_data.upgrade;
@@ -1078,7 +1079,7 @@ bool rune_changestate(map_session_data* sd, uint16 tagID, uint32 runesetid){
 		if(set_data.tagId == tagID && !runesetid && set_data.selected){
 			// Remove from active runesets
 			auto it = std::find_if(sd->runeactivated_data.begin(), sd->runeactivated_data.end(),
-				[tagID](const s_runeactivated_data& active) {
+				[tagID](const map_session_data::s_runeactivated_data& active) {
 					return active.tagID == tagID;
 				});
 			
@@ -1100,7 +1101,7 @@ void rune_count_bookactivated(map_session_data* sd, uint16 tagID, uint32 runeset
 
 	// Find the specific active runeset to update
 	auto it = std::find_if(sd->runeactivated_data.begin(), sd->runeactivated_data.end(),
-		[tagID, runesetid](s_runeactivated_data& active) {
+		[tagID, runesetid](map_session_data::s_runeactivated_data& active) {
 			return active.tagID == tagID && active.runesetid == runesetid;
 		});
 	

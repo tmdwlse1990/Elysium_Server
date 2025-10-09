@@ -464,7 +464,7 @@ void clan_buff_start(map_session_data* sd, struct clan* c) {
     }      
 }  
   
-static void clan_buff_end(map_session_data* sd, struct clan* c) {      
+void clan_buff_end(map_session_data* sd, struct clan* c) {      
     nullpo_retv(sd);      
     nullpo_retv(c);      
       

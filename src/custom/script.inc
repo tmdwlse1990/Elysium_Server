@@ -919,7 +919,11 @@ BUILDIN_FUNC( getupgrade_rune ){
 	if( !script_rid2sd(sd) )
 		return SCRIPT_CMD_FAILURE;
 
-	script_pushint(st,sd->runeactivated_data.upgrade);
+	if(!sd->runeactivated_data.empty()) {
+		script_pushint(st, sd->runeactivated_data[0].upgrade);
+	} else {
+		script_pushint(st, 0);
+	}
 	return SCRIPT_CMD_SUCCESS;
 #else
 	ShowError( "buildin_getupgrade_rune: This command requires PACKETVER 2020-07-24 or newer.\n" );
