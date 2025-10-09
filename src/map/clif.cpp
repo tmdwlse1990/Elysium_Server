@@ -26768,10 +26768,12 @@ void clif_setinfo_rune( map_session_data* sd, uint16 tagID ){
 	//ShowError("clif_setinfo_rune tagID %d \n", p->tagID);
 	clif_send( p, p->packetLength, sd, SELF );
 
-	if(sd->runeactivated_data.tagID && !sd->runeactivated_data.loaded){
-		clif_enablerefresh_rune2(sd,0,0);
-		clif_enablerefresh_rune2(sd,sd->runeactivated_data.tagID,sd->runeactivated_data.runesetid);
-		sd->runeactivated_data.loaded = true;
+	for(auto& active_rune : sd->runeactivated_data) {
+		if(active_rune.tagID && !active_rune.loaded){
+			clif_enablerefresh_rune2(sd,0,0);
+			clif_enablerefresh_rune2(sd,active_rune.tagID,active_rune.runesetid);
+			active_rune.loaded = true;
+		}
 	}
 #endif
 }
@@ -26790,9 +26792,11 @@ void clif_parse_bookactivate_rune( int32 fd, map_session_data* sd ){
 	//ShowError("clif_parse_bookactivate_rune tagID %d runebookid %d result %d\n",p->tagID, p->runebookid, pm.result);
 	clif_send( &pm, sizeof( pm ), sd, SELF );
 
-	if(sd->runeactivated_data.tagID && sd->runeactivated_data.tagID == pm.tagID){
-		clif_enablerefresh_rune2(sd,0,0);
-		clif_enablerefresh_rune2(sd,sd->runeactivated_data.tagID,sd->runeactivated_data.runesetid);
+	for(const auto& active_rune : sd->runeactivated_data) {
+		if(active_rune.tagID && active_rune.tagID == pm.tagID){
+			clif_enablerefresh_rune2(sd,0,0);
+			clif_enablerefresh_rune2(sd,active_rune.tagID,active_rune.runesetid);
+		}
 	}
 #endif
 }
@@ -26849,9 +26853,11 @@ void clif_setupgrade_rune (map_session_data* sd, uint16 tagID, uint32 runesetid 
 	//ShowError("clif_setupgrade_rune result %d upgrade : %d failcount %d \n",p.result, p.upgrade, p.failcount);
 	clif_send( &p, sizeof( p ), sd, SELF );
 
-	if(sd->runeactivated_data.tagID && sd->runeactivated_data.tagID == tagID && sd->runeactivated_data.runesetid == runesetid){
-		clif_enablerefresh_rune2(sd,0,0);
-		clif_enablerefresh_rune2(sd,sd->runeactivated_data.tagID,sd->runeactivated_data.runesetid);
+	for(const auto& active_rune : sd->runeactivated_data) {
+		if(active_rune.tagID && active_rune.tagID == tagID && active_rune.runesetid == runesetid){
+			clif_enablerefresh_rune2(sd,0,0);
+			clif_enablerefresh_rune2(sd,active_rune.tagID,active_rune.runesetid);
+		}
 	}
 #endif
 }
@@ -26906,21 +26912,24 @@ void clif_onlogenable_rune (map_session_data* sd){
    if(sd->runeSets.empty()) return;
    if(sd->runeSets.size() <= 0) return;
 
-	for (auto& set_data : sd->runeSets) {
-		if (&set_data == nullptr)
-			continue;
-		if(set_data.selected){
-			isSelectedSet = true;
-			p.tagID = sd->runeactivated_data.tagID = static_cast<uint16>(set_data.tagId);
-			p.runesetid = sd->runeactivated_data.runesetid = static_cast<uint32>(set_data.setId);
-			p.upgrade = sd->runeactivated_data.upgrade = static_cast<uint8>(set_data.upgrade);
-			p.failcount = set_data.failcount;
-			rune_count_bookactivated(sd, p.tagID, p.runesetid);
-				
-			break;
+	// Send the first active runeset to client (client may only support displaying one)
+	if(!sd->runeactivated_data.empty()) {
+		const auto& first_active = sd->runeactivated_data[0];
+		
+		// Find the corresponding runeset data
+		for (auto& set_data : sd->runeSets) {
+			if (&set_data == nullptr)
+				continue;
+			if(set_data.tagId == first_active.tagID && set_data.setId == first_active.runesetid){
+				isSelectedSet = true;
+				p.tagID = static_cast<uint16>(set_data.tagId);
+				p.runesetid = static_cast<uint32>(set_data.setId);
+				p.upgrade = static_cast<uint8>(set_data.upgrade);
+				p.failcount = set_data.failcount;
+				rune_count_bookactivated(sd, p.tagID, p.runesetid);
+				break;
+			}
 		}
-		if(isSelectedSet)
-			break;
 	}
 	
 	if(!isSelectedSet)

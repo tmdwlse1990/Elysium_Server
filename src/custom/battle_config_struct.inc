@@ -105,3 +105,6 @@ int32 monster_hit_rate2;
 int32 monster_flee_rate2;  
 int32 monster_crit_rate2;  
 int32 monster_aspd_rate2;
+
+// Rune system configuration
+int32 max_active_runesets;
