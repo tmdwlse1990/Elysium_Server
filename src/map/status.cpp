@@ -4315,7 +4315,7 @@ int32 status_calc_pc_sub(map_session_data* sd, uint8 opt)
 		sd->collection.calc = false;
 	}
 
-	if(!sd->runeactivated_data.empty()){
+	if(sd->runeactivated_data.tagID){
 		rune_active_bonus(sd);
 	}
 

@@ -109,7 +109,7 @@ TIMER_FUNC(skill_animation_timer) {
     return 0;    
 }  
 
-void skill_animation_clear_internal(struct block_list* bl) {    
+static void skill_animation_clear_internal(struct block_list* bl) {    
     if (!bl)    
         return;    
    

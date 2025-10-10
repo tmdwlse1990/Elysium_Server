@@ -3,7 +3,6 @@
 
 #include "rune.hpp"
 
-#include <algorithm>
 #include <stdlib.h>
 #include <iostream>
 #include <set>
@@ -18,7 +17,6 @@
 #include <common/showmsg.hpp>
 #include <common/strlib.hpp>
 
-#include "battle.hpp"
 #include "clif.hpp"
 #include "itemdb.hpp"
 #include "log.hpp"
@@ -642,13 +640,9 @@ void rune_load(map_session_data* sd) {
 		}
 		if (set_data.selected) {
 			isSelected = true;
-			map_session_data::s_runeactivated_data active_data;
-			active_data.tagID = set_data.tagId;
-			active_data.runesetid = set_data.setId;
-			active_data.upgrade = set_data.upgrade;
-			active_data.bookNumber = 0;
-			active_data.loaded = false;
-			sd->runeactivated_data.push_back(active_data);
+			sd->runeactivated_data.tagID = set_data.tagId;
+			sd->runeactivated_data.runesetid = set_data.setId;
+			sd->runeactivated_data.upgrade = set_data.upgrade;
 		}
 		sd->runeSets.push_back(set_data);
 	}
@@ -674,11 +668,12 @@ void rune_load(map_session_data* sd) {
 	Sql_FreeResult(mmysql_handle);
 
 	if(!isSelected){
-		sd->runeactivated_data.clear();
+		sd->runeactivated_data.loaded = false;
+		sd->runeactivated_data.tagID = 0;
+		sd->runeactivated_data.upgrade = 0;
+		sd->runeactivated_data.runesetid = 0;
 	}
-	
-	// Initialize max active runesets from battle configuration
-	sd->max_active_runesets = battle_config.max_active_runesets;
+	sd->runeactivated_data.bookNumber = 0;
 
 }
 
@@ -758,13 +753,9 @@ int32 rune_bookactivate(map_session_data* sd, uint16 tagID, uint32 runebookid){
 
 	sd->runeBooks.push_back(book);
 
-	//Update the rune book number for all activated runes
-	if(!sd->runeactivated_data.empty()){
-		for(auto& active_rune : sd->runeactivated_data) {
-			if(active_rune.tagID == tagID) {
-				rune_count_bookactivated(sd, tagID, active_rune.runesetid);
-			}
-		}
+	//Update the rune book number if one rune is activated
+	if(sd->runeactivated_data.runesetid){
+		rune_count_bookactivated(sd, tagID, runesetid);
 		status_calc_pc(sd, SCO_FORCE);
 	}
 
@@ -1029,12 +1020,10 @@ std::tuple<uint8, uint16, uint16> rune_setupgrade(map_session_data* sd, uint16 t
 	it_setrune_data->failcount = failcount;
 
 	//Update the rune book number if one rune is activated
-	for(auto& active_rune : sd->runeactivated_data) {
-		if(active_rune.tagID == tagID && active_rune.runesetid == runesetid){
-			active_rune.upgrade = static_cast<uint8>(upgrade);
+	if(sd->runeactivated_data.runesetid
+		&& sd->runeactivated_data.tagID == tagID && sd->runeactivated_data.runesetid == runesetid){
+			sd->runeactivated_data.upgrade = static_cast<uint8>(upgrade);
 			status_calc_pc(sd, SCO_FORCE);
-			break;
-		}
 	}
 
 	//ShowError("Upgrade after : %d failcount %d chance%d \n",upgrade, failcount, chance);
@@ -1048,45 +1037,19 @@ bool rune_changestate(map_session_data* sd, uint16 tagID, uint32 runesetid){
 
 	for (auto& set_data : sd->runeSets) {
 		if(set_data.tagId == tagID && runesetid && set_data.setId == runesetid) {
-			// Check if we can activate more runesets
-			if(!set_data.selected && sd->runeactivated_data.size() >= sd->max_active_runesets) {
-				// Maximum active runesets reached
-				return false;
-			}
-			
-			// Check if this runeset is already active
-			auto it = std::find_if(sd->runeactivated_data.begin(), sd->runeactivated_data.end(),
-				[tagID, runesetid](const map_session_data::s_runeactivated_data& active) {
-					return active.tagID == tagID && active.runesetid == runesetid;
-				});
-			
-			if(it == sd->runeactivated_data.end()) {
-				// Add to active runesets
-				map_session_data::s_runeactivated_data active_data;
-				active_data.tagID = set_data.tagId;
-				active_data.runesetid = set_data.setId;
-				active_data.upgrade = set_data.upgrade;
-				active_data.bookNumber = 0;
-				active_data.loaded = true;
-				sd->runeactivated_data.push_back(active_data);
-				
-				rune_count_bookactivated(sd, tagID, runesetid);
-				set_data.selected = true;
-				status_calc_pc(sd, SCO_FORCE);
-				return true;
-			}
+			sd->runeactivated_data.tagID = set_data.tagId;
+			sd->runeactivated_data.runesetid = set_data.setId;
+			sd->runeactivated_data.upgrade = set_data.upgrade;
+			rune_count_bookactivated(sd, tagID, runesetid);
+			set_data.selected = true;
+			status_calc_pc(sd, SCO_FORCE);
+			return true;
 		}
 		if(set_data.tagId == tagID && !runesetid && set_data.selected){
-			// Remove from active runesets
-			auto it = std::find_if(sd->runeactivated_data.begin(), sd->runeactivated_data.end(),
-				[tagID](const map_session_data::s_runeactivated_data& active) {
-					return active.tagID == tagID;
-				});
-			
-			if(it != sd->runeactivated_data.end()) {
-				sd->runeactivated_data.erase(it);
-			}
-			
+			sd->runeactivated_data.tagID = 0;
+			sd->runeactivated_data.runesetid = 0;
+			sd->runeactivated_data.upgrade = 0;
+			sd->runeactivated_data.bookNumber = 0;
 			set_data.selected = false;
 			status_calc_pc(sd, SCO_FORCE);
 			return false;
@@ -1099,16 +1062,7 @@ bool rune_changestate(map_session_data* sd, uint16 tagID, uint32 runesetid){
 void rune_count_bookactivated(map_session_data* sd, uint16 tagID, uint32 runesetid){
 	nullpo_retv(sd);
 
-	// Find the specific active runeset to update
-	auto it = std::find_if(sd->runeactivated_data.begin(), sd->runeactivated_data.end(),
-		[tagID, runesetid](map_session_data::s_runeactivated_data& active) {
-			return active.tagID == tagID && active.runesetid == runesetid;
-		});
-	
-	if(it == sd->runeactivated_data.end())
-		return;
-
-	it->bookNumber = 0;
+	sd->runeactivated_data.bookNumber = 0;
 
 	// Check if rune exist
 	std::shared_ptr<s_rune_db> rune_data = rune_db.find( tagID );
@@ -1127,51 +1081,49 @@ void rune_count_bookactivated(map_session_data* sd, uint16 tagID, uint32 runeset
 		uint32 bookId = slot_pair.second;
 		
 		// Check if the book id exists in the books vector
+		bool bookFound = false;
 		for (const auto& book : sd->runeBooks) {
 			if (book.tagId == tagID && book.bookId == bookId) {
-				it->bookNumber++;
+				sd->runeactivated_data.bookNumber++;
 			}
 		}
 	}
-	//ShowError("Active runeset bookNumber %d \n", it->bookNumber);
+	//ShowError("sd->runeactivated_data.bookNumber %d \n",sd->runeactivated_data.bookNumber);
 }
 
 void rune_active_bonus(map_session_data *sd) {
 	nullpo_retv(sd);
 
-	//ShowError("rune_active_bonus execution for %d active runesets\n", (int)sd->runeactivated_data.size());
+	//ShowError("rune_active_bonus execution -- sd->runeactivated_data.tagID %d sd->runeactivated_data.runesetid %d \n", sd->runeactivated_data.tagID, sd->runeactivated_data.runesetid);
 
-	// Process all active runesets
-	for(const auto& active_rune : sd->runeactivated_data) {
-		// Check if rune exist
-		std::shared_ptr<s_rune_db> rune_data = rune_db.find( active_rune.tagID );
+	// Check if rune exist
+	std::shared_ptr<s_rune_db> rune_data = rune_db.find( sd->runeactivated_data.tagID );
 
-		if( rune_data == nullptr )
-			continue;
+	if( rune_data == nullptr )
+		return;
 
-		// Check if rune set exist
-		std::shared_ptr<s_set_rune> runeset_data = util::umap_find( rune_data->sets, active_rune.runesetid );
+	// Check if rune set exist
+	std::shared_ptr<s_set_rune> runeset_data = util::umap_find( rune_data->sets, sd->runeactivated_data.runesetid );
 
-		if( runeset_data == nullptr )
-			continue;
+	if( runeset_data == nullptr )
+		return;
 
-		//ShowError("rune_active_bonus found in database for tagID %d runesetid %d\n", active_rune.tagID, active_rune.runesetid);
-		
-		// Now let's iterate through scripts and apply bonuses
-		for (const auto& script_pair : runeset_data->scripts) {
-			 const std::shared_ptr<s_script_rune> script_data = script_pair.second;
+	//ShowError("rune_active_bonus found in database \n");
+	
+	// Now let's iterate through slots and check if each slot's id exists in the books vector
+	for (const auto& script_pair : runeset_data->scripts) {
+		 const std::shared_ptr<s_script_rune> script_data = script_pair.second;
 
-			//ShowError("bookNumber %d, script_data->amount %d \n", active_rune.bookNumber, script_data->amount);
+		//ShowError("sd->runeactivated_data.bookNumber %d, script_data->amount %d \n",sd->runeactivated_data.bookNumber,script_data->amount);
 
-			if(active_rune.bookNumber >= script_data->amount){
-				run_script(script_data->script, 0, sd->id, 0);
-			}
+		if(sd->runeactivated_data.bookNumber >= script_data->amount){
+			run_script(script_data->script, 0, sd->id, 0);
 		}
+	}
 
-		if(active_rune.tagID && active_rune.loaded){
-			clif_enablerefresh_rune2(sd,0,0);
-			clif_enablerefresh_rune2(sd,active_rune.tagID,active_rune.runesetid);
-		}
+	if(sd->runeactivated_data.tagID && sd->runeactivated_data.loaded){
+		clif_enablerefresh_rune2(sd,0,0);
+		clif_enablerefresh_rune2(sd,sd->runeactivated_data.tagID,sd->runeactivated_data.runesetid);
 	}
 }
 

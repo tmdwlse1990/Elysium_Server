@@ -884,10 +884,7 @@ public:
 		uint16 upgrade;
 		uint8 bookNumber;
 		bool loaded;
-	};
-	
-	std::vector<s_runeactivated_data> runeactivated_data;
-	uint8 max_active_runesets; // Maximum number of runesets that can be active simultaneously
+	} runeactivated_data;
 
 #ifdef SECURE_NPCTIMEOUT
 	/**

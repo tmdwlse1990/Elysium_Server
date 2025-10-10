@@ -103,6 +103,3 @@
 { "monster_flee_rate2",         &battle_config.monster_flee_rate2,          100,    1,      INT_MAX,        },  
 { "monster_crit_rate2",         &battle_config.monster_crit_rate2,          100,    1,      INT_MAX,        },  
 { "monster_aspd_rate2",         &battle_config.monster_aspd_rate2,          100,    1,      INT_MAX,        },
-
-// Rune system configuration
-{ "max_active_runesets",        &battle_config.max_active_runesets,         3,      1,      10,             },
