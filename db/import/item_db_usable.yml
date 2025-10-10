@@ -136,4 +136,4 @@ Body:
       NoMail: true
       NoAuction: true      
     Script: |
-      doevent "bot_at::OnMainMenu";            
+      doevent "auto_combat::OnMainMenu";            

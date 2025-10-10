@@ -1552,7 +1552,7 @@ int ac_status(map_session_data* sd) {
 		return 0;
 	}
 
-	if (battle_config.autocombat_duration_type) {
+	if (battle_config.autocombat_duration_type == 1) {
 		if (sd->ac.duration_ <= 0) {
 			std::string msg = "Automessage - You don't have timer left on autocombat system!";
 			ac_message(sd, "TimerOut", msg.data(), 5, nullptr);
@@ -1561,6 +1561,16 @@ int ac_status(map_session_data* sd) {
 
 		sd->ac.duration_ = sd->ac.duration_ - battle_config.autocombat_timer;
 		pc_setaccountreg(sd, add_str("#ac_duration"), sd->ac.duration_);
+	}
+
+	else if (battle_config.autocombat_duration_type == 2) {  
+		if (sd->status.ap <= 0) {  
+			std::string msg = "Automessage - You don't have AP left on autocombat system!";  
+			ac_message(sd, "APOut", msg.data(), 5, nullptr);  
+			return -1;  
+		}  
+
+		status_heal(sd, 0, 0, -battle_config.autocombat_ap_per_tick, 0);  
 	}
 
 	struct party_data* p = (sd->status.party_id) ? party_search(sd->status.party_id) : nullptr;

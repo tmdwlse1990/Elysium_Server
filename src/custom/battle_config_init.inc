@@ -37,8 +37,9 @@
 { "autocombat_allow_pvp",		&battle_config.autocombat_allow_pvp,		1,		0,		1,				},
 { "autocombat_allow_gvg",		&battle_config.autocombat_allow_gvg,		1,		0,		1,				},
 { "autocombat_allow_bg",		&battle_config.autocombat_allow_bg,			1,		0,		1,				},
-{ "autocombat_duration_type",	&battle_config.autocombat_duration_type,	0,		0,		1,				},
+{ "autocombat_duration_type",	&battle_config.autocombat_duration_type,	0,		0,		2,				},
 { "autocombat_timer",			&battle_config.autocombat_timer,			250,	25,		INT_MAX,		},
+{ "autocombat_ap_per_tick",     &battle_config.autocombat_ap_per_tick,      347,    1,      INT_MAX,        },
 { "autocombat_iplimit",			&battle_config.autocombat_iplimit,			0,		0,		INT_MAX,		},
 { "autocombat_gepardlimit",		&battle_config.autocombat_gepardlimit,		0,		0,		INT_MAX,		},
 // The stat of classic MVPs (ID 1000-2082)    

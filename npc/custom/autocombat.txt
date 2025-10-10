@@ -20,131 +20,196 @@
 //= 1.5 Merged enable/disable skills into ON/OFF menu method
 //= 1.6 Change input method for adding buff items to menu method
 //= 1.7 Change autocombat rental item into timer method
-//= 1.8 Change autocombat timer to match event_queue
-//============================================================
--	script	bot_at	-1,{
-
-function calculate_remaining_time;  
-function reset;  
+//= 1.8 Change autocombat timer to match event_queue 
+//= 1.9 Added support for AP-based duration (type 2)
+//= 2.0 Re applied the missing function of duration type (timer & rental)  
+//============================================================  
+-	script	auto_combat	-1,{  
   
-OnInit:    
-    .duration = 3600000 * 4; // 4 hours in milliseconds    
+function calculate_remaining_time;    
+function reset;    
+    
+OnInit:      
+    .duration = 3600000 * 4; // 4 hours in milliseconds (for type 1)  
+    .rental_item_id = 50501; // Rental item ID (for type 0)  
+    end;      
+      
+OnHour00: // 12am server time will reset duration (only for type 1)  
+    if (getbattleflag("autocombat_duration_type") != 1)  
+        end;  
+          
+    .@n = getunits(BL_PC, .@aid);      
+    for (.@i = 0; .@i < .@n; .@i++) {      
+        attachrid(.@aid[.@i]);      
+        reset();      
+        detachrid;      
+    }      
     end;    
     
-OnHour00: // 12am server time will reset duration    
-    .@n = getunits(BL_PC, .@aid);    
-    for (.@i = 0; .@i < .@n; .@i++) {    
-        attachrid(.@aid[.@i]);    
-        reset();    
-        detachrid;    
-    }    
-    end;  
-  
 function calculate_remaining_time {  
-    .@player_remaining = getd("autocombat_remaining_" + getcharid(0));  
-    .@player_start_time = getd("autocombat_start_" + getcharid(0));  
+    .@duration_type = getbattleflag("autocombat_duration_type");  
       
-    // If no saved data, use full duration  
-    if (.@player_remaining == 0) .@player_remaining = .duration;  
-    if (.@player_start_time == 0) .@player_start_time = gettimetick(2);  
-      
-    // Calculate elapsed time since last save  
-    .@elapsed_time = (gettimetick(2) - .@player_start_time) * 1000;  
-    .@remaining_time = .@player_remaining - .@elapsed_time;  
-      
-    // Prevent negative time  
-    if (.@remaining_time < 0) .@remaining_time = 0;  
-      
-    // Convert to hours, minutes, seconds  
-    .@hours = .@remaining_time / 3600000;    
-    .@minutes = (.@remaining_time % 3600000) / 60000;    
-    .@seconds = (.@remaining_time % 60000) / 1000;    
-      
-    return .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds.";    
-}  
-  
-function reset {  
-    // Reset player's autocombat timer data using per-player variables  
-    setd("autocombat_remaining_" + getcharid(0), .duration);  
-    setd("autocombat_start_" + getcharid(0), gettimetick(2));  
-      
-    // If player has active autocombat, restart it with full duration  
-    if (ac_getstate()) {  
-        sc_end SC_AUTOCOMBAT;  
-        sc_start4 SC_AUTOCOMBAT, .duration, 1, 0, 0, 0;  
+    // Type 2: AP-based  
+    if (.@duration_type == 2) {  
+        return Ap + " / " + MaxAp + " AP";  
     }  
       
-    dispbottom "[Autocombat System]: Your autocombat has been refreshed for today.";  
-    dispbottom "Current remaining time: " + calculate_remaining_time() + ".";  
+    // Type 1: Account variable timer  
+    if (.@duration_type == 1) {  
+		.@player_remaining = getd("#ac_duration");  
+		  
+		if (.@player_remaining <= 0) {  
+			return "No time remaining";  
+		}  
+		  
+		// Convert milliseconds to time display  
+		.@hours = .@player_remaining / 3600000;  
+		.@minutes = (.@player_remaining % 3600000) / 60000;  
+		.@seconds = (.@player_remaining % 60000) / 1000;  
+		  
+		return .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds.";  
+    }  
       
-    return;  
-}
+    // Type 0: Rental item  
+    if (.@duration_type == 0) {  
+        .@rental_time = rentalcountitem(.rental_item_id);  
+        if (.@rental_time <= 0)  
+            return "No rental item";  
+              
+        .@hours = .@rental_time / 3600;  
+        .@minutes = (.@rental_time % 3600) / 60;  
+        .@seconds = .@rental_time % 60;  
+        return .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds (rental)";  
+    }  
+      
+    return "Unknown duration type";  
+}    
     
-goto(OnMainMenu);
-end;
-
-OnMainMenu:
-	mes " ";
-	setdialogsize(400, 300);
-	setdialogpospercent(50, 50);
-	.@menu$ = "<B>[ Autocombat Configuration ]</B>";
-	mes .@menu$;	
-	//if(!rentalcountitem(50501)){
-	//	mes "You need to have an AutoBuff Device to use this feature";
-	//	close;
-	//}
-    mes " ";
-    mes "Remaining Time: ^FF0000" + calculate_remaining_time() + "^000000";
-    mes "Current Time: ^0000FF" + gettimestr("%H:%M:%S", 10) + "^000000";
-    mes " ";	
-	next;
-	.@OnMainMenu = select(ac_getstate()?"[Stop]":"[ Start ]","[ Configuration ]","[ Cancel ]");
-	switch(.@OnMainMenu){
-		case 1:  
-			if (ac_getstate()) {  
-				goto OnStop;  
-			} else {  
-				//autocombat_fromitem(50501);  
-				// Start autocombat  
-				.@saved_remaining = getd("autocombat_remaining_" + getcharid(0));  
-				.@saved_start    = getd("autocombat_start_" + getcharid(0));  
-		  
-				// If no record, default to full duration  
-				if (.@saved_remaining == 0) .@saved_remaining = .duration;  
-				if (.@saved_start == 0) .@saved_start = gettimetick(2);  
-		  
-				// Calculate elapsed  
-				.@elapsed = (gettimetick(2) - .@saved_start) * 1000;  
-				.@remaining = .@saved_remaining - .@elapsed;  
-		  
-				// Prevent negative  
-				if (.@remaining <= 0) .@remaining = 0;  
-		  
-				// Save new values  
-				setd("autocombat_remaining_" + getcharid(0), .@remaining);  
-				setd("autocombat_start_" + getcharid(0), gettimetick(2));  
-		  
-				// Start SC with remaining time  
-				sc_start4 SC_AUTOCOMBAT, .@remaining, 1, 0, 0, 0;  
-				  
-				// Enhanced time display (simplified version)  
-				.@total_seconds = .@remaining / 1000;  
-				.@hours = .@total_seconds / 3600;  
-				.@minutes = (.@total_seconds % 3600) / 60;  
-				.@seconds = .@total_seconds % 60;  
-		  
-				message strcharinfo(0), "Autocombat started. Timer left: " + .@hours + " hours " + .@minutes + " minutes " + .@seconds + " seconds.";  
-			}
-			break;
-		case 2:
-			goto config_menu;
-			break;
-	}
-	end;
+function reset {  
+    .@duration_type = getbattleflag("autocombat_duration_type");  
+      
+    // Type 2: AP-based - restore to max AP  
+    if (.@duration_type == 2) {  
+        healap (MaxAp - Ap);  
+        if (ac_getstate()) {    
+            sc_end SC_AUTOCOMBAT;    
+            sc_start4 SC_AUTOCOMBAT, INFINITE_TICK, 1, 0, 0, 0; // Infinite duration, AP handles it  
+        }  
+        dispbottom "[Autocombat System]: Your AP has been refreshed.";  
+        dispbottom "Current AP: " + Ap + " / " + MaxAp;  
+        return;  
+    }  
+      
+    // Type 1: Account variable timer  
+    if (.@duration_type == 1) {  
+        // Reset player's autocombat timer data using per-player variables    
+        setd("autocombat_remaining_" + getcharid(0), .duration);    
+        setd("autocombat_start_" + getcharid(0), gettimetick(2));    
+            
+        // If player has active autocombat, restart it with full duration    
+        if (ac_getstate()) {    
+            sc_end SC_AUTOCOMBAT;    
+            sc_start4 SC_AUTOCOMBAT, .duration, 1, 0, 0, 0;    
+        }    
+            
+        dispbottom "[Autocombat System]: Your autocombat has been refreshed for today.";    
+        dispbottom "Current remaining time: " + calculate_remaining_time() + ".";  
+    }  
+      
+    // Type 0: Rental item - no reset needed  
+    return;    
+}  
+      
+goto(OnMainMenu);  
+end;  
+  
+OnMainMenu:  
+    mes " ";  
+    setdialogsize(400, 300);  
+    setdialogpospercent(50, 50);  
+    .@menu$ = "<B>[  Autocombat Configuration  ]</B>";  
+    mes .@menu$;  
+      
+    .@duration_type = getbattleflag("autocombat_duration_type");  
+      
+    // Type 0: Check rental item requirement  
+    if (.@duration_type == 0) {  
+        if(!rentalcountitem(.rental_item_id)){  
+            mes "You need to have an Autocombat Device (rental item) to use this feature";  
+            close;  
+        }  
+    }  
+      
+    mes " ";  
+      
+    // Display appropriate status based on duration type  
+    if (.@duration_type == 2) {  
+        mes "Current AP: ^FF0000" + Ap + " / " + MaxAp + "^000000";  
+    } else {  
+        mes "Remaining Time: ^FF0000" + calculate_remaining_time() + "^000000";  
+    }  
+      
+    mes "Current Time: ^0000FF" + gettimestr("%H:%M:%S", 10) + "^000000";  
+    mes " ";      
+    next;  
+      
+    .@OnMainMenu = select(ac_getstate()?"[ ^0000FFStop^000000 ]":"[ ^FF0000Start^000000 ]","[ Configuration ]","[ Cancel ]");  
+    switch(.@OnMainMenu){  
+        case 1:    
+            if (ac_getstate()) {    
+                goto OnStop;    
+            } else {  
+                // Type 0: Rental item  
+                if (.@duration_type == 0) {  
+                    if(!rentalcountitem(.rental_item_id)){  
+                        message strcharinfo(0), "You need a rental autocombat device!";  
+                        close;  
+                    }  
+                    // Let the C++ backend handle rental item duration  
+                    sc_start4 SC_AUTOCOMBAT, INFINITE_TICK, 1, 0, 0, 0;  
+                    message strcharinfo(0), "Autocombat started (rental mode).";  
+                }  
+                // Type 2: AP-based  
+                else if (.@duration_type == 2) {  
+                    if (Ap <= 0) {  
+                        message strcharinfo(0), "You don't have enough AP to start autocombat!";  
+                        close;  
+                    }  
+                    sc_start4 SC_AUTOCOMBAT, INFINITE_TICK, 1, 0, 0, 0; // Infinite duration, AP handles it  
+                    message strcharinfo(0), "Autocombat started. Current AP: " + Ap;  
+                }  
+                // Type 1: Account variable timer  
+				else {  
+					.@saved_remaining = getd("#ac_duration");  
+					  
+					// If no record, initialize with full duration  
+					if (.@saved_remaining == 0) {  
+						.@saved_remaining = .duration;  
+						setd("#ac_duration", .@saved_remaining);  
+					}  
+					  
+					// Check if player has enough time  
+					if (.@saved_remaining <= 0) {  
+						message strcharinfo(0), "You don't have any time left!";  
+						close;  
+					}  
+					  
+					// Start SC - C++ backend will handle the countdown  
+					sc_start4 SC_AUTOCOMBAT, .@saved_remaining, 1, 0, 0, 0;  
+					  
+					message strcharinfo(0), "Autocombat started. Timer managed by C++ backend.";  
+				}  
+            }  
+            break;  
+        case 2:  
+            goto config_menu;  
+            break;  
+    }  
+    end;
 
 config_menu:
 	clear;
-	.@menu$ = "<B>[ Autocombat Configuration ]</B>";
+	.@menu$ = "<B>[  Autocombat Configuration  ]</B>";
 	mes .@menu$;
 
 	// To disable an option, comment the line
@@ -162,7 +227,7 @@ config_menu:
 
 pickupitems_menu:
 	clear;
-	.@menu$ = "[Items Pickup Selection]";
+	.@menu$ = "<B>[ Items Pickup Selection ]</B>";
 
 	mes .@menu$;
 	mes "--- Current configuration ---";
@@ -265,7 +330,7 @@ pickupitems_menu:
 
 others_menu:
 	clear;
-	.@menu$ = "[Others configurations]";
+	.@menu$ = "<B>[ Others configurations ]</B>";
 
 	mes .@menu$;
 	//mes "--- Current configuration ---";
@@ -341,7 +406,7 @@ others_menu:
 
 action_on_end_menu:
 	clear;
-	.@menu$ = "[Action when Autocombat stop]";
+	.@menu$ = "<B>[ Action when Autocombat stop ]</B>";
 
 	mes .@menu$;
 	mes "--- Current configuration ---";
@@ -379,7 +444,7 @@ action_on_end_menu:
 
 reset_all:
 	clear;
-	.@menu$ = "[Reset settings]";
+	.@menu$ = "<B>[ Reset settings ]</B>";
 	mes .@menu$;
 	
 	.@reset_menu = select("Confirm the reset of all settings","[Cancel]");
@@ -395,7 +460,7 @@ reset_all:
 
 monsters_menu:
 	clear;
-	.@menu$ = "[Monster Selection]";
+	.@menu$ = "<B>[ Monster Selection ]</B>";
 
 	mes .@menu$;
 	mes "--- Current configuration ---";
@@ -431,7 +496,7 @@ monsters_menu:
 
 teleport_menu:
 	clear;
-	.@menu$ = "[Teleport]";
+	.@menu$ = "<B>[ Teleport ]</B>";
 
 	mes .@menu$;
 	mes "--- Current configuration ---";
@@ -501,7 +566,7 @@ teleport_menu:
 regeneration_menu:
 	mes "Clear menu";
 	clear;
-	.@menu$ = "[Regeneration]";
+	.@menu$ = "<B>[ Regeneration ]</B>";
 	
 	mes .@menu$;
 	menu	"Return",config_menu,
@@ -512,7 +577,7 @@ regeneration_menu:
 
 heal_menu:
 	clear;
-	.@menu$ = "[Auto-Heal]";
+	.@menu$ = "<B>[ Auto-Heal ]</B>";
 
 	mes .@menu$;
 	mes "--- Current configuration ---";
@@ -617,7 +682,7 @@ heal_menu:
 
 potion_menu:
 	clear;
-	.@menu$ = "[HP / SP Potions]";
+	.@menu$ = "<B>[ HP / SP Potions ]</B>";
 	mes .@menu$;
 	mes "--- Current configuration ---";
 	mes "You can add / modify or remove the following potion";
@@ -719,7 +784,7 @@ potion_menu:
 
 attackskills_menu:
 	clear;
-	.@menu$ = "[Attack Skills]";
+	.@menu$ = "<B>[ Attack Skills ]</B>";
 
 	mes .@menu$;
 	mes "--- Current configuration ---";
@@ -811,7 +876,7 @@ attackskills_menu:
 
 buffskills_menu:
 	clear;
-	.@menu$ = "[Buff Skills]";
+	.@menu$ = "<B>[ Buff Skills ]</B>";
 
 	mes .@menu$;
 	mes "--- Current configuration ---";
@@ -903,7 +968,7 @@ buffskills_menu:
 
 buffitems_menu:
 	clear;
-	.@menu$ = "[Buff Items]";
+	.@menu$ = "<B>[ Buff Items ]</B>";
 
 	mes .@menu$;
 	mes "--- Current configuration ---";
@@ -941,7 +1006,7 @@ buffitems_menu:
 
 sit_regen_menu:
 	clear;
-	.@menu$ = "[Sit to Rest]";
+	.@menu$ = "<B>[ Sit to Rest ]</B>";
 
 	mes .@menu$;
 	mes "--- Current configuration ---";
@@ -1006,31 +1071,28 @@ sit_regen_menu:
 
 OnStop:  
     if(ac_getstate()) {  
-        .@player_remaining = getd("autocombat_remaining_" + getcharid(0));  
-        .@player_start_time = getd("autocombat_start_" + getcharid(0));  
+        .@duration_type = getbattleflag("autocombat_duration_type");  
           
-        // Handle uninitialized variables  
-        if (.@player_remaining == 0) .@player_remaining = .remaining_time;  
-        if (.@player_start_time == 0) .@player_start_time = .start_time;  
-          
-        // Calculate elapsed time  
-        .@elapsed_time = (gettimetick(2) - .@player_start_time) * 1000;  
-        .@player_remaining -= .@elapsed_time;  
-          
-        if (.@player_remaining < 0) {  
-            .@player_remaining = 0;  
+        // Type 1: Save remaining time  
+        if (.@duration_type == 1) {  
+			.@player_remaining = getd("#ac_duration");  
+			.@hours = .@player_remaining / 3600000;  
+			.@minutes = (.@player_remaining % 3600000) / 60000;  
+			.@seconds = (.@player_remaining % 60000) / 1000;  
+			message strcharinfo(0), "Autocombat stopped. Remaining time: " + .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds.";  
+        }  
+        // Type 2: Show remaining AP  
+        else if (.@duration_type == 2) {  
+            message strcharinfo(0), "Autocombat stopped. Remaining AP: " + Ap + " / " + MaxAp;  
+        }  
+        // Type 0: Show rental time  
+        else {  
+            message strcharinfo(0), "Autocombat stopped. Rental time: " + calculate_remaining_time();  
         }  
           
         sc_end SC_AUTOCOMBAT;  
-        setd("autocombat_remaining_" + getcharid(0), .@player_remaining);  
-          
-        // Format time properly  
-        .@hours = .@player_remaining / 3600000;  
-        .@minutes = (.@player_remaining % 3600000) / 60000;  
-        .@seconds = (.@player_remaining % 60000) / 1000;  
-        message strcharinfo(0), "Autocombat stopped. Remaining time: " + .@hours + " hours, " + .@minutes + " minutes, " + .@seconds + " seconds.";  
-    }  
-    end;	
+    }
+	end;
 }
 
 function	script	AC_OnPCLogoutEvent	{  

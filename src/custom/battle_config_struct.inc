@@ -41,6 +41,7 @@ int32 autocombat_allow_gvg;
 int32 autocombat_allow_bg;
 int32 autocombat_duration_type;
 int32 autocombat_timer;
+int32 autocombat_ap_per_tick;
 int32 autocombat_iplimit;
 int32 autocombat_gepardlimit;
 // The stat of renewal MVPs (ID 2083-31999)  
