@@ -63,6 +63,10 @@ Body:
             Amount: 1
         ResultItem: Upg_Adv_Suit
         ChangeRefine: -4
+        SuccessRate: 1000            
+        BreakingRate: 8000           
+        BroadcastSuccess: true
+        BroadcastFailure: true
       - BaseItem: Boots_  
         MinimumRefine: 4
         Materials:
