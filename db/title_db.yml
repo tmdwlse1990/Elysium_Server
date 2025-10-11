@@ -34,115 +34,374 @@ Header:
   
 Body:  
   - ID: 1000  
-    Name: "Junction of life"
+    Name: "Beginner"
     Icon: "EFST_TITLE1"     
     Script: |  
-      bonus bStr,1000;
+      bonus2 bDropAddRace, RC_All, 5;
   - ID: 1001  
     Name: "Specialist"
     Icon: "EFST_TITLE2"     
     Script: |  
-      bonus bAgi,1000;  
+      bonus2 bDropAddRace, RC_All, 10;
   - ID: 1002  
     Name: "Expert"
     Icon: "EFST_TITLE3"    
     Script: |  
-      bonus bVit,1000;  
+      bonus2 bDropAddRace, RC_All, 20;
   - ID: 1003  
     Name: "Master"  
     Icon: "EFST_TITLE4"    
     Script: |  
-      bonus bAllStats,1;  
+      bonus2 bExpAddRace, RC_All, 50;
   - ID: 1004  
     Name: "Grand Master"  
     Icon: "EFST_TITLE5"    
     Script: |  
-      bonus bAllStats,1;  
+      bonus2 bExpAddRace, RC_All, 100;
   - ID: 1005  
     Name: "Novice Adventurer"  
     Icon: "EFST_TITLE6"    
     Script: |  
-      bonus bAllStats,1;  
+      if (BaseClass == Job_Swordman || BaseClass == Job_Merchant || BaseClass == Job_Thief) {  
+        bonus bBaseAtk,10;  
+        bonus bAspd,1;  
+        bonus bMaxHP,100;  
+      }  
+      if (BaseClass == Job_Mage || BaseClass == Job_Archer || BaseClass == Job_Acolyte) {  
+        bonus bMatk,10;  
+        bonus bHealPower,1;  
+        bonus bMaxSP,100;  
+      }
   - ID: 1006  
     Name: "Veteran Adventurer"  
     Icon: "EFST_TITLE7"    
     Script: |  
-      bonus bAllStats,1;  
+      if (BaseClass == Job_Swordman || BaseClass == Job_Merchant || BaseClass == Job_Thief) {  
+        bonus bBaseAtk,20;  
+        bonus bAspd,2;  
+        bonus bMaxHP,200;  
+      }  
+      if (BaseClass == Job_Mage || BaseClass == Job_Archer || BaseClass == Job_Acolyte) {  
+        bonus bMatk,20;  
+        bonus bHealPower,10;  
+        bonus bMaxSP,200;  
+      }
   - ID: 1007  
     Name: "Master Adventurer"  
     Icon: "EFST_TITLE8"
     Script: |  
-      bonus bAllStats,1;  
+      if (Class == JOB_LORD_KNIGHT) {  
+        bonus bAtkRate,1;  
+        bonus bAspdRate,1;  
+        bonus bMaxHPrate,1;  
+        bonus2 bSkillAtk,"KN_BOWLINGBASH",getskilllv("SM_ONEHAND")+getskilllv("SM_TWOHAND");  
+      }  
+      if (Class == JOB_WHITESMITH) {  
+        bonus bAtkRate,1;  
+        bonus bAspdRate,1;  
+        bonus bMaxWeight,1;  
+        bonus2 bSkillAtk,"WS_CARTTERMINATION",getskilllv("BS_HILTBINDING")+getskilllv("MC_PUSHCART");  
+      }  
+      if (Class == JOB_ASSASSIN_CROSS) {  
+        bonus bAtkRate,1;  
+        bonus bAspdRate,1;  
+        bonus bFlee,1;  
+        bonus bFlee2,1;  
+        bonus2 bSkillAtk,"AS_SONICBLOW",getskilllv("AS_KATAR");  
+      }  
+      if (Class == JOB_HIGH_WIZARD) {  
+        bonus bMatkRate,1;  
+        bonus bFixedCast,-500;  
+        bonus2 bIgnoreMdefRate,RC_All,10;  
+      }  
+      if (Class == JOB_HIGH_PRIEST) {  
+        bonus bMatkRate,1;  
+        bonus bFixedCast,-500;  
+        bonus bHealPower,100;  
+      }  
+      if (Class == JOB_SNIPER) {  
+        bonus bLongAtkRate,1;  
+        bonus bAspdRate,1;  
+        bonus bCritical,1;  
+        bonus bCritAtkRate,1;  
+        bonus2 bSkillAtk,"SN_SHARPSHOOTING",getskilllv("AC_OWL")+getskilllv("AC_VULTURE");  
+      }  
+      if (Class == JOB_PALADIN) {  
+        bonus bDefRate,1;  
+        bonus bMdefRate,1;  
+        bonus bMaxHPrate,1;  
+        bonus2 bSkillAtk,"CR_GRANDCROSS",getskilllv("AL_DEMONBANE")+getskilllv("AL_DP");  
+        bonus2 bSkillAtk,"CR_HOLYCROSS",getskilllv("AL_DEMONBANE")+getskilllv("AL_DP");  
+      }  
+      if (Class == JOB_CREATOR) {  
+        bonus bLongAtkRate,1;  
+        bonus bAddItemHealRate,1;  
+        bonus2 bSkillAtk,"AM_ACIDTERROR",getskilllv("BS_WEAPONRESEARCH")+getskilllv("AM_LEARNINGPOTION");  
+      }  
+      if (Class == JOB_STALKER) {  
+        bonus bAtkRate,1;  
+        bonus bAspdRate,1;  
+        bonus bFlee,1;  
+        bonus bFlee2,1;  
+        bonus2 bSkillAtk,"RG_BACKSTAP",getskilllv("SM_SWORD");  
+      }  
+      if (Class == JOB_PROFESSOR) {  
+        bonus bMatkRate,1;  
+        bonus bFixedCast,-500;  
+        bonus2 bIgnoreMdefRate,RC_All,10;  
+      }  
+      if (Class == JOB_CHAMPION) {  
+        bonus bAtkRate,1;  
+        bonus bAspdRate,1;  
+        bonus bFixedCast,-500;  
+        bonus2 bSkillAtk,"MO_EXTREMITYFIST",getskilllv("MO_IRONHAND");  
+      }  
+      if (Class == JOB_CLOWN || Class == JOB_GYPSY) {  
+        bonus bAtkRate,1;  
+        bonus bFixedCast,-500;  
+        if (Class == JOB_CLOWN) {  
+          bonus2 bSkillAtk,"CG_ARROWVULCAN",getskilllv("BA_MUSICALLESSON");  
+        }  
+        if (Class == JOB_GYPSY) {  
+          bonus2 bSkillAtk,"CG_ARROWVULCAN",getskilllv("DC_DANCINGLESSON");  
+        }  
+      }  
   - ID: 1008  
-    Name: "of Dragon"  
+    Name: "Elite Adventurer"  
     Icon: "EFST_TITLE9"
     Script: |  
-      bonus bAllStats,1;  
+      if (Class == JOB_RUNE_KNIGHT) {  
+        bonus bAtkRate,3;  
+        bonus bAspdRate,3;  
+        bonus bMaxHPrate,3;  
+        bonus2 bSkillAtk,"RK_HUNDREDSPEAR",getskilllv("SM_ONEHAND")+getskilllv("SM_TWOHAND");  
+      }  
+      if (Class == JOB_MECHANIC) {  
+        bonus bAtkRate,3;  
+        bonus bAspdRate,3;  
+        bonus bMaxWeight,3;  
+        bonus2 bSkillAtk,"NC_AXEBOOMERANG",getskilllv("BS_HILTBINDING")+getskilllv("MC_PUSHCART");  
+      }  
+      if (Class == JOB_GUILLOTINE_CROSS) {  
+        bonus bAtkRate,3;  
+        bonus bAspdRate,3;  
+        bonus bFlee,3;  
+        bonus bFlee2,3;  
+        bonus2 bSkillAtk,"GC_CROSSIMPACT",getskilllv("AS_KATAR");  
+      }  
+      if (Class == JOB_WARLOCK) {  
+        bonus bMatkRate,3;  
+        bonus bFixedCast,-500;  
+        bonus2 bIgnoreMdefRate,RC_All,10;  
+      }  
+      if (Class == JOB_ARCH_BISHOP) {  
+        bonus bMatkRate,3;  
+        bonus bFixedCast,-500;  
+        bonus bHealPower,100;  
+      }  
+      if (Class == JOB_RANGER) {  
+        bonus bLongAtkRate,3;  
+        bonus bAspdRate,3;  
+        bonus bCritical,3;  
+        bonus bCritAtkRate,3;  
+        bonus2 bSkillAtk,"RA_ARROWSTORM",getskilllv("AC_OWL")+getskilllv("AC_VULTURE");  
+      }  
+      if (Class == JOB_ROYAL_GUARD) {  
+        bonus bDefRate,3;  
+        bonus bMdefRate,3;  
+        bonus bMaxHPrate,3;  
+        bonus2 bSkillAtk,"LG_OVERBRAND",getskilllv("AL_DEMONBANE")+getskilllv("AL_DP");  
+      }  
+      if (Class == JOB_GENETIC) {  
+        bonus bLongAtkRate,3;  
+        bonus bAddItemHealRate,3;  
+        bonus2 bSkillAtk,"GN_CRAZYWEED",getskilllv("BS_WEAPONRESEARCH")+getskilllv("AM_LEARNINGPOTION");  
+      }  
+      if (Class == JOB_SHADOW_CHASER) {  
+        bonus bAtkRate,3;  
+        bonus bAspdRate,3;  
+        bonus bFlee,3;  
+        bonus bFlee2,3;  
+        bonus2 bSkillAtk,"SC_TRIANGLESHOT",getskilllv("AC_VULTURE");  
+      }  
+      if (Class == JOB_SORCERER) {  
+        bonus bMatkRate,3;  
+        bonus bFixedCast,-500;  
+        bonus2 bIgnoreMdefRate,RC_All,10;  
+      }  
+      if (Class == JOB_SURA) {  
+        bonus bAtkRate,3;  
+        bonus bAspdRate,3;  
+        bonus bFixedCast,-500;  
+        bonus2 bSkillAtk,"SR_TIGERCANNON",getskilllv("MO_IRONHAND");  
+      }  
+      if (Class == JOB_MINSTREL || Class == JOB_WANDERER) {  
+        bonus bAtkRate,3;  
+        bonus bFixedCast,-500;  
+        if (Class == JOB_MINSTREL) {  
+          bonus2 bSkillAtk,"WM_SEVERE_RAINSTORM",getskilllv("BA_MUSICALLESSON");  
+        }  
+        if (Class == JOB_WANDERER) {  
+          bonus2 bSkillAtk,"WM_SEVERE_RAINSTORM",getskilllv("DC_DANCINGLESSON");  
+        }  
+      }
   - ID: 1009  
-    Name: "of Madness"
+    Name: "Exceptional Adventurer"
     Icon: "EFST_TITLE10"    
     Script: |  
-      bonus bAllStats,1;  
+      if (Class == JOB_TAEKWON) {  
+        bonus bAtkRate,2;  
+        bonus bAspdRate,2;  
+        bonus bFlee,2;  
+        bonus bCritical,2;  
+        bonus2 bSkillAtk,"TK_STORMKICK",getskilllv("TK_RUN");  
+        bonus2 bSkillAtk,"TK_DOWNKICK",getskilllv("TK_RUN");  
+        bonus2 bSkillAtk,"TK_TURNKICK",getskilllv("TK_RUN");  
+      }  
+      if (Class == JOB_GUNSLINGER) {  
+        bonus bLongAtkRate,2;  
+        bonus bAspdRate,2;  
+        bonus bHit,2;  
+        bonus bCritical,2;  
+        bonus2 bSkillAtk,"GS_DESPERADO",getskilllv("GS_SINGLEACTION");  
+      }  
+      if (Class == JOB_SUPER_NOVICE) {  
+        bonus bAllStats,2;  
+        bonus bMaxHPrate,2;  
+        bonus bMaxSPrate,2;  
+        bonus bHealPower,50;  
+        bonus bAtkRate,2;  
+        bonus bMatkRate,2;  
+        bonus2 bAddClass,Class_All,2;
+      }  
+      if (Class == JOB_NINJA) {  
+        bonus bAtkRate,2;  
+        bonus bMatkRate,2;  
+        bonus bAspdRate,2;  
+        bonus bFlee,2;  
+        bonus2 bSkillAtk,"NJ_KUNAI",getskilllv("NJ_TOBIDOUGU");  
+        bonus2 bSkillAtk,"NJ_HUUMA",getskilllv("NJ_TOBIDOUGU");  
+      }
+      if (Class == JOB_SOUL_LINKER) {  
+        bonus bMatkRate,2;  
+        bonus bAspdRate,2;  
+        bonus bFixedCast,-500;  
+        bonus2 bSkillAtk,"SL_SMA",getskilllv("TK_SPTIME");  
+      }  
+      if (Class == JOB_STAR_GLADIATOR) {  
+        bonus bAtkRate,2;  
+        bonus bAspdRate,2;  
+        bonus bFlee,2;  
+        bonus bCritical,2;  
+        bonus2 bSkillAtk,"SG_FUSION",getskilllv("SG_KNOWLEDGE");  
+      }  
+      if (Class == JOB_REBELLION) {  
+        bonus bLongAtkRate,2;  
+        bonus bAspdRate,2;  
+        bonus bHit,2;  
+        bonus bCritical,2;  
+        bonus2 bSkillAtk,"RL_HAMMER_OF_GOD",getskilllv("GS_SINGLEACTION");  
+      }  
+      if (Class == JOB_KAGEROU) {  
+        bonus bAtkRate,2;  
+        bonus bMatkRate,2;  
+        bonus bAspdRate,2;  
+        bonus bFlee,2;  
+        bonus2 bSkillAtk,"KO_HUUMARANKA",getskilllv("NJ_TOBIDOUGU");  
+      }  
+      if (Class == JOB_OBORO) {  
+        bonus bAtkRate,2;  
+        bonus bMatkRate,2;  
+        bonus bAspdRate,2;  
+        bonus bFlee,2;  
+        bonus2 bSkillAtk,"KO_MUCHANAGE",getskilllv("NJ_TOBIDOUGU");  
+      }
   - ID: 1010  
-    Name: "Steel Body"  
+    Name: "Bearish Power"  
     Icon: "EFST_TITLE11"    
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bStr) >= 200) {  
+        bonus bAtkRate,10;  
+      }
   - ID: 1011  
-    Name: "The Yellow Flash"  
+    Name: "Overflowing Magic"  
     Icon: "EFST_TITLE12"
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bInt) >= 200) {  
+        bonus bMatkRate,10;  
+      }
   - ID: 1012  
-    Name: "Keen"  
+    Name: "Steel Body"  
     Icon: "EFST_TITLE13"
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bVit) >= 200) {  
+        bonus bDefRate,10;  
+      }
   - ID: 1013  
-    Name: "Lucky" 
+    Name: "Speed of Sound" 
     Icon: "EFST_TITLE14"    
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bAgi) >= 200) {  
+        bonus bAspdRate,10;  
+      }
   - ID: 1014  
-    Name: "Incarnation of Love and Hatred" 
+    Name: "Hawk Eyes" 
     Icon: "EFST_TITLE15"    
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bDex) >= 200) {  
+        bonus bLongAtkRate,10;  
+      }
   - ID: 1015  
-    Name: "Maniac"  
+    Name: "Maximum Luck"  
     Icon: "EFST_TITLE16"
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bLuk) >= 200) {  
+        bonus bFleeRate,10;  
+        bonus bFlee2Rate,10;  
+      }
   - ID: 1016  
-    Name: "Reborn"  
+    Name: "Dragonlike Power"  
     Icon: "EFST_TITLE17"
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bStr) >= 275) {  
+        bonus bAtkRate,20;  
+      }
   - ID: 1017  
-    Name: "Bloody Red"  
+    Name: "Magic Insanity"  
     Icon: "EFST_TITLE18"
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bInt) >= 275) {  
+        bonus bMatkRate,20;  
+      }
   - ID: 1018  
-    Name: "Novice Teleporter"  
+    Name: "Rock Alloy"  
     Icon: "EFST_TITLE19"
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bVit) >= 275) {  
+        bonus bDefRate,20;  
+      }
   - ID: 1019  
-    Name: "Mock me yoyo"  
+    Name: "Speed of Light"  
     Icon: "EFST_TITLE20"
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bAgi) >= 275) {  
+        bonus bAspdRate,20;  
+      }
   - ID: 1020  
-    Name: "Gambler"  
+    Name: "Falcon's Eyes"  
     Icon: "EFST_TITLE21"
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bDex) >= 275) {  
+        bonus bLongAtkRate,20;  
+      }
   - ID: 1021  
-    Name: "Battle Manual Master"  
+    Name: "Lucky Fever"  
     Icon: "EFST_TITLE22"
     Script: |  
-      bonus bAllStats,1;  
+      if (readparam(bLuk) >= 275) {  
+        bonus bFleeRate,20;  
+        bonus bFlee2Rate,20;  
+      }
   - ID: 1022  
     Name: "Married Person"  
     Icon: "EFST_TITLE23"

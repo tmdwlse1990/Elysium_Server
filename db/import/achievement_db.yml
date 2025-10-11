@@ -1945,7 +1945,7 @@ Body:
     Score: 50
   - Id: 200000
     Group: Goal_Level
-    Name: Acquire the first aura!
+    Name: Achieve Base Level 99!
     Condition: " BaseLevel >= 99 "
     Rewards:
       Item: Achievement_Badge
@@ -1954,8 +1954,8 @@ Body:
     Score: 50
   - Id: 200001
     Group: Goal_Level
-    Name: Acquire the second aura!
-    Condition: " BaseLevel >= 150 "
+    Name: Achieve Base Level 200!
+    Condition: " BaseLevel >= 200 "
     Dependents:
       200000: true
     Rewards:
@@ -1965,8 +1965,8 @@ Body:
     Score: 60
   - Id: 200002
     Group: Goal_Level
-    Name: Acquire the third aura!
-    Condition: " BaseLevel >= 175 "
+    Name: Achieve Base Level 275!
+    Condition: " BaseLevel >= 275 "
     Dependents:
       200001: true
     Rewards:
@@ -2001,6 +2001,7 @@ Body:
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,30000,10; "
+      TitleId: 1005
     Score: 10
   - Id: 200006
     Group: Job_Change
@@ -2017,6 +2018,7 @@ Body:
     Rewards:
       Item: Achievement_Badge    
       Script: " specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,30000,10; "
+      TitleId: 1006
     Score: 25
   - Id: 200008
     Group: Job_Change
@@ -2025,22 +2027,25 @@ Body:
     Rewards:
       Item: Achievement_Badge    
       Script: " specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,30000,10; "
+      TitleId: 1006
     Score: 25
   - Id: 200009
     Group: Job_Change
-    Name: Warrior (1)
+    Name: Master Adventurer (1)
     Condition: " Class >= JOB_LORD_KNIGHT && Class <= JOB_ASSASSIN_CROSS "
     Rewards:
       Item: Achievement_Badge    
       Script: " specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,30000,10; "
+      TitleId: 1007
     Score: 30
   - Id: 200010
     Group: Job_Change
-    Name: Warrior (2)
+    Name: Master Adventurer (2)
     Condition: " Class >= JOB_PALADIN && Class <= JOB_GYPSY "
     Rewards:
       Item: Achievement_Badge    
       Script: " specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,30000,10; "
+      TitleId: 1007
     Score: 30
   - Id: 200011
     Group: Job_Change
@@ -2049,14 +2054,16 @@ Body:
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,30000,10; "
+      TitleId: 1008
     Score: 50
   - Id: 200012
     Group: Job_Change
-    Name: Transcendentaler! (1)
+    Name: Elite Adventurer! (3)
     Condition: " Class >= JOB_RUNE_KNIGHT_T && Class <= JOB_GUILLOTINE_CROSS_T "
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,30000,10; "
+      TitleId: 1008
     Score: 60
   - Id: 200013
     Group: Job_Change
@@ -2065,14 +2072,16 @@ Body:
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,30000,10; "
+      TitleId: 1008
     Score: 50
   - Id: 200014
     Group: Job_Change
-    Name: Transcendentaler! (2)
+    Name: Elite Adventurer! (4)
     Condition: " Class >= JOB_ROYAL_GUARD_T && Class <= JOB_SHADOW_CHASER_T "
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,30000,10; "
+      TitleId: 1008
     Score: 60
   - Id: 200015
     Group: Job_Change
@@ -2089,72 +2098,82 @@ Body:
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_INCAGILITY; sc_start SC_INCREASEAGI,30000,10; "
+      TitleId: 1009
     Score: 20
   - Id: 200017
     Group: Goal_Status
     Name: Bearish Power!
-    Condition: " readparam(bStr) >= 90 "
+    Condition: " readparam(bStr) >= 200 "
     Rewards:
       Item: Achievement_Badge    
+      TitleId: 1010
     Score: 10
   - Id: 200018
     Group: Goal_Status
     Name: Overflowing Magic!
-    Condition: " readparam(bInt) >= 90 "
+    Condition: " readparam(bInt) >= 200 "
     Rewards:
       Item: Achievement_Badge    
+      TitleId: 1011
     Score: 10
   - Id: 200019
     Group: Goal_Status
     Name: Healthy Body and Mental Health!
-    Condition: " readparam(bVit) >= 90 "
+    Condition: " readparam(bVit) >= 200 "
     Rewards:
       Item: Achievement_Badge    
+      TitleId: 1012
     Score: 10
   - Id: 200020
     Group: Goal_Status
     Name: Speed of Light
-    Condition: " readparam(bAgi) >= 90 "
+    Condition: " readparam(bAgi) >= 200 "
     Rewards:
       Item: Achievement_Badge    
+      TitleId: 1013
     Score: 10
   - Id: 200021
     Group: Goal_Status
     Name: Hawk Eyes
-    Condition: " readparam(bDex) >= 90 "
+    Condition: " readparam(bDex) >= 200 "
     Rewards:
       Item: Achievement_Badge    
+      TitleId: 1014
     Score: 10
   - Id: 200022
     Group: Goal_Status
     Name: Maximum Luck
-    Condition: " readparam(bLuk) >= 90 "
+    Condition: " readparam(bLuk) >= 200 "
     Rewards:
       Item: Achievement_Badge    
+      TitleId: 1015
     Score: 10
   - Id: 200023
     Group: Goal_Status
     Name: Dragonlike Power!
-    Condition: " readparam(bStr) >= 125 "
+    Condition: " readparam(bStr) >= 275 "
     Rewards:
       Item: Achievement_Badge
       Script: " sc_start SC_GIANTGROWTH,180000,1; "
+      TitleId: 1016
     Score: 20
   - Id: 200024
     Group: Goal_Status
     Name: Magic Insanity
-    Condition: " readparam(bInt) >= 125 "
+    Condition: " readparam(bInt) >= 275 "
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_HASTEUP; bonus_script \"{ bonus2 bHPLossRate,100,10000; bonus bBaseAtk,20; bonus bAspdRate,25; }\",60,0,0,EFST_STEAMPACK; "
+      TitleId: 1017
     Score: 20
   - Id: 200025
     Group: Goal_Status
     Name: Rock Alloy
-    Condition: " readparam(bVit) >= 125 "
+    Condition: " readparam(bVit) >= 275 "
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_HEAL3; sc_start2 SC_S_LIFEPOTION,600000,-5,5; "
+      TitleId: 1018
     Score: 20
   - Id: 200026
     Group: Goal_Status
@@ -2163,6 +2182,7 @@ Body:
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_STEAL; sc_start SC_INCFLEE2,60000,20; "
+      TitleId: 1019
     Score: 20
   - Id: 200027
     Group: Goal_Status
@@ -2171,6 +2191,7 @@ Body:
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_MAGICALATTHIT; sc_start SC_INCCRI,300000,30; "
+      TitleId: 1020
     Score: 20
   - Id: 200028
     Group: Goal_Status
@@ -2179,6 +2200,7 @@ Body:
     Rewards:
       Item: Achievement_Badge
       Script: " specialeffect2 EF_GLORIA; sc_start SC_GLORIA,15000,0; "
+      TitleId: 1021
     Score: 20
   - Id: 200029
     Group: Goal_Status
