@@ -24678,6 +24678,7 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
 	struct item& selected_item = sd->inventory.u.items_inventory[index];
 
 	std::shared_ptr<s_item_reform_base> base = util::umap_find( reform->base_items, selected_item.nameid );
+	std::string item_name = sd->inventory_data[index]->ename;
 
 	if( base == nullptr ){
 		return;
@@ -24765,24 +24766,25 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
         uint16 breaking_rate = base->breaking_rate;  
         bool item_broken = (breaking_rate > rnd() % 10000);  
 
-		std::string item_name = sd->inventory_data[index]->ename;
-
         if (item_broken) {  
-            // Item destroyed  
-            log_pick_pc(sd, LOG_TYPE_REFORM, -1, &selected_item);
-			// Show effect failure (not working at the moment idk why)
-			clif_misceffect( *sd, NOTIFYEFFECT_REFINE_FAILURE );
-			// delete the item
-            pc_delitem(sd, index, 1, 0, 0, LOG_TYPE_REFORM);  
+			// Show effect failure  
+			clif_misceffect(*sd, NOTIFYEFFECT_REFINE_FAILURE);
+
             if (base->broadcast_failure) {  
-				char output[CHAT_SIZE_MAX];
-				sprintf(output, "%s has failed to slot %s", sd->status.name, item_name.c_str());  
-				intif_broadcast(output, strlen(output) + 1, BC_DEFAULT);
+				intif_broadcast((sd->status.name + std::string(" has failed to slot ") + item_name).c_str(), strlen(sd->status.name) + item_name.length() + 23, BC_DEFAULT);
             }
 
-			sd->state.item_reform = 0;
-			// Since there's no close when fail we immitate it by reopening the item reform
-            clif_item_reform_open(*sd, sd->state.item_reform);
+			clif_messagecolor(sd, color_table[COLOR_RED], ("Item slot failed on " + item_name + "!").c_str(), false, SELF);
+
+			// Log the item BEFORE deletion  
+			log_pick_pc(sd, LOG_TYPE_REFORM, -1, &sd->inventory.u.items_inventory[index]);  
+		  
+			// Delete the item    
+			pc_delitem(sd, index, 1, 0, 0, LOG_TYPE_REFORM);    
+				
+			// Clear state and close UI    
+			sd->state.item_reform = 0;    
+			clif_item_reform_open(*sd, sd->state.item_reform);
 
             return;  
         }  
@@ -24824,11 +24826,9 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
 	// Log retrieving the item again -> with the new options
 	log_pick_pc( sd, LOG_TYPE_REFORM, 1, &selected_item );
   
-	if (base->broadcast_success) {  
-		char output[CHAT_SIZE_MAX];
-		sprintf(output, "%s has succeeded to slot %s", sd->status.name, sd->inventory_data[index]->ename.c_str());  
-		intif_broadcast(output, strlen(output) + 1, BC_DEFAULT);
-	}
+    if (base->broadcast_success) {  
+        intif_broadcast((sd->status.name + std::string(" has successfully slotted ") + item_name).c_str(), strlen(sd->status.name) + item_name.length() + 28, BC_DEFAULT);  
+    }
 
 	// Make it visible for the client again
 	clif_additem( sd, index, 1, 0 );
