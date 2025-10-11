@@ -175,11 +175,7 @@ Body:
     Buff:  
       Icon: "EFST_DEMIHUMANCLAN"  
       Script: |  
-        bonus bRace, RC_Brute;
-        bonus2 bSubEle, Ele_All, 20;  
-        bonus bHealPower, 100;
-        bonus bDef, 10;
-        bonus bMdef, 10;
+        bonus bRace, RC_DemiHuman;
         bonus2 bSubRace, RC_Demon, -20;
     Allies:  
       - "Angel Clan"  
