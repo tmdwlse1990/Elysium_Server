@@ -1439,16 +1439,22 @@ ACMD_FUNC(healap)
 			clif_displaymessage(fd, msg_txt(sd, 823));// AP have already been recovered.
 		else
 			clif_displaymessage(fd, msg_txt(sd, 821));// AP recovered.
+        // Sync persistent data  
+        sd->status.ap = sd->battle_status.ap;
 		return 0;
 	}else if (ap > 0) {
 		if (!status_heal(sd, 0, 0, ap, 0))
 			clif_displaymessage(fd, msg_txt(sd, 823));// AP have already been recovered.
 		else
 			clif_displaymessage(fd, msg_txt(sd, 821));// AP recovered.
+        // Sync persistent data  
+        sd->status.ap = sd->battle_status.ap;
 		return 0;
 	}else{
 		status_damage(nullptr, sd, 0, 0, -ap, 0, 0, 0);
 		clif_displaymessage(fd, msg_txt(sd, 822));// AP modified.
+        // Sync persistent data  
+        sd->status.ap = sd->battle_status.ap;
 		return 0;
 	}
 }

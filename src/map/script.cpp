@@ -6034,6 +6034,10 @@ BUILDIN_FUNC(healap)
 		return SCRIPT_CMD_FAILURE;
 
 	status_heal(sd, 0, 0, script_getnum(st, 2), 1);
+
+    // Sync persistent data with runtime status  
+    sd->status.ap = sd->battle_status.ap;
+
 	return SCRIPT_CMD_SUCCESS;
 }
 
