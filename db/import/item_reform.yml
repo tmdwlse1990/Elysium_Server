@@ -38,7 +38,8 @@
 #       ClearSlots             Remove cards and socket enchants during reformation. (Default: false)
 #       RemoveEnchantgrade     Remove enchantgrade during reformation. (Default: false)
 #       SuccessRate            Chance of reform success out of 0~10000. (Default: 10000)  
-#       BreakingRate           Chance of item breaking on failure out of 0~10000. (Default: 0)  
+#                              Remaining percentage (10000 - SuccessRate) is failure chance.
+#       BreakOnFailure         If true, item breaks on failure. If false, item is preserved. (Default: false)
 #       BroadcastSuccess       Broadcast to the whole server when reform succeeds. (Default: false)  
 #       BroadcastFailure       Broadcast to the whole server when reform fails. (Default: false)
 ###########################################################################
@@ -63,6 +64,10 @@ Body:
             Amount: 1
         ResultItem: Upg_Adv_Suit
         ChangeRefine: -4
+        SuccessRate: 1000
+        BreakOnFailure: true
+        BroadcastSuccess: true
+        BroadcastFailure: true
       - BaseItem: Boots_  
         MinimumRefine: 4
         Materials:

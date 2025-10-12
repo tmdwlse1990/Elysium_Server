@@ -2212,14 +2212,14 @@ uint64 ItemReformDatabase::parseBodyNode( const ryml::NodeRef& node ){
 				base->success_rate = 10000; // Default 100% success  
 			}  
 			  
-			if (this->nodeExists(baseNode, "BreakingRate")) {  
-				uint16 breaking_rate;  
-				if (!this->asUInt16Rate(baseNode, "BreakingRate", breaking_rate)) {  
+			if (this->nodeExists(baseNode, "BreakOnFailure")) {  
+				bool break_on_fail;  
+				if (!this->asBool(baseNode, "BreakOnFailure", break_on_fail)) {  
 					return 0;  
 				}  
-				base->breaking_rate = breaking_rate;  
+				base->break_on_failure = break_on_fail;  
 			} else {  
-				base->breaking_rate = 0;  
+				base->break_on_failure = false; // Default: preserve item on failure  
 			}
 
 			if (this->nodeExists(baseNode, "BroadcastSuccess")) {  

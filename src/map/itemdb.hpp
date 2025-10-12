@@ -3551,8 +3551,8 @@ struct s_item_reform_base{
 	std::shared_ptr<s_random_opt_group> randomOptionGroup;
 	bool clearSlots;
 	bool removeEnchantgrade;
-    uint16 success_rate;        // 0-10000 (like refine)  
-    uint16 breaking_rate;       // 0-10000  
+    uint16 success_rate;			// 0-10000 (like refine)  
+    bool break_on_failure;			// If true, remaining % breaks item; if false, item preserved
     bool broadcast_success;  
     bool broadcast_failure;
 };

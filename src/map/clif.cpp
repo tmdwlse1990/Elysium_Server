@@ -24762,30 +24762,37 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
     }  
       
     if (!success) {  
-        // Failure handling  
-        uint16 breaking_rate = base->breaking_rate;  
-        bool item_broken = (breaking_rate > rnd() % 10000);  
-
-        if (item_broken) {  
-			// Show effect failure  
-			clif_misceffect(*sd, NOTIFYEFFECT_REFINE_FAILURE);
-
+        // Failure - check if item should break  
+        if (base->break_on_failure) {  
+            // Show failure effect  
+            clif_specialeffect(sd, 155, AREA);
+  
             if (base->broadcast_failure) {  
-				intif_broadcast((sd->status.name + std::string(" has failed to slot ") + item_name).c_str(), strlen(sd->status.name) + item_name.length() + 23, BC_DEFAULT);
-            }
-
-			clif_messagecolor(sd, color_table[COLOR_RED], ("Item slot failed on " + item_name + "!").c_str(), false, SELF);
-
-			// Log the item BEFORE deletion  
-			log_pick_pc(sd, LOG_TYPE_REFORM, -1, &sd->inventory.u.items_inventory[index]);  
-		  
-			// Delete the item    
-			pc_delitem(sd, index, 1, 0, 0, LOG_TYPE_REFORM);    
-				
-			// Clear state and close UI    
-			sd->state.item_reform = 0;    
-			clif_item_reform_open(*sd, sd->state.item_reform);
-
+                intif_broadcast((sd->status.name + std::string(" has failed to reform ") + item_name).c_str(), strlen(sd->status.name) + item_name.length() + 23, BC_DEFAULT);  
+            }  
+  
+            clif_messagecolor(sd, color_table[COLOR_RED], ("Item reform failed on " + item_name + "! Item destroyed.").c_str(), false, SELF);  
+  
+            // Log the item BEFORE deletion  
+            log_pick_pc(sd, LOG_TYPE_REFORM, -1, &sd->inventory.u.items_inventory[index]);  
+  
+            // Delete the item  
+            pc_delitem(sd, index, 1, 0, 0, LOG_TYPE_REFORM);  
+  
+            // Clear state and close UI  
+            sd->state.item_reform = 0;  
+            clif_item_reform_open(*sd, sd->state.item_reform);  
+  
+            return;  
+        } else {  
+            // Failure but item preserved  
+            clif_specialeffect(sd, 155, AREA);  
+            clif_messagecolor(sd, color_table[COLOR_RED], ("Item reform failed on " + item_name + ", but your item is safe.").c_str(), false, SELF);  
+  
+            // Clear state and close UI  
+            sd->state.item_reform = 0;  
+            clif_item_reform_open(*sd, sd->state.item_reform);  
+  
             return;  
         }  
     }
@@ -24829,6 +24836,8 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
     if (base->broadcast_success) {  
         intif_broadcast((sd->status.name + std::string(" has successfully slotted ") + item_name).c_str(), strlen(sd->status.name) + item_name.length() + 28, BC_DEFAULT);  
     }
+
+	clif_messagecolor(sd, color_table[COLOR_LIGHT_GREEN], ("Item reform succeeded on " + item_name + "!").c_str(), false, SELF);
 
 	// Make it visible for the client again
 	clif_additem( sd, index, 1, 0 );
