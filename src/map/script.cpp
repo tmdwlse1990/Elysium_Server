@@ -6120,6 +6120,7 @@ BUILDIN_FUNC(jobchange)
 
 		sd->ac.autocombatskills.clear();
 		sd->ac.autobuffskills.clear();
+		sd->ac.autoheal.clear();
 	}
 
 	return SCRIPT_CMD_SUCCESS;
@@ -12932,7 +12933,8 @@ BUILDIN_FUNC(resetskill)
 		return SCRIPT_CMD_FAILURE;
 	pc_resetskill(sd,1);
 	sd->ac.autocombatskills.clear();
-	sd->ac.autobuffskills.clear();	
+	sd->ac.autobuffskills.clear();
+	sd->ac.autoheal.clear();	
 	return SCRIPT_CMD_SUCCESS;
 }
 

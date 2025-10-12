@@ -1243,9 +1243,12 @@ ACMD_FUNC(jobchange)
 
 	if (pcdb_checkid(job))
 	{
-		if (pc_jobchange(sd, job, upper))
+		if (pc_jobchange(sd, job, upper)){
+			sd->ac.autocombatskills.clear();  
+			sd->ac.autobuffskills.clear();  
+			sd->ac.autoheal.clear();
 			clif_displaymessage(fd, msg_txt(sd,12)); // Your job has been changed.
-		else {
+		} else {
 			clif_displaymessage(fd, msg_txt(sd,155)); // You are unable to change your job.
 			return -1;
 		}
