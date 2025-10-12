@@ -24647,6 +24647,10 @@ void clif_item_reform_result( map_session_data& sd, uint16 index, uint8 result )
 
 void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
 #if PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20211103 || PACKETVER_ZERO_NUM >= 20221024
+	char output[CHAT_SIZE_MAX];
+	
+	memset(output, '\0', sizeof(output));
+	
 	// Not opened
 	if( sd->state.item_reform == 0 ){
 		return;
@@ -24745,7 +24749,15 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
 		materials[material_index] = material.second;
 	}
 
-    // NEW: Check success rate BEFORE removing materials  
+	if (base->zeny > 0) {  
+		if (sd->status.zeny < base->zeny) {  
+			sprintf(output, "You need %s Zeny for this reform.", rathena::util::insert_comma(base->zeny).c_str());
+			clif_messagecolor(sd, color_table[COLOR_RED], output, false, SELF);
+			return;  
+		}  
+	}
+
+    // Check success rate before removing materials  
     uint16 success_rate = base->success_rate; // Default 10000 if not set  
     bool success = (success_rate >= rnd() % 10000);  
       
@@ -24755,7 +24767,11 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
             return;  
         }  
     }  
-      
+
+	if (base->zeny > 0) {  
+		pc_payzeny(sd, base->zeny, LOG_TYPE_REFORM, NULL);  
+	}
+
     // If triggered from item  
     if( sd->itemid == sd->state.item_reform && pc_delitem( sd, sd->itemindex, 1, 0, 0, LOG_TYPE_REFORM ) != 0 ){  
         return;  
@@ -24768,7 +24784,12 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
             clif_specialeffect(sd, 155, AREA);
   
             if (base->broadcast_failure) {  
-                intif_broadcast((sd->status.name + std::string(" has failed to reform ") + item_name).c_str(), strlen(sd->status.name) + item_name.length() + 23, BC_DEFAULT);  
+				if (base->broadcast_failure) {  
+					std::string action = (base->category == ITEM_REFORM_CATEGORY_SOCKET_ENCHANT)   
+						? " has failed to add slots to "   
+						: " has failed to craft ";  
+					intif_broadcast((sd->status.name + action + item_name).c_str(), strlen(sd->status.name) + action.length() + item_name.length() + 28, BC_DEFAULT);  
+				}
             }  
   
             clif_messagecolor(sd, color_table[COLOR_RED], ("Item reform failed on " + item_name + "! Item destroyed.").c_str(), false, SELF);  
@@ -24834,7 +24855,10 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
 	log_pick_pc( sd, LOG_TYPE_REFORM, 1, &selected_item );
   
     if (base->broadcast_success) {  
-        intif_broadcast((sd->status.name + std::string(" has successfully slotted ") + item_name).c_str(), strlen(sd->status.name) + item_name.length() + 28, BC_DEFAULT);  
+		std::string action = (base->category == ITEM_REFORM_CATEGORY_SOCKET_ENCHANT)   
+			? " has successfully added slots to "   
+			: " has successfully crafted ";  
+		intif_broadcast((sd->status.name + action + item_name).c_str(), strlen(sd->status.name) + action.length() + item_name.length() + 28, BC_DEFAULT);
     }
 
 	clif_messagecolor(sd, color_table[COLOR_LIGHT_GREEN], ("Item reform succeeded on " + item_name + "!").c_str(), false, SELF);

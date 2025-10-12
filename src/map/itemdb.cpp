@@ -2001,6 +2001,24 @@ uint64 ItemReformDatabase::parseBodyNode( const ryml::NodeRef& node ){
 				base->item_id = base_itemid;
 			}
 
+			if (this->nodeExists(baseNode, "Category")) {  
+				std::string category_str;  
+				if (!this->asString(baseNode, "Category", category_str)) {  
+					return 0;  
+				}  
+				  
+				if (category_str == "Socket Enchant") {  
+					base->category = ITEM_REFORM_CATEGORY_SOCKET_ENCHANT;  
+				} else if (category_str == "Item Crafting") {  
+					base->category = ITEM_REFORM_CATEGORY_ITEM_CRAFTING;  
+				} else {  
+					this->invalidWarning(baseNode["Category"], "Unknown category \"%s\". Valid values: Socket Enchant and Item Crafting.\n", category_str.c_str());  
+					return 0;  
+				}  
+			} else {  
+				base->category = ITEM_REFORM_CATEGORY_ITEM_CRAFTING; // Default: item crafting
+			}
+
 			if( this->nodeExists( baseNode, "MinimumRefine" ) ){
 				uint16 refine;
 
@@ -2112,6 +2130,25 @@ uint64 ItemReformDatabase::parseBodyNode( const ryml::NodeRef& node ){
 						base->materials.erase( material_id );
 					}
 				}
+			}
+
+			if (this->nodeExists(baseNode, "Zeny")) {  
+				uint32 zeny;  
+				if (!this->asUInt32(baseNode, "Zeny", zeny)) {  
+					this->invalidWarning(baseNode["Zeny"], "Zeny needs to be an integer and not a string, defaulting to 0.\n");
+					return 0;  
+				}  
+				  
+				if (zeny > MAX_ZENY) {  
+					this->invalidWarning(baseNode["Zeny"], "Zeny %u exceeds %u, capping to MAX_ZENY.\n", zeny, MAX_ZENY);  
+					zeny = MAX_ZENY;  
+				}  
+				  
+				base->zeny = zeny;  
+			} else {  
+				if (!base_exists) {  
+					base->zeny = 0; // Default: no zeny cost  
+				}  
 			}
 
 			if( this->nodeExists( baseNode, "ResultItem" ) ){

@@ -25,6 +25,8 @@
 # - Item                       Item that triggers Item Reform UI.
 #   BaseItems:                 Items that can be reformed.
 #     - BaseItem               Item that can be reformed.
+#       Category               Reform category: "Socket Enchant" or "Item Crafting". (Default: Item Crafting)  
+#                              Used to customize broadcast messages based on operation type.
 #       MinimumRefine          Minimum refine level of the required items. (Default: 0)
 #       MaximumRefine          Maximum refine level of the required items. (Default: MAX_REFINE)
 #       RequiredRandomOptions  Amount of random options have to be in the item. (Default: 0)
@@ -32,6 +34,7 @@
 #       Materials:             Additional items needed for the reformation. (Default: none)
 #         - Material           Material item that is needed.
 #           Amount             Amount of the material item that is needed. (Default: 1)
+#       Zeny                   Zeny cost required for the reform. (Default: 0)
 #       ResultItem             Item after the reform.
 #       ChangeRefine           Increase or decrease the refine during reformation. (Default: 0)
 #       RandomOptionGroup      Name of the random option group that will be applied. (Default: none)
@@ -64,10 +67,6 @@ Body:
             Amount: 1
         ResultItem: Upg_Adv_Suit
         ChangeRefine: -4
-        SuccessRate: 1000
-        BreakOnFailure: true
-        BroadcastSuccess: true
-        BroadcastFailure: true
       - BaseItem: Boots_  
         MinimumRefine: 4
         Materials:

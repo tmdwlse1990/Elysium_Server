@@ -3539,6 +3539,11 @@ public:
 
 extern LaphineUpgradeDatabase laphine_upgrade_db;
 
+enum e_item_reform_category : uint8 {  
+    ITEM_REFORM_CATEGORY_SOCKET_ENCHANT = 0,  
+    ITEM_REFORM_CATEGORY_ITEM_CRAFTING = 1,  
+};
+
 struct s_item_reform_base{
 	t_itemid item_id;
 	uint16 minimumRefine;
@@ -3551,7 +3556,9 @@ struct s_item_reform_base{
 	std::shared_ptr<s_random_opt_group> randomOptionGroup;
 	bool clearSlots;
 	bool removeEnchantgrade;
+	e_item_reform_category category;
     uint16 success_rate;			// 0-10000 (like refine)  
+	uint32 zeny;
     bool break_on_failure;			// If true, remaining % breaks item; if false, item preserved
     bool broadcast_success;  
     bool broadcast_failure;
