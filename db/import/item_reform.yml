@@ -34,6 +34,9 @@
 #       Materials:             Additional items needed for the reformation. (Default: none)
 #         - Material           Material item that is needed.
 #           Amount             Amount of the material item that is needed. (Default: 1)
+#       PreventBreak:          Materials consumed to prevent item breakage on failure. (Default: none)  
+#         - Material           Material item that prevents breakage.  
+#           Amount             Amount of the material item needed. (Default: 1)
 #       Zeny                   Zeny cost required for the reform. (Default: 0)
 #       ResultItem             Item after the reform.
 #       ChangeRefine           Increase or decrease the refine during reformation. (Default: 0)
@@ -65,8 +68,16 @@ Body:
             Amount: 10
           - Material: Gold
             Amount: 1
+        PreventBreak:
+          - Material: Elunium
+            Amount: 10
+        Zeny: 100000
         ResultItem: Upg_Adv_Suit
         ChangeRefine: -4
+        SuccessRate: 1000
+        BreakOnFailure: true
+        BroadcastSuccess: true
+        BroadcastFailure: true
       - BaseItem: Boots_  
         MinimumRefine: 4
         Materials:

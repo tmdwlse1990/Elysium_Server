@@ -3559,6 +3559,7 @@ struct s_item_reform_base{
 	e_item_reform_category category;
     uint16 success_rate;			// 0-10000 (like refine)  
 	uint32 zeny;
+	std::unordered_map<t_itemid, uint16> prevent_break_materials;
     bool break_on_failure;			// If true, remaining % breaks item; if false, item preserved
     bool broadcast_success;  
     bool broadcast_failure;

@@ -24749,6 +24749,29 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
 		materials[material_index] = material.second;
 	}
 
+    std::unordered_map<uint16, uint16> prevent_materials;  
+    bool has_prevent_materials = false;  
+  
+    if( base->break_on_failure && !base->prevent_break_materials.empty() ){  
+        has_prevent_materials = true;  
+          
+        for( const auto& prevent_mat : base->prevent_break_materials ){  
+            int16 prevent_index = pc_search_inventory( sd, prevent_mat.first );  
+  
+            if( prevent_index < 0 ){  
+                has_prevent_materials = false;  
+                break;  
+            }  
+  
+            if( sd->inventory.u.items_inventory[prevent_index].amount < prevent_mat.second ){  
+                has_prevent_materials = false;  
+                break;  
+            }  
+  
+            prevent_materials[prevent_index] = prevent_mat.second;  
+        }  
+    }
+
 	if (base->zeny > 0) {  
 		if (sd->status.zeny < base->zeny) {  
 			sprintf(output, "You need %s Zeny for this reform.", rathena::util::insert_comma(base->zeny).c_str());
@@ -24780,6 +24803,25 @@ void clif_parse_item_reform_start( int32 fd, map_session_data* sd ){
     if (!success) {  
         // Failure - check if item should break  
         if (base->break_on_failure) {  
+            // Check if player has prevent break materials  
+            if( has_prevent_materials ){  
+                // Consume prevent break materials instead of breaking item  
+                for( const auto& prevent_mat : prevent_materials ){  
+                    pc_delitem( sd, prevent_mat.first, prevent_mat.second, 0, 0, LOG_TYPE_REFORM );  
+                }  
+  
+                // Show failure effect but item is protected  
+                clif_specialeffect(sd, 155, AREA);  
+                clif_messagecolor(sd, color_table[COLOR_YELLOW], ("Item reform failed on " + item_name + ", but your item was protected! Prevention materials were consumed.").c_str(), false, SELF);  
+  
+                // Clear state and close UI    
+                sd->state.item_reform = 0;    
+                clif_item_reform_open(*sd, sd->state.item_reform);    
+  
+                return;  
+            }  
+  
+            // No prevent materials - item breaks
             // Show failure effect  
             clif_specialeffect(sd, 155, AREA);
   

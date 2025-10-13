@@ -2259,6 +2259,50 @@ uint64 ItemReformDatabase::parseBodyNode( const ryml::NodeRef& node ){
 				base->break_on_failure = false; // Default: preserve item on failure  
 			}
 
+			if (this->nodeExists(baseNode, "PreventBreak")) {  
+				for (const ryml::NodeRef& preventNode : baseNode["PreventBreak"]) {  
+					std::string name;  
+					  
+					if (!this->asString(preventNode, "Material", name)) {  
+						return 0;  
+					}  
+					  
+					std::shared_ptr<item_data> item = item_db.search_aegisname(name.c_str());  
+					  
+					if (item == nullptr) {  
+						this->invalidWarning(preventNode["Material"], "Unknown prevent break material \"%s\".\n", name.c_str());  
+						return 0;  
+					}  
+					  
+					t_itemid material_id = item->nameid;  
+					bool material_exists = util::umap_find(base->prevent_break_materials, material_id) != nullptr;  
+					uint16 amount;  
+					  
+					if (this->nodeExists(preventNode, "Amount")) {  
+						if (!this->asUInt16(preventNode, "Amount", amount)) {  
+							return 0;  
+						}  
+						  
+						if (amount > MAX_AMOUNT) {  
+							this->invalidWarning(preventNode["Amount"], "Amount %hu is too high, capping to MAX_AMOUNT.\n", amount);  
+							amount = MAX_AMOUNT;  
+						}  
+					} else {  
+						if (!material_exists) {  
+							amount = 1;  
+						} else {  
+							amount = base->prevent_break_materials[material_id];  
+						}  
+					}  
+					  
+					if (amount > 0) {  
+						base->prevent_break_materials[material_id] = amount;  
+					} else {  
+						base->prevent_break_materials.erase(material_id);  
+					}  
+				}  
+			}
+
 			if (this->nodeExists(baseNode, "BroadcastSuccess")) {  
 				bool bcast;  
 				if (!this->asBool(baseNode, "BroadcastSuccess", bcast)) {  
