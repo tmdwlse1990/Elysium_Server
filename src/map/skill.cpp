@@ -3980,57 +3980,6 @@ int64 skill_attack (int32 attack_type, block_list* src, block_list *dsrc, block_
 		default:
 			if( flag&SD_ANIMATION && dmg.div_ < 2 ) //Disabling skill animation doesn't works on multi-hit.
 				dmg_type = DMG_SPLASH;
-
-			// Magic critical hit system  
-			if (attack_type == BF_MAGIC) {  
-			   map_session_data *caster_sd = nullptr;  
-				 
-			   // Resolve caster  
-			   if (src->type == BL_PC) {  
-				   caster_sd = sd;  
-			   } else {  
-				   block_list *master = battle_get_master(src);  
-				   if (master && master->type == BL_PC) {  
-					   caster_sd = map_id2sd(master->id);  
-				   }  
-			   }  
-				 
-			   if (caster_sd) {  
-				   status_data *caster_status = status_get_status_data(*src);  
-				   status_data *target_status = status_get_status_data(*bl);  
-					 
-				   int32 magic_cri = caster_status->cri - (target_status->luk * 2);  
-					 
-				   if (rnd() % 1000 < magic_cri) {  
-					   mob_data *md = mob_once_spawn_sub(src, src->m, src->x, src->y, "--en--", 1083, "", SZ_SMALL, AI_NONE);  
-					   if (!md) break;  
-						 
-					   int32 num = abs(skill_get_num(skill_id, skill_lv));  
-					   if (skill_get_splash(skill_id, skill_lv) > 1 && num > 1)  
-						   num = 1;  
-						 
-			#ifdef RENEWAL  
-					   damage = damage * 14 / 10;  
-			#else  
-					   damage = damage * 2;  
-			#endif  
-						 
-					   md->deletetimer = add_timer(tick + 200 * num + 1, mob_timer_delete, md->id, 0);  
-					   status_set_viewdata(md, JT_INVISIBLE);  
-						 
-					   md->tmpd.src = src;  
-					   md->tmpd.bl = bl;  
-					   md->tmpd.num[0] = skill_id;  
-					   md->tmpd.num[1] = skill_lv;  
-	
-					   for (int i = 0; i < num; i++)  
-						   add_timer(tick + 200 * i + 1, skill_mcri_hit, damage / num, (intptr_t)md);  
-						 
-					   break;  
-				   }  
-			   }  
-			}  
-
 			if (src->type == BL_SKILL) {
 				TBL_SKILL *su = (TBL_SKILL*)src;
 				if (su->group && skill_get_inf2(su->group->skill_id, INF2_ISTRAP)) { // show damage on trap targets
@@ -23024,23 +22973,6 @@ int16 skill_can_produce_mix(map_session_data *sd, t_itemid nameid, int32 trigger
 	}
 	return i + 1;
 }
-
-TIMER_FUNC(skill_mcri_hit) {  
-   mob_data *md = (mob_data *)data;  
-   if (!md || !md->tmpd.src || !md->tmpd.bl) return 0;  
-     
-    clif_skill_damage( *md->tmpd.src, *md->tmpd.bl, gettick(), 1, 1, id, 0, TK_STORMKICK, 1, DMG_MULTI_HIT);  
-    clif_skill_nodamage( md->tmpd.src, *md->tmpd.src, md->tmpd.num[0], md->tmpd.num[1], 1);  
-     
-   return 0;  
-}  
-  
-TIMER_FUNC(skill_mcri_kill_delay) {  
-   block_list *bl = map_id2bl(id);  
-   if (bl && !status_isdead(*bl))  
-       status_kill(bl);  
-   return 0;  
-}  
 
 /**
  * Attempt to produce an item

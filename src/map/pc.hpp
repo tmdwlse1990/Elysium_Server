@@ -411,7 +411,6 @@ class map_session_data : public block_list {
 public:
 	struct unit_data ud;
 	struct view_data vd;
-	tmp_data tmpd;
 	struct status_data base_status, battle_status;
 	status_change sc;
 	struct regen_data regen;
