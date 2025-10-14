@@ -19,6 +19,12 @@ enum clr_type : uint8;
 extern const int16 dirx[DIR_MAX]; ///lookup to know where will move to x according dir
 extern const int16 diry[DIR_MAX]; ///lookup to know where will move to y according dir
 
+struct tmp_data {  
+   block_list *src;  
+   block_list *bl;  
+   int num[2];  
+};
+
 struct unit_data {
 	block_list *bl; ///link to owner object BL_PC|BL_MOB|BL_PET|BL_NPC|BL_HOM|BL_MER|BL_ELEM|BL_STALL
 	struct walkpath_data walkpath;

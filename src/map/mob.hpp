@@ -337,6 +337,7 @@ struct s_dmglog{
 struct mob_data : public block_list {
 	struct unit_data  ud;
 	struct view_data *vd;
+	tmp_data tmpd;
 	bool vd_changed;
 	struct status_data status, *base_status; //Second one is in case of leveling up mobs, or tiny/large mobs.
 	status_change sc;
