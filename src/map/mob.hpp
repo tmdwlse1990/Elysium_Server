@@ -326,6 +326,7 @@ private:
 
 extern MapDropDatabase map_drop_db;
 extern std::unordered_map<uint16, std::vector<spawn_info>> mob_spawn_data;
+extern std::unordered_map<std::string, std::vector<uint16>> mob_name_index;
 
 struct s_dmglog{
 	int32 id; //char id
@@ -581,6 +582,8 @@ void mvptomb_create(mob_data *md, char *killer, time_t time);
 void mvptomb_destroy(mob_data *md);
 
 void mob_setdropitem_option( item& itm, const std::shared_ptr<s_mob_drop>& mobdrop );
+
+uint16 mobdb_searchname_array_indexed(const char *str, uint16 *out, uint16 size);
 
 #define CHK_MOBSIZE(size) ((size) >= SZ_SMALL && (size) < SZ_MAX) /// Check valid Monster Size
 

@@ -2931,11 +2931,60 @@ ACMD_FUNC(reloadcollectiondb){
  * originally by [Lupus]
  * edited by [Louis T Steinhil]
  *------------------------------------------*/
+struct MobInfoCache {  
+    std::string formatted_output;  
+    time_t last_update;  
+};  
+  
+static std::unordered_map<uint16, MobInfoCache> mobinfo_cache;  
+static const int CACHE_EXPIRY_SECONDS = 300; // 5 minutes  
+  
+std::string get_cached_mobinfo_stats(uint16 mob_id, std::shared_ptr<s_mob_db> mob) {  
+    time_t now = time(nullptr);  
+      
+    auto it = mobinfo_cache.find(mob_id);  
+    if (it != mobinfo_cache.end() && (now - it->second.last_update) < CACHE_EXPIRY_SECONDS) {  
+        return it->second.formatted_output;  
+    }  
+	std::string output;
+    output += "Lv: " + rathena::util::insert_comma(mob->lv);  
+    output += "  HP: " + rathena::util::insert_comma(mob->status.max_hp);  
+    output += "  STR: " + rathena::util::insert_comma(mob->status.str);  
+    output += "  AGI: " + rathena::util::insert_comma(mob->status.agi);  
+    output += "  VIT: " + rathena::util::insert_comma(mob->status.vit);  
+    output += "  INT: " + rathena::util::insert_comma(mob->status.int_);  
+    output += "  DEX: " + rathena::util::insert_comma(mob->status.dex);  
+    output += "  LUK: " + rathena::util::insert_comma(mob->status.luk);  
+    output += "\n";
+    output += "ATK: " + rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk);  
+    output += "~" + rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk2);
+    output += "  HIT: " + rathena::util::insert_comma(MOB_HIT(mob));  
+    output += "  FLEE: " + rathena::util::insert_comma(MOB_FLEE(mob));
+	if (mob->status.cri > 0) {  
+		output += "  CRIT: " + rathena::util::insert_comma(mob->status.cri);  
+	}	
+    output += "  DEF: " + rathena::util::insert_comma(mob->status.def);  
+    output += "  MDEF: " + rathena::util::insert_comma(mob->status.mdef);  
+#ifdef RENEWAL  
+    output += "  RES: " + rathena::util::insert_comma(mob->status.res);  
+    output += "  MRES: " + rathena::util::insert_comma(mob->status.mres);  
+#endif
+    output += "\n";
+    output += "Range: " + rathena::util::insert_comma(mob->status.rhw.range);  
+    output += "~" + rathena::util::insert_comma(mob->range2);  
+    output += "~" + rathena::util::insert_comma(mob->range3);  
+	output += "  Speed: " + rathena::util::insert_comma(mob->status.speed);  
+	output += "  AtkDelay: " + rathena::util::insert_comma(mob->status.adelay);  
+	output += "  AtkMotion: " + rathena::util::insert_comma(mob->status.amotion);
+	if (mob->damagetaken != 100) {  
+		output += "  DMGTAKEN: " + rathena::util::insert_comma(mob->damagetaken) + "%";  
+	}
+    // Cache it  
+    mobinfo_cache[mob_id] = {output, now};  
+    return output;  
+}
 ACMD_FUNC(mobinfo2)
 {
-	unsigned char msize[SZ_ALL][7] = { "Small", "Medium", "Large" };
-	unsigned char mrace[RC_ALL][11] = { "Formless", "Undead", "Beast", "Plant", "Insect", "Fish", "Demon", "Demi-Human", "Angel", "Dragon", "Player" };
-	unsigned char melement[ELE_ALL][8] = { "Neutral", "Water", "Earth", "Fire", "Wind", "Poison", "Holy", "Dark", "Ghost", "Undead" };
 	char atcmd_output2[CHAT_SIZE_MAX];
 	uint16 mob_ids[MAX_SEARCH], count;
 	uint16 i;
@@ -2948,7 +2997,6 @@ ACMD_FUNC(mobinfo2)
 		return -1;
 	}
 
-	// If monster identifier/name argument is a name
 	i = util::strtoint32def(message);
 	if (i != 0 && (i = mobdb_checkid(i)))
 	{
@@ -2973,10 +3021,25 @@ ACMD_FUNC(mobinfo2)
 		if (mob == nullptr)
 			continue;
 
-		t_exp base_exp = mob->base_exp;
-		t_exp job_exp = mob->job_exp;
+		t_exp base_exp, job_exp;
+ 
+        bool cache_valid = (sd->mobinfo_exp_cache.cached_level == sd->status.base_level && sd->mobinfo_exp_cache.cached_vip_status == pc_isvip(sd));  
+          
+        if (cache_valid) {  
+            auto cache_it = sd->mobinfo_exp_cache.mob_exp_cache.find(mob_ids[k]);  
+            if (cache_it != sd->mobinfo_exp_cache.mob_exp_cache.end()) {  
+                base_exp = cache_it->second.first;  
+                job_exp = cache_it->second.second;  
+            } else {  
+                cache_valid = false;  
+            }  
+        }  
+          
+        if (!cache_valid) {  
+            base_exp = mob->base_exp;  
+            job_exp = mob->job_exp;
 
-		if (pc_isvip(sd)) { // Display EXP rate increase for VIP
+		if (pc_isvip(sd)) {
 			base_exp += (base_exp * battle_config.vip_base_exp_increase) / 100;
 			job_exp += (job_exp * battle_config.vip_job_exp_increase) / 100;
 		}
@@ -2988,53 +3051,23 @@ ACMD_FUNC(mobinfo2)
 			job_exp = job_exp * penalty / 100;
 		}
 #endif
-		// stats
+            sd->mobinfo_exp_cache.mob_exp_cache[mob_ids[k]] = {base_exp, job_exp};  
+            sd->mobinfo_exp_cache.cached_level = sd->status.base_level;  
+            sd->mobinfo_exp_cache.cached_vip_status = pc_isvip(sd);  
+        }
 		if( mob->get_bosstype() == BOSSTYPE_MVP )
 			sprintf(atcmd_output, "MVP Monster: %s | %s | %s (%d)", mob->name.c_str(), mob->jname.c_str(), mob->sprite.c_str(), mob->id);
 		else
 			sprintf(atcmd_output, "Monster: %s | %s | %s (%d)", mob->name.c_str(), mob->jname.c_str(), mob->sprite.c_str(), mob->id);
 		clif_displaymessage(fd, atcmd_output);
 
-		std::string formatted_lv = rathena::util::insert_comma(mob->lv);
-		std::string formatted_hp = rathena::util::insert_comma(mob->status.max_hp);
-		std::string formatted_base_exp = rathena::util::insert_comma(static_cast<int32>(base_exp));
-		std::string formatted_job_exp = rathena::util::insert_comma(static_cast<int32>(job_exp));
-		std::string formatted_hit = rathena::util::insert_comma(MOB_HIT(mob));
-		std::string formatted_flee = rathena::util::insert_comma(MOB_FLEE(mob));
-
-		sprintf(atcmd_output, "Lv: %s  HP: %s  Base EXP: %s  Job EXP: %s  HIT: %s  FLEE: %s", formatted_lv.c_str(), formatted_hp.c_str(), formatted_base_exp.c_str(), formatted_job_exp.c_str(), formatted_hit.c_str(), formatted_flee.c_str());    
+        std::string cached_stats = get_cached_mobinfo_stats(mob_ids[k], mob);  
+        sprintf(atcmd_output, "%s", cached_stats.c_str());
 		clif_displaymessage(fd, atcmd_output);
 
-		std::string formatted_def = rathena::util::insert_comma(mob->status.def);
-		std::string formatted_mdef = rathena::util::insert_comma(mob->status.mdef);
-		std::string formatted_str = rathena::util::insert_comma(mob->status.str);
-		std::string formatted_agi = rathena::util::insert_comma(mob->status.agi);
-		std::string formatted_vit = rathena::util::insert_comma(mob->status.vit);
-		std::string formatted_int = rathena::util::insert_comma(mob->status.int_);
-		std::string formatted_dex = rathena::util::insert_comma(mob->status.dex);
-		std::string formatted_luk = rathena::util::insert_comma(mob->status.luk);
-
-		sprintf(atcmd_output, "DEF: %s  MDEF: %s  STR: %s  AGI: %s  VIT: %s  INT: %s  DEX: %s  LUK: %s", formatted_def.c_str(), formatted_mdef.c_str(), formatted_str.c_str(), formatted_agi.c_str(), formatted_vit.c_str(), formatted_int.c_str(), formatted_dex.c_str(), formatted_luk.c_str());
+		sprintf(atcmd_output, "Size: %s  Race: %s  Element: %s (Lv: %d)", get_size_name(mob->status.size).c_str(), get_race_name(mob->status.race).c_str(), get_element_name(mob->status.def_ele).c_str(), mob->status.ele_lv);  
 		clif_displaymessage(fd, atcmd_output);
 
-		std::string formatted_atk1 = rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk);
-		std::string formatted_atk2 = rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk2);
-		std::string formatted_range1 = rathena::util::insert_comma(mob->status.rhw.range);
-		std::string formatted_range2 = rathena::util::insert_comma(mob->range2);
-		std::string formatted_range3 = rathena::util::insert_comma(mob->range3);
-		std::string formatted_ele_lv = rathena::util::insert_comma(mob->status.ele_lv);
-
-		sprintf(atcmd_output, "ATK: %s~%s  Range: %s~%s~%s  Size: %s  Race: %s  Element: %s (Lv: %s)", formatted_atk1.c_str(), formatted_atk2.c_str(), formatted_range1.c_str(), formatted_range2.c_str(), formatted_range3.c_str(), msize[mob->status.size], mrace[mob->status.race], melement[mob->status.def_ele], formatted_ele_lv.c_str());
-		clif_displaymessage(fd, atcmd_output);
-
-#ifdef RENEWAL    
-		std::string formatted_res = rathena::util::insert_comma(mob->status.res);
-		std::string formatted_mres = rathena::util::insert_comma(mob->status.mres);
-
-		sprintf(atcmd_output, "RES: %s  MRES: %s", formatted_res.c_str(), formatted_mres.c_str());      
-		clif_displaymessage(fd, atcmd_output);
-#endif
-		// drops
 		clif_displaymessage(fd, msg_txt(sd,1245)); //  Drops:
 		if( mob->dropitem.empty() ){
 			clif_displaymessage(fd, msg_txt(sd,1246)); // This monster has no drops.
@@ -3061,7 +3094,12 @@ ACMD_FUNC(mobinfo2)
 			}
 		}
 
-		// mvp
+		std::string formatted_base_exp = rathena::util::insert_comma(static_cast<int32>(base_exp));
+		std::string formatted_job_exp = rathena::util::insert_comma(static_cast<int32>(job_exp));
+
+		sprintf(atcmd_output, "Base EXP: %s  Job EXP: %s", formatted_base_exp.c_str(), formatted_job_exp.c_str());    
+		clif_displaymessage(fd, atcmd_output);
+
 		if( mob->get_bosstype() == BOSSTYPE_MVP ){
 
 			std::string formatted_mexp = rathena::util::insert_comma(static_cast<int32>(mob->mexp));  
@@ -3073,7 +3111,7 @@ ACMD_FUNC(mobinfo2)
 			if( mob->mvpitem.empty() ){
 				clif_displaymessage(fd, msg_txt(sd,1249)); // This monster has no MVP drops.
 			}else{
-				float mvpremain = 100.0; //Remaining drop chance for official mvp drop mode
+				float mvpremain = 100.0;
 
 				for( const std::shared_ptr<s_mob_drop>& entry : mob->mvpitem ){
 					if (entry->nameid == 0)
@@ -3084,7 +3122,6 @@ ACMD_FUNC(mobinfo2)
 					if (id == nullptr)
 						continue;
 
-					//Because if there are 3 MVP drops at 50%, the first has a chance of 50%, the second 25% and the third 12.5%
 					float mvppercent = (float)entry->rate * mvpremain / 10000.0f;
 					if(battle_config.item_drop_mvp_mode == 0) {
 						mvpremain -= mvppercent;

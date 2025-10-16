@@ -1007,6 +1007,12 @@ public:
 		std::unordered_map<uint16, std::vector<s_collection_items>> items;
 		std::vector<s_collection_bonus> bonus;
 	} collection;	
+
+	struct {  
+		std::unordered_map<uint16, std::pair<t_exp, t_exp>> mob_exp_cache; // mob_id -> (base_exp, job_exp)  
+		int cached_level;  
+		bool cached_vip_status;  
+	} mobinfo_exp_cache;
 };
 
 extern struct eri *pc_sc_display_ers; /// Player's SC display table

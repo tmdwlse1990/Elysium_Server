@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <common/cbasetypes.hpp>
@@ -82,6 +83,8 @@ std::unordered_map<int32, std::shared_ptr<s_mob_skill_db>> mob_skill_db; /// Mon
 
 std::unordered_map<uint32, std::shared_ptr<s_item_drop_list>> mob_delayed_drops;
 std::unordered_map<uint32, std::shared_ptr<s_item_drop_list>> mob_looted_drops;
+std::unordered_map<std::string, std::vector<uint16>> mob_name_index;
+
 MobSummonDatabase mob_summon_db;
 MobChatDatabase mob_chat_db;
 MapDropDatabase map_drop_db;
@@ -392,6 +395,68 @@ e_mob_bosstype mob_data::get_bosstype(){
 	}else{
 		return BOSSTYPE_NONE;
 	}
+}
+
+void mobdb_build_name_index() {  
+    mob_name_index.clear();  
+      
+    for (const auto& pair : mob_db) {  
+		std::shared_ptr<s_mob_db> mob = pair.second;
+
+        if (mob == nullptr)  
+            continue;  
+              
+        // Index by lowercase name  
+        std::string lower_name = mob->name;  
+        std::transform(lower_name.begin(), lower_name.end(), lower_name.begin(), ::tolower);  
+        mob_name_index[lower_name].push_back(mob->id);  
+          
+        // Index by lowercase jname  
+        std::string lower_jname = mob->jname;  
+        std::transform(lower_jname.begin(), lower_jname.end(), lower_jname.begin(), ::tolower);  
+        mob_name_index[lower_jname].push_back(mob->id);  
+          
+        // Index by lowercase sprite  
+        std::string lower_sprite = mob->sprite;  
+        std::transform(lower_sprite.begin(), lower_sprite.end(), lower_sprite.begin(), ::tolower);  
+        mob_name_index[lower_sprite].push_back(mob->id);  
+    }  
+}  
+  
+// Optimized search using index  
+uint16 mobdb_searchname_array_indexed(const char *str, uint16 *out, uint16 size) {  
+    std::string search_str = str;  
+    std::transform(search_str.begin(), search_str.end(), search_str.begin(), ::tolower);  
+      
+    uint16 count = 0;  
+    std::unordered_set<uint16> found_ids; // Avoid duplicates  
+      
+    // Exact match first  
+    auto it = mob_name_index.find(search_str);  
+    if (it != mob_name_index.end()) {  
+        for (uint16 mob_id : it->second) {  
+            if (count >= size) break;  
+            out[count++] = mob_id;  
+            found_ids.insert(mob_id);  
+        }  
+    }  
+      
+    // Partial matches if space remains  
+    if (count < size) {  
+        for (const auto& [key, ids] : mob_name_index) {  
+            if (key.find(search_str) != std::string::npos) {  
+                for (uint16 mob_id : ids) {  
+                    if (found_ids.count(mob_id) > 0) continue; // Skip duplicates  
+                    if (count >= size) break;  
+                    out[count++] = mob_id;  
+                    found_ids.insert(mob_id);  
+                }  
+            }  
+            if (count >= size) break;  
+        }  
+    }  
+      
+    return count;  
 }
 
 /**
@@ -5763,6 +5828,7 @@ void MobDatabase::loadingFinished() {
 		mob->status.sp = mob->status.max_sp;
 	}
 
+	mobdb_build_name_index();
 	TypesafeCachedYamlDatabase::loadingFinished();
 }
 

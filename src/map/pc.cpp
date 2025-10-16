@@ -8491,6 +8491,7 @@ int32 pc_checkbaselevelup(map_session_data *sd) {
 		sd->status.status_point += statpoint_db.pc_gets_status_point(sd->status.base_level);
 		sd->status.trait_point += statpoint_db.pc_gets_trait_point(sd->status.base_level);
 		sd->status.base_level++;
+		sd->mobinfo_exp_cache.mob_exp_cache.clear();
 
 		if( pc_is_maxbaselv(sd) ){
 			sd->status.base_exp = u64min(sd->status.base_exp,MAX_LEVEL_BASE_EXP);
@@ -8565,6 +8566,7 @@ int32 pc_checkjoblevelup(map_session_data *sd)
 
 		sd->status.job_level ++;
 		sd->status.skill_point ++;
+		sd->mobinfo_exp_cache.mob_exp_cache.clear();
 
 		if( pc_is_maxjoblv(sd) ){
 			sd->status.job_exp = u64min(sd->status.job_exp,MAX_LEVEL_JOB_EXP);
