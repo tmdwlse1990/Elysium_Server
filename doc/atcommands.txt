@@ -349,6 +349,35 @@ Drops:
  
 ---------------------------------------
 
+@mobinfo2 <monster name or ID>  
+  
+Displays detailed information about a monster, including stats, skills, drops, and experience values. This is an optimized version of @mobinfo with enhanced formatting and caching.  
+  
+The command shows:  
+- Monster level, HP, and base stats (STR, AGI, VIT, INT, DEX, LUK)  
+- Combat stats (ATK, HIT, FLEE, CRIT, DEF, MDEF, RES, MRES)  
+- Movement stats (Range, Speed, Attack Delay, Attack Motion, Damage Taken modifier)  
+- Size, Race, and Element information  
+- Monster skills (if any) with skill descriptions and levels  
+- Item drops with rates  
+- Base and Job EXP (adjusted for your level and VIP status)  
+- MVP information (if applicable)  
+  
+Output Example:  
+MVP Monster: Valkyrie Randgris | ヴァルキリーランドグリス | VALKYRIE (1751)  
+Lv: 99  HP: 1,567,200  STR: 1  AGI: 152  VIT: 96  INT: 171  DEX: 188  LUK: 85  
+ATK: 3,220~4,040  HIT: 366  FLEE: 361  DEF: 93  MDEF: 88  RES: 176  MRES: 125  
+Range: 2~10~12  Speed: 100  AtkDelay: 576  AtkMotion: 576  
+Size: Large  Race: Angel  Element: Holy (Lv: 3)  
+Skills:  
+- Summon Slave (Lv:1)  
+- Teleport (Lv:1)  
+- Power Up (Lv:5)  
+...  
+Base EXP: 862,740  Job EXP: 612,720  
+  
+---------------------------------------
+
 @iteminfo <item name/ID>
 
 Displays item information (type, price, weight, drops).

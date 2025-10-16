@@ -89,6 +89,112 @@ MobSummonDatabase mob_summon_db;
 MobChatDatabase mob_chat_db;
 MapDropDatabase map_drop_db;
 
+struct MobInfoCache {  
+    std::vector<std::string> formatted_output;
+};  
+  
+static std::unordered_map<uint16, MobInfoCache> mobinfo_cache;  
+  
+std::vector<std::string> get_cached_mobinfo_stats(uint16 mob_id, std::shared_ptr<s_mob_db> mob) {    
+    auto it = mobinfo_cache.find(mob_id);    
+    if (it != mobinfo_cache.end()) {    
+        return it->second.formatted_output;  
+    }    
+      
+    std::vector<std::string> output;  
+      
+    // First line: Basic stats  
+    std::string line1;  
+    line1 += "Lv: " + rathena::util::insert_comma(mob->lv);    
+    line1 += "  HP: " + rathena::util::insert_comma(mob->status.max_hp);    
+    line1 += "  STR: " + rathena::util::insert_comma(mob->status.str);    
+    line1 += "  AGI: " + rathena::util::insert_comma(mob->status.agi);    
+    line1 += "  VIT: " + rathena::util::insert_comma(mob->status.vit);    
+    line1 += "  INT: " + rathena::util::insert_comma(mob->status.int_);    
+    line1 += "  DEX: " + rathena::util::insert_comma(mob->status.dex);    
+    line1 += "  LUK: " + rathena::util::insert_comma(mob->status.luk);  
+    output.push_back(line1);  
+      
+    // Second line: Combat stats  
+    std::string line2;  
+    line2 += "ATK: " + rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk);    
+    line2 += "~" + rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk2);  
+    line2 += "  HIT: " + rathena::util::insert_comma(MOB_HIT(mob));    
+    line2 += "  FLEE: " + rathena::util::insert_comma(MOB_FLEE(mob));  
+    if (mob->status.cri > 0) {    
+        line2 += "  CRIT: " + rathena::util::insert_comma(mob->status.cri);    
+    }  
+    line2 += "  DEF: " + rathena::util::insert_comma(mob->status.def);    
+    line2 += "  MDEF: " + rathena::util::insert_comma(mob->status.mdef);  
+#ifdef RENEWAL    
+    line2 += "  RES: " + rathena::util::insert_comma(mob->status.res);    
+    line2 += "  MRES: " + rathena::util::insert_comma(mob->status.mres);    
+#endif  
+    output.push_back(line2);  
+      
+    // Third line: Movement/timing stats  
+    std::string line3;  
+    line3 += "Range: " + rathena::util::insert_comma(mob->status.rhw.range);    
+    line3 += "~" + rathena::util::insert_comma(mob->range2);    
+    line3 += "~" + rathena::util::insert_comma(mob->range3);    
+    line3 += "  Speed: " + rathena::util::insert_comma(mob->status.speed);    
+    line3 += "  AtkDelay: " + rathena::util::insert_comma(mob->status.adelay);    
+    line3 += "  AtkMotion: " + rathena::util::insert_comma(mob->status.amotion);  
+    if (mob->damagetaken != 100) {    
+        line3 += "  DMGTAKEN: " + rathena::util::insert_comma(mob->damagetaken) + "%";    
+    }  
+    output.push_back(line3);  
+
+	// Fourth line: Size/Race/Element  
+	std::string line4;  
+	line4 += "Size: " + get_size_name(mob->status.size);  
+	line4 += "  Race: " + get_race_name(mob->status.race);  
+	line4 += "  Element: " + get_element_name(mob->status.def_ele);  
+	line4 += "  (Lv: " + rathena::util::insert_comma(mob->status.ele_lv) + ")";  
+	output.push_back(line4);
+
+	// Fifth line: Monster Skills
+	std::shared_ptr<s_mob_skill_db> mob_skills = util::umap_find(mob_skill_db, static_cast<int32>(mob_id));  
+	if (mob_skills != nullptr && !mob_skills->skill.empty()) {    
+		output.push_back("Skills:");
+
+		std::unordered_set<uint16> displayed_skills;
+
+		for (size_t i = 0; i < mob_skills->skill.size(); i++) {    
+			const auto& skill = mob_skills->skill[i];    
+
+			if (displayed_skills.count(skill->skill_id) > 0) {  
+				continue;  
+			}  
+			  
+			std::shared_ptr<s_skill_db> skill_data = skill_db.find(skill->skill_id);    
+			if (skill_data) {    
+				std::string skill_line = " - ";  
+				skill_line += skill_data->desc;
+				skill_line += " (Lv:";  
+				skill_line += rathena::util::insert_comma(skill->skill_lv);  
+				skill_line += ")";  
+				output.push_back(skill_line);
+				  
+				displayed_skills.insert(skill->skill_id); 
+			}    
+		}    
+	}
+
+    mobinfo_cache[mob_id] = {output};    
+    return output;    
+}
+
+void mobdb_build_stats_cache() {  
+    for (const auto& pair : mob_db) {  
+        std::shared_ptr<s_mob_db> mob = pair.second;  
+        if (mob == nullptr) continue;  
+          
+        // Pre-format all mob stats  
+        get_cached_mobinfo_stats(pair.first, mob);  
+    }  
+}
+
 /*==========================================
  * Local prototype declaration   (only required thing)
  *------------------------------------------*/
@@ -397,29 +503,33 @@ e_mob_bosstype mob_data::get_bosstype(){
 	}
 }
 
-void mobdb_build_name_index() {  
-    mob_name_index.clear();  
-      
-    for (const auto& pair : mob_db) {  
-		std::shared_ptr<s_mob_db> mob = pair.second;
+void mobdb_build_name_index() {    
+    mob_name_index.clear();    
 
-        if (mob == nullptr)  
-            continue;  
-              
-        // Index by lowercase name  
-        std::string lower_name = mob->name;  
-        std::transform(lower_name.begin(), lower_name.end(), lower_name.begin(), ::tolower);  
-        mob_name_index[lower_name].push_back(mob->id);  
-          
-        // Index by lowercase jname  
-        std::string lower_jname = mob->jname;  
-        std::transform(lower_jname.begin(), lower_jname.end(), lower_jname.begin(), ::tolower);  
-        mob_name_index[lower_jname].push_back(mob->id);  
-          
-        // Index by lowercase sprite  
-        std::string lower_sprite = mob->sprite;  
-        std::transform(lower_sprite.begin(), lower_sprite.end(), lower_sprite.begin(), ::tolower);  
-        mob_name_index[lower_sprite].push_back(mob->id);  
+    std::unordered_map<std::string, std::unordered_set<uint16>> temp_index;  
+        
+    for (const auto& pair : mob_db) {    
+        std::shared_ptr<s_mob_db> mob = pair.second;  
+  
+        if (mob == nullptr)    
+            continue;    
+  
+        std::string lower_name = mob->name;    
+        std::transform(lower_name.begin(), lower_name.end(), lower_name.begin(), ::tolower);    
+        temp_index[lower_name].insert(mob->id);
+  
+        std::string lower_jname = mob->jname;    
+        std::transform(lower_jname.begin(), lower_jname.end(), lower_jname.begin(), ::tolower);    
+        temp_index[lower_jname].insert(mob->id);    
+   
+        std::string lower_sprite = mob->sprite;    
+        std::transform(lower_sprite.begin(), lower_sprite.end(), lower_sprite.begin(), ::tolower);    
+        temp_index[lower_sprite].insert(mob->id);    
+    }  
+
+    // Convert sets to vectors for final storage  
+    for (const auto& [key, id_set] : temp_index) {  
+        mob_name_index[key] = std::vector<uint16>(id_set.begin(), id_set.end());  
     }  
 }  
   
@@ -7453,6 +7563,7 @@ static void mob_load(void)
 
 	mob_drop_ratio_adjust();
 	mob_skill_db_set();
+	mobdb_build_stats_cache();
 }
 
 /**

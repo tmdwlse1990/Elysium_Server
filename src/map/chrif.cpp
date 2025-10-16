@@ -1583,6 +1583,7 @@ void chrif_parse_ack_vipActive(int32 fd) {
 			sd->vip.time = 0;
 			sd->storage.max_amount = MIN_STORAGE;
 			sd->special_state.no_gemstone = 0;
+			sd->mobinfo_exp_cache.mob_exp_cache.clear();
 			clif_displaymessage(sd->fd,msg_txt(sd,438)); // You are no longer VIP.
 		}
 	}

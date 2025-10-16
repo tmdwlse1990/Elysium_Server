@@ -2931,58 +2931,6 @@ ACMD_FUNC(reloadcollectiondb){
  * originally by [Lupus]
  * edited by [Louis T Steinhil]
  *------------------------------------------*/
-struct MobInfoCache {  
-    std::string formatted_output;  
-    time_t last_update;  
-};  
-  
-static std::unordered_map<uint16, MobInfoCache> mobinfo_cache;  
-static const int CACHE_EXPIRY_SECONDS = 300; // 5 minutes  
-  
-std::string get_cached_mobinfo_stats(uint16 mob_id, std::shared_ptr<s_mob_db> mob) {  
-    time_t now = time(nullptr);  
-      
-    auto it = mobinfo_cache.find(mob_id);  
-    if (it != mobinfo_cache.end() && (now - it->second.last_update) < CACHE_EXPIRY_SECONDS) {  
-        return it->second.formatted_output;  
-    }  
-	std::string output;
-    output += "Lv: " + rathena::util::insert_comma(mob->lv);  
-    output += "  HP: " + rathena::util::insert_comma(mob->status.max_hp);  
-    output += "  STR: " + rathena::util::insert_comma(mob->status.str);  
-    output += "  AGI: " + rathena::util::insert_comma(mob->status.agi);  
-    output += "  VIT: " + rathena::util::insert_comma(mob->status.vit);  
-    output += "  INT: " + rathena::util::insert_comma(mob->status.int_);  
-    output += "  DEX: " + rathena::util::insert_comma(mob->status.dex);  
-    output += "  LUK: " + rathena::util::insert_comma(mob->status.luk);  
-    output += "\n";
-    output += "ATK: " + rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk);  
-    output += "~" + rathena::util::insert_comma(mob->status.batk + mob->status.rhw.atk2);
-    output += "  HIT: " + rathena::util::insert_comma(MOB_HIT(mob));  
-    output += "  FLEE: " + rathena::util::insert_comma(MOB_FLEE(mob));
-	if (mob->status.cri > 0) {  
-		output += "  CRIT: " + rathena::util::insert_comma(mob->status.cri);  
-	}	
-    output += "  DEF: " + rathena::util::insert_comma(mob->status.def);  
-    output += "  MDEF: " + rathena::util::insert_comma(mob->status.mdef);  
-#ifdef RENEWAL  
-    output += "  RES: " + rathena::util::insert_comma(mob->status.res);  
-    output += "  MRES: " + rathena::util::insert_comma(mob->status.mres);  
-#endif
-    output += "\n";
-    output += "Range: " + rathena::util::insert_comma(mob->status.rhw.range);  
-    output += "~" + rathena::util::insert_comma(mob->range2);  
-    output += "~" + rathena::util::insert_comma(mob->range3);  
-	output += "  Speed: " + rathena::util::insert_comma(mob->status.speed);  
-	output += "  AtkDelay: " + rathena::util::insert_comma(mob->status.adelay);  
-	output += "  AtkMotion: " + rathena::util::insert_comma(mob->status.amotion);
-	if (mob->damagetaken != 100) {  
-		output += "  DMGTAKEN: " + rathena::util::insert_comma(mob->damagetaken) + "%";  
-	}
-    // Cache it  
-    mobinfo_cache[mob_id] = {output, now};  
-    return output;  
-}
 ACMD_FUNC(mobinfo2)
 {
 	char atcmd_output2[CHAT_SIZE_MAX];
@@ -3003,7 +2951,7 @@ ACMD_FUNC(mobinfo2)
 		mob_ids[0] = i;
 		count = 1;
 	} else
-		count = mobdb_searchname_array(message, mob_ids, MAX_SEARCH);
+		count = mobdb_searchname_array_indexed(message, mob_ids, MAX_SEARCH);
 
 	if (!count) {
 		clif_displaymessage(fd, msg_txt(sd,40)); // Invalid monster ID or name.
@@ -3061,12 +3009,10 @@ ACMD_FUNC(mobinfo2)
 			sprintf(atcmd_output, "Monster: %s | %s | %s (%d)", mob->name.c_str(), mob->jname.c_str(), mob->sprite.c_str(), mob->id);
 		clif_displaymessage(fd, atcmd_output);
 
-        std::string cached_stats = get_cached_mobinfo_stats(mob_ids[k], mob);  
-        sprintf(atcmd_output, "%s", cached_stats.c_str());
-		clif_displaymessage(fd, atcmd_output);
-
-		sprintf(atcmd_output, "Size: %s  Race: %s  Element: %s (Lv: %d)", get_size_name(mob->status.size).c_str(), get_race_name(mob->status.race).c_str(), get_element_name(mob->status.def_ele).c_str(), mob->status.ele_lv);  
-		clif_displaymessage(fd, atcmd_output);
+		std::vector<std::string> cached_stats = get_cached_mobinfo_stats(mob_ids[k], mob);
+		for (const std::string& line : cached_stats) {  
+			clif_displaymessage(fd, line.c_str());  
+		}
 
 		clif_displaymessage(fd, msg_txt(sd,1245)); //  Drops:
 		if( mob->dropitem.empty() ){

@@ -33,10 +33,18 @@ Header:
   Version: 1
 
 Body:
-    - Command: mercenaryon  
-      Aliases:  
-        - mercon  
-        - mercoff  
-      Help: |  
-        Toggle automatic mercenary support skill usage.  
-        When enabled, your mercenary will automatically cast support buffs when they expire.
+  - Command: mercenaryon  
+    Aliases:  
+      - mercon  
+      - mercoff  
+    Help: |  
+      Toggle automatic mercenary support skill usage.  
+      When enabled, your mercenary will automatically cast support buffs when they expire.
+  - Command: mobinfo2  
+    Aliases:  
+      - mi2  
+      - monsterinfo2  
+    Help: |  
+      Displays detailed monster information with optimized caching.  
+      Usage: @mobinfo2 <monster name or ID>  
+      Shows stats, skills, drops, and experience values.

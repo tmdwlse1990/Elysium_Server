@@ -584,6 +584,8 @@ void mvptomb_destroy(mob_data *md);
 void mob_setdropitem_option( item& itm, const std::shared_ptr<s_mob_drop>& mobdrop );
 
 uint16 mobdb_searchname_array_indexed(const char *str, uint16 *out, uint16 size);
+std::vector<std::string> get_cached_mobinfo_stats(uint16 mob_id, std::shared_ptr<s_mob_db> mob);
+void mobdb_build_stats_cache();
 
 #define CHK_MOBSIZE(size) ((size) >= SZ_SMALL && (size) < SZ_MAX) /// Check valid Monster Size
 
