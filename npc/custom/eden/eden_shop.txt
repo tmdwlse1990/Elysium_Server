@@ -13,21 +13,13 @@
 	mes "<B>[ Achievement Shop ] </B>";
 	mes "You can use your " + mesitemicon(.eden_currency$[0]) + " " + getitemname(.eden_currency$[0]) + " on this shop.";
 	next;
-	switch( select( "Information", "Eden Useable Shop", "Achievement Costume Shop", "Achievement Weapon Shop" ) ) {
+	switch( select( "Information", "Eden Useable Shop" ) ) {
 	case 1:
 		mes "Information.";
 		end;
 	case 2:
 		close2;
 		callshop "Eden_Shop_Useable";
-		end;
-	case 3:
-		close2;
-		callshop "Achievement_Costume_Shop";
-		end;
-	case 4:
-		close2;
-		callshop "Achievement_Weapon_Shop";
 		end;		
 	}
 
