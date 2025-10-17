@@ -106,3 +106,12 @@ int32 monster_hit_rate2;
 int32 monster_flee_rate2;  
 int32 monster_crit_rate2;  
 int32 monster_aspd_rate2;
+// Soul Link
+int32 sl_rogue_strip_bypass;
+int32 sl_rogue_strip_item_id;
+//int32 sl_parry_1h_weapons;
+// Skill Enhance
+int32 closeconfine_blocks_bodyrelocation;
+int32 spiderweb_blocks_bodyrelocation;
+int32 anklesnare_blocks_bodyrelocation;
+int32 preserve_toggle_mode;

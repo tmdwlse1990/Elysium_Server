@@ -1,0 +1,175 @@
+# This file is a part of rAthena.
+#   Copyright(C) 2022 rAthena Development Team
+#   https://rathena.org - https://github.com/rathena
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+###########################################################################
+# Status Change Database
+###########################################################################
+#
+# Status Change Settings
+#
+###########################################################################
+# - Status                    Status change name.
+#   Icon                      Status change icon. (Default: EFST_BLANK)
+#   DurationLookup            Default status change duration. (Default: 0)
+#   States:                   Status change state to determine player states. (Default: None)
+#   CalcFlags:                Status change calculation to indicate which stat is adjusted. (Default: None)
+#   Opt1                      Special effect when a status change is active. Non-stackable. (Default: None)
+#   Opt2:                     Special options/client effects when a status change is active. (Default: None)
+#   Opt3:                     Special options/client effects when a status change is active. (Default: Normal)
+#   Options:                  Special options/client effects when a status change is active. (Default: Nothing)
+#   Flags:                    Special flags which trigger during certain events.  (Default: None)
+#   MinRate                   Minimum rate after status change reduction (10000 = 100%). (Default: 0)
+#   MinDuration               Minimum duration in milliseconds after status change reduction. (Default: 1)
+#   Fail:                     List of Status Changes that causes the status to fail to activate. (Optional)
+#   EndOnStart:               List of Status Changes that will end when the status activates. (Optional)
+#   EndReturn:                List of Status Changes that will end when the status activates and won't give its effect. (Optional)
+#   EndOnEnd:                 List of Status Changes that will end when the status becomes inactive. (Optional)
+#   Script:                   Script to execute, when starting the status change. (Optional)
+###########################################################################
+
+Header:
+  Type: STATUS_DB
+  Version: 4
+
+Body:
+  - Status: Spirit  
+    Icon: EFST_SOULLINK  
+    DurationLookup: SL_HIGH  
+    CalcFlags:  
+      All: true  
+    Opt3:  
+      SoulLink: true  
+    Flags:  
+      NoClearance: true  
+      NoSave: true  
+      NoBanishingBuster: true  
+      RemoveOnHermode: true  
+    Script: |  
+      // Job-specific Soul Link bonuses based on val2  
+      .@spirit = getstatus(SC_SPIRIT, 2);  
+        
+      switch(.@spirit) {  
+        case 445: // Alchemist  
+          bonus bHealPower, readparam(bInt)/10;  
+          bonus2 bSkillHeal, "AM_POTIONPITCHER", 500;  
+          break;  
+            
+        case 447: // Monk  
+          bonus2 bSkillAtk, "MO_EXTREMITYFIST", 20;  
+          break;  
+            
+        case 448: // Star Gladiator  
+          skill "WZ_VERMILION", 10;  
+          skill "LK_PARRYING", 10;  
+          bonus2 bAddClass, Class_Boss, 100;  
+          bonus2 bAddEle, Ele_Holy, 100;  
+          break;  
+            
+        case 449: // Sage  
+          bonus bMaxHP, BaseLevel*120;  
+          bonus bVit, JobLevel/10*4;  
+          if (getiteminfo(getequipid(EQI_HAND_R), 11) == W_BOOK) {  
+            bonus bAtkRange, 3;  
+          }  
+          break;  
+            
+        case 450: // Crusader  
+          bonus2 bSkillAtk, "CR_GRANDCROSS", 100;  
+          break;  
+            
+        case 451: // Super Novice  
+          bonus bStr, 10;  
+          bonus bAgi, 10;  
+          bonus bVit, 10;  
+          bonus bInt, 10;  
+          bonus bDex, 10;  
+          bonus bLuk, 10;  
+          break;  
+            
+        case 452: // Knight  
+          bonus2 bSkillAtk, "LK_SPIRALPIERCE", 300;  
+          bonus2 bSkillAtk, "SM_BASH", 300;  
+          bonus bDelayRate, -30;  
+          if (getiteminfo(getequipid(EQI_HAND_R), 11) == W_2HSWORD) {  
+            bonus bShortAtkRate, 30;  
+            bonus bCritAtkRate, 30;  
+          }  
+          if (getiteminfo(getequipid(EQI_HAND_R), 11) == W_2HSPEAR) {  
+            bonus2 bSkillAtk, "KN_PIERCE", 25;  
+          }  
+          break;  
+            
+        case 453: // Wizard  
+          bonus bMaxHP, BaseLevel*200;  
+          bonus bVit, readparam(bInt)/5;  
+          bonus2 bSkillAtk, "WZ_METEOR", 200;  
+          bonus2 bSkillAtk, "WZ_VERMILION", 200;  
+          break;  
+            
+        case 454: // Priest  
+          bonus bShortWeaponDamageReturn, 20;  
+          bonus bHealPower, 200;  
+          bonus2 bSkillAtk, "PR_TURNUNDEAD", 300;  
+          bonus bUseSPrate, 300;  
+          break;  
+            
+        case 455: // Bard/Dancer  
+          bonus2 bSkillAtk, "BA_MUSICALSTRIKE", 50;  
+          bonus2 bSkillAtk, "DC_THROWARROW", 50;  
+          break;  
+            
+        case 456: // Rogue  
+          bonus bDex, 1;  
+          skill "SC_TRIANGLESHOT", 10;  
+          bonus2 bSkillAtk, "MA_DOUBLE", readparam(bStr)/2;  
+          break;  
+            
+        case 457: // Assassin  
+          bonus2 bSkillAtk, "AS_GRIMTOOTH", 100;  
+          bonus2 bSkillAtk, "AS_SONICBLOW", 100;  
+          bonus2 bSkillAtk, "ASC_METEORASSAULT", 100;  
+          break;  
+            
+        case 458: // Blacksmith  
+          skill "LK_PARRYING", 5;  
+          skill "WS_OVERTHRUSTMAX", 10;  
+          bonus2 bSkillAtk, "WS_CARTTERMINATION", 50;  
+          break;  
+            
+        case 460: // Hunter  
+          bonus2 bSkillAtk, "HT_BLITZBEAT", 2000;  
+          bonus2 bSkillAtk, "SN_SHARPSHOOTING", 50;  
+          bonus3 bAutoSpell, "SN_FALCONASSAULT", getskilllv("SN_FALCONASSAULT"), 100;  
+          break;  
+            
+        case 461: // Soul Linker  
+          bonus bMatkRate, 20;  
+          bonus bMaxHPrate, 20;  
+          break;  
+            
+        case 494: // High Novice (rebirth < level 70)  
+          // Add bonuses if needed  
+          break;  
+      }  
+        
+      // Extended jobs (Ninja, Gunslinger)  
+      if (Class == JOB_NINJA && .@spirit) {  
+        bonus2 bSkillAtk, "NJ_SYURIKEN", 20;  
+      }  
+      if (Class == JOB_GUNSLINGER && .@spirit) {  
+        bonus2 bSkillAtk, "GS_DESPERADO", 100;  
+      }

@@ -101,6 +101,7 @@ static char dir_ka = -1; // Holds temporary direction to the target for SR_KNUCK
 
 //Early declaration
 bool skill_strip_equip(block_list *src, block_list *target, uint16 skill_id, uint16 skill_lv);
+bool skill_strip_equip(block_list *src, block_list *target, uint16 skill_id, uint16 skill_lv, bool bypassFcp);
 static int32 skill_check_unit_range (block_list *bl, int32 x, int32 y, uint16 skill_id, uint16 skill_lv);
 static int32 skill_check_unit_range2 (block_list *bl, int32 x, int32 y, uint16 skill_id, uint16 skill_lv, bool isNearNPC);
 static int32 skill_destroy_trap( block_list *bl, va_list ap );
@@ -1687,14 +1688,32 @@ int32 skill_additional_effect( block_list* src, block_list *bl, uint16 skill_id,
 			basetime /= 5;
 		basetime = std::max((basetime * status_get_agi(bl)) / -200 + basetime, mintime);
 		sc_start(src, bl, SC_ANKLE, (1 + skill_lv) * 10, 0, basetime);
+
+		// Block Body Relocation if config enabled  
+		if (battle_config.anklesnare_blocks_bodyrelocation && bl->type == BL_PC) {  
+			TBL_PC *target_sd = BL_CAST(BL_PC, bl);  
+			if (target_sd) {  
+				skill_blockpc_start(*target_sd, MO_BODYRELOCATION, basetime);  
+			}  
+		}
 	}
 		break;
 
 	case LK_SPIRALPIERCE:
 	case ML_SPIRALPIERCE:
 	case HN_SPIRAL_PIERCE_MAX:
-		if( dstsd || ( dstmd && !status_bl_has_mode(bl,MD_STATUSIMMUNE) ) ) //Does not work on status immune
+		if( dstsd || ( dstmd && !status_bl_has_mode(bl,MD_STATUSIMMUNE) ) ) {//Does not work on status immune
+			t_tick duration = skill_get_time2(skill_id, skill_lv);
 			sc_start(src,bl,SC_ANKLE,100,0,skill_get_time2(skill_id,skill_lv));
+
+			// Block Body Relocation if config enabled  
+			if (battle_config.anklesnare_blocks_bodyrelocation && bl->type == BL_PC) {  
+				TBL_PC *target_sd = BL_CAST(BL_PC, bl);  
+				if (target_sd) {  
+					skill_blockpc_start(*target_sd, MO_BODYRELOCATION, duration);  
+				}  
+			}
+		}
 		break;
 
 	case ST_REJECTSWORD:
@@ -2936,7 +2955,11 @@ int32 skill_break_equip(block_list *src, block_list *bl, uint16 where, int32 rat
  * @param skill_lv: Skill level used
  * @return True on successful strip or false otherwise
  */
-bool skill_strip_equip(block_list *src, block_list *target, uint16 skill_id, uint16 skill_lv)
+bool skill_strip_equip(block_list *src, block_list *target, uint16 skill_id, uint16 skill_lv)  
+{  
+    return skill_strip_equip(src, target, skill_id, skill_lv, false);  
+}
+bool skill_strip_equip(block_list *src, block_list *target, uint16 skill_id, uint16 skill_lv, bool bypassFcp)
 {
 	nullpo_retr(false, src);
 	nullpo_retr(false, target);
@@ -3049,9 +3072,19 @@ bool skill_strip_equip(block_list *src, block_list *target, uint16 skill_id, uin
 			break;
 	}
 
-	for (uint8 i = 0; i < ARRAYLENGTH(pos); i++) {
-		if (location&pos[i] && sc_def[i] > SC_NONE && tsc->getSCE(sc_def[i]))
-			location &=~ pos[i];
+	if (!bypassFcp) {  
+		status_change *src_sc = status_get_sc(src);  
+		if (src_sc && src_sc->getSCE(SC_SPIRIT) &&   
+			src_sc->getSCE(SC_SPIRIT)->val2 == SL_ROGUE) {  
+			bypassFcp = true;  
+			  
+			// Remove Chemical Protect statuses for slots being stripped  
+			for (uint8 i = 0; i < ARRAYLENGTH(pos); i++) {  
+				if (location&pos[i] && sc_def[i] > SC_NONE && tsc->getSCE(sc_def[i])) {  
+					status_change_end(target, sc_def[i], INVALID_TIMER);  
+				}  
+			}  
+		}  
 	}
 	if (!location)
 		return false;
@@ -8153,6 +8186,14 @@ int32 skill_castend_nodamage_id (block_list *src, block_list *bl, uint16 skill_i
 	case RG_CLOSECONFINE:
 		clif_skill_nodamage(src,*bl,skill_id,skill_lv,
 			sc_start4(src,bl,type,100,skill_lv,src->id,0,0,skill_get_time(skill_id,skill_lv)));
+		// Block the use of MO_BODYRELOCATION for the duration of RG_CLOSECONFINE
+		if (battle_config.closeconfine_blocks_bodyrelocation && bl && bl->type == BL_PC) {
+			map_session_data *sd = BL_CAST(BL_PC, bl);
+			if (sd) {
+				// Block the MO_BODYRELOCATION skill
+				skill_blockpc_start(*sd, MO_BODYRELOCATION, skill_get_time(skill_id, skill_lv));
+			}
+		}
 		break;
 	case SA_FLAMELAUNCHER:	// added failure chance and chance to break weapon if turned on [Valaris]
 	case SA_FROSTWEAPON:
@@ -8354,6 +8395,21 @@ int32 skill_castend_nodamage_id (block_list *src, block_list *bl, uint16 skill_i
 	case NPC_DEFENDER:
 	case NPC_MAGICMIRROR:
 	case ST_PRESERVE:
+		if (battle_config.preserve_toggle_mode) {  
+			// Toggle on/off logic  
+			if (tsc && tsc->getSCE(type)) {  
+				status_change_end(bl, type, INVALID_TIMER);  
+				clif_skill_nodamage(src, *bl, skill_id, skill_lv, 1);  
+			} else {  
+				clif_skill_nodamage(src, *bl, skill_id, skill_lv,  
+					sc_start(src, bl, type, 100, skill_lv, INFINITE_TICK));
+			}  
+		} else {  
+			// Normal timed mode  
+			clif_skill_nodamage(src, *bl, skill_id, skill_lv,  
+				sc_start(src, bl, type, 100, skill_lv, skill_get_time(skill_id, skill_lv)));  
+		}  
+		break;
 	case NPC_KEEPING:
 	case NPC_WEAPONBRAKER:
 	case NPC_BARRIER:
@@ -9753,6 +9809,43 @@ int32 skill_castend_nodamage_id (block_list *src, block_list *bl, uint16 skill_i
 	case RG_STRIPSHIELD:
 	case RG_STRIPARMOR:
 	case RG_STRIPHELM:
+		if (battle_config.sl_rogue_strip_bypass && sd && sd->sc.getSCE(SC_SPIRIT) && sd->sc.getSCE(SC_SPIRIT)->val2 == SL_ROGUE) {
+			const int item_id = battle_config.sl_rogue_strip_item_id;  
+			  
+			// All variables initialized at declaration  
+			const int base_chance = 15;  
+			const int dex_bonus = sd->status.dex / 50;  
+			const int strip_chance = base_chance + dex_bonus;  
+			  
+			if (rnd() % 100 < strip_chance) {  
+				int item_index = pc_search_inventory(sd, item_id);  
+				if (item_index != -1) {  
+					int32 strip_duration = skill_strip_equip(src, bl, skill_id, skill_lv, true);  
+					  
+					if (strip_duration > 0) {  
+						pc_delitem(sd, item_index, 1, 0, 0, LOG_TYPE_CONSUME);  
+						clif_skill_nodamage(src, *bl, skill_id, skill_lv, strip_duration);  
+					} else {  
+						clif_skill_fail(*sd, skill_id);  
+					}  
+				} else {  
+					clif_skill_fail(*sd, skill_id);  
+				}  
+				break;  
+			}  
+		}
+		// Normal strip logic for non-Soul Linked or failed random roll  
+		{  
+			bool i;  
+			  
+			if ((i = skill_strip_equip(src, bl, skill_id, skill_lv)) ||   
+				(skill_id != ST_FULLSTRIP && skill_id != GC_WEAPONCRUSH))  
+				clif_skill_nodamage(src, *bl, skill_id, skill_lv, i);  
+			  
+			if (sd && !i)  
+				clif_skill_fail(*sd, skill_id);  
+		}  
+		break;
 	case ST_FULLSTRIP:
 	case GC_WEAPONCRUSH:
 	case SC_STRIPACCESSARY:
@@ -10775,6 +10868,8 @@ int32 skill_castend_nodamage_id (block_list *src, block_list *bl, uint16 skill_i
 	case SL_SUPERNOVICE:
 	case SL_WIZARD:
 	case SL_HIGH:
+	case SL_NINJA:
+	case SL_GUNNER:
 		if( sc_start2( src, bl, type, 100, skill_lv, skill_id, skill_get_time( skill_id, skill_lv ) ) ){
 			clif_skill_nodamage(src, *bl, skill_id, skill_lv);
 
@@ -14747,6 +14842,19 @@ int32 skill_castend_pos2(block_list* src, int32 x, int32 y, uint16 skill_id, uin
 		return 0; // not to consume item.
 
 	case MO_BODYRELOCATION:
+		if(sc) {  
+			// Only block block Ankle Snare if config is active  
+			if(battle_config.anklesnare_blocks_bodyrelocation && sc->getSCE(SC_ANKLE))  
+				break;  
+			  
+			// Only block Close Confine if config is enabled  
+			if(battle_config.closeconfine_blocks_bodyrelocation && sc->getSCE(SC_CLOSECONFINE))  
+				break;
+
+			// Only block Spider Web if config is enabled  
+			if(battle_config.spiderweb_blocks_bodyrelocation && sc->getSCE(SC_SPIDERWEB))  
+				break;			
+		}
 		if (unit_movepos(src, x, y, 2, 1)) {
 #if PACKETVER >= 20111005
 			clif_snap(src, src->x, src->y);
@@ -16580,6 +16688,14 @@ static int32 skill_unit_onplace(skill_unit *unit, block_list *bl, t_tick tick)
 							sec = DIFF_TICK(td->tick, tick);
 						map_moveblock(bl, unit->x, unit->y, tick);
 						clif_fixpos( *bl );
+
+						// Block MO_BODYRELOCATION for the duration of Spider Web
+						if (battle_config.spiderweb_blocks_bodyrelocation && bl->type == BL_PC) {  
+							TBL_PC *target_sd = BL_CAST(BL_PC, bl);  
+							if (target_sd) {  
+								skill_blockpc_start(*target_sd, MO_BODYRELOCATION, sec);  
+							}  
+						} 
 					}
 					else
 						sec = 3000; //Couldn't trap it?

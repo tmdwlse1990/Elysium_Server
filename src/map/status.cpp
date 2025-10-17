@@ -10754,6 +10754,12 @@ static bool status_change_start_post_delay(block_list* src, block_list* bl, sc_t
 						mask = sd->class_;
 						target_class = sd->class_;
 						break;
+					case SL_NINJA:
+						target_class = MAPID_NINJA;
+						break;
+					case SL_GUNNER:
+						target_class = MAPID_GUNSLINGER;
+						break;
 					default:
 						ShowError( "Unknown skill id %d for SC_SPIRIT.\n", val2 );
 						return false;

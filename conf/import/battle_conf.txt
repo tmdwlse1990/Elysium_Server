@@ -7,3 +7,4 @@
 
 //Feature control (on/off) settings
 import: conf/battle/autocombat.conf
+import: conf/battle/skill_enhance.conf
