@@ -258,9 +258,9 @@ bool mob_is_spotted(mob_data *md) {
  * @param nd: NPC data
  */
 int32 mvptomb_setdelayspawn(npc_data *nd) {
-	if (nd->u.tomb.spawn_timer != INVALID_TIMER)
-		delete_timer(nd->u.tomb.spawn_timer, mvptomb_delayspawn);
-	nd->u.tomb.spawn_timer = add_timer(gettick() + battle_config.mvp_tomb_delay, mvptomb_delayspawn, nd->id, 0);
+	if (nd->dynamicnpc.removal_tid != INVALID_TIMER)
+		delete_timer(nd->dynamicnpc.removal_tid, mvptomb_delayspawn);
+	nd->dynamicnpc.removal_tid = add_timer(gettick() + battle_config.mvp_tomb_delay, mvptomb_delayspawn, nd->id, 0);
 	return 0;
 }
 
@@ -275,11 +275,11 @@ TIMER_FUNC(mvptomb_delayspawn){
 	npc_data *nd = BL_CAST(BL_NPC, map_id2bl(id));
 
 	if (nd) {
-		if (nd->u.tomb.spawn_timer != tid) {
-			ShowError("mvptomb_delayspawn: Timer mismatch: %d != %d\n", tid, nd->u.tomb.spawn_timer);
+		if (nd->dynamicnpc.removal_tid != tid) {
+			ShowError("mvptomb_delayspawn: Timer mismatch: %d != %d\n", tid, nd->dynamicnpc.removal_tid);
 			return 0;
 		}
-		nd->u.tomb.spawn_timer = INVALID_TIMER;
+		nd->dynamicnpc.removal_tid = INVALID_TIMER;
 		clif_spawn(nd);
 	}
 	return 0;
@@ -310,24 +310,166 @@ void mvptomb_create(mob_data *md, char *killer, time_t time)
 	nd->y = md->y;
 	nd->type = BL_NPC;
 
-	safestrncpy(nd->name, msg_txt(nullptr,656), sizeof(nd->name));
+	safestrncpy(nd->name, md->name, sizeof(nd->name));
+
+	std::vector<std::pair<int, int>> mobClassId = {
+		{1038, 19100},  
+		{1039, 19101},  
+		{1046, 19102},
+		{1059, 19103},
+		{1086, 19104},
+		{1087, 19105},
+		{1112, 19106},
+		{1115, 19107},
+		{1147, 19108},
+		{1150, 19109},
+		{1157, 19110},
+		{1159, 19111},
+		{1190, 19112},
+		{1251, 19113},
+		{1252, 19114},
+		{1272, 19115},
+		{1312, 19116},
+		{1373, 19117},
+		{1389, 19118},
+		{1418, 19119},
+		{1492, 19120},
+		{1511, 19121},
+		{1583, 19122},
+		{1623, 19123},
+		{1630, 19124},
+		{1646, 19125},
+		{1647, 19126},
+		{1648, 19127},
+		{1649, 19128},
+		{1650, 19129},
+		{1651, 19130},
+		{1658, 19131},
+		{1685, 19132},
+		{1688, 19133},
+		{1708, 19134},
+		{1719, 19135},
+		{1734, 19136},
+		{1751, 19137},
+		{1768, 19138},
+		{1779, 19139},
+		{1785, 19140},
+		{1832, 19141},
+		{1871, 19142},
+		{1885, 19143},
+		{1917, 19144},
+		{2022, 19145},
+		{2068, 19146},
+		{2087, 19147},
+		{2131, 19148},
+		{2156, 19149},
+		{2165, 19150},
+		{2202, 19151},
+		{2236, 19152},
+		{2237, 19153},
+		{2238, 19154},
+		{2239, 19155},
+		{2240, 19156},
+		{2241, 19157},
+		{2249, 19158},
+		{2251, 19159},
+		{2253, 19160},
+		{2255, 19161},
+		{2319, 19162},
+		{2362, 19163},
+		{2441, 19164},
+		{2442, 19165},
+		{2446, 19166},
+		{2529, 19167},
+		{2532, 19168},
+		{2533, 19169},
+		{2534, 19170},
+		{2535, 19171},
+		{2996, 19172},
+		{3000, 19173},
+		{3029, 19174},
+		{3073, 19175},
+		{3074, 19176},
+		{3091, 19177},
+		{3092, 19178},
+		{3096, 19179},
+		{3097, 19180},
+		{3124, 19181},
+		{3181, 19182},
+		{3254, 19183},
+		{3426, 19184},
+		{3427, 19185},
+		{3428, 19186},
+		{3429, 19187},
+		{3430, 19188},
+		{3450, 19189},
+		{3628, 19190},
+		{3633, 19191},
+		{3757, 19192},
+		{3758, 19193}
+    };
 
 	nd->class_ = 565;
-	nd->speed = DEFAULT_NPC_WALK_SPEED;
-	nd->subtype = NPCTYPE_TOMB;
 
-	nd->u.tomb.md = md;
-	nd->u.tomb.kill_time = time;
-	nd->u.tomb.spawn_timer = INVALID_TIMER;
+	for (const auto& pair : mobClassId) {
+        if (md->mob_id == pair.first) {
+            nd->class_ = pair.second;
+            break;
+        }
+    }
+
+	nd->speed = DEFAULT_NPC_WALK_SPEED;
+	nd->subtype = NPCTYPE_SCRIPT;
+
+	char script_buffer[4096];  
+	char time_str[32];  
+	strftime(time_str, sizeof(time_str), "%H:%M", localtime(&time));  
+
+	// Build script with embedded data  
+	snprintf(script_buffer, sizeof(script_buffer),  
+		"{ "  
+		"mes \"\"; "
+		"setdialogsize(400, 300); "  
+		"setdialogpospercent(50, 50); "  
+		"mes \"<B>[ ^EE0000%s^000000 ]</B>\"; "  
+		"mes \"Has met its demise\"; "  
+		"mes \"Time of death: ^EE0000%s^000000\"; "  
+		"mes \" \"; "  
+		"mes \"<B>[ ^FF0000Damage Rankings:^000000 ]</B>\"; ",  
+		md->db->name.c_str(), time_str);  
+
+	// Add damage rankings  
+	if (!md->dmglog.empty()) {    
+		auto sorted_log = md->dmglog;    
+		std::sort(sorted_log.begin(), sorted_log.end(),    
+			[](const s_dmglog& a, const s_dmglog& b) {    
+				return (a.dmg + a.dmg_tanked) > (b.dmg + b.dmg_tanked);    
+			});    
+
+		char temp_buffer[512];    
+		for (int i = 0; i < std::min(3, (int)sorted_log.size()); i++) {    
+			map_session_data* sd = map_charid2sd(sorted_log[i].id);    
+			if (sd) {    
+				const char* place[] = {"1st", "2nd", "3rd"};  
+				int64 total_damage = sorted_log[i].dmg + sorted_log[i].dmg_tanked;  
+				std::string formatted_damage = rathena::util::insert_comma((int32)total_damage);  
+				  
+				snprintf(temp_buffer, sizeof(temp_buffer), "mes \"^EE0000%s Place:^000000 %s - ^0000FF%s^000000 damage\"; ", place[i], sd->status.name, formatted_damage.c_str());    
+				strncat(script_buffer, temp_buffer, sizeof(script_buffer) - strlen(script_buffer) - 1);    
+			}    
+		}    
+	}  
+
+	strncat(script_buffer, "close; }", sizeof(script_buffer) - strlen(script_buffer) - 1);  
+
+	// Parse the generated script  
+	nd->u.scr.script = parse_script(script_buffer, "mvp_tomb", 0, 0);  
+	nd->u.scr.xs = -1;  
+	nd->u.scr.ys = -1;
 
 	nd->dynamicnpc.owner_char_id = 0;
 	nd->dynamicnpc.last_interaction = 0;
-	nd->dynamicnpc.removal_tid = INVALID_TIMER;
-
-	if (killer)
-		safestrncpy(nd->u.tomb.killer_name, killer, NAME_LENGTH);
-	else
-		nd->u.tomb.killer_name[0] = '\0';
+	nd->dynamicnpc.removal_tid = add_timer(gettick() + battle_config.mvp_tomb_delay, mvptomb_delayspawn, nd->id, 0);
 
 	map_addnpc(nd->m, nd);
 	if(map_addblock(nd))
