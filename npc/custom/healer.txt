@@ -243,6 +243,7 @@ OnInit:
 	setunitdata (getnpcid(0),UNPC_HEADMIDDLE,1945);
 	setunitdata (getnpcid(0),UNPC_HEADTOP,804);
 	setunitdata (getnpcid(0),UNPC_GROUP_ID,39);
+	setunitdata (getnpcid(0), UNPC_AURA,1000);
 	setunittitle (getnpcid(0),"Sister Frieda");
 	
 	end;

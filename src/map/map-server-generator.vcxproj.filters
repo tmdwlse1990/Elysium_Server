@@ -101,9 +101,12 @@
     <ClInclude Include="atcommand.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+	<ClInclude Include="aura.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>	
     <ClInclude Include="autocombat.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
+    </ClInclude>    
     <ClInclude Include="autocombat_script.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>	
@@ -262,7 +265,10 @@
     <ClCompile Include="atcommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="autocombat.cpp">
+    <ClCompile Include="aura.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>    
+	<ClCompile Include="autocombat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="autocombat_script.cpp">

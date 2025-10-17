@@ -35,6 +35,51 @@ ACMD_FUNC(afk) {
 	return 0;
 }
 
+/*==========================================
+ * Command: aura  
+ * Description: Activate specified aura combination  
+ * Usage: @aura  
+ * Author: Sola丶小克  
+ *------------------------------------------*/
+ACMD_FUNC(aura) {
+	uint32 aura_id = 0;
+
+	if (!message || !*message || sscanf(message, "%11d", &aura_id) < 1) {
+		clif_displaymessage(fd, "Usage: @aura <aura number, set to 0 to remove the aura>");
+		//clif_displaymessage(fd, "The aura number is defined in the aura combination database located in db/aura_db.yml. For more information, please refer to the comments at the top of the database.");
+		return -1;
+	}
+
+	aura_id = max(aura_id, 0);
+
+	if (aura_id && !aura_search(aura_id)) {
+		clif_displaymessage(fd, "I'm sorry, the specified aura number is invalid. Please check and re-enter.");
+		return -1;
+	}
+
+	aura_make_effective(static_cast<block_list*>(sd), aura_id);
+
+	if (aura_id != 0) {
+		clif_displaymessage(fd, "The specified aura effect has been activated.");
+	}
+	else {
+		clif_displaymessage(fd, "The aura effect has been turned off.");
+	}
+
+	return 0;
+}
+
+/*==========================================
+* @reloadaura
+*------------------------------------------*/
+ACMD_FUNC(reloadaura){
+	nullpo_retr(-1, sd);
+
+	aura_reload();
+	clif_displaymessage(fd, "Aura Database has been reloaded.");
+
+	return 0;
+}
 /*==========================================      
 * @basicbonuses    
 * shows basic stat bonuses of players    

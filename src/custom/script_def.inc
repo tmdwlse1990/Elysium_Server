@@ -18,6 +18,10 @@ BUILDIN_DEF(ac_getautocombatstring, "i??"),
 BUILDIN_DEF(ac_getautocombatint, "i?"),
 BUILDIN_DEF(ac_getstate, ""),
 
+// Aura System
+BUILDIN_DEF(aura, "i?"),
+BUILDIN_DEF(unitaura, "ii"),
+
 // Collection System
 BUILDIN_DEF(getcollectionstore, ""),
 BUILDIN_DEF(getcollectionlist, "i?"),

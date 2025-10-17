@@ -2596,6 +2596,20 @@ void pc_reg_received(map_session_data *sd)
 	// Cooking Exp
 	sd->cook_mastery = static_cast<int16>(pc_readglobalreg(sd, add_str(COOKMASTERY_VAR)));
 
+	//Read the aura number enabled by the current character settings from the character's variables
+	sd->ucd.aura.id = static_cast<int32>(pc_readglobalreg(sd, add_str(AURA_VARIABLE)));
+
+	std::shared_ptr<s_aura> aura = aura_search(sd->ucd.aura.id);
+	if (aura) {
+		// If it is a valid halo number, put its special effect combination into the effective list
+		aura_effects_refill(static_cast<block_list*>(sd));
+	}
+	else {
+		// If it is not a valid halo number, reset the relevant variables and values ​​to 0
+		sd->ucd.aura.id = 0;
+		pc_setglobalreg(sd, add_str(AURA_VARIABLE), 0);
+	}
+
 	if( (sd->class_&MAPID_BASEMASK) == MAPID_TAEKWON )
 	{ // Better check for class rather than skill to prevent "skill resets" from unsetting this
 		sd->mission_mobid = static_cast<int16>(pc_readglobalreg(sd, add_str(TKMISSIONID_VAR)));

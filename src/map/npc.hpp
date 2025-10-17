@@ -237,6 +237,7 @@ struct npc_data : public block_list {
 	std::vector<navi_link> links; // for extra links, like warper npc
 #endif
 	bool is_invisible;
+	struct s_unit_common_data ucd;
 };
 
 struct eri;

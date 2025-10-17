@@ -1075,6 +1075,59 @@ static int32 clif_setlevel(block_list* bl) {
 }
 
 /*==========================================
+* Method:      clif_send_auras_single
+* Description: Send the halo effect information of bl to the client of tsd
+* Access:      public 
+* Parameter:   struct block_list * bl
+* Parameter:   map_session_data * dsd
+* Returns:     void
+* Author:      Sola丶小克(CairoLee)  2020/09/26 16:38
+ *------------------------------------------*/
+void clif_send_auras_single(struct block_list* bl, map_session_data* tsd) {
+	if (!bl || !tsd || bl->m == -1) return;
+
+	struct s_unit_common_data* ucd = status_get_ucd(bl);
+	if (!ucd) return;
+	if (aura_need_hiding(bl, static_cast<block_list*>(tsd))) return;
+
+	if (map_getmapflag(bl->m, MF_NOAURA)) return;
+
+	for (auto it : ucd->aura.effects) {
+		if (it->replay_tid != INVALID_TIMER) continue;
+		clif_specialeffect_single(bl, it->effect_id, tsd->fd);
+	}
+}
+
+/*==========================================
+* Method:      clif_send_auras
+* Description: Send the halo information of sd to other clients in the specified range
+* Access:      public 
+* Parameter:   struct block_list * bl
+* Parameter:   enum send_target target
+* Parameter:   bool ignore_when_hidden does not send halo information if the character is hidden
+* Parameter:   enum e_aura_special flag specifies that only certain special effects are sent
+* Returns:     void
+* Author:      Sola丶小克(CairoLee)  2020/10/11 11:49
+ *------------------------------------------*/
+void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_when_hidden, enum e_aura_special flag) {
+	if (!bl || bl->m == -1) return;
+
+	if (map_getmapflag(bl->m, MF_NOAURA)) return;
+
+	if (aura_need_hiding(bl) && ignore_when_hidden)
+		return;
+
+	struct s_unit_common_data* ucd = status_get_ucd(bl);
+	if (!ucd) return;
+
+	for (auto it : ucd->aura.effects) {
+		if (it->replay_tid != INVALID_TIMER) continue;
+		if (flag != AURA_SPECIAL_NOTHING && (aura_special(it->effect_id) & flag) != flag) continue;
+		clif_specialeffect(bl, it->effect_id, target);
+	}
+}
+
+/*==========================================
  * Prepares 'unit standing/spawning' packet
  *------------------------------------------*/
 static void clif_set_unit_idle( block_list* bl, bool walking, send_target target, block_list* tbl ){
@@ -1240,6 +1293,17 @@ static void clif_set_unit_idle( block_list* bl, bool walking, send_target target
 #endif
 		clif_send(&p, sizeof(p), bl, SELF);
 	}
+	if (tbl->type == BL_PC) {
+
+		// If the target of the packet sent is a player unit,
+		//Then the halo effect of bl is drawn here and given to the player client corresponding to tbl
+		map_session_data* tsd = BL_CAST(BL_PC, tbl);
+		clif_send_auras_single(bl, tsd);
+	}
+	else {
+		// Otherwise broadcast to target specified range of players
+		clif_send_auras(bl, target, false, AURA_SPECIAL_NOTHING);
+	}
 }
 
 static void clif_spawn_unit( block_list *bl, enum send_target target ){
@@ -1387,6 +1451,10 @@ static void clif_spawn_unit( block_list *bl, enum send_target target ){
 	}else{
 		clif_send( &p, sizeof( p ), bl, target );
 	}
+	// When a unit is notified to a client for spawning by clif_spawn_unit,
+	// Also apply its corresponding aura to this unit
+	// clif_spawn_unit is the underlying function of clif_spawn, it should be handled more thoroughly
+	clif_send_auras(bl, target, true, AURA_SPECIAL_NOTHING);
 }
 
 /*==========================================
@@ -1483,6 +1551,23 @@ static void clif_set_unit_walking( block_list& bl, map_session_data* tsd, struct
 		p.GID = disguised_bl_id( bl.id );
 #endif
 		clif_send(&p, sizeof(p), &bl, SELF);
+	}
+	if (tsd) {
+		//The entire clif_set_unit_walking has only two references, if tsd is not empty, it means
+		// This is the call from clif_getareachar_unit
+		// At this time we can send the halo information of bl to the tsd client and request to draw the halo
+		clif_send_auras_single(&bl, tsd);
+	}
+	else {
+		// If tsd is empty, it means this is a call from clif_move2
+		// The main function of this packet at this time is to force the client to redraw the entire unit and force the movement speed to take effect.
+		// Due to client design flaw (202 / 362 is bound to paper doll instead of unit)
+		// Using clif_set_unit_walking will force the paper doll to be redrawn, causing 202 / 362 this special effect to disappear
+		// At this point we add a packet here to ask the client to redraw these special effects.
+		//
+		// Of course, the best solution is to not use clif_move2 in clif_move (clif_set_unit_walking is called in the end)
+		// To force the client to update the movement speed of a certain unit. But I have tried it so far, and there is no particularly good method.
+		clif_send_auras(&bl, target, true, AURA_SPECIAL_HIDE_DISAPPEAR);
 	}
 }
 
@@ -1750,6 +1835,11 @@ int32 clif_spawn( block_list *bl, bool walking ){
 			if (sd->spiritcharm_type != CHARM_TYPE_NONE && sd->spiritcharm > 0)
 				clif_spiritcharm( *sd );
 			clif_efst_status_change_sub(bl, bl, AREA);
+			// When the sd unit is generated, notify your client to load its own halo information
+			// The reason why there is no need to notify others is because the clif_spawn_unit function has been called at the top.
+			// Inside clif_spawn_unit, the halo information has been broadcast to AREA_WOS (clients except itself within the field of view)
+			// So here you only need to reissue a packet to yourself.
+			clif_send_auras(bl, SELF, true, AURA_SPECIAL_NOTHING);
 		}
 		break;
 	case BL_MOB:
@@ -4408,6 +4498,7 @@ void clif_misceffect( block_list& bl, e_notify_effect type ){
 	clif_send( &packet, sizeof( packet ), &bl, AREA );
 }
 
+void clif_getareachar_unit(map_session_data* sd, struct block_list* bl);
 
 /// Notifies clients in the area of a state change.
 /// 0119 <id>.L <body state>.W <health state>.W <effect state>.W <pk mode>.B (ZC_STATE_CHANGE)
@@ -4461,6 +4552,34 @@ void clif_changeoption_target( block_list* bl, block_list* target ){
 			clif_send( &p, sizeof( p ), target, SELF );
 		}else{
 			clif_send( &p, sizeof( p ), target, SELF );
+		}
+	}
+
+	struct s_unit_common_data* ucd = status_get_ucd(bl);
+ 
+ 	if (ucd) {
+		if (target && target->type == BL_PC) {
+			// If a clear target is specified, the relevant packets will only be sent to the specified target.
+			map_session_data* tsd = BL_CAST(BL_PC, target);
+
+			clif_clearunit_single(bl->id, CLR_TRICKDEAD, *tsd);
+			
+			if (!aura_need_hiding(bl, target)) {
+				clif_getareachar_unit(tsd, bl);
+			}
+		}
+		else if (bl->type == BL_NPC) {
+			clif_clearunit_area(*bl, CLR_TRICKDEAD);
+			map_foreachinallrange(clif_insight, bl, AREA_SIZE, BL_PC, bl);
+		}
+		// If it is a player unit, then send its special effects to itself (a cumbersome solution to the client defect)
+		// When you hide or disguise yourself and reappear, special halo effects like 202 / 362 will automatically disappear
+		// This is because in the client's internal logic, 202 / 362 is bound to the character paper doll.
+		// Other special effects are bound to the unit object. The unit does not disappear when hidden, but the paper doll is destroyed.
+		// When hidden, a paper doll appearance is actually re-established.
+		// The new paper doll does not have 202 / 362 special effects, so a reissue packet needs to be redrawn here.
+		if (bl->type == BL_PC) {
+			clif_send_auras(bl, SELF, false, AURA_SPECIAL_HIDE_DISAPPEAR);
 		}
 	}
 }
@@ -10082,6 +10201,7 @@ void clif_refresh(map_session_data *sd)
 		pc_disguise(sd, disguise);
 	}
 	clif_refresh_storagewindow(sd);
+	clif_send_auras_single(static_cast<block_list*>(sd), sd);
 }
 
 

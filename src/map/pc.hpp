@@ -65,6 +65,7 @@ class MapGuild;
 #define ATTENDANCE_DATE_VAR "#AttendanceDate"
 #define ATTENDANCE_COUNT_VAR "#AttendanceCounter"
 #define ACHIEVEMENTLEVEL "AchievementLevel"
+#define AURA_VARIABLE "PANDAS_AURASET"
 
 //Total number of classes (for data storage)
 #define CLASS_COUNT (JOB_MAX - JOB_NOVICE_HIGH + JOB_MAX_BASIC)
@@ -1013,6 +1014,8 @@ public:
 		int cached_level;  
 		bool cached_vip_status;  
 	} mobinfo_exp_cache;
+	
+	struct s_unit_common_data ucd;
 };
 
 extern struct eri *pc_sc_display_ers; /// Player's SC display table

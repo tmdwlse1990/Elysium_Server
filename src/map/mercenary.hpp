@@ -59,6 +59,7 @@ struct s_mercenary_data : public block_list {
 	int support_timer;          // Timer ID for support checks  
 	t_tick last_support_time;   // Last time support was used
 	int32 target_id;			// ID of current target enemy
+	struct s_unit_common_data ucd;
 };
 
 struct view_data * mercenary_get_viewdata(uint16 class_);

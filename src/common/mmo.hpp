@@ -5,6 +5,8 @@
 #define MMO_HPP
 
 #include <ctime>
+#include <memory>
+#include <vector>
 
 #include <config/core.hpp>
 
@@ -276,6 +278,19 @@ enum e_mode {
 #define MD_MASK 0x000FFFF
 #define ATR_MASK 0x0FF0000
 #define CL_MASK 0xF000000
+
+struct s_aura_effect {
+	uint16 effect_id = 0;
+	uint32 replay_interval = 0;
+	int32 replay_tid = INVALID_TIMER;
+};
+
+struct s_unit_common_data {
+	struct s_ucd_aura {
+		uint32 id = 0;
+		std::vector<std::shared_ptr<s_aura_effect>> effects;
+	} aura;
+};
 
 // Questlog states
 enum e_quest_state : uint8 {

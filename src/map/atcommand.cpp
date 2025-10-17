@@ -23,6 +23,7 @@
 #include <common/utils.hpp>
 
 #include "achievement.hpp"
+#include "aura.hpp"
 #include "battle.hpp"
 #include "buyingstore.hpp"
 #include "channel.hpp"

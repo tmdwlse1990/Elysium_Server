@@ -3923,6 +3923,15 @@ int32 unit_free(block_list *bl, clr_type clrtype)
 	if( bl->prev )	// Players are supposed to logout with a "warp" effect.
 		unit_remove_map(bl, clrtype);
 
+		struct s_unit_common_data* ucd = nullptr;
+		if ((ucd = status_get_ucd(bl)) != nullptr) {
+			for (auto &it : ucd->aura.effects) {
+				if (it->replay_tid == INVALID_TIMER) continue;
+				delete_timer(it->replay_tid, aura_effects_timer);
+				it->replay_tid = INVALID_TIMER;
+			}
+		}
+
 	switch( bl->type ) {
 		case BL_PC: {
 			map_session_data *sd = (map_session_data*)bl;

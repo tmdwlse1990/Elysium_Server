@@ -375,6 +375,73 @@ BUILDIN_FUNC(ac_getstate)
 	return SCRIPT_CMD_SUCCESS;
 }
 
+/* ===========================================================
+* Instruction: aura
+* Description: Activate the specified aura combination.
+* Usage: aura <aura number>{,<character number>};
+* Return: Returns 1 for success, 0 for failure.
+* Author: Sola丶Xiao Ke
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(aura) {
+	uint32 aura_id = script_getnum(st, 2);
+	map_session_data* sd = nullptr;
+
+	if (!script_charid2sd(3, sd)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	aura_id = max(aura_id, 0);
+
+	if (aura_id && !aura_search(aura_id)) {
+		ShowError("buildin_aura: The specified aura id '%d' is invalid.\n", aura_id);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	aura_make_effective(static_cast<block_list*>(sd), aura_id);
+
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+
+/* ===========================================================
+* Instruction: unitaura
+* Description: Used to adjust the aura combinations of seven units (but only BL_PC will be persisted).
+* Usage: unitaura <unit number>,<aura number>;
+* Return: Returns 1 for success, 0 for failure.
+* Author: Sola丶Xiao Ke
+ * -----------------------------------------------------------*/
+BUILDIN_FUNC(unitaura) {
+	uint32 aura_id = script_getnum(st, 3);
+	struct s_unit_common_data* ucd = nullptr;
+	struct block_list* bl = nullptr;
+
+	if (!script_rid2bl(2, bl)) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	ucd = status_get_ucd(bl);
+	if (!ucd) {
+		script_pushint(st, 0);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	aura_id = max(aura_id, 0);
+
+	if (aura_id && !aura_search(aura_id)) {
+		ShowError("buildin_unitaura: The specified aura id '%d' is invalid.\n", aura_id);
+		script_pushint(st, 0);
+		return SCRIPT_CMD_FAILURE;
+	}
+
+	aura_make_effective(bl, aura_id);
+
+	script_pushint(st, 1);
+	return SCRIPT_CMD_SUCCESS;
+}
+
 /*==========================================
 * getcollectionstore
 *------------------------------------------*/

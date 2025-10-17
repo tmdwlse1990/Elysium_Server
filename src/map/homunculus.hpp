@@ -98,6 +98,7 @@ struct homun_data : public block_list {
 	int32 hungry_timer;	//[orn]
 	t_exp exp_next;
 	std::unordered_map<uint16, int32> scd;
+	struct s_unit_common_data ucd;
 };
 
 #define HOM_EVO 0x100 //256

@@ -401,6 +401,8 @@ struct mob_data : public block_list {
 
 	e_mob_bosstype get_bosstype();
 	map_session_data* get_mvp_player();
+	
+	struct s_unit_common_data ucd;
 };
 
 class MobAvailDatabase : public YamlDatabase {

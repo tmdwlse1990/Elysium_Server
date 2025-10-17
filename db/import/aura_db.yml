@@ -1,0 +1,97 @@
+# This file is a part of rAthena.
+#   Copyright(C) 2021 rAthena Development Team
+#   https://rathena.org - https://github.com/rathena
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+###########################################################################
+# Aura Database
+###########################################################################
+#
+# - AuraID                  Aura Number
+# EffectList: Required field, this is the list of special effects for the aura.
+#     - EffectID            Required field, special effect number
+# ReplayInterval Optional node, the replay interval for non-persistent effects (unit: milliseconds)
+#
+###########################################################################
+#
+# - AuraID
+# Halo number, the default halo number preset by Panda starts from 1000.
+# The numbers do not need to be consecutive. If you want to add your own halo combinations, it is recommended to start numbering directly from 2000.
+#
+#If multiple configurations with the same aura number appear in this database's configuration files,
+#So ultimately, only the configuration with the highest priority will prevail, with the priorities in the following order:
+#
+# - 1. db/import/aura_db.yml (High priority)
+# - 2. db/aura_db.yml (low priority)
+#
+#If the same halo number appears in the same file, the configuration closer to the end of the file will take precedence.
+#
+###########################################################################
+#
+# EffectList:
+# Required nodes, list, sub-nodes belonging to AuraID
+# This node lists the effects that will appear when this aura is activated; there can be multiple.
+#
+###########################################################################
+# 
+#     - EffectID
+# Required node, value must be of numeric type, member of the EffectList.
+# Special effect number, you can fill in one or more, but at least one must be filled in.
+# The special effect numbers here can refer to the list of effects in doc/effect_list.txt.
+#
+###########################################################################
+# 
+# ReplayInterval
+# Optional nodes, with values of numeric type, are sub-nodes of EffectID.
+# Non-durable effect replay interval (unit: milliseconds), durable effects do not need to be set or can be set to 0.
+#
+###########################################################################
+#
+# How to Choose Long-lasting Special Effects
+#
+#By default, this database has pre-configured dozens of halo combinations, but they are all quite ordinary.
+#If you want to choose special effects yourself, you can use the @effect command in the game to select them.
+#
+# The specific approach is:
+# 1. Try using @effect with the effects in doc/effect_list.txt.
+# 2. Is the observed effect persistent, or will it disappear on its own?
+# 3. If the effect persists before transitioning between scenes and during minor exits, then it indicates that it is suitable as a lasting effect for the aura.
+# 4. For persistent effects, please do not set the ReplayInterval, otherwise the aura will continue to stack until the client crashes.
+# 
+###########################################################################
+#
+# Selection Method for Non-Persistent Effects
+# 
+#Some special effects look very beautiful but disappear automatically after a few seconds; these short-lived effects are called non-persistent effects.
+#You can use ReplayInterval to play a brief effect on the server every few seconds.
+# 
+# The specific approach is:
+# 1. Try using @effect with the effects in doc/effect_list.txt.
+# 2. Is the observed effect persistent, or does it disappear on its own? If it disappears, pay attention to its approximate duration.
+# 3. When setting the special effects to the aura, also set the ReplayInterval for it (you can refer to the preset 1064 aura).
+# 4. If you are very concerned about the transition of special effects, then please test the playback duration of the effects multiple times and set the intervals correctly.
+#
+###########################################################################
+#
+# Prompt:
+# Self-added aura combinations, please define them in the db/import/aura_db.yml file.
+#This way, if there are updates on the server in the future, there will be no need to repeat the process of merging differences.
+#
+###########################################################################
+
+
+Header:
+  Type: AURA_DB
+  Version: 1

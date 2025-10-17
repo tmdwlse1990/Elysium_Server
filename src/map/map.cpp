@@ -25,6 +25,7 @@
 
 #include "achievement.hpp"
 #include "atcommand.hpp"
+#include "aura.hpp"
 #include "battle.hpp"
 #include "battleground.hpp"
 #include "cashshop.hpp"
@@ -5027,6 +5028,18 @@ bool map_setmapflag_sub(int16 m, enum e_mapflag mapflag, bool status, union u_ma
 			}
 			mapdata->setMapFlag(mapflag, status);
 			break;
+		case MF_NOAURA:
+			{
+			struct s_mapiterator* iter = mapit_getallusers();
+			map_session_data* pl_sd = nullptr;
+			for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+				if (!pl_sd || pl_sd->m != m)
+					continue;
+				clif_refresh(pl_sd);
+			}
+			mapit_free(iter);
+			break;
+			}
 		default:
 			mapdata->setMapFlag(mapflag, status);
 			break;
@@ -5117,6 +5130,7 @@ void MapServer::finalize(){
 	do_final_emotions();
 	do_final_rune();	
 	do_final_stall();
+	do_final_aura();
 
 	map_db->destroy(map_db, map_db_final);
 
@@ -5496,6 +5510,7 @@ bool MapServer::initialize( int32 argc, char *argv[] ){
 	do_init_emotions();	
 	do_init_rune();	
 	do_init_stall();
+	do_init_aura();
 
 	npc_event_do_oninit();	// Init npcs (OnInit)
 

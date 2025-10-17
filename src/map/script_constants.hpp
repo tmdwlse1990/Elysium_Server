@@ -539,6 +539,7 @@
 	export_constant(MF_NOLOOTNORMALMOB);
 	export_constant(MF_NO_NPC_SELFDESTRUCTION_ON_ALL);
 	export_constant(MF_INVINCIBLE_TIME);
+	export_constant(MF_NOAURA);
 
 	/* setcell types */
 	export_constant(CELL_WALKABLE);
@@ -4146,6 +4147,7 @@
 	export_constant(UMOB_MRES);
 	export_constant(UMOB_DAMAGETAKEN);
 	export_constant(UMOB_BODYSIZE);
+	export_constant(UMOB_AURA);
 
 	/* unit control - homunculus */
 	export_constant(UHOM_SIZE);
@@ -4189,6 +4191,7 @@
 	export_constant(UHOM_DMOTION);
 	export_constant(UHOM_TARGETID);
 	export_constant(UHOM_GROUP_ID);
+	export_constant(UHOM_AURA);
 
 	/* unit control - pet */
 	export_constant(UPET_SIZE);
@@ -4229,6 +4232,7 @@
 	export_constant(UPET_ADELAY);
 	export_constant(UPET_DMOTION);
 	export_constant(UPET_GROUP_ID);
+	export_constant(UPET_AURA);
 
 	/* unit control - mercenary */
 	export_constant(UMER_SIZE);
@@ -4269,6 +4273,7 @@
 	export_constant(UMER_DMOTION);
 	export_constant(UMER_TARGETID);
 	export_constant(UMER_GROUP_ID);
+	export_constant(UMER_AURA);
 
 	/* unit control - elemental */
 	export_constant(UELE_SIZE);
@@ -4311,6 +4316,7 @@
 	export_constant(UELE_DMOTION);
 	export_constant(UELE_TARGETID);
 	export_constant(UELE_GROUP_ID);
+	export_constant(UELE_AURA);
 
 	/* unit control - NPC */
 	export_constant(UNPC_LEVEL);
@@ -4360,6 +4366,7 @@
 	export_constant(UNPC_DEADSIT);
 	export_constant(UNPC_GROUP_ID);
 	export_constant(UNPC_BODYSIZE);
+	export_constant(UNPC_AURA);
 
 	export_constant(NAV_NONE);
 	export_constant(NAV_AIRSHIP_ONLY);

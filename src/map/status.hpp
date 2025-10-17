@@ -3720,6 +3720,10 @@ struct view_data *status_get_viewdata(block_list *bl);
 void status_set_viewdata(block_list *bl, int32 class_);
 status_change* status_get_sc(const block_list* bl);
 
+struct s_unit_common_data *status_get_ucd(struct block_list* bl);
+bool status_ishiding(struct block_list* bl, struct block_list* observer_bl = nullptr);
+bool status_isinvisible(struct block_list* bl);
+
 bool status_isdead(block_list &bl);
 int32 status_isimmune(block_list *bl);
 bool status_isendure(block_list& bl, t_tick tick, bool visible);

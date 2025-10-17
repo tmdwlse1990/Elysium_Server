@@ -12,6 +12,7 @@
 #include <common/mmo.hpp>
 #include <common/timer.hpp> // t_tick
 
+#include "aura.hpp"
 #include "packets.hpp"
 #include "rune.hpp"
 #include "script.hpp"
@@ -1610,5 +1611,8 @@ void clif_runedecompowindow_result (map_session_data* sd, enum e_runedecompo_res
 void clif_parse_askreward_rune(int32 fd, map_session_data* sd);
 void clif_resultreward_rune(map_session_data* sd, e_runereward_result result, uint8 reward, uint16 tagID, uint32 runesetid);
 void clif_onlogreward_rune(map_session_data* sd, uint16 tagID);
+
+// Aura
+void clif_send_auras(struct block_list* bl, enum send_target target, bool ignore_when_hidden, enum e_aura_special flag);
 
 #endif /* CLIF_HPP */
