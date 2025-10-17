@@ -72,7 +72,7 @@ ACMD_FUNC(aura) {
 /*==========================================
 * @reloadaura
 *------------------------------------------*/
-ACMD_FUNC(reloadaura){
+ACMD_FUNC(reloadauradb){
 	nullpo_retr(-1, sd);
 
 	aura_reload();

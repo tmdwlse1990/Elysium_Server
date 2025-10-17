@@ -11,6 +11,7 @@
 //ACMD_DEF(newcommand),
 ACMD_DEF(afk),
 ACMD_DEF(aura),
+ACMD_DEF(reloadauradb),
 ACMD_DEF(basicbonuses),
 ACMD_DEF(extendedbonuses),
 ACMD_DEF(gspecificbonuses),
