@@ -46,6 +46,7 @@ main_menu:
     if (#HEALER_BUFF_KYRIE) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
     if (#HEALER_BUFF_MAGNIFICAT) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
     if (#HEALER_BUFF_GLORIA) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }  
+	if (#HEALER_BUFF_SOULLINK) { .@hasBuffs = 1; .@totalCost += .@BuffPrice; }
       
     if (.@hasBuffs) {  
         .@menu$ += ":Heal and Buffs (" + callfunc("F_InsertComma",.@totalCost) + " Zeny)";  
@@ -119,6 +120,39 @@ main_menu:
             specialeffect2 EF_GLORIA;  
             sc_start SC_GLORIA,.@BuffDuration,5;  
         }  
+		if (#HEALER_BUFF_SOULLINK) {  
+			// Determine which soul link based on job  
+			.@spirit = 0;  
+			.@basejob = BaseJob;  
+			  
+			switch(.@basejob) {  
+				case Job_Alchemist:     .@spirit = 445; break;  
+				case Job_Monk:          .@spirit = 447; break;  
+				case Job_Star_Gladiator:.@spirit = 448; break;  
+				case Job_Sage:          .@spirit = 449; break;  
+				case Job_Crusader:      .@spirit = 450; break;  
+				case Job_SuperNovice:   .@spirit = 451; break;  
+				case Job_Knight:        .@spirit = 452; break;  
+				case Job_Wizard:        .@spirit = 453; break;  
+				case Job_Priest:        .@spirit = 454; break;  
+				case Job_Bard:  
+				case Job_Dancer:        .@spirit = 455; break;  
+				case Job_Rogue:         .@spirit = 456; break;  
+				case Job_Assassin:      .@spirit = 457; break;  
+				case Job_Blacksmith:    .@spirit = 458; break;  
+				case Job_Hunter:        .@spirit = 460; break;  
+				case Job_Soul_Linker:   .@spirit = 461; break;  
+				default:  
+					if (Upper == 1 && BaseLevel < 70)  
+						.@spirit = 494; // High Novice soul link  
+			}  
+			  
+			if (.@spirit) {  
+				specialeffect2 EF_SOULLINK;  
+				sc_start4 SC_SPIRIT, .@BuffDuration, 5, .@spirit, 0, 0;  
+				skilleffect .@spirit, 5;  
+			}  
+		}
         mes "<B>[ Sister Frieda ]</B>";  
         mes "You have been healed and buffed!";  
         break;  
@@ -150,6 +184,7 @@ options_menu:
     mes "Kyrie Eleison: " + (#HEALER_BUFF_KYRIE ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
     mes "Magnificat: " + (#HEALER_BUFF_MAGNIFICAT ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
     mes "Gloria: " + (#HEALER_BUFF_GLORIA ? "^008000Enabled^000000" : "^FF0000Disabled^000000");  
+	mes "Soul Link: " + (#HEALER_BUFF_SOULLINK ? "^008000Enabled^000000" : "^FF0000Disabled^000000");
     next;  
       
     .@optMenu$ = "";  
@@ -161,6 +196,7 @@ options_menu:
     .@optMenu$ += ":" + (#HEALER_BUFF_KYRIE ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Kyrie Eleison";  
     .@optMenu$ += ":" + (#HEALER_BUFF_MAGNIFICAT ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Magnificat";  
     .@optMenu$ += ":" + (#HEALER_BUFF_GLORIA ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Gloria";  
+	.@optMenu$ += ":" + (#HEALER_BUFF_SOULLINK ? "^FF0000Disable^000000" : "^008000Enable^000000") + " Soul Link";
 	.@optMenu$ += ":^FF0000Clear All Active Buffs^000000";
     .@optMenu$ += ":Back to Main Menu";  
       
@@ -199,7 +235,11 @@ options_menu:
         #HEALER_BUFF_GLORIA = !#HEALER_BUFF_GLORIA;  
         goto options_menu;  
           
-    case 9: // Clear All Active Buffs  
+    case 9: // Toggle Soul Link    
+        #HEALER_BUFF_SOULLINK = !#HEALER_BUFF_SOULLINK;    
+        goto options_menu;
+		
+    case 10: // Clear All Active Buffs  
         mes "<B>[ Sister Frieda ]</B>";  
         mes "Are you sure you want to remove all active buffs?";  
         next;  
@@ -213,6 +253,7 @@ options_menu:
             sc_end SC_KYRIE;  
             sc_end SC_MAGNIFICAT;  
             sc_end SC_GLORIA;  
+			sc_end SC_SPIRIT;
 			// Clear permanent buff preference variables  
 			#HEALER_BUFF_AGI = 0;  
 			#HEALER_BUFF_ANGELUS = 0;  
@@ -222,6 +263,7 @@ options_menu:
 			#HEALER_BUFF_KYRIE = 0;  
 			#HEALER_BUFF_MAGNIFICAT = 0;  
 			#HEALER_BUFF_GLORIA = 0;
+			#HEALER_BUFF_SOULLINK = 0;
             specialeffect2 EF_DISPELL;  
             mes "<B>[ Sister Frieda ]</B>";  
             mes "All buffs have been removed!";  
@@ -229,7 +271,7 @@ options_menu:
         }  
         goto options_menu;  
           
-    case 10: // Back  
+    case 11: // Back  
         goto main_menu;
     }  
     end;
@@ -243,7 +285,7 @@ OnInit:
 	setunitdata (getnpcid(0),UNPC_HEADMIDDLE,1945);
 	setunitdata (getnpcid(0),UNPC_HEADTOP,804);
 	setunitdata (getnpcid(0),UNPC_GROUP_ID,39);
-	setunitdata (getnpcid(0), UNPC_AURA,1000);
+	setunitdata (getnpcid(0),UNPC_AURA,1000);
 	setunittitle (getnpcid(0),"Sister Frieda");
 	
 	end;
