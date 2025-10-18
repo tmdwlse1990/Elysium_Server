@@ -164,12 +164,12 @@ Body:
         case 494: // High Novice (rebirth < level 70)  
           // Add bonuses if needed  
           break;  
+
+        case 574: // Ninja
+          bonus2 bSkillAtk, "NJ_SYURIKEN", 20;  
+          break;
+
+        case 575: // Gunslinger
+          bonus2 bSkillAtk, "GS_DESPERADO", 100;  
+          break;
       }  
-        
-      // Extended jobs (Ninja, Gunslinger)  
-      if (Class == JOB_NINJA && .@spirit) {  
-        bonus2 bSkillAtk, "NJ_SYURIKEN", 20;  
-      }  
-      if (Class == JOB_GUNSLINGER && .@spirit) {  
-        bonus2 bSkillAtk, "GS_DESPERADO", 100;  
-      }

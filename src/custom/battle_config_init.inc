@@ -107,9 +107,10 @@
 // Soul Link
 { "sl_rogue_strip_bypass",		&battle_config.sl_rogue_strip_bypass,		1,		0,		1,				},
 { "sl_rogue_strip_item_id",		&battle_config.sl_rogue_strip_item_id,		7139,	501,	32767,			},
-//{ "sl_parry_1h_weapons",		&battle_config.sl_parry_1h_weapons,			1,		0,		1,				},
+{ "sl_parry_1h_weapons",		&battle_config.sl_parry_1h_weapons,			1,		0,		1,				},
 // Skill Enhance
 { "closeconfine_blocks_bodyrelocation",	&battle_config.closeconfine_blocks_bodyrelocation,	1,	0,	1,		},
 { "spiderweb_blocks_bodyrelocation",	&battle_config.spiderweb_blocks_bodyrelocation,	1,	0,	1,			},
 { "anklesnare_blocks_bodyrelocation",	&battle_config.anklesnare_blocks_bodyrelocation,	1,	0,	1,		},
 { "preserve_toggle_mode",		&battle_config.preserve_toggle_mode,		1,		0,		1,				},
+{ "cp_remove_strip",			&battle_config.cp_remove_strip,				1,		0,		1,				},

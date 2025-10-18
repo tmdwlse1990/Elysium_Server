@@ -142,6 +142,8 @@ main_menu:
 				case Job_Blacksmith:    .@spirit = 458; break;  
 				case Job_Hunter:        .@spirit = 460; break;  
 				case Job_Soul_Linker:   .@spirit = 461; break;  
+				case Job_Ninja:			.@spirit = 574; break;
+				case Job_Gunslinger:	.@spirit = 575; break;
 				default:  
 					if (Upper == 1 && BaseLevel < 70)  
 						.@spirit = 494; // High Novice soul link  

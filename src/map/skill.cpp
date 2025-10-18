@@ -828,6 +828,12 @@ bool skill_isNotOk( uint16 skill_id, map_session_data& sd ){
 	if (pc_has_permission(&sd,PC_PERM_SKILL_UNCONDITIONAL))
 		return false; // can do any damn thing they want
 
+	// Soul-linked Knight 1H Parry bypass  
+	if (skill_id == LK_PARRYING && battle_config.sl_parry_1h_weapons) {  
+		status_change *sc = status_get_sc(&sd);  
+		if (sc && sc->getSCE(SC_SPIRIT) && sc->getSCE(SC_SPIRIT)->val2 == SL_KNIGHT && sd.weapontype1 == W_1HSWORD)  
+			return false;  
+	}
 	if (skill_id == AL_TELEPORT && sd.skillitem == skill_id && sd.skillitemlv > 2)
 		return false; // Teleport lv 3 bypasses this check.[Inkfish]
 
@@ -3016,8 +3022,16 @@ bool skill_strip_equip(block_list *src, block_list *target, uint16 skill_id, uin
 			return false;
 	}
 
-	if (rnd()%mod >= rate)
-		return false;
+	if (rnd()%mod >= rate) {  
+		// Add failure notification for player source  
+		if (src->type == BL_PC) {  
+			map_session_data *sd = BL_CAST(BL_PC, src);  
+			if (sd) {  
+				clif_skill_fail(*sd, skill_id, USESKILL_FAIL_LEVEL);  
+			}  
+		}  
+		return false;  
+	}
 
 	switch (skill_id) { // Duration
 		case SC_STRIPACCESSARY:
@@ -9836,14 +9850,11 @@ int32 skill_castend_nodamage_id (block_list *src, block_list *bl, uint16 skill_i
 		}
 		// Normal strip logic for non-Soul Linked or failed random roll  
 		{  
-			bool i;  
+			bool i = skill_strip_equip(src, bl, skill_id, skill_lv);
 			  
-			if ((i = skill_strip_equip(src, bl, skill_id, skill_lv)) ||   
-				(skill_id != ST_FULLSTRIP && skill_id != GC_WEAPONCRUSH))  
-				clif_skill_nodamage(src, *bl, skill_id, skill_lv, i);  
-			  
-			if (sd && !i)  
-				clif_skill_fail(*sd, skill_id);  
+			if (i) { 
+				clif_skill_nodamage(src, *bl, skill_id, skill_lv, true);  
+			}
 		}  
 		break;
 	case ST_FULLSTRIP:
@@ -10794,8 +10805,18 @@ int32 skill_castend_nodamage_id (block_list *src, block_list *bl, uint16 skill_i
 	case CR_FULLPROTECTION:
 		{
 			uint32 equip[] = {EQP_WEAPON, EQP_SHIELD, EQP_ARMOR, EQP_HEAD_TOP};
+			sc_type strip_statuses[] = {SC_STRIPWEAPON, SC_STRIPSHIELD, SC_STRIPARMOR, SC_STRIPHELM};
 			int32 i_eqp, s = 0, skilltime = skill_get_time(skill_id,skill_lv);
 
+			// First pass: Remove strip statuses if config enabled  
+			if (battle_config.cp_remove_strip) {  
+				for (i_eqp = 0; i_eqp < 4; i_eqp++) {  
+					if( bl->type != BL_PC )  
+						continue;  
+					status_change_end(bl, strip_statuses[i_eqp], INVALID_TIMER);  
+				}  
+			}
+			// Second pass: Apply Chemical Protect only to equipped slots
 			for (i_eqp = 0; i_eqp < 4; i_eqp++) {
 				if( bl->type != BL_PC || ( dstsd && pc_checkequip(dstsd,equip[i_eqp]) < 0 ) )
 					continue;
@@ -19468,32 +19489,48 @@ bool skill_check_condition_castbegin( map_session_data& sd, uint16 skill_id, uin
 	}
 
 	if( require.weapon && !pc_check_weapontype(&sd,require.weapon) ) {
-		switch(skill_id) {
-			case RA_AIMEDBOLT:
-				break;
-			default:
-				switch((uint32)log2(require.weapon)) {
-					case W_REVOLVER:
-						clif_msg( sd, MSI_FAIL_NEED_EQUIPPED_GUN_HANDGUN );
-						break;
-					case W_RIFLE:
-						clif_msg( sd, MSI_FAIL_NEED_EQUIPPED_GUN_RIFLE );
-						break;
-					case W_GATLING:
-						clif_msg( sd, MSI_FAIL_NEED_EQUIPPED_GUN_GATLING );
-						break;
-					case W_SHOTGUN:
-						clif_msg( sd, MSI_FAIL_NEED_EQUIPPED_GUN_SHOTGUN );
-						break;
-					case W_GRENADE:
-						clif_msg( sd, MSI_FAIL_NEED_EQUIPPED_GUN_GRANADE );
-						break;
-					default:
-						clif_skill_fail( sd, skill_id, USESKILL_FAIL_THIS_WEAPON );
-						break;
-				}
-				return false;
-		}
+		bool bypass_weapon_check = false;  
+		  
+		// Soul-linked Knight/Star Gladiator/Blacksmith 1H Parry bypass  
+		if (skill_id == LK_PARRYING && battle_config.sl_parry_1h_weapons) {  
+			status_change *sc = status_get_sc(&sd);  
+			if (sc && sc->getSCE(SC_SPIRIT)) {  
+				status_change_entry *sce_spirit = sc->getSCE(SC_SPIRIT);  
+
+				if ((sce_spirit->val2 == SL_KNIGHT && sd.weapontype1 == W_1HSWORD) || (sce_spirit->val2 == SL_STAR && sd.weapontype1 == W_BOOK) || (sce_spirit->val2 == SL_BLACKSMITH && sd.weapontype1 == W_1HAXE)) {  
+					bypass_weapon_check = true;  
+				}  
+			}  
+		}  
+
+		if (!bypass_weapon_check) {
+			switch(skill_id) {
+				case RA_AIMEDBOLT:
+					break;
+				default:
+					switch((uint32)log2(require.weapon)) {
+						case W_REVOLVER:
+							clif_msg( sd, MSI_FAIL_NEED_EQUIPPED_GUN_HANDGUN );
+							break;
+						case W_RIFLE:
+							clif_msg( sd, MSI_FAIL_NEED_EQUIPPED_GUN_RIFLE );
+							break;
+						case W_GATLING:
+							clif_msg( sd, MSI_FAIL_NEED_EQUIPPED_GUN_GATLING );
+							break;
+						case W_SHOTGUN:
+							clif_msg( sd, MSI_FAIL_NEED_EQUIPPED_GUN_SHOTGUN );
+							break;
+						case W_GRENADE:
+							clif_msg( sd, MSI_FAIL_NEED_EQUIPPED_GUN_GRANADE );
+							break;
+						default:
+							clif_skill_fail( sd, skill_id, USESKILL_FAIL_THIS_WEAPON );
+							break;
+					}
+					return false;
+			}  
+		}  
 	}
 
 	if( require.sp > 0 && status->sp < (uint32)require.sp) {
@@ -19743,8 +19780,24 @@ bool skill_check_condition_castend( map_session_data& sd, uint16 skill_id, uint1
 	}
 
 	if( require.weapon && !pc_check_weapontype(&sd,require.weapon) ) {
-		clif_skill_fail( sd, skill_id, USESKILL_FAIL_THIS_WEAPON );
-		return false;
+		bool bypass_weapon_check = false;  // Declare here, before any potential case labels  
+
+		// Soul-linked Knight/Star Gladiator/Blacksmith 1H Parry bypass    
+		if (skill_id == LK_PARRYING && battle_config.sl_parry_1h_weapons) {    
+			status_change *sc = status_get_sc((block_list*)&sd);    
+			if (sc && sc->getSCE(SC_SPIRIT)) {    
+				status_change_entry *sce_spirit = sc->getSCE(SC_SPIRIT);    
+				  
+				if ((sce_spirit->val2 == SL_KNIGHT && sd.weapontype1 == W_1HSWORD) || (sce_spirit->val2 == SL_STAR && sd.weapontype1 == W_BOOK) || (sce_spirit->val2 == SL_BLACKSMITH && sd.weapontype1 == W_1HAXE)) {    
+					bypass_weapon_check = true;    
+				}    
+			}    
+		}    
+
+		if (!bypass_weapon_check) {    
+			clif_skill_fail(sd, skill_id, USESKILL_FAIL_THIS_WEAPON);    
+			return false;    
+		}  
 	}
 
 	if( require.ammo ) { //Skill requires stuff equipped in the ammo slot.

@@ -7690,6 +7690,12 @@ static void pc_checkallowskill(map_session_data *sd)
 		if (flag[SCF_REQUIREWEAPON]) { // Skills requiring specific weapon types
 			if (status == SC_DANCING && !battle_config.dancing_weaponswitch_fix)
 				continue;
+			// Soul-linked Knight 1H Parry - don't remove SC_PARRYING  
+			if (status == SC_PARRYING && battle_config.sl_parry_1h_weapons) {  
+				status_change *sc = &sd->sc;  
+				if (sc->getSCE(SC_SPIRIT) && sc->getSCE(SC_SPIRIT)->val2 == SL_KNIGHT && sd->weapontype1 == W_1HSWORD)  
+					continue;  
+			}
 			if (sd->sc.getSCE(status) && !pc_check_weapontype(sd, skill_get_weapontype(it.second->skill_id)))
 				status_change_end(sd, status);
 		}
