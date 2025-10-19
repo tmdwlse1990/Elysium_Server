@@ -29,6 +29,24 @@ using namespace rathena;
 
 std::unordered_map<uint16, std::shared_ptr<struct s_storage_table>> storage_db;
 
+/**    
+ * Safely multiply two int32 values with overflow detection    
+ * @param a First operand    
+ * @param b Second operand      
+ * @param result Pointer to store the multiplication result    
+ * @return true if multiplication succeeded, false if overflow/underflow detected    
+ **/  
+static bool safe_multiply_int32(int32 a, int32 b, int32* result) {  
+    int64 temp = (int64)a * (int64)b;  
+      
+    if (temp > INT32_MAX || temp < INT32_MIN) {  
+        return false;
+    }  
+      
+    *result = (int32)temp;  
+    return true;  
+}
+
 ///Databases of guild_storage : int32 guild_id -> struct guild_storage
 std::map<int32, struct s_storage> guild_storage_db;
 
@@ -243,6 +261,7 @@ static int32 storage_additem(map_session_data* sd, struct s_storage *stor, struc
 {
 	struct item_data *data;
 	int32 i;
+	int32 collection_fee = 0;
 
 	if( it->nameid == 0 || amount <= 0 )
 		return 1;
@@ -327,13 +346,17 @@ static int32 storage_additem(map_session_data* sd, struct s_storage *stor, struc
 			}
 		}
 
-		int32 collection_fee = 0;
-
 		if (entry != nullptr && entry->collection_fee > 0) {
-			collection_fee = entry->collection_fee * amount;
+			if (!safe_multiply_int32(entry->collection_fee, amount, &collection_fee)) {  
+				clif_displaymessage(sd->fd, "Collection fee calculation overflow. Amount too large.");  
+				return 1;  
+			}  
 		}
 		else if (collection->collection_fee > 0) {
-			collection_fee = collection->collection_fee * amount;
+			if (!safe_multiply_int32(collection->collection_fee, amount, &collection_fee)) {  
+				clif_displaymessage(sd->fd, "Collection fee calculation overflow. Amount too large.");  
+				return 1;  
+			}
 		}
 
 		if (collection_fee > 0) {
@@ -343,15 +366,6 @@ static int32 storage_additem(map_session_data* sd, struct s_storage *stor, struc
 				clif_displaymessage(sd->fd, message);
 				return 1;
 			}
-
-			sd->status.zeny -= collection_fee;
-			clif_updatestatus(*sd, SP_ZENY);
-
-			log_zeny(*sd, LOG_TYPE_STORAGE, sd->status.char_id, -collection_fee);
-
-			std::string formatted_fee = rathena::util::insert_comma(collection_fee);
-			safesnprintf(message, sizeof(message), "Collection fee of %s Zeny has been charged.", formatted_fee.c_str());
-			clif_displaymessage(sd->fd, message);
 		}
 	}
 
@@ -364,6 +378,16 @@ static int32 storage_additem(map_session_data* sd, struct s_storage *stor, struc
 				stor->u.items_storage[i].amount += amount;
 				stor->dirty = true;
 				clif_storageitemadded(sd,&stor->u.items_storage[i],i,amount);
+
+                if (collection_fee > 0) {  
+                    sd->status.zeny -= collection_fee;  
+                    clif_updatestatus(*sd, SP_ZENY);  
+                    log_zeny(*sd, LOG_TYPE_STORAGE, sd->status.char_id, -collection_fee);  
+                    std::string formatted_fee = rathena::util::insert_comma(collection_fee);  
+                    char message[CHAT_SIZE_MAX + 1];  
+                    safesnprintf(message, sizeof(message), "Collection fee of %s Zeny has been charged.", formatted_fee.c_str());  
+                    clif_displaymessage(sd->fd, message);  
+                }
 
 				return 0;
 			}
@@ -383,6 +407,17 @@ static int32 storage_additem(map_session_data* sd, struct s_storage *stor, struc
 	stor->amount++;
 	stor->u.items_storage[i].amount = amount;
 	stor->dirty = true;
+	
+	if (collection_fee > 0) {  
+		sd->status.zeny -= collection_fee;  
+		clif_updatestatus(*sd, SP_ZENY);  
+		log_zeny(*sd, LOG_TYPE_STORAGE, sd->status.char_id, -collection_fee);  
+		std::string formatted_fee = rathena::util::insert_comma(collection_fee);  
+		char message[CHAT_SIZE_MAX + 1];  
+		safesnprintf(message, sizeof(message), "Collection fee of %s Zeny has been charged.", formatted_fee.c_str());  
+		clif_displaymessage(sd->fd, message);  
+	}
+
 	clif_storageitemadded(sd,&stor->u.items_storage[i],i,amount);
 	clif_updatestorageamount(*sd, stor->amount, stor->max_amount);
 
@@ -403,38 +438,12 @@ int32 storage_delitem(map_session_data* sd, struct s_storage *stor, int32 index,
 
 	stor->u.items_storage[index].amount -= amount;
 	stor->dirty = true;
-
-    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor->stor_id);  
-    if (collection != nullptr)  
-    {  
-        char message[CHAT_SIZE_MAX + 1];  
-        std::shared_ptr<s_collection_item> entry = collection_db.findItemInStor(stor->stor_id, stor->u.items_storage[index].nameid);  
-
-        int32 withdraw_fee = 0;  
-        if (entry != nullptr && entry->withdraw_fee > 0) {  
-            withdraw_fee = entry->withdraw_fee * amount;  
-        }  
-        else if (collection->withdraw_fee > 0) {  
-            withdraw_fee = collection->withdraw_fee * amount;  
-        }  
   
-        if (withdraw_fee > 0) {  
-            if (sd->status.zeny < withdraw_fee) {  
-                std::string formatted_fee = rathena::util::insert_comma(withdraw_fee);
-                safesnprintf(message, sizeof(message), "You need %s Zeny to withdraw items from this collection box.", formatted_fee.c_str());  
-                clif_displaymessage(sd->fd, message);  
-                return 1;  
-            }  
-
-            sd->status.zeny -= withdraw_fee;  
-            clif_updatestatus(*sd, SP_ZENY);  
-            log_zeny(*sd, LOG_TYPE_STORAGE, sd->status.char_id, -withdraw_fee);  
+    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor->stor_id);
+    if (collection != nullptr)    
+    {    
+        char message[CHAT_SIZE_MAX + 1];    
   
-            std::string formatted_fee = rathena::util::insert_comma(withdraw_fee);
-            safesnprintf(message, sizeof(message), "Withdrawal fee of %s Zeny has been charged.", formatted_fee.c_str());  
-            clif_displaymessage(sd->fd, message);  
-        }  
-
         for (size_t combo_idx = 0; combo_idx < collection->combos.size(); combo_idx++) {  
             if (combo_idx < collection->active_combos.size() && collection->active_combos[combo_idx]) {  
                 auto& combo = collection->combos[combo_idx];  
@@ -526,6 +535,43 @@ void storage_storageget(map_session_data *sd, struct s_storage *stor, int32 inde
 	result = storage_canGetItem(stor, index, amount);
 	if (result != STORAGE_ADD_OK)
 		return;
+
+    std::shared_ptr<s_collection_stor> collection = collection_db.find(stor->stor_id);  
+    if (collection != nullptr) {  
+        char message[CHAT_SIZE_MAX + 1];  
+        std::shared_ptr<s_collection_item> entry = collection_db.findItemInStor(stor->stor_id, stor->u.items_storage[index].nameid);  
+
+        int32 withdraw_fee = 0;  
+        if (entry != nullptr && entry->withdraw_fee > 0) {  
+            if (!safe_multiply_int32(entry->withdraw_fee, amount, &withdraw_fee)) {  
+                clif_displaymessage(sd->fd, "Withdrawal fee calculation overflow.");  
+                return;  
+            }  
+        }  
+        else if (collection->withdraw_fee > 0) {  
+            if (!safe_multiply_int32(collection->withdraw_fee, amount, &withdraw_fee)) {  
+                clif_displaymessage(sd->fd, "Withdrawal fee calculation overflow.");  
+                return;  
+            }  
+        }  
+
+        if (withdraw_fee > 0) {  
+            if (sd->status.zeny < withdraw_fee) {  
+                std::string formatted_fee = rathena::util::insert_comma(withdraw_fee);  
+                safesnprintf(message, sizeof(message), "You need %s Zeny to withdraw items from this collection box.", formatted_fee.c_str());  
+                clif_displaymessage(sd->fd, message);  
+                return;
+            }  
+
+            sd->status.zeny -= withdraw_fee;  
+            clif_updatestatus(*sd, SP_ZENY);  
+            log_zeny(*sd, LOG_TYPE_STORAGE, sd->status.char_id, -withdraw_fee);  
+  
+            std::string formatted_fee = rathena::util::insert_comma(withdraw_fee);  
+            safesnprintf(message, sizeof(message), "Withdrawal fee of %s Zeny has been charged.", formatted_fee.c_str());  
+            clif_displaymessage(sd->fd, message);  
+        }  
+    }
 
 	if ((flag = pc_additem(sd,&stor->u.items_storage[index],amount,LOG_TYPE_STORAGE, favorite)) == ADDITEM_SUCCESS)
 		storage_delitem(sd,stor,index,amount);

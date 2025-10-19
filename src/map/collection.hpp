@@ -68,6 +68,8 @@ public:
   
     // Additional  
     std::shared_ptr<s_collection_item> findItemInStor(uint16 stor_id, t_itemid nameid);  
+
+    static void invalidate_cache();
 };  
   
 extern CollectionDatabase collection_db;

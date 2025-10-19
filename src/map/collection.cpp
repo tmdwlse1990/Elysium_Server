@@ -87,6 +87,12 @@ uint64 CollectionDatabase::parseBodyNode(const ryml::NodeRef& node)
     // Parse combos with individual properties  
     if (this->nodeExists(node, "Combos"))  
     {  
+		size_t combo_count = 0;  
+		for (const ryml::NodeRef& comboIt : node["Combos"]) {  
+			combo_count++;  
+		}  
+		collection->active_combos.resize(combo_count, false);
+
         for (const ryml::NodeRef& comboIt : node["Combos"])  
         {  
             static const std::string nodeName = "Combo";  
@@ -201,7 +207,19 @@ uint64 CollectionDatabase::parseBodyNode(const ryml::NodeRef& node)
             {  
                 combo_entry->collection_fee = 0;  
             }  
-              
+
+			if (this->nodeExists(comboIt, "WithdrawFee"))    
+			{    
+				int32 withdraw_fee;    
+				if (!this->asInt32(comboIt, "WithdrawFee", withdraw_fee))    
+					return 0;    
+				combo_entry->withdraw_fee = withdraw_fee;    
+			}    
+			else    
+			{    
+				combo_entry->withdraw_fee = 0;    
+			}
+
             if (this->nodeExists(comboIt, "Script"))  
             {  
                 std::string script;  
@@ -215,8 +233,6 @@ uint64 CollectionDatabase::parseBodyNode(const ryml::NodeRef& node)
 
         }  
     }
-
-	collection->active_combos.resize(collection->combos.size(), false);	
   
     // Parse individual items (separate from combos)  
     if (this->nodeExists(node, "Items"))  
@@ -330,6 +346,19 @@ uint64 CollectionDatabase::parseBodyNode(const ryml::NodeRef& node)
                 if (new_entry)  
                     entry->collection_fee = 0;  
             }  
+
+			if (this->nodeExists(it, "WithdrawFee"))    
+			{    
+				int32 withdraw_fee;    
+				if (!this->asInt32(it, "WithdrawFee", withdraw_fee))    
+					return 0;    
+				entry->withdraw_fee = withdraw_fee;    
+			}    
+			else    
+			{    
+				if (new_entry)    
+					entry->withdraw_fee = 0;    
+			}
   
             if (this->nodeExists(it, "Script"))  
             {  
@@ -377,39 +406,34 @@ std::shared_ptr<s_collection_item> CollectionDatabase::findItemInStor(uint16 sto
         if (entry->nameid == nameid)    
             return entry;    
     }    
-        
-    // For combo items, return a static reference instead of creating temporary objects  
-    static thread_local std::unordered_map<uint64, std::shared_ptr<s_collection_item>> combo_item_cache;  
-      
+
     for (std::shared_ptr<s_collection_combo> combo : collection->combos)    
     {    
         for (t_itemid combo_item : combo->items)    
         {    
             if (combo_item == nameid)    
             {    
-                // Use cached item or create once  
-                auto cache_key = (static_cast<uint64>(stor_id) << 32) | nameid;  
-                auto it = combo_item_cache.find(cache_key);  
-                if (it != combo_item_cache.end()) {  
-                    return it->second;  
-                }  
-                  
-                std::shared_ptr<s_collection_item> cached_entry = std::make_shared<s_collection_item>();    
-                cached_entry->nameid = nameid;    
-                cached_entry->amount = combo->amount;    
-                cached_entry->refine = combo->refine;    
-                cached_entry->withdraw = combo->withdraw;    
-                cached_entry->collection_fee = combo->collection_fee;    
-                cached_entry->withdraw_fee = collection->withdraw_fee;  
-                cached_entry->script = nullptr; // Never share script pointers  
-                  
-                combo_item_cache[cache_key] = cached_entry;  
-                return cached_entry;    
+
+                std::shared_ptr<s_collection_item> temp_entry = std::make_shared<s_collection_item>();      
+                temp_entry->nameid = nameid;      
+                temp_entry->amount = combo->amount;      
+                temp_entry->refine = combo->refine;      
+                temp_entry->withdraw = combo->withdraw;      
+                temp_entry->collection_fee = combo->collection_fee;      
+                temp_entry->withdraw_fee = combo->withdraw_fee;    
+                temp_entry->script = nullptr; // Never share script pointers  
+
+                return temp_entry;    
             }    
         }    
     }    
         
     return nullptr;    
+}
+
+// Add invalidation function:  
+void CollectionDatabase::invalidate_cache() {  
+    // Cache is now removed, no invalidation needed  
 }
 
 CollectionDatabase collection_db;
